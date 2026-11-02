@@ -1,0 +1,418 @@
+/* ========================================================== */
+/* SUIRI NOSSO LAR - CSS-MODULOS.CSS (100% COMPLETO)          */
+/* Módulos: Perfil, Missões, Mercado, Finanças e Calendário   */
+/* ========================================================== */
+
+/* ---------------------------------------------------------- */
+/* 1. CABEÇALHO DO MEMBRO & PERFIL (DESAFOGADO E RESPONSIVO)  */
+/* ---------------------------------------------------------- */
+.cabecalho-app {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--pastel-card, #ffffff);
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-lg, 20px);
+    box-shadow: var(--sombra-elegante, 0 4px 20px rgba(180, 120, 20, 0.06));
+    margin-bottom: 14px;
+}
+
+.cabecalho-app > div:first-child {
+    min-width: 0;
+    flex: 1;
+}
+
+.grade-acoes-topo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-loja-topo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--pastel-ouro, #fef3c7);
+    border: 1px solid rgba(217, 119, 6, 0.28);
+    color: var(--cor-primaria, #d97706);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-loja-topo:active {
+    transform: scale(0.96);
+}
+
+.avatar-topo-usuario {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cor-primaria, #d97706);
+    background: var(--suiri-surface-secondary-light, #fef9ea);
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* ---------------------------------------------------------- */
+/* 2. MÓDULO DE MISSÕES (SEGMENTAÇÃO & CARTÕES)               */
+/* ---------------------------------------------------------- */
+.item-missao-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--pastel-card, #ffffff);
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    margin-bottom: 8px;
+    box-shadow: var(--sombra-elegante, 0 2px 8px rgba(15, 23, 42, 0.03));
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.item-missao-card:hover {
+    border-color: rgba(217, 119, 6, 0.35);
+}
+
+.item-missao-card.concluida {
+    opacity: 0.7;
+    background: var(--pastel-verde, #dcfce7);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.item-missao-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.item-missao-titulo {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--texto-principal, #334155);
+    line-height: 1.35;
+    overflow-wrap: break-word;
+}
+
+.badge-prioridade {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.prioridade-urgente { 
+    background: #fee2e2; 
+    color: #ef4444; 
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.prioridade-importante { 
+    background: #fef3c7; 
+    color: #d97706; 
+    border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.prioridade-tranquilo { 
+    background: #dcfce7; 
+    color: #10b981; 
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* ---------------------------------------------------------- */
+/* 3. MÓDULO DE SUPERMERCADO & MODO PLANILHA                  */
+/* ---------------------------------------------------------- */
+.autocomplete-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--raio-md, 14px);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+}
+
+.autocomplete-item {
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--texto-principal, #334155);
+    display: flex;
+    justify-content: space-between;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover {
+    background: var(--suiri-surface-secondary-light, #fef9ea);
+}
+
+.item-planejamento-mercado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    margin-bottom: 6px;
+}
+
+.tabela-mercado-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    margin-bottom: 12px;
+    background: #ffffff;
+}
+
+.planilha-mercado {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: left;
+}
+
+.planilha-mercado th {
+    background: var(--suiri-surface-secondary-light, #fef9ea);
+    color: var(--texto-suave, #64748b);
+    font-weight: 700;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+}
+
+.planilha-mercado td {
+    padding: 8px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.planilha-mercado tr:last-child td {
+    border-bottom: none;
+}
+
+.planilha-mercado input[type="number"] {
+    padding: 6px 4px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.total-mercado-fixo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------- */
+/* 4. MÓDULO DE FINANÇAS, CARTEIRAS & COFRINHO                */
+/* ---------------------------------------------------------- */
+.box-carteira-topo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.card-saldo-carteira {
+    background: #ffffff;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-lg, 16px);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--sombra-elegante);
+}
+
+.card-carteira-destaque-usuario {
+    background: #ffffff;
+    border: 1.5px solid var(--cor-sucesso, #10b981);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.09);
+}
+
+.barra-progresso-fundo {
+    width: 100%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 6px 0;
+}
+
+.barra-progresso-preenchimento {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cor-primaria, #d97706), var(--cor-sucesso, #10b981));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.campo-com-voz {
+    position: relative;
+    width: 100%;
+}
+
+.campo-com-voz input {
+    padding-right: 44px;
+}
+
+.btn-microfone {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--pastel-ouro, #fef3c7);
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cor-primaria, #d97706);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-microfone.ouvindo {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+    animation: pulsarMic 1s infinite alternate;
+}
+
+@keyframes pulsarMic {
+    from { transform: translateY(-50%) scale(0.96); }
+    to { transform: translateY(-50%) scale(1.08); }
+}
+
+.item-extrato-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    font-size: 13px;
+}
+
+/* ---------------------------------------------------------- */
+/* 5. CALENDÁRIO MENSAL INTEGRADO (100% PREENCHIDO E FLUIDO)  */
+/* ---------------------------------------------------------- */
+#grid-calendario-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.grade-calendario-mensal {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.grade-calendario-cabecalho {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--texto-suave, #64748b);
+    text-align: center;
+    padding-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dia-calendario {
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #ffffff !important;
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)) !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto-principal, #334155);
+    position: relative;
+    padding: 2px !important;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.15s ease;
+}
+
+.dia-calendario:active {
+    transform: scale(0.95);
+}
+
+.dia-calendario:hover {
+    border-color: var(--cor-primaria, #d97706);
+    background: var(--pastel-ouro, #fef3c7) !important;
+}
+
+.dia-calendario.dia-atual {
+    border: 2px solid var(--cor-primaria, #d97706) !important;
+    background: var(--pastel-ouro, #fef3c7) !important;
+    color: var(--cor-primaria, #d97706) !important;
+    font-weight: 800;
+}
+
+.bolinhas-calendario {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3px;
+    min-height: 6px;
+}
+
+.bolinhas-calendario span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Indicadores das abas e filtros */
+.badge-bolinha-filtro {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.bolinha-verde { background: #10b981; }
+.bolinha-vermelha { background: #ef4444; }
+.bolinha-azul { background: #0ea5e9; }

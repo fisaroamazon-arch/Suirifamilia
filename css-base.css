@@ -1,0 +1,818 @@
+/* ========================================================== */
+/* SUIRI GESTOR FAMILIAR - CSS-BASE.CSS (100% COMPLETO)       */
+/* Tema Ouro Suave, Tons Pastéis, Notificações & MODO KIDS    */
+/* Modal de Quiosque Tela Cheia, Mascotes e Animações         */
+/* ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    color-scheme: light;
+
+    /* Fundo Degradê Ouro Delicado */
+    --bg-ouro-degrade: linear-gradient(160deg, #fffdf8 0%, #fef9e8 40%, #fef3c7 100%);
+    --cor-fundo: #fffdf8;
+
+    /* Tons Pastéis Elegantes */
+    --pastel-card: #ffffff;
+    --suiri-surface-light: #ffffff;
+    --suiri-surface-secondary-light: #fef9ea;
+    --pastel-ouro: #fef3c7;
+    --pastel-ouro-forte: #fde68a;
+    --pastel-verde: #dcfce7;
+    --pastel-rosa: #fee2e2;
+    --pastel-azul: #e0f2fe;
+    --pastel-roxo: #f3e8ff;
+
+    /* Tipografia & Contrastes */
+    --texto-principal: #334155;
+    --cor-texto: #334155;
+    --texto-suave: #64748b;
+    --suiri-text-muted-light: #64748b;
+
+    /* Bordas & Sombras */
+    --borda-delicada: rgba(217, 119, 6, 0.16);
+    --suiri-border-light: rgba(217, 119, 6, 0.16);
+    --suiri-border: rgba(217, 119, 6, 0.16);
+    --sombra-elegante: 0 4px 20px rgba(180, 120, 20, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+    --sombra-card: 0 4px 20px rgba(180, 120, 20, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+
+    /* Cores de Ação Harmonizadas */
+    --cor-primaria: #d97706;
+    --cor-primaria-hover: #b45309;
+    --cor-primaria-suave: #fef3c7;
+    --cor-botao: #d97706;
+    --cor-sucesso: #10b981;
+    --cor-erro: #f43f5e;
+    --cor-alerta: #d97706;
+    --cor-azul-evento: #0ea5e9;
+
+    /* Raios de Arredondamento */
+    --input-bg: #ffffff;
+    --raio-sm: 10px;
+    --raio-md: 14px;
+    --raio-lg: 20px;
+    --raio-padrao: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    background-color: var(--cor-fundo);
+    background-image: var(--bg-ouro-degrade);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--texto-principal);
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    padding-top: 68px;
+    padding-bottom: 36px;
+    position: relative;
+}
+
+/* Prevenção de quebras de texto */
+h1, h2, h3, h4, span, p, label, strong {
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+/* Trava Universal Contra Sobreposição */
+.oculto, .modal-overlay.oculto {
+    display: none !important;
+}
+
+.container {
+    width: 100%;
+    max-width: 560px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    contain: layout style;
+}
+
+/* Isolamento de camada para impedir travamentos com teclado aberto */
+.cartao-geral, .modal-conteudo {
+    contain: layout style;
+}
+
+/* ========================================================== */
+/* TRANSIÇÃO SUAVE ENTRE JANELAS / TELAS                      */
+/* ========================================================== */
+.secao-conteudo-app {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    will-change: opacity, transform;
+}
+
+.secao-conteudo-app:not(.oculto) {
+    animation: animacaoTransicaoJanelaSuave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes animacaoTransicaoJanelaSuave {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* ========================================================== */
+/* TÍTULO SUIRI FAMÍLIA (DEGRADÊ OURO & LUZ)                  */
+/* ========================================================== */
+.titulo-suiri-ouro, .logo-estilizada, .titulo-suiri-cursivo {
+    font-family: 'Great Vibes', cursive !important;
+    font-size: 46px !important;
+    font-weight: 700 !important;
+    line-height: 1.15;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 1px;
+    background: linear-gradient(
+        120deg, 
+        #b45309 0%, 
+        #d97706 25%, 
+        #fef08a 50%, 
+        #d97706 75%, 
+        #92400e 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: brilhoOuroLuz 6s ease-in-out infinite;
+    filter: drop-shadow(0 2px 8px rgba(217, 119, 6, 0.22));
+}
+
+@keyframes brilhoOuroLuz {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.status-texto {
+    font-size: 12.5px;
+    color: var(--texto-suave);
+}
+
+/* ========================================================== */
+/* ÍCONES SVG                                                 */
+/* ========================================================== */
+.icone-svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.2;
+    stroke: currentColor;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* ========================================================== */
+/* BARRA DE NAVEGAÇÃO SUPERIOR                                */
+/* ========================================================== */
+.bottom-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 60px;
+    background: rgba(255, 253, 248, 0.88);
+    border-bottom: 1px solid var(--borda-delicada);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+}
+
+.bottom-nav-list {
+    display: flex;
+    width: 100%;
+    max-width: 560px;
+    list-style: none;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2px;
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--texto-suave);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 5px 2px;
+    border-radius: var(--raio-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.bottom-nav-item span {
+    white-space: nowrap;
+    letter-spacing: -0.2px;
+}
+
+.bottom-nav-item.ativo {
+    color: var(--cor-primaria);
+    background: var(--pastel-ouro);
+    border-color: rgba(217, 119, 6, 0.3);
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1);
+}
+
+/* ========================================================== */
+/* CARTÕES E CABEÇALHO                                        */
+/* ========================================================== */
+.cartao-geral {
+    background: var(--pastel-card);
+    border: 1px solid var(--borda-delicada);
+    border-radius: var(--raio-lg);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra-elegante);
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s ease;
+}
+
+.cartao-geral:active {
+    transform: scale(0.988);
+}
+
+.cabecalho-app {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--pastel-card);
+    border: 1px solid var(--borda-delicada);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-elegante);
+    margin-bottom: 14px;
+    padding: 12px 14px;
+}
+
+.avatar-topo-usuario {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cor-primaria);
+    cursor: pointer;
+}
+
+/* ========================================================== */
+/* ENTRADAS E FORMULÁRIOS ESTILIZADOS                         */
+/* ========================================================== */
+input, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: var(--input-bg);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--raio-md);
+    font-size: 13.5px;
+    color: var(--texto-principal);
+    outline: none;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Dropdowns / Seletores Customizados na Paleta Âmbar */
+select {
+    width: 100%;
+    padding: 10px 34px 10px 12px;
+    background-color: #ffffff;
+    border: 1.5px solid var(--borda-delicada);
+    border-radius: var(--raio-md);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-principal);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+}
+
+select option {
+    background-color: #ffffff;
+    color: var(--texto-principal);
+    font-weight: 600;
+    padding: 8px;
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--cor-primaria);
+    cursor: pointer;
+}
+
+/* ========================================================== */
+/* BOTÕES PADRÃO                                              */
+/* ========================================================== */
+button {
+    font-family: inherit;
+}
+
+.btn-principal, .btn-sucesso, .btn-erro, .btn-secundario {
+    border: none;
+    border-radius: var(--raio-md);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-principal:active, .btn-sucesso:active, .btn-erro:active, .btn-secundario:active {
+    transform: scale(0.98);
+}
+
+.btn-principal {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #ffffff;
+    width: 100%;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2);
+}
+
+.btn-sucesso {
+    background: var(--cor-sucesso);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2);
+}
+
+.btn-erro {
+    background: var(--cor-erro);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(244, 63, 94, 0.2);
+}
+
+.btn-secundario {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: var(--texto-principal);
+}
+
+.btn-circular-trocar-membro {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--suiri-surface-secondary-light, #fef9ea);
+    border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25));
+    color: var(--cor-primaria, #d97706);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 4px;
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-circular-trocar-membro:hover {
+    background: var(--pastel-ouro, #fef3c7);
+    border-color: var(--cor-primaria, #d97706);
+}
+
+.btn-circular-trocar-membro:active {
+    transform: scale(0.92);
+}
+
+/* ========================================================== */
+/* NOTIFICAÇÕES FLUTUANTES (TOASTS) CENTRALIZADAS             */
+/* ========================================================== */
+#toast-container {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast-msg {
+    pointer-events: auto;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--raio-md);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: surgimentoToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-sucesso {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.toast-erro {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.toast-info {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+@keyframes surgimentoToast {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px) scale(0.96); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* ========================================================== */
+/* MODAL DE TROCAR MEMBRO GIGANTE (QUASE TELA INTEIRA)        */
+/* ========================================================== */
+.modal-quiosque-tela-cheia {
+    width: 95vw !important;
+    max-width: 520px !important;
+    max-height: 90vh !important;
+    border-radius: 28px !important;
+    padding: 24px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    border: 2px solid var(--borda-delicada) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
+}
+
+.grade-avatares-expandida {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)) !important;
+    gap: 16px !important;
+    margin: 20px 0 !important;
+    overflow-y: auto !important;
+    padding: 4px !important;
+}
+
+.card-usuario-quiosque {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 14px 10px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.card-usuario-quiosque:active {
+    transform: scale(0.94);
+}
+
+.avatar-quiosque-grande {
+    width: 76px !important;
+    height: 76px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin-bottom: 8px !important;
+}
+
+/* Card de perfil Kids no seletor: Bordas em degradê e cores alegres */
+.card-usuario-kids-destaque {
+    border: 3px solid transparent !important;
+    background: linear-gradient(#ffffff, #ffffff) padding-box,
+                linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6, #10b981) border-box !important;
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.2) !important;
+}
+
+.card-usuario-kids-destaque .avatar-quiosque-grande {
+    border: 3px solid #10b981 !important;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* ========================================================== */
+/* TELA EXCLUSIVA DO MODO KIDS COM FUSÃO & ESTAMPA SVG        */
+/* ========================================================== */
+
+body.modo-kids-ativo {
+    background-color: #8b5cf6 !important;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.16' fill-rule='evenodd'%3E%3Cpath d='M20 8 L22 16 L30 18 L22 20 L20 28 L18 20 L10 18 L18 16 Z'/%3E%3Cpath d='M62 14 A3 3 0 0 0 56 16 A3 3 0 0 0 50 14 A3 3 0 0 0 50 20 L56 26 L62 20 A3 3 0 0 0 62 14 Z'/%3E%3Cpath d='M14 54 A 8 8 0 1 0 24 64 A 7 7 0 1 1 14 54 Z'/%3E%3Cpath d='M52 56 C50 54 46 54 45 56 C43 56 42 58 43 60 C41 61 41 64 43 65 C45 66 59 66 61 65 C63 63 62 60 60 59 C60 57 58 55 55 56 C54 55 53 55 52 56 Z'/%3E%3Ccircle cx='38' cy='38' r='2'/%3E%3Ccircle cx='70' cy='46' r='2.5'/%3E%3Ccircle cx='32' cy='72' r='2'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(135deg, #38bdf8 0%, #ec4899 45%, #8b5cf6 75%, #3b82f6 100%) !important;
+    background-size: 80px 80px, 300% 300% !important;
+    background-attachment: fixed !important;
+    animation: fusaoCoresMagicasKids 10s ease infinite !important;
+    padding-top: 14px !important;
+}
+
+@keyframes fusaoCoresMagicasKids {
+    0% { background-position: 0 0, 0% 50%; }
+    50% { background-position: 0 0, 100% 50%; }
+    100% { background-position: 0 0, 0% 50%; }
+}
+
+body.modo-kids-ativo #barra-navegacao-principal,
+body.modo-kids-ativo #painel-adulto-container {
+    display: none !important;
+}
+
+body.modo-kids-ativo #tela-kids-exclusiva {
+    display: block !important;
+    animation: animacaoTransicaoJanelaSuave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.cabecalho-kids-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 2.5px solid #fde68a;
+    border-radius: 24px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.12);
+}
+
+.avatar-kids-circulo {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #10b981;
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2);
+    cursor: pointer;
+}
+
+.subtitulo-kids-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #10b981;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.titulo-kids-nome {
+    font-size: 17px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.badge-xp-kids-topo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef3c7;
+    border: 1.5px solid #fde68a;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #b45309;
+}
+
+.btn-lojinha-kids-gigante {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
+    border: none;
+    border-radius: 26px;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.btn-lojinha-kids-gigante:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+}
+
+.btn-lojinha-kids-gigante .icone-box-presente {
+    width: 48px;
+    height: 48px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.badge-contador-kids {
+    font-size: 11px;
+    font-weight: 800;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.card-missao-kids {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.card-missao-kids:active {
+    transform: scale(0.985);
+}
+
+.card-missao-kids.concluida {
+    background: #f0fdf4 !important;
+    border-color: #86efac !important;
+    border-left: 8px solid #10b981 !important;
+    opacity: 0.85;
+}
+
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) {
+    border-left: 8px solid #38bdf8 !important;
+    border-top: 2px solid #bae6fd !important;
+}
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) {
+    border-left: 8px solid #f472b6 !important;
+    border-top: 2px solid #fbcfe8 !important;
+}
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) {
+    border-left: 8px solid #fbbf24 !important;
+    border-top: 2px solid #fde68a !important;
+}
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) {
+    border-left: 8px solid #34d399 !important;
+    border-top: 2px solid #a7f3d0 !important;
+}
+
+.btn-concluir-missao-kids {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-concluir-missao-kids:active {
+    transform: scale(0.94);
+}
+
+/* ========================================================== */
+/* MODAL & ANIMAÇÕES DO MASCOTE KIDS                          */
+/* ========================================================== */
+.modal-mascote-container {
+    text-align: center;
+    max-width: 330px !important;
+    padding: 24px 20px !important;
+    border-radius: 28px !important;
+    border: 3px solid #fde68a !important;
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2) !important;
+}
+
+.box-mascote-animacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.titulo-mascote-kids {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 4px 0 6px 0;
+}
+
+.subtexto-mascote-kids {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    line-height: 1.4;
+    margin-bottom: 18px;
+}
+
+@keyframes bounceMascote {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-14px) scale(1.08); }
+}
+
+@keyframes balancoMascoteTriste {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+/* ========================================================== */
+/* SPLASH DE VÍDEO CORRIGIDO (TELA CHEIA, POR CIMA DE TUDO)  */
+/* ========================================================== */
+.splash-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background: #000000 !important;
+    z-index: 99999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash-fullscreen.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.video-splash-bg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}

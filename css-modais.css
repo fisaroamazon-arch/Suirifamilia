@@ -1,0 +1,256 @@
+/* ========================================================== */
+/* SUIRI GESTÃO FAMILIAR - CSS-MODAIS.CSS (100% COMPLETO)     */
+/* Janelas Flutuantes, Pense, Cofrinho, Mercado e Tour Guia   */
+/* ========================================================== */
+
+/* Trava Universal de Segurança Contra Sobreposições */
+.oculto, .modal-overlay.oculto, .painel-tour-flutuante.oculto {
+    display: none !important;
+}
+
+/* ---------------------------------------------------------- */
+/* 1. ESTRUTURA DOS MODAIS PADRÃO (OVERLAY & CONTEÚDO)        */
+/* ---------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 99999;
+}
+
+.modal-conteudo {
+    width: 100%;
+    max-width: 460px;
+    max-height: 88vh;
+    background: var(--pastel-card, #ffffff);
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-lg, 20px);
+    padding: 18px 20px;
+    overflow-y: auto;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 15.5px;
+    color: var(--texto-principal, #334155);
+    line-height: 1.3;
+}
+
+/* ---------------------------------------------------------- */
+/* 2. PÍLULA DO DIA (PENSE - SABEDORIA & FINANÇAS)            */
+/* ---------------------------------------------------------- */
+#modal-pilula-dia .modal-conteudo {
+    background: linear-gradient(180deg, #ffffff 0%, #fffdf8 100%);
+    border: 1.5px solid rgba(217, 119, 6, 0.25);
+}
+
+#pilula-frase-filosofica {
+    font-style: italic;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--texto-principal, #334155);
+    padding: 10px 14px;
+    border-left: 3px solid var(--cor-primaria, #d97706);
+    background: var(--pastel-ouro, #fef3c7);
+    border-radius: 0 var(--raio-sm, 10px) var(--raio-sm, 10px) 0;
+    margin: 10px 0 14px 0;
+}
+
+/* ---------------------------------------------------------- */
+/* 3. MODAL DE DEFINIÇÃO DO COFRINHO MENSAL                   */
+/* ---------------------------------------------------------- */
+#modal-definir-meta-economia input[type="number"] {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cor-primaria, #d97706);
+    text-align: center;
+    padding: 12px;
+}
+
+/* ---------------------------------------------------------- */
+/* 4. GRÁFICOS DO SUPERMERCADO                                */
+/* ---------------------------------------------------------- */
+.graficos-mercado-box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 14px 0;
+}
+
+.grafico-canvas-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ---------------------------------------------------------- */
+/* 5. LOJA DE RECOMPENSAS & BENEFÍCIOS FAMILIARES             */
+/* ---------------------------------------------------------- */
+.item-beneficio-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: var(--suiri-surface-secondary-light, #fef9ea);
+    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
+    border-radius: var(--raio-md, 14px);
+    padding: 12px 14px;
+    transition: transform 0.15s ease;
+}
+
+.item-beneficio-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.item-beneficio-titulo {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--texto-principal, #334155);
+    line-height: 1.3;
+    overflow-wrap: break-word;
+}
+
+.item-beneficio-custo {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--cor-primaria, #d97706);
+}
+
+.btn-resgatar-beneficio {
+    background: var(--cor-primaria, #d97706);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--raio-sm, 10px);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-resgatar-beneficio:active {
+    transform: scale(0.96);
+}
+
+/* ---------------------------------------------------------- */
+/* 6. TOUR DE INSTRUÇÕES COM POSICIONAMENTO INTELIGENTE       */
+/* ---------------------------------------------------------- */
+#modal-tour-instrucoes,
+.painel-tour-flutuante {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 92% !important;
+    max-width: 440px !important;
+    z-index: 999999 !important; /* Prioridade máxima: fica acima de qualquer modal aberto */
+    pointer-events: none;
+    transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation: surgimentoTour 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Posição inferior padrão */
+#modal-tour-instrucoes.posicao-rodape,
+.painel-tour-flutuante.posicao-rodape {
+    bottom: 18px !important;
+    top: auto !important;
+}
+
+/* Posição superior quando o elemento em foco estiver na parte inferior */
+#modal-tour-instrucoes.posicao-topo,
+.painel-tour-flutuante.posicao-topo {
+    top: 18px !important;
+    bottom: auto !important;
+}
+
+.conteudo-tour-flutuante {
+    pointer-events: auto;
+    background: #ffffff;
+    border: 1.5px solid var(--cor-primaria, #d97706);
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(217, 119, 6, 0.18);
+}
+
+@keyframes surgimentoTour {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, 15px) scale(0.97); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, 0) scale(1); 
+    }
+}
+
+.tour-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(217, 119, 6, 0.2);
+    margin: 0 3px;
+    transition: all 0.2s ease;
+}
+
+.tour-dot.ativo {
+    background: var(--cor-primaria, #d97706);
+    width: 16px;
+    border-radius: 4px;
+}
+
+/* ---------------------------------------------------------- */
+/* 7. DESTAQUE INTERATIVO (SPOTLIGHT) & ANIMAÇÕES             */
+/* ---------------------------------------------------------- */
+.destaque-tour-foco {
+    position: relative !important;
+    z-index: 1000000 !important; /* Acima de overlays para destacar o campo na demo */
+    outline: 3px solid var(--cor-primaria, #d97706) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.25), 0 0 25px rgba(217, 119, 6, 0.5) !important;
+    animation: pulsoContornoTour 1.3s infinite alternate ease-in-out !important;
+    transition: all 0.25s ease-in-out !important;
+}
+
+@keyframes pulsoContornoTour {
+    from {
+        box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2), 0 0 10px rgba(217, 119, 6, 0.3);
+    }
+    to {
+        box-shadow: 0 0 0 6px rgba(217, 119, 6, 0.45), 0 0 24px rgba(217, 119, 6, 0.65);
+    }
+}
+
+.clique-simulado-tour {
+    transform: scale(0.94) !important;
+    filter: brightness(1.2) !important;
+    transition: transform 0.15s ease !important;
+}
