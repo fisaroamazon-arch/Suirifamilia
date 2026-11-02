@@ -245,7 +245,7 @@
                 <div id="lista-missoes-kids-container"></div>
             </section>
 
-            <!-- =============================================================== -->
+            =============================================================== -->
             <!-- AMBIENTE DE ADULTOS                                             -->
             <!-- =============================================================== -->
             <div id="painel-adulto-container">
@@ -285,4 +285,1282 @@
 
                 <!-- BOTÃO LONGO DE DESTAQUE: APOIAR O PROJETO -->
                 <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 12px; margin-bottom: 12px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 12px; color: #b45309; font-size: 12.5px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15); transition: transform 0.15s ease, background 0.2s ease;">
-                    <svg class="icone-svg" style="width: 15px; height: 15px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></s
+                    <svg class="icone-svg" style="width: 15px; height: 15px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    <span>Apoiar o Projeto</span>
+                </button>
+
+                <!-- METAS DO ANO -->
+                <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 16px; height: 16px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-sucesso, #10b981);">
+                                Planos & Metas do Ano
+                            </span>
+                        </div>
+                        <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalMetasAnuais()">
+                            Ver Todos
+                        </button>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--texto-principal);">
+                            <span id="lbl-metas-ano-resumo">Objetivos definidos para o ano</span>
+                            <strong id="lbl-metas-ano-porcentagem" style="color: var(--cor-sucesso, #10b981);">0%</strong>
+                        </div>
+                        <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 8px; height: 7px; width: 100%; overflow: hidden;">
+                            <div id="barra-metas-ano-fill" style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MÓDULO 1: MISSÕES -->
+                <section id="secao-inicio" class="secao-conteudo-app">
+                    <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                        <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">
+                                    Mural de Recados da Casa
+                                </span>
+                                <span id="contador-recados-pendentes" style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">0 avisos</span>
+                            </div>
+                            <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #d97706); transition: transform 0.2s ease;">▼</span>
+                        </div>
+
+                        <div id="mural-recados-conteudo" class="oculto" style="margin-top: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+                                <input type="text" id="input-novo-recado" placeholder="Deixar um aviso ou lembrete rápido..." style="width: 100%; box-sizing: border-box; margin: 0; padding: 9px 12px; font-size: 13px;">
+                                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 6px;">
+                                    <select id="select-recado-destinatario" style="padding: 6px 8px; font-size: 11.5px; margin: 0;">
+                                        <option value="todos">Toda a Casa</option>
+                                    </select>
+                                    <button type="button" class="btn-principal" style="width: 100%; padding: 8px 10px; font-size: 12px; font-weight: 700;" onclick="window.publicarRecadoLar()">Confirmar</button>
+                                </div>
+                            </div>
+                            <div id="lista-recados-lar" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px;">
+                        <div onclick="window.alternarSecaoRetratil('nova-missao-formulario', 'seta-nova-missao')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+                            <h3 style="font-size: 15px; margin: 0; color: var(--texto-principal, #334155); display: flex; align-items: center; gap: 6px;">
+                                <span id="lbl-btn-nova-missao-expansivel">+ Nova Missão para a Casa</span>
+                            </h3>
+                            <span id="seta-nova-missao" style="font-size: 12px; color: var(--texto-suave, #64748b); transition: transform 0.2s ease;">▼</span>
+                        </div>
+
+                        <div id="nova-missao-formulario" class="oculto" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                            <input type="text" id="input-nova-missao-titulo" placeholder="O que precisa ser feito?">
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                <select id="select-nova-missao-prioridade">
+                                    <option value="2">Importante (+25 XP)</option>
+                                    <option value="1">Urgente (+40 XP)</option>
+                                    <option value="3">Tranquilo (+15 XP)</option>
+                                </select>
+                                <select id="select-nova-missao-recorrencia">
+                                    <option value="diaria_24h">Diária (04:00)</option>
+                                    <option value="semanal_7d">Semanal (7d)</option>
+                                    <option value="quinzenal_15d">Quinzenal (15d)</option>
+                                    <option value="mensal_30d">Mensal (30d)</option>
+                                    <option value="nenhuma">Não repete</option>
+                                </select>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px;">
+                                <select id="select-nova-missao-responsavel">
+                                    <option value="todos">Casa (Todos)</option>
+                                    <option value="todos_kids">Todos Kids (Quem fizer 1º)</option>
+                                    <option value="individual">Individual (Minha)</option>
+                                </select>
+                                <input type="time" id="input-nova-missao-horario-limite" placeholder="Hora Limite">
+                            </div>
+
+                            <!-- Secção de Subitens Opcionais na Criação -->
+                            <div style="margin-top: 4px; padding: 8px; background: var(--suiri-surface-secondary-light, #f1f5f9); border-radius: 10px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Sub-etapas / Checklist (Opcional):</span>
+                                    <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px;" onclick="window.adicionarLinhaSubitemCriacao()">+ Subitem</button>
+                                </div>
+                                <div id="container-inputs-subitens-criacao"></div>
+                            </div>
+
+                            <input type="hidden" id="input-nova-missao-horario-reinicio" value="04:00">
+                            <button type="button" class="btn-principal" onclick="window.adicionarNovaMissao()">Confirmar Missão</button>
+                        </div>
+                    </div>
+
+                    <div id="container-botoes-filtro-missoes" style="display: flex; gap: 8px; margin: 12px 0;">
+                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:9px 12px; font-size:12.5px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('todas')">
+                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <span id="lbl-texto-filtro-casa-toda">Casa Toda</span>
+                        </button>
+                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:9px 12px; font-size:12.5px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('minhas')">
+                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Minhas
+                        </button>
+                    </div>
+
+                    <div id="lista-missoes-dia"></div>
+
+                    <!-- Secção de Gestão do Histórico Kids (Exclusivo para o Administrador) -->
+                    <div id="painel-historico-missoes-kids-adm" class="cartao-geral oculto" style="padding: 12px 14px; margin-top: 16px; border-left: 4px solid #38bdf8;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <h3 style="font-size: 14px; margin: 0; color: var(--texto-principal, #334155); display: flex; align-items: center; gap: 6px;">
+                                <span>Histórico de Missões Kids (Painel ADM)</span>
+                            </h3>
+                        </div>
+                        <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 8px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
+                        <div id="lista-historico-kids-adm"></div>
+                    </div>
+                </section>
+
+                <!-- MÓDULO 2: SUPERMERCADO -->
+                <section id="secao-mercado" class="secao-conteudo-app oculto">
+                    <div class="cartao-geral">
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                            <button type="button" id="btn-aba-lista-mes" class="btn-principal" style="flex:1;" onclick="window.alternarVisualizacaoMercado('lista')">Lista do Mês</button>
+                            <button type="button" id="btn-aba-modo-mercado" class="btn-secundario" style="flex:1;" onclick="window.alternarVisualizacaoMercado('planilha')">No Mercado</button>
+                        </div>
+
+                        <div style="position: relative; display: flex; flex-direction: column; gap: 6px;">
+                            <input type="text" id="input-novo-item-mercado" placeholder="Adicionar item à despensa..." oninput="window.filtrarAutocompleteMercado(this.value)">
+                            <div id="dropdown-autocomplete-mercado" class="autocomplete-dropdown oculto"></div>
+
+                            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 1fr; gap: 6px;">
+                                <select id="select-novo-item-categoria">
+                                    <option value="auto">Categoria Automática</option>
+                                    <option value="Açougue">Açougue</option>
+                                    <option value="Hortifrúti">Hortifrúti</option>
+                                    <option value="Mercearia">Mercearia</option>
+                                    <option value="Limpeza">Limpeza</option>
+                                    <option value="Higiene">Higiene</option>
+                                    <option value="Laticínios">Laticínios</option>
+                                    <option value="Padaria">Padaria</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                </select>
+                                <input type="number" id="input-novo-item-qtd" value="1" min="0.1" step="0.1" placeholder="Qtd">
+                                <input type="number" id="input-novo-item-unit" step="0.01" placeholder="R$ Unit.">
+                            </div>
+                            <button type="button" class="btn-principal" onclick="window.adicionarItemMercado()">Confirmar Item</button>
+                        </div>
+                    </div>
+
+                    <div id="bloco-lista-planejamento-mercado">
+                        <div id="container-itens-lista-mes"></div>
+                    </div>
+
+                    <div id="bloco-planilha-modo-mercado" class="oculto">
+                        <div class="tabela-mercado-container">
+                            <table class="planilha-mercado">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 32px; text-align: center;">✓</th>
+                                        <th>Produto</th>
+                                        <th style="width: 58px;">Qtd</th>
+                                        <th style="width: 72px;">Unit.</th>
+                                        <th style="text-align: right;">Total</th>
+                                        <th style="width: 28px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpo-tabela-planilha-mercado"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="total-mercado-fixo">
+                            <span>Total no Carrinho:</span>
+                            <strong id="valor-total-carrinho-mercado" style="color: var(--cor-sucesso, #10b981); font-size: 15px;">R$ 0,00</strong>
+                        </div>
+
+                        <button type="button" class="btn-sucesso" style="width: 100%; margin-top: 10px;" onclick="window.finalizarCompraMercado()">
+                            Confirmar Compra
+                        </button>
+                    </div>
+                </section>="icone-svg" style="width: 15px; height: 15px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></s
+                                                                                                                                                                                                                                                                    
+                <!-- MÓDULO 3: FINANÇAS -->
+                <section id="secao-financeiro" class="secao-conteudo-app oculto">
+                    
+                    <!-- 1. PRIMEIRO ITEM DA TELA: REGISTRO RÁPIDO DE MOVIMENTAÇÃO -->
+                    <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                        <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
+                        <div class="campo-com-voz" style="margin-bottom: 8px;">
+                            <input type="text" id="input-fin-descricao" placeholder="Descrição ou fale tocando no microfone...">
+                            <button type="button" id="btn-mic-gastos" class="btn-microfone" onclick="window.ouvirComandoVoz()" title="Falar">
+                                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                            </button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+                            <input type="number" step="0.01" id="input-fin-valor" placeholder="R$ 0,00">
+                            <select id="select-fin-categoria">
+                                <option value="Geral">Categoria: Geral</option>
+                                <option value="Alimentação">Alimentação</option>
+                                <option value="Supermercado">Supermercado</option>
+                                <option value="Moradia">Moradia / Casa</option>
+                                <option value="Transporte">Transporte / Combustível</option>
+                                <option value="Saúde">Saúde / Farmácia</option>
+                                <option value="Lazer">Lazer / Passeio</option>
+                                <option value="Educação">Educação</option>
+                                <option value="Salário">Salário / Renda</option>
+                            </select>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                            <select id="select-fin-tipo">
+                                <option value="saida">Saída (Gasto)</option>
+                                <option value="entrada">Entrada (Ganho)</option>
+                            </select>
+                            <select id="select-fin-escopo">
+                                <option value="pessoal">Privativo (Pessoal)</option>
+                                <option value="casa">Família (Compartilhado)</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
+                    </div>
+
+                    <!-- 2. BLOCO DE SALDOS DAS CARTEIRAS -->
+                    <div class="box-carteira-topo">
+                        <div class="card-saldo-carteira card-carteira-destaque-usuario">
+                            <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #d97706);">Minha Carteira</span>
+                            <h2 id="lbl-saldo-carteira-membro" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                        </div>
+                        <div id="bloco-card-montante-familia" class="card-saldo-carteira">
+                            <span id="lbl-titulo-montante-coletivo" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Montante da Família</span>
+                            <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                        </div>
+                    </div>
+
+                    <!-- 3. GRÁFICO DO MÊS ANTERIOR -->
+                    <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 12px; font-weight: 700; color: var(--texto-principal, #334155);">Gastos do Mês Anterior por Setor</span>
+                            <span id="lbl-nome-mes-anterior" style="font-size: 11px; color: var(--texto-suave, #64748b); font-weight: 600;">--/----</span>
+                        </div>
+                        <div style="position: relative; height: 180px; width: 100%;">
+                            <canvas id="grafico-barras-mes-anterior"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 4. METAS E COFRES -->
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
+                        <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--cor-primaria, #d97706); letter-spacing: 0.5px;">Meta Pessoal do Mês</span>
+                                    <h4 style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #334155);">Economia Mensal</h4>
+                                </div>
+                                <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 11px;" onclick="window.abrirModalDefinirMetaEconomia()">Ajustar</button>
+                            </div>
+                            <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; position: relative; margin: 8px 0;">
+                                <div id="barra-progresso-economia-fill" class="barra-progresso-preenchimento" style="background: var(--cor-primaria, #d97706); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--texto-suave, #64748b);">
+                                <span id="lbl-status-acumulado-economia">R$ 0,00 guardados</span>
+                                <span>Meta: <strong id="lbl-valor-meta-mensal">R$ 0,00</strong> (<strong id="lbl-porcentagem-meta-economia">0%</strong>)</span>
+                            </div>
+                        </div>
+
+                        <div id="bloco-card-cofres-compartilhados" class="cartao-geral" style="padding: 12px 14px; margin: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <span id="lbl-subtitulo-cofres" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--cor-sucesso, #10b981); letter-spacing: 0.5px;">Reserva da Família</span>
+                                    <h4 id="lbl-titulo-cofres" style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #334155);">Cofres do Lar</h4>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalDefinirMeta()">+ Novo Cofre</button>
+                                    <button type="button" class="btn-principal" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalAporteMeta()">+ Guardar</button>
+                                </div>
+                            </div>
+                            <div id="lista-cofres-compartilhados" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 5. EXTRATO NOMINAL -->
+                    <div class="cartao-geral">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="font-size: 14px; margin: 0;">Extrato Nominal</h3>
+                            <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                            <input type="date" id="extrato-filtro-inicio">
+                            <input type="date" id="extrato-filtro-fim">
+                        </div>
+                        <button type="button" class="btn-secundario" style="width: 100%; margin-bottom: 10px;" onclick="window.carregarExtratoPeriodo()">Atualizar Extrato</button>
+                        
+                        <div id="lista-extrato-carteira"></div>
+                    </div>
+                </section>
+
+                <!-- MÓDULO 4: CALENDÁRIO -->
+                <section id="secao-calendario" class="secao-conteudo-app oculto">
+                    <div class="cartao-geral">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <button type="button" class="btn-secundario" style="padding: 5px 10px;" onclick="window.navegarMesCalendario(-1)">◄</button>
+                            <h3 id="mes-ano-calendario-titulo" style="margin: 0; font-size: 15px; color: var(--texto-principal, #334155);">Mês Atual</h3>
+                            <button type="button" class="btn-secundario" style="padding: 5px 10px;" onclick="window.navegarMesCalendario(1)">►</button>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="display: flex; gap: 4px;">
+                                <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 10.5px;" onclick="window.filtrarCalendarioPorTipo('todos')">Todos</button>
+                                <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 10.5px;" onclick="window.filtrarCalendarioPorTipo('contas')">Contas</button>
+                                <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 10.5px;" onclick="window.filtrarCalendarioPorTipo('eventos')">Eventos</button>
+                            </div>
+                            <button type="button" class="btn-principal" style="width: auto; padding: 5px 10px; font-size: 11px;" onclick="window.abrirModalNovoEventoCalendario()">+ Novo Compromisso</button>
+                        </div>
+
+                        <div id="grid-calendario-container"></div>
+                    </div>
+
+                    <div class="cartao-geral">
+                        <h3 style="font-size: 14px; margin-bottom: 8px;">Agendar Conta ou Salário Fixo</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="text" id="input-agenda-descricao" placeholder="Descrição (ex: Aluguel, Internet, Salário)">
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                <input type="number" step="0.01" id="input-agenda-valor" placeholder="R$ Valor">
+                                <input type="date" id="input-agenda-vencimento">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                <select id="select-agenda-tipo">
+                                    <option value="conta_pagar">Conta a Pagar</option>
+                                    <option value="recebimento">Salário / Recebimento</option>
+                                </select>
+                                <select id="select-agenda-recorrencia">
+                                    <option value="unica">Única (Este Mês)</option>
+                                    <option value="mensal_12x">Mensal (12 Parcelas)</option>
+                                    <option value="perpetua">Fixa / Perpétua (Até Cancelar)</option>
+                                </select>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 6px;">
+                                <select id="select-agenda-escopo">
+                                    <option value="casa">Família (Compartilhado)</option>
+                                    <option value="pessoal">Privativo (Pessoal)</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn-principal" onclick="window.adicionarItemAgendaFinanceira()">Confirmar Agendamento</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MÓDULO 5: FAMÍLIA -->
+                <section id="secao-familia" class="secao-conteudo-app oculto">
+                    <div class="cartao-geral">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 id="lbl-titulo-lista-membros" style="margin: 0; font-size: 15px;">Membros da Família</h3>
+                            <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 6px 12px; font-size: 11.5px;" onclick="window.abrirModalNovoMembro()">
+                                + Novo Membro
+                            </button>
+                        </div>
+                        <div id="lista-membros-cadastrados"></div>
+                    </div>
+
+                    <div id="bloco-card-balanco-familiar" class="cartao-geral">
+                        <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                            <input type="date" id="data-inicio">
+                            <input type="date" id="data-fim">
+                        </div>
+                        <select id="filtro-membro-relatorio" style="margin-bottom: 8px;">
+                            <option value="todos">Todos os Membros (Casa)</option>
+                        </select>
+                        
+                        <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Confirmar Balanço</button>
+                    </div>
+
+                    <div id="relatorio-pdf-container" class="oculto">
+                        <div id="area-resultados-relatorio"></div>
+                        
+                        <div class="cartao-geral" style="margin-top: 10px;">
+                            <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #334155);">Comparativo: Renda vs Gastos Próprios</h4>
+                            <div style="position: relative; height: 220px; width: 100%;">
+                                <canvas id="grafico-barras-renda-gastos"></canvas>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                            <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
+                            <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
+                        </div>
+                    </div>
+
+                    <!-- CARTÃO APOIE O PROJETO (NA ABA FAMÍLIA) -->
+                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #fef9ea; margin-top: 14px; padding: 14px;">
+                        <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
+                        <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
+                        <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #d97706);" onclick="window.abrirModalApoioPix()">
+                            <svg class="icone-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                            Fazer uma Contribuição (Pix)
+                        </button>
+                    </div>
+
+                    <!-- ZONA DE SEGURANÇA E AUTOEXCLUSÃO TOTAL DE CONTA -->
+                    <div class="cartao-geral" style="text-align: center; border: 1.5px dashed var(--cor-erro, #ef4444); background: rgba(239, 68, 68, 0.04); margin-top: 14px; padding: 14px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Zona de Segurança da Conta</span>
+                        <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">Ao remover a sua conta, todos os seus dados e registos serão eliminados de forma definitiva e irreversível.</p>
+                        <button type="button" class="btn-erro" style="font-size: 11.5px; padding: 8px 14px; border-radius: 10px; width: auto;" onclick="window.solicitarExclusaoPropriaConta()">
+                            <svg class="icone-svg" style="width: 13px; height: 13px;" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Eliminar a Minha Conta
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+        <!-- =================================================================== -->
+    <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
+    <!-- =================================================================== -->
+
+    <!-- MODAL DE APOIO AO PROJETO (PIX COPIA E COLA) -->
+    <div id="modal-apoie-projeto" class="modal-overlay oculto" style="z-index: 1000001;">
+        <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <svg class="icone-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            </div>
+            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Apoie o Projeto Suiri</h3>
+            <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
+                O Suiri é desenvolvido de forma independente. Qualquer valor ajuda a manter os servidores e a criar novas melhorias para as famílias!
+            </p>
+
+            <div style="background: #f8fafc; border: 1.5px dashed var(--borda-delicada, rgba(217, 119, 6, 0.3)); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; text-align: center;">
+                <span style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b); text-transform: uppercase; display: block; margin-bottom: 3px;">Chave Pix:</span>
+                <strong id="texto-chave-pix-exibida" style="font-size: 11px; color: var(--cor-primaria, #d97706); word-break: break-all; user-select: all; display: block; font-family: monospace;">8f10257e-11a3-48e2-8672-58a6204b629d</strong>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-secundario" style="flex: 1; padding: 10px; font-size: 12px; border-radius: 10px;" onclick="window.fecharModalApoioPix()">Cancelar</button>
+                <button type="button" id="btn-copiar-chave-pix" class="btn-principal" style="flex: 1.4; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 10px;" onclick="window.copiarChavePixApoio()">
+                    Copiar Chave
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-metas-anuais" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width: 440px; padding: 20px 18px; border-radius: 24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 22px; height: 22px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    <h3 style="margin: 0; font-size: 17px; color: var(--texto-principal);">Planos & Metas do Ano</h3>
+                </div>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius: 10px;" onclick="window.fecharModalMetasAnuais()">✕</button>
+            </div>
+
+            <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                <button type="button" id="btn-tab-metas-casa" class="btn-principal" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('casa')">Família (Casa)</button>
+                <button type="button" id="btn-tab-metas-pessoal" class="btn-secundario" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('pessoal')">Minhas (Pessoais)</button>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <button type="button" class="btn-sucesso" style="width: 100%; font-size: 12.5px; padding: 9px;" onclick="window.abrirFormularioNovaMetaAnual()">
+                    + Cadastrar Novo Objetivo
+                </button>
+            </div>
+
+            <div id="bloco-form-nova-meta-anual" class="oculto" style="background: var(--suiri-surface-secondary-light, #fef9ea); border: 1px solid var(--borda-delicada); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
+                <input type="text" id="input-meta-anual-titulo" placeholder="Qual é o grande objetivo? (ex: Viagem, Curso, Reforma)" style="margin-bottom: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                    <select id="select-meta-anual-ano">
+                        <option value="2026">Ano: 2026</option>
+                        <option value="2027">Ano: 2027</option>
+                    </select>
+                    <select id="select-meta-anual-categoria">
+                        <option value="Geral">Categoria: Geral</option>
+                        <option value="Viagem">Viagem</option>
+                        <option value="Casa">Lar / Reforma</option>
+                        <option value="Estudo">Estudos / Carreira</option>
+                        <option value="Saúde">Saúde / Bem-Estar</option>
+                        <option value="Finanças">Finanças</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn-secundario" style="flex: 1;" onclick="window.fecharFormularioNovaMetaAnual()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex: 1;" onclick="window.salvarNovaMetaAnual()">Salvar Plano</button>
+                </div>
+            </div>
+
+            <div id="lista-metas-anuais-container" style="max-height: 48vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL MASCOTE KIDS -->
+    <div id="overlay-mascote-kids" class="modal-overlay oculto">
+        <div class="modal-conteudo modal-mascote-container">
+            <div id="box-animacao-mascote-kids" class="box-mascote-animacao"></div>
+            <h3 id="titulo-mascote-kids" class="titulo-mascote-kids">Muito Bem!</h3>
+            <p id="subtexto-mascote-kids" class="subtexto-mascote-kids">Missão cumprida!</p>
+            <button type="button" id="btn-fechar-mascote-kids" class="btn-sucesso" style="width:100%; border-radius:18px; padding:12px; font-size:15px; font-weight:800;" onclick="window.fecharModalMascoteKids()">
+                Continuar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAÇÃO SUIRI -->
+    <div id="modal-confirmacao-suiri" class="modal-overlay oculto" style="z-index: 1000000;">
+        <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <svg class="icone-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <h3 id="titulo-confirmacao-suiri" style="margin: 0 0 8px 0; font-size: 16px; color: var(--texto-principal);">Confirmação</h3>
+            <p id="mensagem-confirmacao-suiri" style="font-size: 13px; color: var(--texto-suave); line-height: 1.45; margin: 0 0 18px 0;"></p>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" id="btn-cancelar-confirmacao-suiri" class="btn-secundario" style="flex: 1; padding: 10px; font-size: 12.5px; border-radius: 12px;">Cancelar</button>
+                <button type="button" id="btn-ok-confirmacao-suiri" class="btn-principal" style="flex: 1; padding: 10px; font-size: 12.5px; border-radius: 12px;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAIS DE FINANÇAS E COFRE -->
+    <div id="modal-definir-meta-economia" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width:300px; padding:16px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin:0; font-size:15px;">Meta de Poupança Pessoal</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalDefinirMetaEconomia()">✕</button>
+            </div>
+            <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin-bottom: 8px;">Quanto você planeja poupar este mês?</p>
+            <input type="number" step="10" id="input-novo-valor-meta-economia" placeholder="R$ 500,00" style="width:100%; margin-bottom:12px; padding:8px;">
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalDefinirMetaEconomia()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex:1;" onclick="window.salvarNovaMetaEconomia()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-definir-meta" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width:320px; padding:16px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 id="titulo-modal-cofre" style="margin:0; font-size:15px;">Cofre Compartilhado</h3>
+                <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharModalDefinirMeta()">✕</button>
+            </div>
+            <input type="hidden" id="input-meta-id">
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">Objetivo / Nome do Cofre</label>
+            <input type="text" id="input-meta-titulo" placeholder="Ex: Viagem de Férias, Reforma..." style="width:100%; margin-bottom:10px; padding:8px;">
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">Valor Alvo Total (R$)</label>
+            <input type="number" step="0.01" id="input-meta-alvo" placeholder="Ex: 2500.00" style="width:100%; margin-bottom:14px; padding:8px;">
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalDefinirMeta()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex:1;" onclick="window.salvarMetaEstavel()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-aporte-meta" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width:320px; padding:16px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin:0; font-size:15px;">Guardar Valor</h3>
+                <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharModalAporteMeta()">✕</button>
+            </div>
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">Para onde vai o dinheiro?</label>
+            <select id="select-destino-aporte" style="width:100%; margin-bottom:10px; padding:8px;">
+                <option value="pessoal">Minha Poupança Individual</option>
+            </select>
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">Quanto deseja guardar? (R$)</label>
+            <input type="number" step="0.01" id="input-valor-aporte" placeholder="0.00" style="width:100%; margin-bottom:14px; padding:8px;">
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalAporteMeta()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex:1;" onclick="window.confirmarAporteMeta()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-pilula-dia" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="text-align: center; border-radius: 20px; padding: 22px 18px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 style="margin:0; font-size:16px; color:var(--texto-principal);">Pense: Sabedoria Familiar</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius:8px;" onclick="window.fecharModalPilulaDia()">✕</button>
+            </div>
+            <div id="pilula-frase-filosofica" style="min-height: 40px; display: flex; align-items: center; justify-content: center;"></div>
+            <p id="pilula-dica-financeira" style="font-size: 13px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 12px 0 16px 0;"></p>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalPilulaDia()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex:1;" onclick="window.fecharModalPilulaDia()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DA LOJA DE RECOMPENSAS -->
+    <div id="modal-ranking-equipe" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="border-radius:24px; padding:18px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 id="lbl-titulo-modal-loja" style="font-size:17px; font-weight:800; color:#d97706; margin:0;">Lojinha de Recompensas</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius:10px;" onclick="window.fecharModalRankingEquipe()">✕</button>
+            </div>
+            
+            <div id="bloco-podio-loja" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; margin-bottom: 14px;">
+                <div style="background: var(--suiri-surface-secondary-light, #fef9ea); padding: 8px; border-radius: 10px; border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));">
+                    <span style="font-size: 11px; font-weight: 700; color: #64748b; display: block;">2º Lugar</span>
+                    <strong id="podio-colab-2-nome" style="font-size: 12.5px; display: block;">-</strong>
+                    <span id="podio-colab-2-pts" style="font-size: 10.5px; color: var(--cor-primaria, #d97706);">0 XP</span>
+                </div>
+                <div style="background: var(--pastel-ouro, #fef3c7); padding: 10px 8px; border-radius: 10px; border: 1.5px solid var(--cor-primaria, #d97706); transform: translateY(-4px);">
+                    <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); display: block;">1º Lugar</span>
+                    <strong id="podio-colab-1-nome" style="font-size: 13px; display: block;">-</strong>
+                    <span id="podio-colab-1-pts" style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706);">0 XP</span>
+                </div>
+                <div style="background: var(--suiri-surface-secondary-light, #fef9ea); padding: 8px; border-radius: 10px; border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));">
+                    <span style="font-size: 11px; font-weight: 700; color: #b45309; display: block;">3º Lugar</span>
+                    <strong id="podio-colab-3-nome" style="font-size: 12.5px; display: block;">-</strong>
+                    <span id="podio-colab-3-pts" style="font-size: 10.5px; color: var(--cor-primaria, #d97706);">0 XP</span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span id="lbl-saldo-pontos-resgate" style="font-size: 13px; font-weight: 800;">Seu Saldo: 0 XP</span>
+                <button type="button" id="btn-novo-premio-loja" class="btn-secundario" style="padding: 4px 8px; font-size: 11px; border-radius:10px;" onclick="window.abrirModalCriarBeneficio()">+ Novo Prêmio</button>
+            </div>
+
+            <div id="lista-beneficios-resgatáveis" style="max-height: 50vh; overflow-y: auto;"></div>
+            
+            <div style="margin-top: 12px;">
+                <button type="button" class="btn-secundario" style="width: 100%; border-radius:12px;" onclick="window.fecharModalRankingEquipe()">Fechar Loja</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CRIAR / EDITAR RECOMPENSA (COM SELETOR KIDS & EXCLUSÃO) -->
+    <div id="modal-editar-beneficio-loja" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3 id="titulo-modal-editar-beneficio">Criar Recompensa</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalCriarBeneficio()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="edit-beneficio-id">
+                <input type="text" id="edit-beneficio-titulo" placeholder="Título da Recompensa (ex: Escolha da Pizza, Videogame)">
+                <input type="text" id="edit-beneficio-descricao" placeholder="Descrição simples">
+                <input type="number" id="edit-beneficio-custo" placeholder="Custo em XP (ex: 200)" value="200">
+                
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px;">
+                    <input type="checkbox" id="edit-beneficio-para-kids">
+                    <span style="display:flex; align-items:center; gap:5px;">
+                        <svg class="icone-svg" style="width:14px; height:14px; color:#d97706;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <strong>Disponível na Lojinha Kids</strong> (Aparece para as crianças)
+                    </span>
+                </label>
+
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button type="button" id="btn-excluir-beneficio-loja" class="btn-erro oculto" style="flex:1;" onclick="window.excluirBeneficioLojaConfirmado()">Excluir</button>
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalCriarBeneficio()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarBeneficioLoja()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-detalhes-dia-calendario" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3 id="detalhes-dia-calendario-titulo">Compromissos do Dia</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalDetalhesDiaCalendario()">✕</button>
+            </div>
+            <div id="conteudo-itens-dia-calendario"></div>
+            <div style="margin-top: 10px;">
+                <button type="button" class="btn-secundario" style="width: 100%;" onclick="window.fecharModalDetalhesDiaCalendario()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO COMPROMISSO CALENDÁRIO (COM SELETOR PRIVADO VS FAMÍLIA) -->
+    <div id="modal-novo-evento-calendario" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Novo Compromisso</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalNovoEventoCalendario()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" id="evento-titulo" placeholder="Nome do Compromisso (ex: Consulta, Festa)">
+                <input type="text" id="evento-descricao" placeholder="Descrição ou Local (opcional)">
+                <input type="date" id="evento-data">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <input type="time" id="evento-hora-inicio">
+                    <input type="time" id="evento-hora-fim">
+                </div>
+                
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                    <span style="font-size: 11px; font-weight: 700;">Visibilidade:</span>
+                    <select id="evento-escopo" style="flex: 1; padding: 4px 8px; font-size: 11.5px;">
+                        <option value="casa">Família (Compartilhado)</option>
+                        <option value="pessoal">Privativo (Pessoal)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                    <span style="font-size: 11px; font-weight: 700;">Cor da Etiqueta:</span>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#0ea5e9" checked> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0ea5e9;"></span> Azul</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#10b981"> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981;"></span> Verde</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#f59e0b"> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#f59e0b;"></span> Âmbar</label>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalNovoEventoCalendario()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex:1;" onclick="window.salvarNovoEventoCalendario()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirmar-exclusao-agenda" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="text-align: center;">
+            <div class="modal-header">
+                <h3>Remover Conta Recorrente</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalConfirmarExclusaoAgenda()">✕</button>
+            </div>
+            <p style="font-size: 13px; color: var(--texto-suave, #64748b); margin: 12px 0;">Esta conta possui repetições programadas. Como deseja remover?</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" class="btn-secundario" onclick="window.executarExclusaoAgenda('apenas_esta')">Eliminar apenas este mês</button>
+                <button type="button" class="btn-erro" onclick="window.executarExclusaoAgenda('proximas')">Eliminar este e todos os seguintes</button>
+                <button type="button" class="btn-secundario" onclick="window.fecharModalConfirmarExclusaoAgenda()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-correcao-carteira" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Alinhamento com o Banco</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalCorrecaoCarteira()">✕</button>
+            </div>
+            <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin-bottom: 8px;">Digite o saldo real da sua conta bancária/dinheiro:</p>
+            <input type="number" step="0.01" id="input-saldo-real-banco" placeholder="R$ Saldo Real">
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalCorrecaoCarteira()">Cancelar</button>
+                <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarAjusteCarteira()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR TRANSAÇÃO (COM PRIVACIDADE) -->
+    <div id="modal-editar-transacao" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Editar Movimentação</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEditarTransacao()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="edit-transacao-id">
+                <input type="text" id="edit-transacao-descricao" placeholder="Descrição">
+                <input type="number" step="0.01" id="edit-transacao-valor" placeholder="R$ Valor">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <select id="edit-transacao-tipo">
+                        <option value="saida">Saída</option>
+                        <option value="entrada">Entrada</option>
+                    </select>
+                    <select id="edit-transacao-escopo">
+                        <option value="pessoal">Privativo (Pessoal)</option>
+                        <option value="casa">Família (Compartilhado)</option>
+                    </select>
+                </div>
+                <input type="date" id="edit-transacao-data">
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalEditarTransacao()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarEdicaoTransacao()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-editar-mercado" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Editar Item da Compra</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEditarMercado()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="edit-mercado-id">
+                <input type="text" id="edit-mercado-nome" placeholder="Nome do Produto">
+                <select id="edit-mercado-categoria">
+                    <option value="Açougue">Açougue</option>
+                    <option value="Hortifrúti">Hortifrúti</option>
+                    <option value="Mercearia">Mercearia</option>
+                    <option value="Limpeza">Limpeza</option>
+                    <option value="Higiene">Higiene</option>
+                    <option value="Laticínios">Laticínios</option>
+                    <option value="Padaria">Padaria</option>
+                    <option value="Bebidas">Bebidas</option>
+                </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <input type="number" id="edit-mercado-qtd" step="0.1" placeholder="Quantidade">
+                    <input type="number" id="edit-mercado-unit" step="0.01" placeholder="R$ Unitário">
+                </div>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalEditarMercado()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarEdicaoItemMercado()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-fechamento-mercado" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Compra Concluída</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalGraficosMercado()">✕</button>
+            </div>
+            <div style="text-align: center; margin-bottom: 12px;">
+                <span style="font-size: 11px; color: var(--texto-suave, #64748b);">Total Gasto no Mercado</span>
+                <h2 id="resumo-total-gasto-mercado" style="margin: 2px 0; color: var(--cor-sucesso, #10b981);">R$ 0,00</h2>
+            </div>
+            <div style="position: relative; height: 210px; width: 100%; margin-bottom: 10px;">
+                <canvas id="grafico-pizza-segmentos"></canvas>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalGraficosMercado()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex:1;" onclick="window.fecharModalGraficosMercado()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-editar-missao" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Editar Missão</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEditarMissao()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="edit-missao-id">
+                <input type="text" id="edit-missao-titulo" placeholder="Título da Missão">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <select id="edit-missao-prioridade">
+                        <option value="2">Importante (+25 XP)</option>
+                        <option value="1">Urgente (+40 XP)</option>
+                        <option value="3">Tranquilo (+15 XP)</option>
+                    </select>
+                    <select id="edit-missao-recorrencia">
+                        <option value="diaria_24h">Diária (04:00)</option>
+                        <option value="semanal_7d">Semanal (7d)</option>
+                        <option value="quinzenal_15d">Quinzenal (15d)</option>
+                        <option value="mensal_30d">Mensal (30d)</option>
+                        <option value="nenhuma">Não repete</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px;">
+                    <select id="edit-missao-responsavel"></select>
+                    <input type="time" id="edit-missao-horario-limite">
+                </div>
+                <input type="hidden" id="edit-missao-horario-reinicio" value="04:00">
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalEditarMissao()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarEdicaoMissao()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-cadastro-familiar" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Cadastrar Membro da Família</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalNovoMembro()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" id="cad-familiar-nome" placeholder="Nome Completo">
+                <input type="email" id="cad-familiar-email" placeholder="E-mail de acesso (opcional no Modo Kids)">
+                <input type="text" id="cad-familiar-cpf" placeholder="CPF (apenas números - opcional)" maxlength="14" oninput="this.value = window.formatarCPF(this.value)">
+                <input type="password" id="cad-familiar-senha" placeholder="Senha de Acesso (opcional no Modo Kids)">
+                <input type="text" id="cad-familiar-parentesco" placeholder="Parentesco (ex: Esposa, Filho, Mãe)">
+                
+                <select id="cad-familiar-papel" onchange="const chk = document.getElementById('cad-familiar-modo-kids'); if(chk && this.value === 'dependente') chk.checked = true;">
+                    <option value="adulto">Membro Adulto</option>
+                    <option value="dependente">Filho / Dependente</option>
+                    <option value="adm">Administrador (Co-gestor)</option>
+                </select>
+
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 4px;">
+                    <input type="checkbox" id="cad-familiar-cartao"> Possui Cartão Próprio
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 2px;">
+                    <input type="checkbox" id="cad-familiar-modo-kids"> Perfil Kids (Ativar no Trocar Membro sem senha)
+                </label>
+
+                <fieldset style="border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                    <legend style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">Permissões de Acesso</legend>
+                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11.5px;">
+                        <label><input type="checkbox" id="perm-acesso-mercado" checked> Gestão do Supermercado</label>
+                        <label><input type="checkbox" id="perm-cadastro-gastos" checked> Registo de Finanças/Gastos</label>
+                        <label><input type="checkbox" id="perm-acesso-missoes" checked> Missões e Tarefas</label>
+                    </div>
+                </fieldset>
+
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalNovoMembro()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarNovoFamiliar()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-editar-familiar" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Editar Membro</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEditarFamiliar()">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="hidden" id="edit-familiar-id">
+                <input type="text" id="edit-familiar-nome" placeholder="Nome Completo">
+                <input type="email" id="edit-familiar-email" placeholder="E-mail (opcional no Modo Kids)">
+                <input type="text" id="edit-familiar-parentesco" placeholder="Parentesco">
+                
+                <select id="edit-familiar-papel">
+                    <option value="adulto">Membro Adulto</option>
+                    <option value="dependente">Filho / Dependente</option>
+                    <option value="adm">Administrador (Co-gestor)</option>
+                </select>
+
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 4px;">
+                    <input type="checkbox" id="edit-familiar-cartao"> Possui Cartão Próprio
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 2px;">
+                    <input type="checkbox" id="edit-familiar-modo-kids"> Perfil Kids (Ativar no Trocar Membro sem senha)
+                </label>
+
+                <fieldset style="border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                    <legend style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">Permissões de Acesso</legend>
+                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11.5px;">
+                        <label><input type="checkbox" id="edit-perm-mercado"> Gestão do Supermercado</label>
+                        <label><input type="checkbox" id="edit-perm-gastos"> Registo de Finanças/Gastos</label>
+                        <label><input type="checkbox" id="edit-perm-missoes"> Missões e Tarefas</label>
+                    </div>
+                </fieldset>
+
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalEditarFamiliar()">Cancelar</button>
+                    <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarEdicaoFamiliar()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay-celebracao-subida-nivel" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="text-align: center; padding: 24px 16px;">
+            <div id="celebracao-nivel-icone" style="margin-bottom: 10px;"></div>
+            <h2 id="celebracao-nivel-titulo" style="font-size: 18px; color: var(--cor-primaria, #d97706); margin: 0 0 6px 0;">Parabéns!</h2>
+            <p id="celebracao-nivel-subtexto" style="font-size: 13px; color: var(--texto-principal, #334155); margin-bottom: 14px; line-height: 1.4;"></p>
+            <button type="button" class="btn-principal" style="width: 100%;" onclick="window.fecharCelebracaoNivel()">Confirmar</button>
+        </div>
+    </div>
+
+    <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
+        <div class="conteudo-tour-flutuante">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="tour-passo-numero" style="font-size: 10.5px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase;">Manual</span>
+                <button type="button" style="background: none; border: none; font-size: 14px; color: var(--texto-suave, #64748b); cursor: pointer;" onclick="window.encerrarTourInstrucoes()">✕</button>
+            </div>
+            <h4 id="tour-passo-titulo" style="font-size: 13px; color: var(--texto-principal, #334155); margin: 4px 0 2px 0;"></h4>
+            <p id="tour-passo-descricao" style="font-size: 11.5px; color: var(--texto-suave, #64748b); line-height: 1.35; margin: 0;"></p>
+            
+            <div id="tour-indicadores-bolinhas"></div>
+
+            <div style="display: flex; justify-content: space-between; gap: 6px; margin-top: 8px;">
+                <button type="button" id="btn-tour-anterior" class="btn-secundario" style="flex:1; padding: 5px; font-size: 11px;" onclick="window.navegarTour(-1)">← Anterior</button>
+                <button type="button" id="btn-tour-proximo" class="btn-principal" style="flex:1; padding: 5px; font-size: 11px;" onclick="window.navegarTour(1)">Próximo →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Modulares -->
+    <script src="app-core.js"></script>
+    <script src="app-game.js"></script>
+    <script src="app-gestao.js"></script>
+    <script src="app-operacional.js"></script>
+    <script src="app-painel.js"></script>
+    <script src="app-relatorios.js"></script>
+    <script src="app-instrucao.js"></script>
+
+    <!-- Gatilhos de Inicialização, PWA, Seções Retráteis, Apoio Pix e Confirmações -->
+    <script>
+
+                // =========================================================================
+        // MOTOR DO MODAL DE APOIO (PIX COPIA E COLA)
+        // =========================================================================
+        const CHAVE_PIX_APOIO_VALOR = "8f10257e-11a3-48e2-8672-58a6204b629d";
+
+        window.abrirModalApoioPix = function() {
+            const elTxt = document.getElementById('texto-chave-pix-exibida');
+            if (elTxt) elTxt.textContent = CHAVE_PIX_APOIO_VALOR;
+            document.getElementById('modal-apoie-projeto')?.classList.remove('oculto');
+        };
+
+        window.fecharModalApoioPix = function() {
+            document.getElementById('modal-apoie-projeto')?.classList.add('oculto');
+        };
+
+        window.copiarChavePixApoio = function() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(CHAVE_PIX_APOIO_VALOR).then(() => {
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast("Chave Pix copiada para a área de transferência!");
+                    } else {
+                        alert("Chave Pix copiada!");
+                    }
+                    window.fecharModalApoioPix();
+                }).catch(() => {
+                    window.copiarChaveFallback();
+                });
+            } else {
+                window.copiarChaveFallback();
+            }
+        };
+
+        window.copiarChaveFallback = function() {
+            const inputTemp = document.createElement("input");
+            inputTemp.value = CHAVE_PIX_APOIO_VALOR;
+            document.body.appendChild(inputTemp);
+            inputTemp.select();
+            document.execCommand("copy");
+            document.body.removeChild(inputTemp);
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast("Chave Pix copiada!");
+            } else {
+                alert("Chave Pix copiada!");
+            }
+            window.fecharModalApoioPix();
+        };
+
+        // =========================================================================
+        // MOTOR DE INSTALAÇÃO DO APPWEB (PWA - ANDROID & IOS)
+        // =========================================================================
+        let eventoDiferidoPwa = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            eventoDiferidoPwa = e;
+
+            if (!localStorage.getItem('suiri_pwa_instalado_ou_dispensado')) {
+                const banner = document.getElementById('banner-instalacao-pwa');
+                if (banner) banner.classList.remove('oculto');
+            }
+        });
+
+        function verificarSugestaoPwaIos() {
+            const ehIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const estaModoApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+            if (ehIos && !estaModoApp && !localStorage.getItem('suiri_pwa_instalado_ou_dispensado')) {
+                const banner = document.getElementById('banner-instalacao-pwa');
+                const btnAcao = document.getElementById('btn-instalar-pwa-acao');
+                const txtInstrucao = document.getElementById('txt-instrucao-pwa');
+
+                if (banner && btnAcao && txtInstrucao) {
+                    txtInstrucao.textContent = 'Toque em Compartilhar e "Adicionar à Tela de Início"';
+                    btnAcao.textContent = 'Como fazer';
+                    btnAcao.onclick = () => {
+                        window.mostrarToast("No Safari: toque no ícone de Compartilhar (quadrado com seta para cima) e selecione 'Adicionar à Tela de Início'.", "info");
+                        window.fecharBannerPwa();
+                    };
+                    banner.classList.remove('oculto');
+                }
+            }
+        }
+
+        window.executarInstalacaoPwa = async function() {
+            if (eventoDiferidoPwa) {
+                eventoDiferidoPwa.prompt();
+                const { outcome } = await eventoDiferidoPwa.userChoice;
+                if (outcome === 'accepted') {
+                    localStorage.setItem('suiri_pwa_instalado_ou_dispensado', 'true');
+                    window.fecharBannerPwa();
+                }
+                eventoDiferidoPwa = null;
+            } else {
+                window.mostrarToast("Abra o menu do seu navegador (três pontos) e toque em 'Instalar aplicativo' ou 'Adicionar à tela inicial'.", "info");
+                window.fecharBannerPwa();
+            }
+        };
+
+        window.fecharBannerPwa = function() {
+            const banner = document.getElementById('banner-instalacao-pwa');
+            if (banner) banner.classList.add('oculto');
+            localStorage.setItem('suiri_pwa_instalado_ou_dispensado', 'true');
+        };
+
+        window.addEventListener('appinstalled', () => {
+            window.fecharBannerPwa();
+            localStorage.setItem('suiri_pwa_instalado_ou_dispensado', 'true');
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast("Suiri instalado com sucesso na tela inicial!");
+            }
+        });
+
+        // =========================================================================
+        // SEÇÕES RETRÁTEIS E DIÁLOGOS
+        // =========================================================================
+        window.alternarSecaoRetratil = function(idConteudo, idSeta) {
+            const el = document.getElementById(idConteudo);
+            const seta = document.getElementById(idSeta);
+            if (!el) return;
+
+            const estaOculto = el.classList.contains('oculto');
+            if (estaOculto) {
+                el.classList.remove('oculto');
+                if (seta) seta.style.transform = 'rotate(180deg)';
+            } else {
+                el.classList.add('oculto');
+                if (seta) seta.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        // Modal Customizado com botões CONFIRMAR e CANCELAR
+        window.confirmarAcaoSuiri = function(mensagem, titulo = "Confirmação") {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('modal-confirmacao-suiri');
+                const msgEl = document.getElementById('mensagem-confirmacao-suiri');
+                const titEl = document.getElementById('titulo-confirmacao-suiri');
+                const btnOk = document.getElementById('btn-ok-confirmacao-suiri');
+                const btnCancel = document.getElementById('btn-cancelar-confirmacao-suiri');
+
+                if (!modal) {
+                    return resolve(window.confirm(mensagem));
+                }
+
+                if (msgEl) msgEl.textContent = mensagem;
+                if (titEl) titEl.textContent = titulo;
+
+                const limpar = () => {
+                    modal.classList.add('oculto');
+                    btnOk.onclick = null;
+                    btnCancel.onclick = null;
+                };
+
+                btnOk.onclick = () => {
+                    limpar();
+                    resolve(true);
+                };
+
+                btnCancel.onclick = () => {
+                    limpar();
+                    resolve(false);
+                };
+
+                modal.classList.remove('oculto');
+            });
+        };
+
+        // Acervo local de fallback para a Pílula do Dia
+        const ACERVO_RESERVA_PENSE = [
+            { frase: "A união da família é a força que supera qualquer desafio diário.", autor: "Sabedoria Familiar", dica: "Dica: Anote pequenos gastos do dia a dia para não ter surpresas no fim do mês." },
+            { frase: "Pequenos gestos de cuidado constroem um lar harmonioso e acolhedor.", autor: "Sabedoria Familiar", dica: "Dica: Estabelecer uma reserva para emergências traz paz de espírito para toda a casa." },
+            { frase: "O trabalho em equipe faz o lar funcionar com leveza e alegria.", autor: "Reflexão Prática", dica: "Dica: Revise as assinaturas mensais que a família não costuma mais utilizar." },
+            { frase: "Paciência e diálogo são as chaves mestras da convivência familiar.", autor: "Sabedoria Familiar", dica: "Dica: Guardar mesmo que seja R$ 20 por semana cria o hábito da poupança contínua." },
+            { frase: "A riqueza não consiste em ter muitas posses, mas em valorizar o que já se conquistou em conjunto.", autor: "Sêneca", dica: "Dica: Antes de uma compra não planejada, espere 24 horas para evitar compras por impulso." }
+        ];
+
+        const DICAS_FINANCEIRAS_ONLINE = [
+            "Regra dos 50-30-20: 50% para necessidades da casa, 30% para lazer familiar e 20% guardados para a reserva do lar.",
+            "Antes de fechar compras no mercado, confira a despensa para evitar itens duplicados e desperdícios.",
+            "Alinhar o pagamento de contas logo nos primeiros dias após a receita evita juros e surpresas no orçamento.",
+            "Pequenos valores economizados com regularidade formam a segurança financeira e a tranquilidade da casa.",
+            "Converse abertamente sobre as metas do mês para que todos cooperem com o cofrinho familiar."
+        ];
+
+        window.abrirModalPilulaDia = async function() {
+            const modal = document.getElementById('modal-pilula-dia');
+            const elFrase = document.getElementById('pilula-frase-filosofica');
+            const elDica = document.getElementById('pilula-dica-financeira');
+
+            if (!modal) return;
+
+            if (elFrase) {
+                elFrase.innerHTML = '<span style="font-size:12px; color:var(--texto-suave); font-style:italic;">Buscando sabedoria do dia na internet...</span>';
+            }
+            if (elDica) elDica.textContent = '';
+            modal.classList.remove('oculto');
+
+            let textoFinal = '';
+            let autorFinal = '';
+            let dicaFinal = DICAS_FINANCEIRAS_ONLINE[Math.floor(Math.random() * DICAS_FINANCEIRAS_ONLINE.length)];
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                const resposta = await fetch('https://www.fraseestoica.com.br/api', { 
+                    method: 'GET',
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    if (dados && (dados.quote || dados.frase || dados.texto)) {
+                        textoFinal = dados.quote || dados.frase || dados.texto;
+                        autorFinal = dados.author || dados.autor || 'Filosofia';
+                    }
+                }
+            } catch (err) {
+                console.warn("Consulta à API oscilou, usando acervo local:", err);
+            }
+
+            if (!textoFinal) {
+                const sorteio = ACERVO_RESERVA_PENSE[Math.floor(Math.random() * ACERVO_RESERVA_PENSE.length)];
+                textoFinal = sorteio.frase;
+                autorFinal = sorteio.autor;
+                dicaFinal = sorteio.dica;
+            }
+
+            if (elFrase) {
+                elFrase.innerHTML = `
+                    <blockquote style="font-size:14px; font-weight:700; color:var(--cor-primaria, #d97706); margin:0 0 6px 0; line-height:1.45; text-align:center;">
+                        “${textoFinal}”
+                    </blockquote>
+                    <span style="font-size:11px; font-weight:800; color:var(--texto-suave, #64748b); text-transform:uppercase; letter-spacing:0.5px; display:block; text-align:center;">
+                        — ${autorFinal}
+                    </span>
+                `;
+            }
+
+            if (elDica) {
+                elDica.textContent = dicaFinal;
+            }
+        };
+
+        window.fecharModalPilulaDia = function() {
+            const modal = document.getElementById('modal-pilula-dia');
+            if (modal) modal.classList.add('oculto');
+        };
+
+        window.executarAberturaPilulaPense = window.abrirModalPilulaDia;
+
+        function verificarGatilhoPenseSeteManha() {
+            if (!window.usuarioAtual) return;
+            const agora = new Date();
+            const hora = agora.getHours();
+            const dataHoje = agora.toISOString().split('T')[0];
+            const chave = `suiri_pense_visto_${window.usuarioAtual.id}_${dataHoje}`;
+            
+            if (hora >= 7 && !localStorage.getItem(chave)) {
+                window.abrirModalPilulaDia();
+                localStorage.setItem(chave, 'true');
+            }
+        }
+
+        // Trava Defensiva contra erros de Linha 0 (Service Worker / PWA no TrebEdit)
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(() => console.log('PWA registrado com sucesso.'))
+                    .catch((err) => console.warn('PWA ignorado no ambiente local:', err));
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(verificarGatilhoPenseSeteManha, 1000);
+            setTimeout(verificarSugestaoPwaIos, 2000);
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible') {
+                verificarGatilhoPenseSeteManha();
+            }
+        });
+    </script>
+</body>
+</html>
