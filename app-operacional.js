@@ -2,7 +2,9 @@
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
 // Missões com Subitens, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
-// Filtro de Membros Sem Cartão, Reconhecimento de Voz, Metas Anuais & Zero Emojis
+// Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
+// Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis
+// & Leitura de Cupom Fiscal com Visão Computacional IA.
 // =========================================================================
 
 let cacheMissoes = [];
@@ -997,7 +999,6 @@ window.concluirMissaoDomestica = async function(id) {
         window.SonsSuiri.sucessoMissao();
     }
 
-    // DISPARO INTELIGENTE DO MASCOTE TAMAGOTCHI
     if (window.TamagotchiKids && typeof window.TamagotchiKids.aoCompletarMissao === 'function') {
         window.TamagotchiKids.aoCompletarMissao();
     } else if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
@@ -1089,7 +1090,6 @@ window.falharMissaoDomestica = async function(id) {
     const elXpKids = document.getElementById('contador-xp-kids');
     if (elXpKids) elXpKids.textContent = `${novoXpTotal} XP`;
 
-    // DISPARO INTELIGENTE DO MASCOTE TAMAGOTCHI NA FALHA
     if (window.TamagotchiKids && typeof window.TamagotchiKids.aoFalharMissao === 'function') {
         window.TamagotchiKids.aoFalharMissao();
     } else if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
@@ -1145,7 +1145,7 @@ window.excluirMissao = async function(id) {
 };
 
 // =========================================================================
-// 11. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE
+// 11. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER AUTOMÁTICO
 // =========================================================================
 
 window.inicializarMotorVoz = function() {
@@ -1159,7 +1159,7 @@ window.inicializarMotorVoz = function() {
 
     reconhecimentoVoz.onstart = function() {
         document.getElementById('btn-mic-gastos')?.classList.add('ouvindo');
-        window.mostrarToast("Ouvindo... pode falar a descrição e valor!", "info");
+        window.mostrarToast("A ouvir... Diga por exemplo: 'Gastei 45 reais na farmácia' ou 'Recebi 1200 de salário'", "info");
     };
 
     reconhecimentoVoz.onend = function() {
@@ -1188,53 +1188,157 @@ window.processarTextoTranscrito = function(frase) {
     if (!frase) return;
     const texto = frase.toLowerCase();
 
+    // 1. Extração Inteligente do Valor Monetário
     let valorDetectado = 0;
     const matchNumero = texto.match(/(\d+[\d.,]*)/);
     if (matchNumero) {
-        let numStr = matchNumero[0].replace('.', '').replace(',', '.');
+        let numStr = matchNumero[0].replace(/\.(?=\d{3})/g, '').replace(',', '.');
         valorDetectado = parseFloat(numStr) || 0;
     }
 
-    const ehReceita = /recebi|recebido|ganhei|salario|caiu|entrou|pix de|vendi|reembolso/i.test(texto);
+    // 2. Classificação: Entrada vs Saída
+    const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o/i;
+    const ehReceita = padroesEntrada.test(texto);
     const tipoTransacao = ehReceita ? 'entrada' : 'saida';
 
+    // 3. Classificação de Escopo: Pessoal vs Casa
     let escopo = 'pessoal';
-    if (/casa|familia|mercado|energia|luz|internet|feira|aluguel/i.test(texto)) {
+    if (/casa|fam[ií]lia|lar|mercado|supermercado|condom[ií]nio|energia|luz|água|agua|internet|feira|aluguel|coletivo/i.test(texto)) {
         escopo = 'casa';
     }
 
+    // 4. Classificação Automática da Categoria
     let categoria = 'Geral';
-    if (/supermercado|mercado|acougue|padaria|feira/i.test(texto)) {
+    if (/supermercado|mercado|a[cç]ougue|padaria|hortifr[uú]ti|feira|despensa/i.test(texto)) {
         categoria = 'Supermercado';
-    } else if (/almoco|jantar|lanche|pizza|restaurante|comida|ifood|cafe/i.test(texto)) {
+    } else if (/almo[cç]o|jantar|lanche|pizza|restaurante|comida|ifood|caf[eé]|hamb[uú]rguer|a[cç]a[ií]/i.test(texto)) {
         categoria = 'Alimentação';
-    } else if (/uber|combustivel|gasolina|etanol|passagem|taxi|estacionamento/i.test(texto)) {
+    } else if (/uber|combust[ií]vel|gasolina|etanol|abasteci|posto|passagem|t[aá]xi|estacionamento|ped[aá]gio|mecanico|pneu/i.test(texto)) {
         categoria = 'Transporte';
-    } else if (/aluguel|condominio|energia|luz|agua|internet|iptu/i.test(texto)) {
+    } else if (/aluguel|condom[ií]nio|energia|luz|água|agua|internet|iptu|manuten[cç][aã]o|g[aá]s/i.test(texto)) {
         categoria = 'Moradia';
-    } else if (/remedio|farmacia|consulta|medico|dentista|exame/i.test(texto)) {
+    } else if (/rem[eé]dio|farm[aá]cia|drogaria|consulta|m[eé]dico|dentista|exame|hospital|vacina/i.test(texto)) {
         categoria = 'Saúde';
-    } else if (/cinema|passeio|viagem|festa|jogo|praia/i.test(texto)) {
+    } else if (/cinema|passeio|viagem|festa|jogo|praia|futebol|show|bar|churrasco/i.test(texto)) {
         categoria = 'Lazer';
-    } else if (/escola|livro|curso|faculdade|mensalidade/i.test(texto)) {
+    } else if (/escola|livro|curso|faculdade|mensalidade|material|uniforme/i.test(texto)) {
         categoria = 'Educação';
     } else if (ehReceita) {
         categoria = 'Salário';
     }
 
+    // 5. Limpeza da Descrição (Remove verbos e números comuns da fala para deixar o título limpo)
+    let descricaoLimpa = frase
+        .replace(/^(eu\s+)?(gastei|comprei|paguei|pago|recebi|ganhei|entrou|caiu|depositei)\s+/i, '')
+        .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/i, '')
+        .replace(/(\d+[\d.,]*)\s*(reais|real|r\$)/i, '')
+        .replace(/r\$\s*(\d+[\d.,]*)/i, '')
+        .trim();
+
+    if (!descricaoLimpa || descricaoLimpa.length < 2) {
+        descricaoLimpa = frase;
+    }
+    // Capitalizar a primeira letra
+    descricaoLimpa = descricaoLimpa.charAt(0).toUpperCase() + descricaoLimpa.slice(1);
+
+    // 6. Preenchimento Automático dos Campos de Registo Rápido
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
     const selTipo = document.getElementById('select-fin-tipo');
     const selEscopo = document.getElementById('select-fin-escopo');
     const selCat = document.getElementById('select-fin-categoria');
 
-    if (inDesc) inDesc.value = frase;
+    if (inDesc) inDesc.value = descricaoLimpa;
     if (inVal && valorDetectado > 0) inVal.value = valorDetectado.toFixed(2);
     if (selTipo) selTipo.value = tipoTransacao;
     if (selEscopo) selEscopo.value = escopo;
     if (selCat) selCat.value = categoria;
 
-    window.mostrarToast(`Voz identificada: ${categoria} (${ehReceita ? 'Entrada' : 'Saída'})!`);
+    const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
+    window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${categoria})`);
+};
+
+// =========================================================================
+// 11B. MOTOR DE VISÃO COMPUTACIONAL (CUPÃO FISCAL COM IA GEMINI)
+// =========================================================================
+
+window.processarCupomFiscalIA = async function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    let apiKey = localStorage.getItem('suiri_gemini_api_key');
+    if (!apiKey) {
+        apiKey = prompt("Para a IA ler o cupom, insira a sua chave API do Google Gemini (Google AI Studio):");
+        if (!apiKey) {
+            window.mostrarToast("Chave da IA não fornecida.", "erro");
+            return;
+        }
+        localStorage.setItem('suiri_gemini_api_key', apiKey.trim());
+    }
+
+    window.mostrarToast("A IA está a analisar o seu cupom fiscal... Aguarde um momento.", "info");
+
+    try {
+        const base64String = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        const promptText = `Analise este cupom fiscal ou nota fiscal. Identifique o nome principal do estabelecimento e o valor total exato pago. 
+        Classifique a compra numa destas categorias exatas: Supermercado, Alimentação, Moradia, Transporte, Saúde, Lazer, Educação, Geral.
+        Responda EXATAMENTE e APENAS com um objeto JSON válido, sem crases, blocos de código ou formatação markdown, estritamente com esta estrutura:
+        {"estabelecimento": "Nome", "total": 0.00, "categoria": "Categoria"}`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: promptText },
+                        { inline_data: { mime_type: file.type || "image/jpeg", data: base64String } }
+                    ]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const respostaIA = data.candidates[0].content.parts[0].text;
+        const jsonLimpo = respostaIA.replace(/```json/g, '').replace(/```/g, '').trim();
+        const dadosCupom = JSON.parse(jsonLimpo);
+
+        const inDesc = document.getElementById('input-fin-descricao');
+        const inVal = document.getElementById('input-fin-valor');
+        const selCat = document.getElementById('select-fin-categoria');
+        const selTipo = document.getElementById('select-fin-tipo');
+        const selEscopo = document.getElementById('select-fin-escopo');
+
+        if (inDesc) inDesc.value = dadosCupom.estabelecimento || '';
+        if (inVal) inVal.value = (dadosCupom.total || 0).toFixed(2);
+        if (selCat) {
+            const catValida = Array.from(selCat.options).map(o => o.value).includes(dadosCupom.categoria);
+            selCat.value = catValida ? dadosCupom.categoria : 'Geral';
+        }
+        if (selTipo) selTipo.value = 'saida';
+        if (selEscopo) selEscopo.value = 'casa';
+
+        window.mostrarToast(`Cupom lido! R$ ${(dadosCupom.total || 0).toFixed(2)} em ${dadosCupom.estabelecimento}. Confirme os dados e lance na carteira.`);
+    } catch (error) {
+        console.error("Erro na leitura IA:", error);
+        if (error.message && error.message.includes('API key not valid')) {
+            localStorage.removeItem('suiri_gemini_api_key');
+            window.mostrarToast("A sua chave API é inválida. Tente novamente.", "erro");
+        } else {
+            window.mostrarToast("Não foi possível processar o cupom. A imagem está nítida?", "erro");
+        }
+    } finally {
+        event.target.value = '';
+    }
 };
 
 // =========================================================================

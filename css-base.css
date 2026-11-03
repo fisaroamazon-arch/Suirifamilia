@@ -63,6 +63,16 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* 
+======================================================
+REMOÇÃO DO GRADIENTE GLOBAL NO HTML QUANDO KIDS ATIVO
+======================================================
+*/
+html:has(body.modo-kids-ativo) {
+    background-image: none !important;
+    background-color: transparent !important;
+}
+
 html, body {
     width: 100%;
     max-width: 100%;
@@ -279,6 +289,7 @@ h1, h2, h3, h4, span, p, label, strong {
     height: 42px;
     border-radius: 50%;
     object-fit: cover;
+    aspect-ratio: 1 / 1;
     border: 2px solid var(--cor-primaria);
     cursor: pointer;
 }
@@ -546,54 +557,69 @@ button {
 }
 
 /* ========================================================== */
-/* CENÁRIO KIDS BASEADO EM IMAGENS LOCAIS E ASTROS EM SVG     */
+/* CENÁRIO KIDS: FOTOGRAFIAS LOCAIS + ASTROS EM SVG INLINE    */
 /* ========================================================== */
 
-/* Fundo padrão diurno (Amanhecer) */
-body.modo-kids-ativo {
+/* 1. Manhã / Dia (Padrão e .cenario-dia - 06:00 às 15:59) */
+body.modo-kids-ativo,
+body.modo-kids-ativo.cenario-dia {
     background-color: #7dd3fc !important; 
     background-image: 
-        /* O Sol Sorridente (SVG embutido) */
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='25' fill='%23fde047'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23facc15'/%3E%3Cpath d='M38 45 A 2 2 0 0 1 44 45' stroke='%23d97706' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M56 45 A 2 2 0 0 1 62 45' stroke='%23d97706' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M44 55 Q 50 65 56 55' stroke='%23d97706' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='52' r='3' fill='%23f87171' opacity='0.7'/%3E%3Ccircle cx='64' cy='52' r='3' fill='%23f87171' opacity='0.7'/%3E%3C/svg%3E"),
-        /* Imagem de Fundo (Amanhecer) - Preenche o ecrã e traz a relva nela mesma */
-        url('amanhecer.jpg') !important;
+        url('amanhecer.jpg'),
+        url('Amanhecer.jpg') !important;
     background-size: 
-        140px 140px, /* Tamanho do Sol */
-        cover !important; /* A imagem 65073 cobre todo o ecrã */
+        130px 130px,
+        cover,
+        cover !important;
     background-position: 
-        95% 5%,      /* Posição do Sol (topo direito) */
-        center bottom !important; /* A relva da imagem fica fixa na base */
+        92% 4%,
+        center bottom,
+        center bottom !important;
     background-repeat: no-repeat !important;
     background-attachment: fixed !important;
+    min-height: 100vh !important;
     padding-top: 14px !important;
-    padding-bottom: 22vh !important; /* Espaço inferior para não tapar os bonecos */
-    transition: background-image 1.5s ease-in-out !important;
+    padding-bottom: 22vh !important;
+    transition: background-image 1.2s ease-in-out !important;
 }
 
-/* Ciclo Horário 1: Tarde */
+/* 2. Fim de Tarde / Pôr do Sol (.cenario-tarde - 16:00 às 18:29) */
 body.modo-kids-ativo.cenario-tarde {
     background-color: #fb923c !important;
     background-image: 
-        /* O Sol Forte (Alaranjado) */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='25' fill='%23ea580c'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f97316'/%3E%3Cpath d='M38 45 A 2 2 0 0 1 44 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M56 45 A 2 2 0 0 1 62 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M44 55 Q 50 65 56 55' stroke='%237c2d12' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
-        /* Imagem de Fundo (Tarde) */
-        url('tarde.jpg') !important;
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='26' fill='%23ea580c'/%3E%3Ccircle cx='50' cy='50' r='23' fill='%23f97316'/%3E%3Cpath d='M38 45 A 2 2 0 0 1 44 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M56 45 A 2 2 0 0 1 62 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M44 55 Q 50 65 56 55' stroke='%237c2d12' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+        url('tarde.jpg'),
+        url('Tarde.jpg') !important;
+    background-size: 
+        130px 130px,
+        cover,
+        cover !important;
+    background-position: 
+        88% 8%,
+        center bottom,
+        center bottom !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
-/* Ciclo Horário 2: Noite Estrelada */
+/* 3. Noite Estrelada (.cenario-noite - 18:30 às 05:59) */
 body.modo-kids-ativo.cenario-noite {
     background-color: #0f172a !important;
     background-image: 
-        /* A Lua Mágica Crescente */
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M40 10 A 35 35 0 1 0 85 55 A 30 30 0 0 1 40 10 Z' fill='%23fef08a'/%3E%3C/svg%3E"),
-        /* Imagem de Fundo (Noite) */
-        url('noite.jpg') !important;
+        url('noite.jpg'),
+        url('Noite.jpg') !important;
     background-size: 
-        90px 90px, /* Lua em tamanho elegante */
+        95px 95px,
+        cover,
         cover !important;
     background-position: 
-        85% 8%, /* Lua mais recuada no céu noturno */
+        88% 6%,
+        center bottom,
         center bottom !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 /* ========================================================== */
@@ -645,10 +671,10 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 2.5px solid #fde68a;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(253, 230, 138, 0.5);
     border-radius: 24px;
     padding: 12px 16px;
     margin-bottom: 14px;
@@ -658,6 +684,8 @@ body.modo-kids-ativo #tela-kids-exclusiva {
 .avatar-kids-circulo {
     width: 52px; height: 52px; border-radius: 50%;
     border: 3px solid #10b981; cursor: pointer;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
 }
 .titulo-kids-nome { font-size: 17px; font-weight: 800; color: #1e293b; margin: 0; }
 
@@ -665,8 +693,8 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #fef3c7;
-    border: 1.5px solid #fde68a;
+    background: rgba(254, 243, 199, 0.85);
+    border: 1.5px solid rgba(253, 230, 138, 0.85);
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 13px;
@@ -681,7 +709,9 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     gap: 14px;
     width: 100%;
     padding: 16px 20px;
-    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(236, 72, 153, 0.9) 50%, rgba(139, 92, 246, 0.9) 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: none;
     border-radius: 26px;
     color: #ffffff !important;
@@ -693,10 +723,10 @@ body.modo-kids-ativo #tela-kids-exclusiva {
 .btn-lojinha-kids-gigante:active { transform: scale(0.96); }
 
 .card-missao-kids {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 2px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid rgba(226, 232, 240, 0.8);
     border-radius: 22px;
     padding: 14px 16px;
     margin-bottom: 12px;
@@ -704,45 +734,43 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     justify-content: space-between;
 }
 .card-missao-kids.concluida {
-    background: #f0fdf4 !important;
-    border-color: #86efac !important;
+    background: rgba(240, 253, 244, 0.85) !important;
+    border-color: rgba(134, 239, 172, 0.8) !important;
     border-left: 8px solid #10b981 !important;
 }
 
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid #38bdf8 !important; border-top: 2px solid #bae6fd !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 2px solid #fbcfe8 !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 2px solid #fde68a !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid #a7f3d0 !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid #38bdf8 !important; border-top: 2px solid rgba(186, 230, 253, 0.5) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 2px solid rgba(251, 207, 232, 0.5) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 2px solid rgba(253, 230, 138, 0.5) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid rgba(167, 243, 208, 0.5) !important; }
 
 /* ========================================================== */
 /* TAMAGOTCHI MONSTRINHO E CASINHA APOIADOS NO CHÃO (JPG)     */
 /* ========================================================== */
 #container-tamagotchi-kids {
     position: fixed;
-    /* Ancorado no rodapé: a base da imagem JPG (65073.jpg, etc.) serve como chão */
-    bottom: 20px; 
-    right: 16px;
+    bottom: 18px; 
+    right: 14px;
     display: flex;
-    align-items: flex-end; /* Alinha os dois elementos na mesma base horizontal */
-    gap: 16px;
+    align-items: flex-end;
+    gap: 12px;
     z-index: 999;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
 #btn-casinha-tamagotchi {
-    /* Casa Grande: Dobro da largura e altura do Chuíri */
-    width: 200px;
-    height: 200px;
+    /* Casinha: Grande e destacada (o dobro do Chuíri) */
+    width: 160px;
+    height: 160px;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
 #btn-chuiri-tamagotchi {
-    /* Chuíri: Escala proporcional e correta */
-    width: 70px;
-    height: 70px;
-    margin-bottom: 6px; /* Descola subtilmente o monstrinho para não raspar na porta */
+    /* Chuíri: Metade do tamanho da casa */
+    width: 80px;
+    height: 80px;
     cursor: pointer;
     position: relative;
     transition: transform 0.2s ease;
@@ -751,7 +779,7 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
 #balao-fala-tamagotchi {
     display: none;
     position: absolute;
-    bottom: 135px; /* Altura calculada para aparecer ao lado/acima da casa sem a cobrir */
+    bottom: 110px;
     right: 0;
     width: 235px;
     background: #ffffff;

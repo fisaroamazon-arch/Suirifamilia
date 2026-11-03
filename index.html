@@ -310,114 +310,22 @@
                     <span>Apoiar o Projeto</span>
                 </button>
 
-                <!-- METAS DO ANO -->
-                <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 16px; height: 16px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-sucesso, #10b981);">
-                                Planos & Metas do Ano
-                            </span>
-                        </div>
-                        <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalMetasAnuais()">
-                            Ver Todos
-                        </button>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 6px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--texto-principal);">
-                            <span id="lbl-metas-ano-resumo">Objetivos definidos para o ano</span>
-                            <strong id="lbl-metas-ano-porcentagem" style="color: var(--cor-sucesso, #10b981);">0%</strong>
-                        </div>
-                        <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 8px; height: 7px; width: 100%; overflow: hidden;">
-                            <div id="barra-metas-ano-fill" style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
-                    <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
-                        <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">
-                                    Mural de Recados da Casa
-                                </span>
-                                <span id="contador-recados-pendentes" style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">0 avisos</span>
-                            </div>
-                            <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #d97706); transition: transform 0.2s ease;">▼</span>
-                        </div>
-
-                        <div id="mural-recados-conteudo" class="oculto" style="margin-top: 10px;">
-                            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
-                                <input type="text" id="input-novo-recado" placeholder="Deixar um aviso ou lembrete rápido..." style="width: 100%; box-sizing: border-box; margin: 0; padding: 9px 12px; font-size: 13px;">
-                                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 6px;">
-                                    <select id="select-recado-destinatario" style="padding: 6px 8px; font-size: 11.5px; margin: 0;">
-                                        <option value="todos">Toda a Casa</option>
-                                    </select>
-                                    <button type="button" class="btn-principal" style="width: 100%; padding: 8px 10px; font-size: 12px; font-weight: 700;" onclick="window.publicarRecadoLar()">Confirmar</button>
-                                </div>
-                            </div>
-                            <div id="lista-recados-lar" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                        </div>
-                    </div>
-
-                    <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px;">
-                        <div onclick="window.alternarSecaoRetratil('nova-missao-formulario', 'seta-nova-missao')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
-                            <h3 style="font-size: 15px; margin: 0; color: var(--texto-principal, #334155); display: flex; align-items: center; gap: 6px;">
-                                <span id="lbl-btn-nova-missao-expansivel">+ Nova Missão para a Casa</span>
-                            </h3>
-                            <span id="seta-nova-missao" style="font-size: 12px; color: var(--texto-suave, #64748b); transition: transform 0.2s ease;">▼</span>
-                        </div>
-
-                        <div id="nova-missao-formulario" class="oculto" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
-                            <input type="text" id="input-nova-missao-titulo" placeholder="O que precisa ser feito?">
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                                <select id="select-nova-missao-prioridade">
-                                    <option value="2">Importante (+25 XP)</option>
-                                    <option value="1">Urgente (+40 XP)</option>
-                                    <option value="3">Tranquilo (+15 XP)</option>
-                                </select>
-                                <select id="select-nova-missao-recorrencia">
-                                    <option value="diaria_24h">Diária (04:00)</option>
-                                    <option value="semanal_7d">Semanal (7d)</option>
-                                    <option value="quinzenal_15d">Quinzenal (15d)</option>
-                                    <option value="mensal_30d">Mensal (30d)</option>
-                                    <option value="nenhuma">Não repete</option>
-                                </select>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px;">
-                                <select id="select-nova-missao-responsavel">
-                                    <option value="todos">Casa (Todos)</option>
-                                    <option value="todos_kids">Todos Kids (Quem fizer 1º)</option>
-                                    <option value="individual">Individual (Minha)</option>
-                                </select>
-                                <input type="time" id="input-nova-missao-horario-limite" placeholder="Hora Limite">
-                            </div>
-
-                            <div style="margin-top: 4px; padding: 8px; background: var(--suiri-surface-secondary-light, #f1f5f9); border-radius: 10px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Sub-etapas / Checklist (Opcional):</span>
-                                    <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px;" onclick="window.adicionarLinhaSubitemCriacao()">+ Subitem</button>
-                                </div>
-                                <div id="container-inputs-subitens-criacao"></div>
-                            </div>
-
-                            <input type="hidden" id="input-nova-missao-horario-reinicio" value="04:00">
-                            <button type="button" class="btn-principal" onclick="window.adicionarNovaMissao()">Confirmar Missão</button>
-                        </div>
-                    </div>
-
-                    <div id="container-botoes-filtro-missoes" style="display: flex; gap: 8px; margin: 12px 0;">
-                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:9px 12px; font-size:12.5px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('todas')">
+                    
+                    <!-- BOTÕES DE FILTRO E INCLUSÃO EM LINHA (CASA / MINHAS / + INCLUIR) -->
+                    <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 12px 0;">
+                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('todas')">
                             <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            <span id="lbl-texto-filtro-casa-toda">Casa Toda</span>
+                            <span id="lbl-texto-filtro-casa-toda">Casa</span>
                         </button>
-                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:9px 12px; font-size:12.5px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('minhas')">
+                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('minhas')">
                             <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             Minhas
+                        </button>
+                        <button type="button" class="btn-sucesso" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="document.getElementById('modal-nova-missao').classList.remove('oculto')">
+                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            + Incluir
                         </button>
                     </div>
 
@@ -431,6 +339,31 @@
                         </div>
                         <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 8px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
                         <div id="lista-historico-kids-adm"></div>
+                    </div>
+
+                    <!-- METAS DO ANO EXCLUSIVAS DA ABA MISSÕES (FUNDO DA TELA) -->
+                    <div class="cartao-geral" style="padding: 12px 14px; margin-top: 16px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 16px; height: 16px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-sucesso, #10b981);">
+                                    Planos & Metas do Ano
+                                </span>
+                            </div>
+                            <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalMetasAnuais()">
+                                Ver Todos
+                            </button>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--texto-principal);">
+                                <span id="lbl-metas-ano-resumo">Objetivos definidos para o ano</span>
+                                <strong id="lbl-metas-ano-porcentagem" style="color: var(--cor-sucesso, #10b981);">0%</strong>
+                            </div>
+                            <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 8px; height: 7px; width: 100%; overflow: hidden;">
+                                <div id="barra-metas-ano-fill" style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -544,6 +477,41 @@
                         <div id="bloco-card-montante-familia" class="card-saldo-carteira">
                             <span id="lbl-titulo-montante-coletivo" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Montante da Família</span>
                             <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Ações Rápidas: Escanear Cupom Fiscal com IA -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <button type="button" class="btn-secundario" style="flex: 1; padding: 10px 12px; font-size: 12.5px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706);" onclick="document.getElementById('input-camera-cupom-ia').click()">
+                            <svg class="icone-svg" style="width: 17px; height: 17px; color: var(--cor-primaria, #d97706);" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Ler Cupom Fiscal (IA)</span>
+                        </button>
+                        <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
+                    </div>
+
+                    <!-- MURAL DE FINANÇAS E AVISOS DA CASA -->
+                    <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                        <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">
+                                    Mural de Finanças e Avisos
+                                </span>
+                                <span id="contador-recados-pendentes" style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">0 avisos</span>
+                            </div>
+                            <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #d97706); transition: transform 0.2s ease;">▼</span>
+                        </div>
+
+                        <div id="mural-recados-conteudo" class="oculto" style="margin-top: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+                                <input type="text" id="input-novo-recado" placeholder="Avisos de contas, compras ou recados..." style="width: 100%; box-sizing: border-box; margin: 0; padding: 9px 12px; font-size: 13px;">
+                                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 6px;">
+                                    <select id="select-recado-destinatario" style="padding: 6px 8px; font-size: 11.5px; margin: 0;">
+                                        <option value="todos">Toda a Casa</option>
+                                    </select>
+                                    <button type="button" class="btn-principal" style="width: 100%; padding: 8px 10px; font-size: 12px; font-weight: 700;" onclick="window.publicarRecadoLar()">Confirmar</button>
+                                </div>
+                            </div>
+                            <div id="lista-recados-lar" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
                     </div>
 
@@ -703,7 +671,7 @@
                     </div>
 
                     <!-- CARTÃO APOIE O PROJETO (NA ABA FAMÍLIA) -->
-                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #fef9ea; margin-top: 14px; padding: 14px;">
+                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); background: #fef9ea; margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
                         <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #d97706);" onclick="window.abrirModalApoioPix()">
@@ -730,6 +698,57 @@
     <!-- =================================================================== -->
     <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
     <!-- =================================================================== -->
+
+    <!-- MODAL NOVA MISSÃO -->
+    <div id="modal-nova-missao" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h3>Nova Missão para a Casa</h3>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="document.getElementById('modal-nova-missao').classList.add('oculto')">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                <input type="text" id="input-nova-missao-titulo" placeholder="O que precisa ser feito?">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <select id="select-nova-missao-prioridade">
+                        <option value="2">Importante (+25 XP)</option>
+                        <option value="1">Urgente (+40 XP)</option>
+                        <option value="3">Tranquilo (+15 XP)</option>
+                    </select>
+                    <select id="select-nova-missao-recorrencia">
+                        <option value="diaria_24h">Diária (04:00)</option>
+                        <option value="semanal_7d">Semanal (7d)</option>
+                        <option value="quinzenal_15d">Quinzenal (15d)</option>
+                        <option value="mensal_30d">Mensal (30d)</option>
+                        <option value="nenhuma">Não repete</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px;">
+                    <select id="select-nova-missao-responsavel">
+                        <option value="todos">Casa (Todos)</option>
+                        <option value="todos_kids">Todos Kids (Quem fizer 1º)</option>
+                        <option value="individual">Individual (Minha)</option>
+                    </select>
+                    <input type="time" id="input-nova-missao-horario-limite" placeholder="Hora Limite">
+                </div>
+
+                <div style="margin-top: 4px; padding: 8px; background: var(--suiri-surface-secondary-light, #f1f5f9); border-radius: 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Sub-etapas / Checklist (Opcional):</span>
+                        <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px;" onclick="window.adicionarLinhaSubitemCriacao()">+ Subitem</button>
+                    </div>
+                    <div id="container-inputs-subitens-criacao"></div>
+                </div>
+
+                <input type="hidden" id="input-nova-missao-horario-reinicio" value="04:00">
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="document.getElementById('modal-nova-missao').classList.add('oculto')">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex:1;" onclick="window.adicionarNovaMissao(); document.getElementById('modal-nova-missao').classList.add('oculto');">Confirmar Missão</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DE APOIO AO PROJETO (PIX COPIA E COLA) -->
     <div id="modal-apoie-projeto" class="modal-overlay oculto" style="z-index: 1000001;">

@@ -1,7 +1,8 @@
 // =========================================================================
 // SUIRI NOSSO LAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
-// Mercado com Histórico de Preço Médio/Último, Gráficos SVG, Extrato com 
-// Privacidade Estrita (Privativo vs Família) e Agendamentos Recorrentes
+// Mercado com Leitura de Cupom Fiscal via IA (Gemini Vision), Histórico de
+// Preço Médio/Último, Gráficos SVG, Extrato com Privacidade Estrita
+// (Privativo vs Família) e Agendamentos Recorrentes
 // Padrão de Diálogos: Confirmar / Cancelar (Zero Emojis - 100% SVG)
 // =========================================================================
 
@@ -133,8 +134,6 @@ window.carregarExtratoPeriodo = async function() {
             }
         }
 
-        // REGRA DE PRIVACIDADE:
-        // Se a transação for pessoal/privada e NÃO pertencer ao usuário logado, mascara a descrição
         const ehMeuLancamento = (t.membro_id === usuarioConectadoId);
         const ehPrivativo = (t.escopo === 'pessoal' || t.eh_privado === true);
 
@@ -150,7 +149,6 @@ window.carregarExtratoPeriodo = async function() {
         const linhaNominalDestaque = `${nomeResponsavel} ${verboTipo} ${categoriaVisivel.toLowerCase()} R$ ${Number(t.valor || 0).toFixed(2)}`;
         const marcadorDot = `<span style="width:8px; height:8px; border-radius:50%; background:${cor}; display:inline-block; margin-right:6px; flex-shrink:0;"></span>`;
 
-        // Tag indicadora SVG se for pessoal ou coletivo
         const tagEscopoSvg = ehPrivativo
             ? `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Pessoal</span>`
             : `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Casa</span>`;
@@ -322,7 +320,7 @@ window.salvarAjusteCarteira = async function() {
 };
 
 // =========================================================================
-// 2. MÓDULO DE MERCADO COM HISTÓRICO DE PREÇO MÉDIO / ÚLTIMO
+// 2. MÓDULO DE MERCADO COM HISTÓRICO DE PREÇO MÉDIO / ÚLTIMO & IA
 // =========================================================================
 
 window.atualizarEstatisticasPrecoCatalogo = async function(nomeProduto, categoria, precoPago) {
@@ -367,6 +365,121 @@ window.atualizarEstatisticasPrecoCatalogo = async function(nomeProduto, categori
     }
 
     await cli.from(tabela).upsert([payload], { onConflict: 'familia_id,nome_produto' });
+};
+
+// =========================================================================
+// MOTOR DE IA: LEITURA DE CUPOM FISCAL (GEMINI VISION)
+// =========================================================================
+
+window.processarCupomFiscalIA = async function(evento) {
+    const arquivo = evento.target?.files?.[0];
+    if (!arquivo) return;
+
+    const cli = obterClienteSupabase();
+    const usuarioId = obterUsuarioId();
+
+    if (!cli || !window.familiaAtualId) {
+        return window.mostrarToast("Sessão não identificada. Recarregue a página.", "erro");
+    }
+
+    window.mostrarToast("Analisando cupom com IA... Aguarde.", "info");
+
+    try {
+        const base64Data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(arquivo);
+            reader.onload = () => {
+                const res = reader.result;
+                resolve(res.includes(',') ? res.split(',')[1] : res);
+            };
+            reader.onerror = erro => reject(erro);
+        });
+
+        const GEMINI_API_KEY = "AQ.Ab8RN6KnLr3mPnGZTeyFo1T1vP2WYNxOpvi1xHRIzwqwA7QcUA";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+        const payload = {
+            contents: [{
+                parts: [
+                    {
+                        text: "Analise a imagem deste cupom fiscal de compras. Extraia todos os produtos adquiridos e devolva APENAS um array JSON válido, sem qualquer bloco markdown, sem crases, sem texto adicional. Esquema obrigatório: [{\"nome\": \"Nome do Produto\", \"quantidade\": 1, \"valor_unitario\": 5.99, \"categoria\": \"Mercearia\"}]. Categorias permitidas estritamente: Mercearia, Açougue, Hortifrúti, Limpeza, Higiene, Laticínios, Padaria, Bebidas."
+                    },
+                    {
+                        inlineData: {
+                            mimeType: arquivo.type || 'image/jpeg',
+                            data: base64Data
+                        }
+                    }
+                ]
+            }]
+        };
+
+        const resposta = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!resposta.ok) {
+            throw new Error(`Erro na API Gemini (${resposta.status})`);
+        }
+
+        const dados = await resposta.json();
+        let textoResposta = dados?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        textoResposta = textoResposta.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        if (!textoResposta) {
+            throw new Error("Resposta da IA vazia.");
+        }
+
+        const itensExtraidos = JSON.parse(textoResposta);
+
+        if (!Array.isArray(itensExtraidos) || itensExtraidos.length === 0) {
+            return window.mostrarToast("Nenhum item legível encontrado no cupom fiscal.", "erro");
+        }
+
+        const registros = itensExtraidos.map(item => {
+            const qtd = parseFloat(item.quantidade) || 1;
+            const unit = parseFloat(item.valor_unitario) || 0;
+            const subtotal = qtd * unit;
+            const cat = item.categoria || window.identificarSegmentoItem(item.nome);
+
+            return {
+                familia_id: window.familiaAtualId,
+                nome_item: String(item.nome || 'Produto').trim(),
+                segmento_categoria: cat,
+                criado_por: usuarioId,
+                status: 'comprado',
+                quantidade: qtd,
+                valor_unitario: unit,
+                valor_total: subtotal,
+                comprado: true,
+                no_carrinho: true
+            };
+        });
+
+        const { error: errInsert } = await cli.from('itens_mercado').insert(registros);
+
+        if (errInsert) {
+            throw errInsert;
+        }
+
+        for (const r of registros) {
+            if (r.valor_unitario > 0) {
+                await window.atualizarEstatisticasPrecoCatalogo(r.nome_item, r.segmento_categoria, r.valor_unitario);
+            }
+        }
+
+        window.mostrarToast(`${registros.length} itens do cupom adicionados ao carrinho!`);
+        window.alternarVisualizacaoMercado('planilha');
+        window.carregarItensMercado();
+
+    } catch (erro) {
+        console.error("Erro no processamento do cupom fiscal:", erro);
+        window.mostrarToast("Falha ao ler o cupom. Verifique o enquadramento e a iluminação.", "erro");
+    } finally {
+        evento.target.value = '';
+    }
 };
 
 window.alternarVisualizacaoMercado = function(modo) {
