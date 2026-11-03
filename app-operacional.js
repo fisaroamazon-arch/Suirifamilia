@@ -1,8 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
 // Missões com Subitens, Isolamento Kids vs Adultos, Realtime,
-// Carregamento Imediato da Reserva/Cofres, Filtro de Membros Sem Cartão,
-// Reconhecimento de Voz, Metas Anuais & Zero Emojis (100% SVG)
+// Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
+// Filtro de Membros Sem Cartão, Reconhecimento de Voz, Metas Anuais & Zero Emojis
 // =========================================================================
 
 let cacheMissoes = [];
@@ -997,7 +997,10 @@ window.concluirMissaoDomestica = async function(id) {
         window.SonsSuiri.sucessoMissao();
     }
 
-    if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
+    // DISPARO INTELIGENTE DO MASCOTE TAMAGOTCHI
+    if (window.TamagotchiKids && typeof window.TamagotchiKids.aoCompletarMissao === 'function') {
+        window.TamagotchiKids.aoCompletarMissao();
+    } else if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
         window.dispararMascoteKids('feliz', `Muito bem! Você ganhou +${pontosGanhos} XP!`);
     } else if (window.MotorGamificacao && typeof window.MotorGamificacao.obterPatamar === 'function') {
         const patamarAntes = window.MotorGamificacao.obterPatamar(xpAnterior);
@@ -1086,7 +1089,10 @@ window.falharMissaoDomestica = async function(id) {
     const elXpKids = document.getElementById('contador-xp-kids');
     if (elXpKids) elXpKids.textContent = `${novoXpTotal} XP`;
 
-    if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
+    // DISPARO INTELIGENTE DO MASCOTE TAMAGOTCHI NA FALHA
+    if (window.TamagotchiKids && typeof window.TamagotchiKids.aoFalharMissao === 'function') {
+        window.TamagotchiKids.aoFalharMissao();
+    } else if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
         window.dispararMascoteKids('triste', `Você perdeu ${penalidadeXP} XP. Toque em 'Tentar Novamente' para refazer!`);
     } else {
         window.mostrarToast(`Missão marcada como falhada. -${penalidadeXP} XP descontados.`, "erro");
@@ -1297,7 +1303,6 @@ window.carregarCarteiraIndividual = async function() {
     const usuarioId = obterUsuarioId();
     if (!window.familiaAtualId || !usuarioId || !supabase) return;
 
-    // Regra: se o perfil ativo não tem cartão, alerta suave e bloqueia saldos se aplicável
     if (window.perfilAtual && window.perfilAtual.possui_cartao === false) {
         const elSaldoPessoal = document.getElementById('lbl-saldo-carteira-membro');
         if (elSaldoPessoal) elSaldoPessoal.textContent = 'Sem Cartão';
@@ -1322,7 +1327,6 @@ window.carregarCarteiraIndividual = async function() {
         if (elSaldoPessoal) elSaldoPessoal.textContent = `R$ ${saldoPessoal.toFixed(2)}`;
     }
 
-    // Identifica membros autorizados (que possuem cartão ativo) para consolidar montante
     let idsMembrosComCartao = [];
     if (window.listaMembrosFamilia && window.listaMembrosFamilia.length > 0) {
         idsMembrosComCartao = window.listaMembrosFamilia
@@ -1340,7 +1344,6 @@ window.carregarCarteiraIndividual = async function() {
 
     let montanteFamilia = 0;
     (todasTransacoes || []).forEach(t => {
-        // Se houver lista de membros, ignora lançamentos de quem não possui cartão
         if (idsMembrosComCartao.length > 0 && t.membro_id && !idsMembrosComCartao.includes(t.membro_id)) {
             return;
         }
@@ -1351,7 +1354,6 @@ window.carregarCarteiraIndividual = async function() {
     const elMontante = document.getElementById('lbl-saldo-total-familia-montante');
     if (elMontante) elMontante.textContent = `R$ ${montanteFamilia.toFixed(2)}`;
 
-    // Carregamento imediato dos cofres compartilhados e demais indicadores
     await window.carregarCofresCompartilhados();
     await window.atualizarVisualizacaoMetaEconomia();
     await window.renderizarGraficoBarrasMesAnterior();
@@ -1546,7 +1548,6 @@ window.atualizarVisualizacaoMetaEconomia = async function() {
     if (elFill) elFill.style.width = `${porcentagem}%`;
 };
 
-// CARREGAMENTO IMEDIATO DOS COFRES COMPARTILHADOS
 window.carregarCofresCompartilhados = async function() {
     const cli = obterClienteSupabase();
     const container = document.getElementById('lista-cofres-compartilhados');

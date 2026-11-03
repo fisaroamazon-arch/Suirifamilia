@@ -1,11 +1,11 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-GAME.JS (100% COMPLETO & INTEGRAL)
-// Sons Dinâmicos Nativos, Mascote Animado Kids (Feliz & Acolhedor),
-// Gamificação Infantil, Patamares e Super Loja de Recompensas Separada
+// Sons Dinâmicos Nativos (Adultos vs Kids), Mascote Animado Kids,
+// Gamificação, Patamares e Super Loja de Recompensas Separada
 // =========================================================================
 
 // =========================================================================
-// 1. SINTETIZADOR DE ÁUDIO NATIVO (EFEITOS ALEGRES DE ARCADE & ACOLHIMENTO)
+// 1. SINTETIZADOR DE ÁUDIO NATIVO DINÂMICO (ADULTOS VS MODO KIDS)
 // =========================================================================
 window.SonsSuiri = {
     ctx: null,
@@ -21,40 +21,115 @@ window.SonsSuiri = {
         return this.ctx;
     },
 
-    // 1. TROMBETAS TRIUNFAIS & FANFARRA REAL (AO CUMPRIR MISSÃO)
+    // Desbloqueia o motor de áudio no primeiro toque na tela
+    desbloquearAudioGlobal: function() {
+        const ctx = this.obterContexto();
+        if (ctx && ctx.state === 'suspended') {
+            ctx.resume();
+        }
+    },
+
+    // Identifica se o perfil ativo deve receber feedback sonoro infantil
+    ehPerfilKids: function() {
+        return Boolean(
+            window.modoKidsAtivo || 
+            window.perfilAtual?.eh_kids || 
+            window.perfilAtual?.papel === 'dependente'
+        );
+    },
+
+    // 1. CLIQUE / TOQUE DE NAVEGAÇÃO
+    popClique: function() {
+        const ctx = this.obterContexto();
+        if (!ctx) return;
+
+        if (this.ehPerfilKids()) {
+            // Estalo agudo e saltitante de desenho animado
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(480, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.08);
+
+            gain.gain.setValueAtTime(0.18, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.09);
+        } else {
+            // Toque suave, curto e discreto estilo interface executiva
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.04);
+
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.05);
+        }
+    },
+
+    // 2. MISSÃO / TAREFA CONCLUÍDA COM SUCESSO
     sucessoMissao: function() {
         const ctx = this.obterContexto();
         if (!ctx) return;
 
-        const notasTrombeta = [
-            { f: 523.25, t: 0.00, d: 0.12 }, // Dó
-            { f: 523.25, t: 0.12, d: 0.12 }, // Dó
-            { f: 523.25, t: 0.24, d: 0.12 }, // Dó
-            { f: 659.25, t: 0.36, d: 0.24 }, // Mi
-            { f: 783.99, t: 0.60, d: 0.40 }  // Sol triunfante
-        ];
+        if (this.ehPerfilKids()) {
+            // Trombetas triunfantes e fanfarra real para crianças
+            const notasTrombeta = [
+                { f: 523.25, t: 0.00, d: 0.12 }, // Dó
+                { f: 523.25, t: 0.12, d: 0.12 }, // Dó
+                { f: 523.25, t: 0.24, d: 0.12 }, // Dó
+                { f: 659.25, t: 0.36, d: 0.24 }, // Mi
+                { f: 783.99, t: 0.60, d: 0.40 }  // Sol triunfante
+            ];
 
-        notasTrombeta.forEach(nota => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+            notasTrombeta.forEach(nota => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
 
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(nota.f, ctx.currentTime + nota.t);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(nota.f, ctx.currentTime + nota.t);
 
-            gain.gain.setValueAtTime(0.18, ctx.currentTime + nota.t);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + nota.t + nota.d);
+                gain.gain.setValueAtTime(0.18, ctx.currentTime + nota.t);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + nota.t + nota.d);
 
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-            osc.start(ctx.currentTime + nota.t);
-            osc.stop(ctx.currentTime + nota.t + nota.d + 0.02);
-        });
+                osc.start(ctx.currentTime + nota.t);
+                osc.stop(ctx.currentTime + nota.t + nota.d + 0.02);
+            });
 
-        setTimeout(() => this.sininhosMagicos(), 350);
+            setTimeout(() => this.sininhosMagicos(), 350);
+        } else {
+            // Acorde acústico sofisticado e harmonioso (Major 7th) para adultos
+            const notasAdulto = [440, 554.37, 659.25, 830.61]; // A, C#, E, G#
+            notasAdulto.forEach(freq => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.09, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.50);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.52);
+            });
+        }
     },
 
-    // 2. SININHOS MÁGICOS CRISTALINOS (CHIMES)
+    // 3. SININHOS MÁGICOS CRISTALINOS (CHIMES)
     sininhosMagicos: function() {
         const ctx = this.obterContexto();
         if (!ctx) return;
@@ -78,69 +153,92 @@ window.SonsSuiri = {
         });
     },
 
-    // 3. TROMBONE DE FRACASSO CÔMICO COM EFEITO WA-WA-WA-WAAAH (AO CLICAR NO "✕")
+    // 4. ERRO, DESISTÊNCIA OU TAREFA FALHADA
     somFalhaAcolhedor: function() {
         const ctx = this.obterContexto();
         if (!ctx) return;
 
-        const tromboneNotas = [
-            { f: 293.66, t: 0.00, d: 0.28 }, // Ré
-            { f: 277.18, t: 0.30, d: 0.28 }, // Dó#
-            { f: 261.63, t: 0.60, d: 0.28 }, // Dó
-            { f: 246.94, t: 0.90, d: 0.65, vibrato: true } // Si arrastado
-        ];
+        if (this.ehPerfilKids()) {
+            // Trombone cômico com efeito WA-WA-WA-WAAAH
+            const tromboneNotas = [
+                { f: 293.66, t: 0.00, d: 0.28 }, // Ré
+                { f: 277.18, t: 0.30, d: 0.28 }, // Dó#
+                { f: 261.63, t: 0.60, d: 0.28 }, // Dó
+                { f: 246.94, t: 0.90, d: 0.65, vibrato: true } // Si arrastado
+            ];
 
-        tromboneNotas.forEach(nota => {
+            tromboneNotas.forEach(nota => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(nota.f, ctx.currentTime + nota.t);
+
+                if (nota.vibrato) {
+                    osc.frequency.linearRampToValueAtTime(nota.f - 25, ctx.currentTime + nota.t + nota.d);
+                }
+
+                gain.gain.setValueAtTime(0.22, ctx.currentTime + nota.t);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + nota.t + nota.d);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(ctx.currentTime + nota.t);
+                osc.stop(ctx.currentTime + nota.t + nota.d + 0.05);
+            });
+        } else {
+            // Tom descendente discreto e neutro para adultos
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(320, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(190, ctx.currentTime + 0.16);
 
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(nota.f, ctx.currentTime + nota.t);
-
-            if (nota.vibrato) {
-                osc.frequency.linearRampToValueAtTime(nota.f - 25, ctx.currentTime + nota.t + nota.d);
-            }
-
-            gain.gain.setValueAtTime(0.22, ctx.currentTime + nota.t);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + nota.t + nota.d);
+            gain.gain.setValueAtTime(0.10, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
-
-            osc.start(ctx.currentTime + nota.t);
-            osc.stop(ctx.currentTime + nota.t + nota.d + 0.05);
-        });
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.18);
+        }
     },
 
+    // 5. GANHO DE PONTOS / MOEDAS / REGISTRO FINANCEIRO
     moedaXP: function() {
-        this.sininhosMagicos();
+        const ctx = this.obterContexto();
+        if (!ctx) return;
+
+        if (this.ehPerfilKids()) {
+            this.sininhosMagicos();
+        } else {
+            // Duplo tom leve de confirmação para adultos
+            [784, 1046.50].forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+
+                gain.gain.setValueAtTime(0.08, ctx.currentTime + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.16);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + idx * 0.08);
+                osc.stop(ctx.currentTime + idx * 0.08 + 0.18);
+            });
+        }
     },
 
     fanfarraNivel: function() {
         this.sucessoMissao();
-    },
-
-    popClique: function() {
-        const ctx = this.obterContexto();
-        if (!ctx) return;
-
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(500, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(950, ctx.currentTime + 0.08);
-
-        gain.gain.setValueAtTime(0.18, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.09);
     }
 };
+
+// Desbloqueia o motor de áudio no primeiro toque na tela (compatibilidade mobile)
+document.addEventListener('touchstart', () => window.SonsSuiri.desbloquearAudioGlobal(), { once: true });
+document.addEventListener('click', () => window.SonsSuiri.desbloquearAudioGlobal(), { once: true });
 
 // =========================================================================
 // 2. MOTOR DE MASCOTE ANIMADO KIDS (ILUSTRAÇÕES VETORIAIS SVG)
@@ -225,11 +323,12 @@ window.dispararMascoteKids = function(tipo, mensagem) {
 };
 
 window.fecharModalMascoteKids = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
     document.getElementById('overlay-mascote-kids')?.classList.add('oculto');
 };
 
 // =========================================================================
-// 3. MOTOR DE GAMIFICAÇÃO & PRÊMIOS INFANTIS (PADRÕES SEGMENTADOS)
+// 3. MOTOR DE GAMIFICAÇÃO & PRÊMIOS (PADRÕES SEGMENTADOS)
 // =========================================================================
 window.MotorGamificacao = {
     PATAMARES: [
@@ -243,19 +342,19 @@ window.MotorGamificacao = {
 
     // Catálogo Padrão Exclusivo para Kids (para_kids: true)
     PREMIOS_KIDS_PADRAO: [
-        { id: 'game_time',       para_kids: true, corFundo: '#e0f2fe', corBorda: '#38bdf8', iconeChave: 'trofeu',   titulo: '1h de Videogame / Tablet', custo: 200, descricao: 'Tempo extra de tela para jogar seus jogos favoritos.' },
-        { id: 'escolher_desenho',para_kids: true, corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'filme',    titulo: 'Escolher o Filme ou Desenho', custo: 250, descricao: 'Você escolhe a programação da família na TV!' },
-        { id: 'sobremesa_chef',  para_kids: true, corFundo: '#fce7f3', corBorda: '#ec4899', iconeChave: 'refeicao', titulo: 'Sobremesa Especial / Sorvete', custo: 300, descricao: 'Direito a escolher o sorvete ou sobremesa do dia.' },
-        { id: 'dormir_tarde',    para_kids: true, corFundo: '#f3e8ff', corBorda: '#a855f7', iconeChave: 'coroa',    titulo: '30 Minutos Mais Tarde na Cama', custo: 350, descricao: 'Ficar acordado um pouquinho a mais no fim de semana.' },
-        { id: 'passeio_parque',  para_kids: true, corFundo: '#dcfce7', corBorda: '#22c55e', iconeChave: 'broto',    titulo: 'Passeio Divertido ao Ar Livre', custo: 500, descricao: 'Um passeio alegre com brincadeiras no parque.' }
+        { id: 'game_time',        para_kids: true,  corFundo: '#e0f2fe', corBorda: '#38bdf8', iconeChave: 'trofeu',   titulo: '1h de Videogame / Tablet', custo: 200, descricao: 'Tempo extra de tela para jogar seus jogos favoritos.' },
+        { id: 'escolher_desenho', para_kids: true,  corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'filme',    titulo: 'Escolher o Filme ou Desenho', custo: 250, descricao: 'Você escolhe a programação da família na TV!' },
+        { id: 'sobremesa_chef',   para_kids: true,  corFundo: '#fce7f3', corBorda: '#ec4899', iconeChave: 'refeicao', titulo: 'Sobremesa Especial / Sorvete', custo: 300, descricao: 'Direito a escolher o sorvete ou sobremesa do dia.' },
+        { id: 'dormir_tarde',     para_kids: true,  corFundo: '#f3e8ff', corBorda: '#a855f7', iconeChave: 'coroa',    titulo: '30 Minutos Mais Tarde na Cama', custo: 350, descricao: 'Ficar acordado um pouquinho a mais no fim de semana.' },
+        { id: 'passeio_parque',   para_kids: true,  corFundo: '#dcfce7', corBorda: '#22c55e', iconeChave: 'broto',    titulo: 'Passeio Divertido ao Ar Livre', custo: 500, descricao: 'Um passeio alegre com brincadeiras no parque.' }
     ],
 
     // Catálogo Padrão de Adultos (para_kids: false)
     PREMIOS_ADULTOS_PADRAO: [
-        { id: 'folga_louca',     para_kids: false, corFundo: '#e0f2fe', corBorda: '#0284c7', iconeChave: 'medalha',  titulo: 'Folga da Louça do Dia', custo: 250, descricao: 'Outro membro da família assume a pia e a louça hoje.' },
-        { id: 'massagem_ombros', para_kids: false, corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'coroa',    titulo: 'Massagem Relaxante nos Ombros', custo: 300, descricao: 'Momento de relaxamento merecido no fim do dia.' },
-        { id: 'escolha_cardapio',para_kids: false, corFundo: '#fce7f3', corBorda: '#ec4899', iconeChave: 'refeicao', titulo: 'Escolher o Cardápio do Jantar', custo: 350, descricao: 'Decisão do que pedir ou preparar na refeição familiar.' },
-        { id: 'dia_livre_casa',  para_kids: false, corFundo: '#dcfce7', corBorda: '#10b981', iconeChave: 'trofeu',   titulo: 'Passe Livre de Tarefas Domésticas', custo: 600, descricao: 'Um dia inteiro sem nenhuma obrigação na rotina da casa.' }
+        { id: 'folga_louca',      para_kids: false, corFundo: '#e0f2fe', corBorda: '#0284c7', iconeChave: 'medalha',  titulo: 'Folga da Louça do Dia', custo: 250, descricao: 'Outro membro da família assume a pia e a louça hoje.' },
+        { id: 'massagem_ombros',  para_kids: false, corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'coroa',    titulo: 'Massagem Relaxante nos Ombros', custo: 300, descricao: 'Momento de relaxamento merecido no fim do dia.' },
+        { id: 'escolha_cardapio', para_kids: false, corFundo: '#fce7f3', corBorda: '#ec4899', iconeChave: 'refeicao', titulo: 'Escolher o Cardápio do Jantar', custo: 350, descricao: 'Decisão do que pedir ou preparar na refeição familiar.' },
+        { id: 'dia_livre_casa',   para_kids: false, corFundo: '#dcfce7', corBorda: '#10b981', iconeChave: 'trofeu',   titulo: 'Passe Livre de Tarefas Domésticas', custo: 600, descricao: 'Um dia inteiro sem nenhuma obrigação na rotina da casa.' }
     ],
 
     obterPatamar: function(xp) {
@@ -285,6 +384,7 @@ window.abrirModalPilulaDia = function() {
 };
 
 window.fecharModalPilulaDia = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
     document.getElementById('modal-pilula-dia')?.classList.add('oculto');
 };
 
@@ -297,7 +397,6 @@ window.abrirModalRankingEquipe = async function() {
 
     if (window.SonsSuiri) window.SonsSuiri.popClique();
 
-    // Adaptação dos títulos conforme o modo ativo
     const tituloLoja = document.getElementById('lbl-titulo-modal-loja');
     const btnNovoPremio = document.getElementById('btn-novo-premio-loja');
     const blocoPodio = document.getElementById('bloco-podio-loja');
@@ -309,7 +408,6 @@ window.abrirModalRankingEquipe = async function() {
     } else {
         if (tituloLoja) tituloLoja.textContent = "Loja de Recompensas do Lar";
         if (btnNovoPremio) btnNovoPremio.classList.remove('oculto'); // Adulto gerencia tudo
-        // Se houver apenas 1 membro no lar, recolhe o pódio para conforto do usuário solo
         if (blocoPodio && window.listaMembrosFamilia && window.listaMembrosFamilia.length <= 1) {
             blocoPodio.classList.add('oculto');
         } else if (blocoPodio) {
@@ -323,6 +421,7 @@ window.abrirModalRankingEquipe = async function() {
 };
 
 window.fecharModalRankingEquipe = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
     document.getElementById('modal-ranking-equipe')?.classList.add('oculto');
 };
 
@@ -390,7 +489,6 @@ window.renderizarListaBeneficiosLoja = async function() {
             .select('*')
             .eq('familia_id', window.familiaAtualId);
 
-        // FILTRO ESTRITO: Crianças só enxergam recompensas marcadas como kids
         if (ehModoKids) {
             query = query.eq('para_kids', true);
         }
@@ -401,7 +499,6 @@ window.renderizarListaBeneficiosLoja = async function() {
         }
     }
 
-    // Se o banco não tiver itens cadastrados, recorre ao catálogo padrão específico
     let itensExibicao = itensBanco;
     if (itensBanco.length === 0) {
         itensExibicao = ehModoKids 
@@ -429,7 +526,6 @@ window.renderizarListaBeneficiosLoja = async function() {
         const bgIcone = b.corFundo || '#fef3c7';
         const bordaIcone = b.corBorda || '#f59e0b';
 
-        // Tag indicadora SVG no painel adulto informando se é prêmio Kids
         const tagPublicoKids = (!ehModoKids && b.para_kids) ? `
             <span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; background:#e0f2fe; color:#0284c7; padding:2px 6px; border-radius:6px; margin-top:3px;">
                 <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -481,6 +577,10 @@ window.resgatarBeneficioLoja = async function(id, custo, titulo) {
 
     const saldoAtual = Number(window.perfilAtual.xp_total || 0);
     if (saldoAtual < custo) {
+        if (window.SonsSuiri) window.SonsSuiri.somFalhaAcolhedor();
+        if (window.TamagotchiKids && typeof window.TamagotchiKids.aoFalharMissao === 'function') {
+            window.TamagotchiKids.aoFalharMissao();
+        }
         return window.mostrarToast(`Faltam ${custo - saldoAtual} XP para esta recompensa. Continue completando missões!`, "erro");
     }
 
@@ -498,11 +598,17 @@ window.resgatarBeneficioLoja = async function(id, custo, titulo) {
         .eq('id', window.perfilAtual.id);
 
     if (error) {
+        if (window.SonsSuiri) window.SonsSuiri.somFalhaAcolhedor();
         return window.mostrarToast("Falha ao debitar XP: " + error.message, "erro");
     }
 
     window.perfilAtual.xp_total = novoSaldo;
     if (window.SonsSuiri) window.SonsSuiri.moedaXP();
+
+    // COMEMORAÇÃO INTEGRADA DO MASCOTE TAMAGOTCHI
+    if (window.TamagotchiKids && typeof window.TamagotchiKids.aoCompletarMissao === 'function') {
+        window.TamagotchiKids.aoCompletarMissao();
+    }
 
     const elXpKids = document.getElementById('contador-xp-kids');
     if (elXpKids) elXpKids.textContent = `${novoSaldo} XP`;
@@ -566,6 +672,7 @@ window.abrirModalEditarBeneficioExistente = function(id, titulo, descricao, cust
 };
 
 window.fecharModalCriarBeneficio = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
     document.getElementById('modal-editar-beneficio-loja')?.classList.add('oculto');
 };
 
@@ -586,6 +693,7 @@ window.salvarBeneficioLoja = async function() {
     const paraKids = !!(inKids && inKids.checked);
 
     if (!titulo || isNaN(custo) || custo <= 0) {
+        if (window.SonsSuiri) window.SonsSuiri.somFalhaAcolhedor();
         return window.mostrarToast("Preencha o título e uma pontuação válida em XP.", "erro");
     }
 
@@ -607,6 +715,7 @@ window.salvarBeneficioLoja = async function() {
     }
 
     if (error) {
+        if (window.SonsSuiri) window.SonsSuiri.somFalhaAcolhedor();
         return window.mostrarToast("Erro ao salvar recompensa: " + error.message, "erro");
     }
 
@@ -636,9 +745,11 @@ window.excluirBeneficioLoja = async function(id) {
 
     const { error } = await supabase.from('beneficios_loja').delete().eq('id', id);
     if (!error) {
+        if (window.SonsSuiri) window.SonsSuiri.popClique();
         window.mostrarToast("Recompensa removida com sucesso.");
         await window.renderizarListaBeneficiosLoja();
     } else {
+        if (window.SonsSuiri) window.SonsSuiri.somFalhaAcolhedor();
         window.mostrarToast("Erro ao remover: " + error.message, "erro");
     }
 };
@@ -673,5 +784,6 @@ window.dispararModalCelebracao = function(titulo, mensagem, iconeSvg) {
 };
 
 window.fecharCelebracaoNivel = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
     document.getElementById('overlay-celebracao-subida-nivel')?.classList.add('oculto');
 };

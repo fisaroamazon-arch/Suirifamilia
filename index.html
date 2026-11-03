@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Suiri">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23d97706'%3E%3Crect width='512' height='512' rx='120' fill='%23d97706'/%3E%3Cpath d='M256 120 L380 230 L340 230 L340 380 L172 380 L172 230 L132 230 Z' fill='%23FFFFFF'/%3E%3Ccircle cx='256' cy='300' r='35' fill='%23d97706'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="icone.jpg">
 
     <!-- Folhas de Estilo Modulares -->
     <link rel="stylesheet" href="css-base.css">
@@ -64,6 +64,27 @@
             display: block !important;
         }
 
+        #btn-ativar-som-splash {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            color: #ffffff;
+            border: 1.5px solid #f59e0b;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 800;
+            z-index: 100000000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
         /* Banner Flutuante de Instalação PWA */
         #banner-instalacao-pwa {
             position: fixed;
@@ -92,10 +113,10 @@
 <body>
 
     <!-- =================================================================== -->
-    <!-- TELA DE SPLASH COM VÍDEO (Compatível com iPhone / Safari WebKit)     -->
+    <!-- TELA DE SPLASH COM VÍDEO (Compatível com Android e iOS)             -->
     <!-- =================================================================== -->
     <div id="splash-screen-apresentacao" class="oculto">
-        <video id="video-intro-splash" muted autoplay playsinline webkit-playsinline preload="auto">
+        <video id="video-intro-splash" playsinline webkit-playsinline preload="auto">
             <source src="intro.mp4" type="video/mp4">
         </video>
     </div>
@@ -376,7 +397,6 @@
                                 <input type="time" id="input-nova-missao-horario-limite" placeholder="Hora Limite">
                             </div>
 
-                            <!-- Secção de Subitens Opcionais na Criação -->
                             <div style="margin-top: 4px; padding: 8px; background: var(--suiri-surface-secondary-light, #f1f5f9); border-radius: 10px;">
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
                                     <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Sub-etapas / Checklist (Opcional):</span>
@@ -403,7 +423,6 @@
 
                     <div id="lista-missoes-dia"></div>
 
-                    <!-- Secção de Gestão do Histórico Kids (Exclusivo para o Administrador) -->
                     <div id="painel-historico-missoes-kids-adm" class="cartao-geral oculto" style="padding: 12px 14px; margin-top: 16px; border-left: 4px solid #38bdf8;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                             <h3 style="font-size: 14px; margin: 0; color: var(--texto-principal, #334155); display: flex; align-items: center; gap: 6px;">
@@ -480,8 +499,6 @@
 
                 <!-- MÓDULO 3: FINANÇAS -->
                 <section id="secao-financeiro" class="secao-conteudo-app oculto">
-                    
-                    <!-- 1. PRIMEIRO ITEM DA TELA: REGISTRO RÁPIDO DE MOVIMENTAÇÃO -->
                     <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
                         <div class="campo-com-voz" style="margin-bottom: 8px;">
@@ -519,7 +536,6 @@
                         <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
                     </div>
 
-                    <!-- 2. BLOCO DE SALDOS DAS CARTEIRAS -->
                     <div class="box-carteira-topo">
                         <div class="card-saldo-carteira card-carteira-destaque-usuario">
                             <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #d97706);">Minha Carteira</span>
@@ -531,7 +547,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. GRÁFICO DO MÊS ANTERIOR -->
                     <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <span style="font-size: 12px; font-weight: 700; color: var(--texto-principal, #334155);">Gastos do Mês Anterior por Setor</span>
@@ -542,7 +557,6 @@
                         </div>
                     </div>
 
-                    <!-- 4. METAS E COFRES -->
                     <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
                         <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -576,7 +590,6 @@
                         </div>
                     </div>
 
-                    <!-- 5. EXTRATO NOMINAL -->
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <h3 style="font-size: 14px; margin: 0;">Extrato Nominal</h3>
@@ -743,6 +756,7 @@
         </div>
     </div>
 
+    <!-- MODAL METAS DO ANO -->
     <div id="modal-metas-anuais" class="modal-overlay oculto">
         <div class="modal-conteudo" style="max-width: 440px; padding: 20px 18px; border-radius: 24px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
@@ -870,6 +884,7 @@
         </div>
     </div>
 
+    <!-- MODAL PENSE (SABEDORIA FAMILIAR & FINANÇAS) -->
     <div id="modal-pilula-dia" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; border-radius: 20px; padding: 22px 18px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -924,7 +939,7 @@
         </div>
     </div>
 
-    <!-- MODAL CRIAR / EDITAR RECOMPENSA (COM SELETOR KIDS & EXCLUSÃO) -->
+    <!-- MODAL CRIAR / EDITAR RECOMPENSA -->
     <div id="modal-editar-beneficio-loja" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -954,6 +969,7 @@
         </div>
     </div>
 
+    <!-- MODAL DETALHES DO DIA DO CALENDÁRIO -->
     <div id="modal-detalhes-dia-calendario" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -967,7 +983,7 @@
         </div>
     </div>
 
-    <!-- MODAL NOVO COMPROMISSO CALENDÁRIO (COM SELETOR PRIVADO VS FAMÍLIA) -->
+    <!-- MODAL NOVO COMPROMISSO CALENDÁRIO -->
     <div id="modal-novo-evento-calendario" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1005,6 +1021,7 @@
         </div>
     </div>
 
+    <!-- MODAL CONFIRMAR EXCLUSÃO DA AGENDA -->
     <div id="modal-confirmar-exclusao-agenda" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center;">
             <div class="modal-header">
@@ -1020,6 +1037,7 @@
         </div>
     </div>
 
+    <!-- MODAL CORREÇÃO DE CARTEIRA -->
     <div id="modal-correcao-carteira" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1035,7 +1053,7 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR TRANSAÇÃO (COM PRIVACIDADE) -->
+    <!-- MODAL EDITAR TRANSAÇÃO -->
     <div id="modal-editar-transacao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1065,6 +1083,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR MERCADO -->
     <div id="modal-editar-mercado" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1096,6 +1115,7 @@
         </div>
     </div>
 
+    <!-- MODAL FECHAMENTO MERCADO -->
     <div id="modal-fechamento-mercado" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1116,6 +1136,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR MISSÃO -->
     <div id="modal-editar-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1152,6 +1173,7 @@
         </div>
     </div>
 
+    <!-- MODAL CADASTRO FAMILIAR -->
     <div id="modal-cadastro-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1196,6 +1218,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR FAMILIAR -->
     <div id="modal-editar-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1239,6 +1262,7 @@
         </div>
     </div>
 
+    <!-- MODAL CELEBRAÇÃO DE NÍVEL -->
     <div id="overlay-celebracao-subida-nivel" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; padding: 24px 16px;">
             <div id="celebracao-nivel-icone" style="margin-bottom: 10px;"></div>
@@ -1248,6 +1272,7 @@
         </div>
     </div>
 
+    <!-- MODAL MANUAL DE INSTRUÇÕES -->
     <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
         <div class="conteudo-tour-flutuante">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1274,9 +1299,71 @@
     <script src="app-painel.js"></script>
     <script src="app-relatorios.js"></script>
     <script src="app-instrucao.js"></script>
+    <script src="app-tamagotchi.js"></script>
 
-    <!-- Gatilhos de Inicialização, PWA, Seções Retráteis, Apoio Pix e Confirmações -->
+    <!-- Gatilhos de Inicialização, PWA, Splash Screen com Áudio e Diálogos -->
     <script>
+        // =========================================================================
+        // MOTOR DO SPLASH SCREEN COM ÁUDIO INTELIGENTE (10s a 2x = 5s)
+        // =========================================================================
+        window.gerenciarApresentacaoVideoSplash = function() {
+            const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
+            const splashEl = document.getElementById('splash-screen-apresentacao');
+            const videoEl = document.getElementById('video-intro-splash');
+
+            if (!splashEl || !videoEl) return;
+
+            if (sessionStorage.getItem(CHAVE_SPLASH)) {
+                splashEl.remove();
+                return;
+            }
+
+            splashEl.classList.remove('oculto');
+
+            const encerrarSplash = () => {
+                sessionStorage.setItem(CHAVE_SPLASH, 'true');
+                splashEl.classList.add('fade-out');
+                setTimeout(() => splashEl.remove(), 500);
+            };
+
+            videoEl.playbackRate = 2.0;
+            videoEl.muted = false;
+            const promessaPlay = videoEl.play();
+
+            if (promessaPlay !== undefined) {
+                promessaPlay.then(() => {
+                    videoEl.playbackRate = 2.0;
+                }).catch(() => {
+                    videoEl.muted = true;
+                    videoEl.play();
+                    videoEl.playbackRate = 2.0;
+
+                    let btnSom = document.getElementById('btn-ativar-som-splash');
+                    if (!btnSom) {
+                        btnSom = document.createElement('button');
+                        btnSom.id = 'btn-ativar-som-splash';
+                        btnSom.type = 'button';
+                        btnSom.innerHTML = `
+                            <svg class="icone-svg" style="width:16px; height:16px; color:#f59e0b;" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            <span>Ativar Som</span>
+                        `;
+                        
+                        btnSom.onclick = (e) => {
+                            e.stopPropagation();
+                            videoEl.muted = false;
+                            videoEl.currentTime = 0;
+                            if (window.SonsSuiri) window.SonsSuiri.desbloquearAudioGlobal();
+                            btnSom.remove();
+                        };
+                        splashEl.appendChild(btnSom);
+                    }
+                });
+            }
+
+            videoEl.addEventListener('ended', encerrarSplash);
+            setTimeout(encerrarSplash, 5200);
+        };
+
         // =========================================================================
         // MOTOR DO MODAL DE APOIO (PIX COPIA E COLA)
         // =========================================================================
@@ -1352,7 +1439,7 @@
                     txtInstrucao.textContent = 'Toque em Compartilhar e "Adicionar à Tela de Início"';
                     btnAcao.textContent = 'Como fazer';
                     btnAcao.onclick = () => {
-                        window.mostrarToast("No Safari: toque no ícone de Compartilhar (quadrado com seta para cima) e selecione 'Adicionar à Tela de Início'.", "info");
+                        window.mostrarToast("No Safari: toque no ícone de Compartilhar e selecione 'Adicionar à Tela de Início'.", "info");
                         window.fecharBannerPwa();
                     };
                     banner.classList.remove('oculto');
@@ -1407,7 +1494,6 @@
             }
         };
 
-        // Modal Customizado com botões CONFIRMAR e CANCELAR
         window.confirmarAcaoSuiri = function(mensagem, titulo = "Confirmação") {
             return new Promise((resolve) => {
                 const modal = document.getElementById('modal-confirmacao-suiri');
@@ -1443,7 +1529,9 @@
             });
         };
 
-        // Acervo local de fallback para a Pílula do Dia
+        // =========================================================================
+        // PENSE: MENSAGEM DIÁRIA (ONLINE COM FALLBACK LOCAL)
+        // =========================================================================
         const ACERVO_RESERVA_PENSE = [
             { frase: "A união da família é a força que supera qualquer desafio diário.", autor: "Sabedoria Familiar", dica: "Dica: Anote pequenos gastos do dia a dia para não ter surpresas no fim do mês." },
             { frase: "Pequenos gestos de cuidado constroem um lar harmonioso e acolhedor.", autor: "Sabedoria Familiar", dica: "Dica: Estabelecer uma reserva para emergências traz paz de espírito para toda a casa." },
@@ -1529,11 +1617,11 @@
         window.executarAberturaPilulaPense = window.abrirModalPilulaDia;
 
         function verificarGatilhoPenseSeteManha() {
-            if (!window.usuarioAtual) return;
+            const membroId = window.perfilAtual?.id || window.usuarioAtual?.id || 'membro_ativo';
             const agora = new Date();
             const hora = agora.getHours();
             const dataHoje = agora.toISOString().split('T')[0];
-            const chave = `suiri_pense_visto_${window.usuarioAtual.id}_${dataHoje}`;
+            const chave = `suiri_pense_visto_${membroId}_${dataHoje}`;
             
             if (hora >= 7 && !localStorage.getItem(chave)) {
                 window.abrirModalPilulaDia();
@@ -1551,7 +1639,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(verificarGatilhoPenseSeteManha, 1000);
+            window.gerenciarApresentacaoVideoSplash();
+            setTimeout(verificarGatilhoPenseSeteManha, 1500);
             setTimeout(verificarSugestaoPwaIos, 2000);
         });
 

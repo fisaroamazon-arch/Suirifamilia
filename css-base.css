@@ -1,7 +1,7 @@
 /* ========================================================== */
 /* SUIRI GESTOR FAMILIAR - CSS-BASE.CSS (100% COMPLETO)       */
 /* Tema Ouro Suave, Tons Pastéis, Notificações & MODO KIDS    */
-/* Modal de Quiosque Tela Cheia, Mascotes e Animações         */
+/* Cenário Fotográfico (Imagens JPG) com Sol/Lua Interativos  */
 /* ========================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -104,7 +104,6 @@ h1, h2, h3, h4, span, p, label, strong {
     contain: layout style;
 }
 
-/* Isolamento de camada para impedir travamentos com teclado aberto */
 .cartao-geral, .modal-conteudo {
     contain: layout style;
 }
@@ -301,7 +300,6 @@ input, textarea {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Dropdowns / Seletores Customizados na Paleta Âmbar */
 select {
     width: 100%;
     padding: 10px 34px 10px 12px;
@@ -486,7 +484,7 @@ button {
 }
 
 /* ========================================================== */
-/* MODAL DE TROCAR MEMBRO GIGANTE (QUASE TELA INTEIRA)        */
+/* MODAL DE TROCAR MEMBRO GIGANTE                             */
 /* ========================================================== */
 .modal-quiosque-tela-cheia {
     width: 95vw !important;
@@ -535,7 +533,6 @@ button {
     margin-bottom: 8px !important;
 }
 
-/* Card de perfil Kids no seletor: Bordas em degradê e cores alegres */
 .card-usuario-kids-destaque {
     border: 3px solid transparent !important;
     background: linear-gradient(#ffffff, #ffffff) padding-box,
@@ -549,26 +546,88 @@ button {
 }
 
 /* ========================================================== */
-/* TELA EXCLUSIVA DO MODO KIDS COM FUSÃO & ESTAMPA SVG        */
+/* CENÁRIO KIDS BASEADO EM IMAGENS LOCAIS E ASTROS EM SVG     */
 /* ========================================================== */
 
+/* Fundo padrão diurno (Amanhecer) */
 body.modo-kids-ativo {
-    background-color: #8b5cf6 !important;
+    background-color: #7dd3fc !important; 
     background-image: 
-        url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.16' fill-rule='evenodd'%3E%3Cpath d='M20 8 L22 16 L30 18 L22 20 L20 28 L18 20 L10 18 L18 16 Z'/%3E%3Cpath d='M62 14 A3 3 0 0 0 56 16 A3 3 0 0 0 50 14 A3 3 0 0 0 50 20 L56 26 L62 20 A3 3 0 0 0 62 14 Z'/%3E%3Cpath d='M14 54 A 8 8 0 1 0 24 64 A 7 7 0 1 1 14 54 Z'/%3E%3Cpath d='M52 56 C50 54 46 54 45 56 C43 56 42 58 43 60 C41 61 41 64 43 65 C45 66 59 66 61 65 C63 63 62 60 60 59 C60 57 58 55 55 56 C54 55 53 55 52 56 Z'/%3E%3Ccircle cx='38' cy='38' r='2'/%3E%3Ccircle cx='70' cy='46' r='2.5'/%3E%3Ccircle cx='32' cy='72' r='2'/%3E%3C/g%3E%3C/svg%3E"),
-        linear-gradient(135deg, #38bdf8 0%, #ec4899 45%, #8b5cf6 75%, #3b82f6 100%) !important;
-    background-size: 80px 80px, 300% 300% !important;
+        /* O Sol Sorridente (SVG embutido) */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='25' fill='%23fde047'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23facc15'/%3E%3Cpath d='M38 45 A 2 2 0 0 1 44 45' stroke='%23d97706' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M56 45 A 2 2 0 0 1 62 45' stroke='%23d97706' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M44 55 Q 50 65 56 55' stroke='%23d97706' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='52' r='3' fill='%23f87171' opacity='0.7'/%3E%3Ccircle cx='64' cy='52' r='3' fill='%23f87171' opacity='0.7'/%3E%3C/svg%3E"),
+        /* Imagem de Fundo (Amanhecer) - Preenche o ecrã e traz a relva nela mesma */
+        url('amanhecer.jpg') !important;
+    background-size: 
+        140px 140px, /* Tamanho do Sol */
+        cover !important; /* A imagem 65073 cobre todo o ecrã */
+    background-position: 
+        95% 5%,      /* Posição do Sol (topo direito) */
+        center bottom !important; /* A relva da imagem fica fixa na base */
+    background-repeat: no-repeat !important;
     background-attachment: fixed !important;
-    animation: fusaoCoresMagicasKids 10s ease infinite !important;
     padding-top: 14px !important;
+    padding-bottom: 22vh !important; /* Espaço inferior para não tapar os bonecos */
+    transition: background-image 1.5s ease-in-out !important;
 }
 
-@keyframes fusaoCoresMagicasKids {
-    0% { background-position: 0 0, 0% 50%; }
-    50% { background-position: 0 0, 100% 50%; }
-    100% { background-position: 0 0, 0% 50%; }
+/* Ciclo Horário 1: Tarde */
+body.modo-kids-ativo.cenario-tarde {
+    background-color: #fb923c !important;
+    background-image: 
+        /* O Sol Forte (Alaranjado) */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='25' fill='%23ea580c'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f97316'/%3E%3Cpath d='M38 45 A 2 2 0 0 1 44 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M56 45 A 2 2 0 0 1 62 45' stroke='%237c2d12' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M44 55 Q 50 65 56 55' stroke='%237c2d12' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+        /* Imagem de Fundo (Tarde) */
+        url('tarde.jpg') !important;
 }
 
+/* Ciclo Horário 2: Noite Estrelada */
+body.modo-kids-ativo.cenario-noite {
+    background-color: #0f172a !important;
+    background-image: 
+        /* A Lua Mágica Crescente */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M40 10 A 35 35 0 1 0 85 55 A 30 30 0 0 1 40 10 Z' fill='%23fef08a'/%3E%3C/svg%3E"),
+        /* Imagem de Fundo (Noite) */
+        url('noite.jpg') !important;
+    background-size: 
+        90px 90px, /* Lua em tamanho elegante */
+        cover !important;
+    background-position: 
+        85% 8%, /* Lua mais recuada no céu noturno */
+        center bottom !important;
+}
+
+/* ========================================================== */
+/* CLIMA INTERATIVO: CHUVA E FRIO                             */
+/* ========================================================== */
+body.modo-kids-ativo.clima-chuva::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+    background-size: 20px 80px;
+    z-index: 998; 
+    pointer-events: none; 
+    animation: chuvaAnimada 0.4s linear infinite;
+}
+@keyframes chuvaAnimada { 
+    0% { background-position: 0 0; } 
+    100% { background-position: 20px 80px; } 
+}
+
+body.modo-kids-ativo.clima-frio::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(2px) contrast(0.9);
+    -webkit-backdrop-filter: blur(2px) contrast(0.9);
+    z-index: 998;
+    pointer-events: none;
+}
+
+/* ========================================================== */
+/* OCULTA MENUS ADULTOS NA TELA KIDS                          */
+/* ========================================================== */
 body.modo-kids-ativo #barra-navegacao-principal,
 body.modo-kids-ativo #painel-adulto-container {
     display: none !important;
@@ -579,45 +638,28 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     animation: animacaoTransicaoJanelaSuave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
+/* ========================================================== */
+/* CABEÇALHOS E CARTÕES DO MODO INFANTIL                      */
+/* ========================================================== */
 .cabecalho-kids-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 2.5px solid #fde68a;
     border-radius: 24px;
     padding: 12px 16px;
     margin-bottom: 14px;
-    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.12);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
 }
 
 .avatar-kids-circulo {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #10b981;
-    background: #ffffff;
-    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2);
-    cursor: pointer;
+    width: 52px; height: 52px; border-radius: 50%;
+    border: 3px solid #10b981; cursor: pointer;
 }
-
-.subtitulo-kids-tag {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #10b981;
-    letter-spacing: 1px;
-    display: block;
-}
-
-.titulo-kids-nome {
-    font-size: 17px;
-    font-weight: 800;
-    color: #1e293b;
-    margin: 0;
-    line-height: 1.2;
-}
+.titulo-kids-nome { font-size: 17px; font-weight: 800; color: #1e293b; margin: 0; }
 
 .badge-xp-kids-topo {
     display: inline-flex;
@@ -632,6 +674,7 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     color: #b45309;
 }
 
+/* LOJINHA GIGANTE */
 .btn-lojinha-kids-gigante {
     display: flex;
     align-items: center;
@@ -647,172 +690,78 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     margin-bottom: 16px;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
 }
-
-.btn-lojinha-kids-gigante:active {
-    transform: scale(0.96);
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
-}
-
-.btn-lojinha-kids-gigante .icone-box-presente {
-    width: 48px;
-    height: 48px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.badge-contador-kids {
-    font-size: 11px;
-    font-weight: 800;
-    background: #dcfce7;
-    color: #15803d;
-    padding: 3px 9px;
-    border-radius: 999px;
-}
+.btn-lojinha-kids-gigante:active { transform: scale(0.96); }
 
 .card-missao-kids {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 2px solid #e2e8f0;
     border-radius: 22px;
     padding: 14px 16px;
     margin-bottom: 12px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-    transition: transform 0.15s ease, border-color 0.2s ease;
 }
-
-.card-missao-kids:active {
-    transform: scale(0.985);
-}
-
 .card-missao-kids.concluida {
     background: #f0fdf4 !important;
     border-color: #86efac !important;
     border-left: 8px solid #10b981 !important;
-    opacity: 0.85;
 }
 
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) {
-    border-left: 8px solid #38bdf8 !important;
-    border-top: 2px solid #bae6fd !important;
-}
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) {
-    border-left: 8px solid #f472b6 !important;
-    border-top: 2px solid #fbcfe8 !important;
-}
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) {
-    border-left: 8px solid #fbbf24 !important;
-    border-top: 2px solid #fde68a !important;
-}
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) {
-    border-left: 8px solid #34d399 !important;
-    border-top: 2px solid #a7f3d0 !important;
-}
-
-.btn-concluir-missao-kids {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: #ffffff;
-    border: none;
-    border-radius: 16px;
-    padding: 10px 18px;
-    font-size: 13.5px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-concluir-missao-kids:active {
-    transform: scale(0.94);
-}
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid #38bdf8 !important; border-top: 2px solid #bae6fd !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 2px solid #fbcfe8 !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 2px solid #fde68a !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid #a7f3d0 !important; }
 
 /* ========================================================== */
-/* MODAL & ANIMAÇÕES DO MASCOTE KIDS                          */
+/* TAMAGOTCHI MONSTRINHO E CASINHA APOIADOS NO CHÃO (JPG)     */
 /* ========================================================== */
-.modal-mascote-container {
-    text-align: center;
-    max-width: 330px !important;
-    padding: 24px 20px !important;
-    border-radius: 28px !important;
-    border: 3px solid #fde68a !important;
-    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2) !important;
-}
-
-.box-mascote-animacao {
+#container-tamagotchi-kids {
+    position: fixed;
+    /* Ancorado no rodapé: a base da imagem JPG (65073.jpg, etc.) serve como chão */
+    bottom: 20px; 
+    right: 16px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: flex-end; /* Alinha os dois elementos na mesma base horizontal */
+    gap: 16px;
+    z-index: 999;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.titulo-mascote-kids {
-    font-size: 18px;
-    font-weight: 800;
-    margin: 4px 0 6px 0;
+#btn-casinha-tamagotchi {
+    /* Casa Grande: Dobro da largura e altura do Chuíri */
+    width: 200px;
+    height: 200px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.subtexto-mascote-kids {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #475569;
+#btn-chuiri-tamagotchi {
+    /* Chuíri: Escala proporcional e correta */
+    width: 70px;
+    height: 70px;
+    margin-bottom: 6px; /* Descola subtilmente o monstrinho para não raspar na porta */
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+#balao-fala-tamagotchi {
+    display: none;
+    position: absolute;
+    bottom: 135px; /* Altura calculada para aparecer ao lado/acima da casa sem a cobrir */
+    right: 0;
+    width: 235px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
     line-height: 1.4;
-    margin-bottom: 18px;
-}
-
-@keyframes bounceMascote {
-    0% { transform: translateY(0) scale(1); }
-    100% { transform: translateY(-14px) scale(1.08); }
-}
-
-@keyframes balancoMascoteTriste {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
-}
-
-/* ========================================================== */
-/* SPLASH DE VÍDEO CORRIGIDO (TELA CHEIA, POR CIMA DE TUDO)  */
-/* ========================================================== */
-.splash-fullscreen {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    background: #000000 !important;
-    z-index: 99999999 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-.splash-fullscreen.fade-out {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-}
-
-.video-splash-bg {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
+    padding: 12px 14px;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+    border: 2.5px solid #10b981;
+    pointer-events: none;
 }

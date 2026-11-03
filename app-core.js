@@ -1,8 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-CORE.JS (100% COMPLETO E INTEGRAL)
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
-// Modo Kids Isolado, Gestão de Avatar, Fila Offline, Splash de Vídeo,
-// Autoexclusão Definitiva de Conta, Navegação Reativa & Zero Emojis (SVG)
+// Modo Kids Isolado, Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline,
+// Splash de Vídeo, Autoexclusão Definitiva de Conta, Navegação & Zero Emojis (SVG)
 // =========================================================================
 
 // Configuração do Supabase
@@ -590,6 +590,11 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
             imgKids.src = window.perfilAtual.avatar_url;
         }
 
+        // ATIVAÇÃO DIRETA DO MASCOTE TAMAGOTCHI NO MODO KIDS
+        if (window.TamagotchiKids && typeof window.TamagotchiKids.montarWidgetNaTela === 'function') {
+            window.TamagotchiKids.montarWidgetNaTela();
+        }
+
         if (typeof window.carregarMissoesKidsExclusiva === 'function') {
             window.carregarMissoesKidsExclusiva();
         } else if (typeof window.carregarMissoesDoDia === 'function') {
@@ -600,6 +605,10 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         telaKids?.classList.add('oculto');
         painelAdulto?.classList.remove('oculto');
         barraNav?.classList.remove('oculto');
+
+        // REMOVE O MASCOTE DA VISTA NO PERFIL ADULTO
+        document.getElementById('container-tamagotchi-kids')?.remove();
+        document.getElementById('modal-tamagotchi-cuidados')?.classList.add('oculto');
 
         const elNomeMembro = document.getElementById('nome-membro-topo');
         if (elNomeMembro) elNomeMembro.textContent = window.perfilAtual.nome;
@@ -809,7 +818,6 @@ window.solicitarExclusaoPropriaConta = async function() {
             return window.mostrarToast("Erro ao processar eliminação: " + error.message, "erro");
         }
 
-        // Limpa todas as chaves de persistência e encerra sessão
         await cliente.auth.signOut();
         try { localStorage.clear(); } catch (e) {}
         try { sessionStorage.clear(); } catch (e) {}
