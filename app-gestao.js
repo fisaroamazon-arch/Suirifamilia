@@ -1,13 +1,14 @@
 // =========================================================================
 // SUIRI NOSSO LAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
-// Mercado com Leitura de Cupom Fiscal via IA (Gemini Vision), Histórico de
-// Preço Médio/Último, Gráficos SVG, Extrato com Privacidade Estrita
-// (Privativo vs Família) e Agendamentos Recorrentes
+// Mercado com Reconhecimento de Voz Inteligente & Fallback Robusto,
+// Leitura de Cupom Fiscal, Sugestões de Cardápio Mensal no Quadro de Avisos,
+// Histórico de Preço Médio/Último, Extrato e Agendamentos Recorrentes.
 // Padrão de Diálogos: Confirmar / Cancelar (Zero Emojis - 100% SVG)
 // =========================================================================
 
 window.itensMercadoAtual = [];
 let itemParaExcluirAgendaId = null;
+let reconhecimentoVozMercado = null;
 
 // Dicionário local para classificar termos não cadastrados
 const DICIONARIO_SEGMENTOS_MERCADO = {
@@ -37,6 +38,10 @@ function obterClienteSupabase() {
 
 function obterUsuarioId() {
     return window.perfilAtual?.id || window.usuarioAtual?.id || null;
+}
+
+function obterChaveGemini() {
+    return localStorage.getItem('suiri_gemini_api_key') || "";
 }
 
 window.identificarSegmentoItem = function(nomeItem) {
@@ -320,7 +325,7 @@ window.salvarAjusteCarteira = async function() {
 };
 
 // =========================================================================
-// 2. MÓDULO DE MERCADO COM HISTÓRICO DE PREÇO MÉDIO / ÚLTIMO & IA
+// 2. MÓDULO DE MERCADO COM HISTÓRICO, IA POR VOZ & VISÃO COMPUTACIONAL
 // =========================================================================
 
 window.atualizarEstatisticasPrecoCatalogo = async function(nomeProduto, categoria, precoPago) {
@@ -368,7 +373,197 @@ window.atualizarEstatisticasPrecoCatalogo = async function(nomeProduto, categori
 };
 
 // =========================================================================
-// MOTOR DE IA: LEITURA DE CUPOM FISCAL (GEMINI VISION)
+// 2B. MICROFONE INTELIGENTE NO MERCADO COM PARSER SEMÂNTICO PRECISO
+// =========================================================================
+
+window.ouvirComandoVozMercado = function() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+        return window.mostrarToast("Reconhecimento de voz não suportado neste navegador.", "erro");
+    }
+
+    if (!reconhecimentoVozMercado) {
+        reconhecimentoVozMercado = new SpeechRec();
+        reconhecimentoVozMercado.lang = 'pt-BR';
+        reconhecimentoVozMercado.continuous = false;
+        reconhecimentoVozMercado.interimResults = false;
+
+        reconhecimentoVozMercado.onstart = function() {
+            document.getElementById('btn-mic-mercado')?.classList.add('ouvindo');
+            window.mostrarToast("A ouvir... Diga: '3 óleos por 10 reais' ou 'Café, 2 unidades, 15 reais cada'", "info");
+        };
+
+        reconhecimentoVozMercado.onend = function() {
+            document.getElementById('btn-mic-mercado')?.classList.remove('ouvindo');
+        };
+
+        reconhecimentoVozMercado.onerror = function() {
+            document.getElementById('btn-mic-mercado')?.classList.remove('ouvindo');
+            window.mostrarToast("Não foi possível captar o produto. Tente novamente.", "erro");
+        };
+
+        reconhecimentoVozMercado.onresult = function(evento) {
+            const frase = evento.results[0][0].transcript;
+            window.processarItemMercadoPorVozIA(frase);
+        };
+    }
+
+    try { reconhecimentoVozMercado.start(); } catch (e) { reconhecimentoVozMercado.stop(); }
+};
+
+window.processarItemMercadoPorVozIA = async function(frase) {
+    if (!frase) return;
+    const apiKey = obterChaveGemini();
+    let sucessoIA = false;
+
+    // Tenta primeiro via Gemini se houver chave pública configurada
+    if (apiKey && apiKey.length > 20 && !apiKey.startsWith("AQ.") && navigator.onLine) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const promptText = `Analise a seguinte frase dita para adicionar um item de supermercado: "${frase}".
+            Identifique o produto no singular, a quantidade e o valor unitário.
+            Responda EXATAMENTE e APENAS com um JSON válido:
+            {"nome": "Nome no Singular", "quantidade": 1.0, "valor_unitario": 0.0}`;
+
+            const resposta = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                let texto = dados?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                texto = texto.replace(/```json/g, '').replace(/```/g, '').trim();
+                const obj = JSON.parse(texto);
+
+                if (obj && obj.nome) {
+                    await window.aplicarValoresDetectadosMercado(obj.nome, obj.quantidade, obj.valor_unitario);
+                    sucessoIA = true;
+                }
+            }
+        } catch (err) {
+            console.warn("API de voz indisponível, aplicando motor semântico local:", err);
+        }
+    }
+
+    // Fallback semântico determinístico
+    if (!sucessoIA) {
+        window.processarItemMercadoLocalFallback(frase);
+    }
+};
+
+window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
+    let frase = fraseOriginal.toLowerCase().trim();
+
+    // Mapeamento de números por extenso para numerais
+    const numerosExtenso = {
+        'um': 1, 'uma': 1, 'dois': 2, 'duas': 2, 'três': 3, 'tres': 3,
+        'quatro': 4, 'cinco': 5, 'seis': 6, 'sete': 7, 'oito': 8, 'nove': 9, 'dez': 10
+    };
+
+    // 1. Extração Precisa do Valor Unitário / Preço
+    let unit = 0;
+    const padraoValor = /(?:por|custou|de|valor de|a|r\$)\s*(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real|cada)?/i;
+    const matchValor = frase.match(padraoValor);
+
+    if (matchValor) {
+        unit = parseFloat(matchValor[1].replace(',', '.')) || 0;
+        // Remove a fatia do valor da frase para não colidir com a quantidade
+        frase = frase.replace(matchValor[0], ' ');
+    } else {
+        const matchValorSimples = frase.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)/i);
+        if (matchValorSimples) {
+            unit = parseFloat(matchValorSimples[1].replace(',', '.')) || 0;
+            frase = frase.replace(matchValorSimples[0], ' ');
+        }
+    }
+
+    // 2. Extração Precisa da Quantidade
+    let qtd = 1;
+    let achouQtd = false;
+
+    // Procura número por extenso no início
+    for (const [palavra, valorNum] of Object.entries(numerosExtenso)) {
+        const regExtenso = new RegExp(`\\b${palavra}\\b`, 'i');
+        if (regExtenso.test(frase)) {
+            qtd = valorNum;
+            achouQtd = true;
+            frase = frase.replace(regExtenso, ' ');
+            break;
+        }
+    }
+
+    // Se não achou por extenso, procura numeral
+    if (!achouQtd) {
+        const matchQtd = frase.match(/(\d+(?:[.,]\d+)?)\s*(?:unidades|unidade|pct|pacotes|kg|latas|garrafas)?/i);
+        if (matchQtd) {
+            qtd = parseFloat(matchQtd[1].replace(',', '.')) || 1;
+            frase = frase.replace(matchQtd[0], ' ');
+        }
+    }
+
+    // 3. Limpeza do Nome do Produto e Correção Fonética (Ex: "olhos" -> "Óleo")
+    let nomeLimpo = frase
+        .replace(/\b(unidades|unidade|pct|pacotes|kg|quilos|latas|garrafas|caixas)\b/gi, '')
+        .replace(/\b(por|custou|de|valor|cada|r\$|reais|real|conto|peguei|comprei|coloquei)\b/gi, '')
+        .replace(/[^a-zà-ú\s]/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // Normalização no singular e correção fonética
+    if (nomeLimpo === 'olhos' || nomeLimpo === 'oleos' || nomeLimpo === 'oleo' || nomeLimpo === 'óleo' || nomeLimpo === 'óleos') {
+        nomeLimpo = 'Óleo';
+    } else if (nomeLimpo === 'leites' || nomeLimpo === 'leite') {
+        nomeLimpo = 'Leite';
+    } else if (nomeLimpo === 'arroz') {
+        nomeLimpo = 'Arroz';
+    } else if (nomeLimpo === 'feijoes' || nomeLimpo === 'feijões' || nomeLimpo === 'feijao') {
+        nomeLimpo = 'Feijão';
+    } else if (nomeLimpo.endsWith('s') && nomeLimpo.length > 3) {
+        nomeLimpo = nomeLimpo.slice(0, -1);
+        nomeLimpo = nomeLimpo.charAt(0).toUpperCase() + nomeLimpo.slice(1);
+    } else if (nomeLimpo.length >= 2) {
+        nomeLimpo = nomeLimpo.charAt(0).toUpperCase() + nomeLimpo.slice(1);
+    } else {
+        nomeLimpo = 'Produto';
+    }
+
+    await window.aplicarValoresDetectadosMercado(nomeLimpo, qtd, unit);
+};
+
+window.aplicarValoresDetectadosMercado = async function(nome, qtd, unit) {
+    const inpNome = document.getElementById('input-novo-item-mercado');
+    const inpQtd = document.getElementById('input-novo-item-qtd');
+    const inpUnit = document.getElementById('input-novo-item-unit');
+    const selCat = document.getElementById('select-novo-item-categoria');
+
+    const qtdFinal = parseFloat(qtd) || 1;
+    const unitFinal = parseFloat(unit) || 0;
+
+    if (inpNome) inpNome.value = nome;
+    if (inpQtd) inpQtd.value = qtdFinal.toString();
+    if (inpUnit) inpUnit.value = unitFinal > 0 ? unitFinal.toFixed(2) : '';
+
+    const cli = obterClienteSupabase();
+    if (cli && window.familiaAtualId && nome) {
+        const { data: catItem } = await cli.from('catalogo_produtos_compra')
+            .select('categoria')
+            .eq('familia_id', window.familiaAtualId)
+            .ilike('nome_produto', nome)
+            .maybeSingle();
+
+        if (selCat) {
+            if (catItem?.categoria) selCat.value = catItem.categoria;
+            else selCat.value = window.identificarSegmentoItem(nome);
+        }
+    }
+
+    window.mostrarToast(`Produto: ${nome} • Qtd: ${qtdFinal} • Unit: R$ ${unitFinal.toFixed(2)}`);
+};
+
+// =========================================================================
+// 2C. MOTOR DE IA: LEITURA DE CUPOM FISCAL (GEMINI VISION)
 // =========================================================================
 
 window.processarCupomFiscalIA = async function(evento) {
@@ -380,6 +575,16 @@ window.processarCupomFiscalIA = async function(evento) {
 
     if (!cli || !window.familiaAtualId) {
         return window.mostrarToast("Sessão não identificada. Recarregue a página.", "erro");
+    }
+
+    const apiKey = obterChaveGemini();
+    if (!apiKey) {
+        const chaveInformada = prompt("Insira a sua chave Google Gemini API (Google AI Studio):");
+        if (chaveInformada) {
+            localStorage.setItem('suiri_gemini_api_key', chaveInformada.trim());
+        } else {
+            return window.mostrarToast("Chave da IA não informada.", "erro");
+        }
     }
 
     window.mostrarToast("Analisando cupom com IA... Aguarde.", "info");
@@ -395,14 +600,14 @@ window.processarCupomFiscalIA = async function(evento) {
             reader.onerror = erro => reject(erro);
         });
 
-        const GEMINI_API_KEY = "AQ.Ab8RN6KnLr3mPnGZTeyFo1T1vP2WYNxOpvi1xHRIzwqwA7QcUA";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const chaveAtiva = obterChaveGemini();
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chaveAtiva}`;
 
         const payload = {
             contents: [{
                 parts: [
                     {
-                        text: "Analise a imagem deste cupom fiscal de compras. Extraia todos os produtos adquiridos e devolva APENAS um array JSON válido, sem qualquer bloco markdown, sem crases, sem texto adicional. Esquema obrigatório: [{\"nome\": \"Nome do Produto\", \"quantidade\": 1, \"valor_unitario\": 5.99, \"categoria\": \"Mercearia\"}]. Categorias permitidas estritamente: Mercearia, Açougue, Hortifrúti, Limpeza, Higiene, Laticínios, Padaria, Bebidas."
+                        text: "Analise a imagem deste cupom fiscal. Extraia os produtos e devolva APENAS um array JSON válido sem markdown: [{\"nome\": \"Nome\", \"quantidade\": 1, \"valor_unitario\": 5.99, \"categoria\": \"Mercearia\"}]. Categorias: Mercearia, Açougue, Hortifrúti, Limpeza, Higiene, Laticínios, Padaria, Bebidas."
                     },
                     {
                         inlineData: {
@@ -428,9 +633,7 @@ window.processarCupomFiscalIA = async function(evento) {
         let textoResposta = dados?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         textoResposta = textoResposta.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        if (!textoResposta) {
-            throw new Error("Resposta da IA vazia.");
-        }
+        if (!textoResposta) throw new Error("Resposta da IA vazia.");
 
         const itensExtraidos = JSON.parse(textoResposta);
 
@@ -459,10 +662,7 @@ window.processarCupomFiscalIA = async function(evento) {
         });
 
         const { error: errInsert } = await cli.from('itens_mercado').insert(registros);
-
-        if (errInsert) {
-            throw errInsert;
-        }
+        if (errInsert) throw errInsert;
 
         for (const r of registros) {
             if (r.valor_unitario > 0) {
@@ -473,10 +673,9 @@ window.processarCupomFiscalIA = async function(evento) {
         window.mostrarToast(`${registros.length} itens do cupom adicionados ao carrinho!`);
         window.alternarVisualizacaoMercado('planilha');
         window.carregarItensMercado();
-
     } catch (erro) {
-        console.error("Erro no processamento do cupom fiscal:", erro);
-        window.mostrarToast("Falha ao ler o cupom. Verifique o enquadramento e a iluminação.", "erro");
+        console.error("Erro no cupom fiscal:", erro);
+        window.mostrarToast("Falha ao ler o cupom. Verifique a chave ou tire foto mais nítida.", "erro");
     } finally {
         evento.target.value = '';
     }
@@ -895,7 +1094,7 @@ window.removerItemMercado = async function(id) {
 };
 
 // =========================================================================
-// 3. FINALIZAR COMPRA & GRÁFICOS
+// 3. FINALIZAR COMPRA, GRÁFICOS & GATILHO DE CARDÁPIO
 // =========================================================================
 
 window.finalizarCompraMercado = async function() {
@@ -941,6 +1140,8 @@ window.finalizarCompraMercado = async function() {
     window.gerarGraficosFechamentoMercado(segmentos);
     window.carregarItensMercado();
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+
+    window.gerarSugestoesCardapioMesIA();
 };
 
 window.gerarGraficosFechamentoMercado = function(segmentos) {
@@ -973,6 +1174,101 @@ window.gerarGraficosFechamentoMercado = function(segmentos) {
 
 window.fecharModalGraficosMercado = function() { 
     document.getElementById('modal-fechamento-mercado')?.classList.add('oculto'); 
+};
+
+// =========================================================================
+// 3B. SUGESTÕES DE CARDÁPIO DO MÊS (IA COM FALLBACK LOCAL INTELIGENTE)
+// =========================================================================
+
+window.gerarSugestoesCardapioMesIA = async function() {
+    const container = document.getElementById('lista-sugestoes-cardapio-mes');
+    const cli = obterClienteSupabase();
+    if (!cli || !window.familiaAtualId || !container) return;
+
+    container.innerHTML = '<span style="font-size:11px; color:var(--texto-suave); text-align:center; display:block; padding:8px;">A IA está a criar o cardápio do mês com base na despensa...</span>';
+
+    let { data: itensComprados } = await cli.from('catalogo_produtos_compra')
+        .select('nome_produto, categoria')
+        .eq('familia_id', window.familiaAtualId)
+        .limit(20);
+
+    if (!itensComprados || itensComprados.length === 0) {
+        const { data: itensFallback } = await cli.from('catalogo_produtos')
+            .select('nome_produto, segmento_categoria')
+            .eq('familia_id', window.familiaAtualId)
+            .limit(20);
+        itensComprados = (itensFallback || []).map(i => ({ nome_produto: i.nome_produto, categoria: i.segmento_categoria }));
+    }
+
+    const alimentos = (itensComprados || []).filter(i => {
+        const c = (i.categoria || '').toLowerCase();
+        return c.includes('mercearia') || c.includes('açougue') || c.includes('hortifrúti') || c.includes('laticínios') || c.includes('padaria');
+    }).map(i => i.nome_produto);
+
+    if (alimentos.length === 0) {
+        container.innerHTML = '<span style="font-size:11px; color:var(--texto-suave); text-align:center; display:block; padding:8px;">Registe produtos de alimentação no mercado para gerar sugestões de refeições.</span>';
+        return;
+    }
+
+    let geradoComSucesso = false;
+    const apiKey = obterChaveGemini();
+
+    if (apiKey && apiKey.length > 20 && !apiKey.startsWith("AQ.") && navigator.onLine) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const promptText = `Com base nestes alimentos comprados para a família: ${alimentos.join(', ')}.
+            Sugira exatamente 3 refeições práticas, nutritivas e económicas para o mês.
+            Responda EXATAMENTE com um array JSON válido sem markdown, sem crases:
+            [{"prato": "Nome do Prato", "ingredientes": "Ingredientes chave utilizados", "tipo": "Almoço / Jantar"}]`;
+
+            const resposta = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                let texto = dados?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                texto = texto.replace(/```json/g, '').replace(/```/g, '').trim();
+                const listaCardapio = JSON.parse(texto);
+
+                if (Array.isArray(listaCardapio) && listaCardapio.length > 0) {
+                    container.innerHTML = listaCardapio.map(p => `
+                        <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:3.5px solid #10b981; border-radius:10px; padding:7px 10px; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="flex:1; min-width:0;">
+                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                                    <span style="font-size:9.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:4px;">${p.tipo || 'Refeição'}</span>
+                                </div>
+                                <strong style="font-size:12px; color:#1e293b; display:block;">${p.prato}</strong>
+                                <span style="font-size:10.5px; color:#64748b; display:block; margin-top:1px;">Usa: ${p.ingredientes}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    geradoComSucesso = true;
+                    window.mostrarToast("Sugestões de cardápio do mês atualizadas!");
+                }
+            }
+        } catch (e) {
+            console.warn("API de cardápio em fallback local:", e);
+        }
+    }
+
+    if (!geradoComSucesso) {
+        const baseAlimentos = alimentos.slice(0, 3).join(', ');
+        container.innerHTML = `
+            <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:3.5px solid #10b981; border-radius:10px; padding:7px 10px; margin-bottom:4px;">
+                <span style="font-size:9.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:4px;">Almoço Prático</span>
+                <strong style="font-size:12px; color:#1e293b; display:block; margin-top:2px;">Refogado Especial do Lar</strong>
+                <span style="font-size:10.5px; color:#64748b;">Aproveitamento inteligente de: ${baseAlimentos || 'ingredientes da despensa'}.</span>
+            </div>
+            <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:3.5px solid #0284c7; border-radius:10px; padding:7px 10px;">
+                <span style="font-size:9.5px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px;">Jantar Leve</span>
+                <strong style="font-size:12px; color:#1e293b; display:block; margin-top:2px;">Arroz de Forno Reconfortante</strong>
+                <span style="font-size:10.5px; color:#64748b;">Combinação dos itens de mercearia e laticínios do mês.</span>
+            </div>
+        `;
+    }
 };
 
 // =========================================================================
@@ -1028,7 +1324,9 @@ window.adicionarItemAgendaFinanceira = async function() {
             recorrencia_grupo_id: qtdParcelas > 1 ? grupoId : null,
             numero_parcela: d.parcela_num,
             total_parcelas: qtdParcelas,
-            eh_perpetua: ehPerpetua
+            eh_perpetua: ehPerpetua,
+            status: 'pendente',
+            pago: false
         };
         if (usuarioId) {
             obj.criado_por = usuarioId;
@@ -1056,6 +1354,7 @@ window.adicionarItemAgendaFinanceira = async function() {
         if (inDesc) inDesc.value = '';
         if (inVal) inVal.value = '';
         if (typeof window.carregarDadosCalendarioMes === 'function') window.carregarDadosCalendarioMes();
+        if (typeof window.atualizarNotificacoesGeraisPainel === 'function') window.atualizarNotificacoesGeraisPainel();
         if (typeof window.carregarAgendaFinanceira === 'function') window.carregarAgendaFinanceira();
     } else {
         window.mostrarToast("Erro ao agendar: " + error.message, "erro");
@@ -1079,6 +1378,7 @@ window.excluirContaRecorrenteAgenda = async function(id, ehPerpetua) {
                 window.mostrarToast("Conta removida com sucesso!");
                 window.fecharModalDetalhesDiaCalendario();
                 if (typeof window.carregarDadosCalendarioMes === 'function') window.carregarDadosCalendarioMes();
+                if (typeof window.atualizarNotificacoesGeraisPainel === 'function') window.atualizarNotificacoesGeraisPainel();
                 if (typeof window.carregarAgendaFinanceira === 'function') window.carregarAgendaFinanceira();
             }
         }
@@ -1115,5 +1415,6 @@ window.executarExclusaoAgenda = async function(modo) {
     window.fecharModalConfirmarExclusaoAgenda();
     window.fecharModalDetalhesDiaCalendario();
     if (typeof window.carregarDadosCalendarioMes === 'function') window.carregarDadosCalendarioMes();
+    if (typeof window.atualizarNotificacoesGeraisPainel === 'function') window.atualizarNotificacoesGeraisPainel();
     if (typeof window.carregarAgendaFinanceira === 'function') window.carregarAgendaFinanceira();
 };

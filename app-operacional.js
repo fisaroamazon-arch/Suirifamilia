@@ -1,10 +1,10 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
-// Missões com Subitens, Isolamento Kids vs Adultos, Realtime,
+// Missões com Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
-// Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis
-// & Leitura de Cupom Fiscal com Visão Computacional IA.
+// Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis,
+// Menu Dropdown com Z-Index Soberano & Leitura de Cupom Fiscal IA.
 // =========================================================================
 
 let cacheMissoes = [];
@@ -258,8 +258,8 @@ window.carregarMissoesKidsExclusiva = function() {
 
             <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex-shrink:0;">
                 ${(!concluida && !falhada) ? `
-                    <button type="button" class="btn-concluir-missao-kids" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                        <svg class="icone-svg" style="width:16px; height:16px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <button type="button" class="btn-concluir-missao-kids" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: none; border-radius: 14px; padding: 8px 14px; font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35); cursor: pointer; transition: transform 0.15s ease;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                        <svg class="icone-svg" style="width:15px; height:15px; stroke-width:3;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                         Fiz!
                     </button>
                     <button type="button" class="btn-erro" style="padding:8px 12px; font-size:12px; font-weight:800; border-radius:14px;" onclick="window.falharMissaoDomestica('${missao.id}')">
@@ -301,6 +301,16 @@ window.toggleSubitemMissao = async function(missaoId, subitemId) {
     window.renderizarMissoesTela();
     window.carregarMissoesKidsExclusiva();
     window.renderizarHistoricoMissoesKidsADM();
+};
+
+window.alternarVisualizacaoSubitensCard = function(missaoId) {
+    const box = document.getElementById(`box-subitens-missao-${missaoId}`);
+    const seta = document.getElementById(`seta-subitens-${missaoId}`);
+    if (!box) return;
+    const oculto = box.classList.toggle('oculto');
+    if (seta) {
+        seta.style.transform = oculto ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
 };
 
 window.adicionarLinhaSubitemCriacao = function() {
@@ -648,7 +658,7 @@ window.adicionarNovaMissao = async function() {
 };
 
 // =========================================================================
-// 8. RENDERIZAÇÃO: ISOLAMENTO ESTRITO & EXIBIÇÃO DE ADULTOS
+// 8. RENDERIZAÇÃO DESPOLUÍDA: HIERARQUIA VISUAL SUAVE & RESPIRO
 // =========================================================================
 
 window.renderizarMissoesTela = function() {
@@ -678,7 +688,7 @@ window.renderizarMissoesTela = function() {
     }
 
     if (listaExibicao.length === 0) {
-        container.innerHTML = '<p class="status-texto" style="text-align:center; padding:16px 0;">Nenhuma missão disponível para você neste filtro.</p>';
+        container.innerHTML = '<p class="status-texto" style="text-align:center; padding:18px 0;">Nenhuma missão pendente para este filtro.</p>';
         return;
     }
 
@@ -689,122 +699,120 @@ window.renderizarMissoesTela = function() {
         const card = document.createElement('div');
         const concluida = missao.status === 'concluida';
         const falhada = missao.status === 'falhou';
-        
-        card.className = `cartao-geral ${concluida ? 'missao-concluida' : ''}`;
-        card.style.marginBottom = '8px';
-        card.style.padding = '12px 14px';
-        card.style.position = 'relative';
-        if (concluida) card.style.opacity = '0.75';
-        if (falhada) {
-            card.style.opacity = '0.85';
-            card.style.borderColor = 'var(--cor-erro, #f43f5e)';
-            card.style.background = '#fff5f5';
-        }
 
+        card.id = `card-missao-bloco-${missao.id}`;
+        card.className = `cartao-geral ${concluida ? 'missao-concluida' : ''}`;
+        card.style.cssText = `
+            margin-bottom: 8px;
+            padding: 12px 14px;
+            position: relative;
+            background: ${concluida ? 'rgba(240, 253, 244, 0.6)' : (falhada ? '#fff5f5' : '#ffffff')};
+            border: 1px solid ${concluida ? '#bbf7d0' : (falhada ? '#fecaca' : 'rgba(217, 119, 6, 0.14)')};
+            border-left: 3.5px solid ${missao.prioridade === 1 ? '#ef4444' : (missao.prioridade === 2 ? '#d97706' : '#10b981')};
+            border-radius: 12px;
+            z-index: 1;
+            ${concluida ? 'opacity: 0.72;' : ''}
+        `;
+
+        const prioCor = missao.prioridade === 1 ? '#ef4444' : (missao.prioridade === 2 ? '#d97706' : '#10b981');
         const prioTexto = missao.prioridade === 1 ? 'Urgente' : (missao.prioridade === 2 ? 'Importante' : 'Tranquilo');
-        const prioCor = missao.prioridade === 1 ? 'var(--cor-erro, #f43f5e)' : (missao.prioridade === 2 ? 'var(--cor-primaria, #d97706)' : 'var(--cor-sucesso, #10b981)');
 
         let badgeHorario = '';
-        let atrasada = false;
         if (missao.horario_limite) {
             const partes = missao.horario_limite.split(':');
-            const h = parseInt(partes[0], 10);
-            const m = parseInt(partes[1], 10);
-            const limiteMinutos = h * 60 + m;
-            atrasada = !concluida && !falhada && horaAtualMinutos > limiteMinutos;
-            badgeHorario = `<span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; background:${atrasada ? '#fee2e2' : '#e0f2fe'}; color:${atrasada ? '#ef4444' : '#0369a1'}; margin-left:4px;">até ${missao.horario_limite.slice(0, 5)} ${atrasada ? '(Atrasada)' : ''}</span>`;
+            const limiteMin = (parseInt(partes[0], 10) * 60) + parseInt(partes[1], 10);
+            const atrasada = !concluida && !falhada && horaAtualMinutos > limiteMin;
+            badgeHorario = `
+                <span style="font-size:10.5px; font-weight:700; color:${atrasada ? '#dc2626' : '#64748b'}; display:inline-flex; align-items:center; gap:3px;">
+                    <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    ${missao.horario_limite.slice(0, 5)} ${atrasada ? '(atrasada)' : ''}
+                </span>
+            `;
         }
 
-        let labelRecorrencia = '';
-        if (missao.recorrencia_tipo === 'diaria_24h') labelRecorrencia = 'Diária (04:00)';
-        else if (missao.recorrencia_tipo === 'semanal_7d') labelRecorrencia = 'Semanal (7d)';
-        else if (missao.recorrencia_tipo === 'quinzenal_15d') labelRecorrencia = 'Quinzenal (15d)';
-        else if (missao.recorrencia_tipo === 'mensal_30d') labelRecorrencia = 'Mensal (30d)';
-
-        const tagRecorrencia = labelRecorrencia 
-            ? `<span style="font-size:10px; background:var(--pastel-ouro, #fef3c7); color:var(--cor-primaria, #d97706); padding:2px 6px; border-radius:4px; margin-left:4px;">${labelRecorrencia}</span>` 
-            : '';
-
-        const statusTag = falhada 
-            ? '<span style="font-size:10px; font-weight:800; background:#fee2e2; color:#ef4444; padding:2px 6px; border-radius:4px; margin-left:4px;">FALHOU</span>' 
-            : '';
-
         const tagEscopo = missao.escopo === 'pessoal'
-            ? '<span style="font-size:10px; font-weight:700; color:#8B5CF6; background:rgba(139,92,246,0.1); padding:2px 6px; border-radius:4px;">Privada</span>'
-            : '<span style="font-size:10px; font-weight:700; color:var(--texto-suave, #64748b); background:var(--suiri-surface-secondary-light, #fef9ea); padding:2px 6px; border-radius:4px;">Casa</span>';
+            ? `<span style="font-size:10px; font-weight:700; color:#8b5cf6;">Pessoal</span>`
+            : `<span style="font-size:10px; font-weight:700; color:#64748b;">Casa</span>`;
 
-        let badgeCumpridoPor = '';
+        let badgeCumprido = '';
         if (concluida && missao.concluido_por && window.listaMembrosFamilia) {
             const autor = window.listaMembrosFamilia.find(m => m.id === missao.concluido_por);
-            const nomeAutor = autor ? autor.nome.split(' ')[0] : (missao.concluido_por === meuId ? 'Você' : 'Familiar');
-            badgeCumpridoPor = `<span style="font-size:10.5px; font-weight:700; color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px; margin-left:4px;">Feito por ${nomeAutor}</span>`;
+            const nomeAutor = autor ? autor.nome.split(' ')[0] : 'Concluída';
+            badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#15803d;">• Feito por ${nomeAutor}</span>`;
+        } else if (falhada) {
+            badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#ef4444;">• Não cumprida</span>`;
         }
 
         const subitens = Array.isArray(missao.subitens) ? missao.subitens : [];
         let subitensHtml = '';
         if (subitens.length > 0) {
-            subitensHtml = '<div style="margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; display:flex; flex-direction:column; gap:4px;">';
+            const concluidos = subitens.filter(s => s.concluido).length;
+            subitensHtml = `
+                <div style="margin-top:6px;">
+                    <button type="button" onclick="window.alternarVisualizacaoSubitensCard('${missao.id}')" style="background:none; border:none; padding:0; font-size:11px; font-weight:700; color:#64748b; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                        <span>Etapas (${concluidos}/${subitens.length})</span>
+                        <span id="seta-subitens-${missao.id}" style="transition:transform 0.2s ease; display:inline-block;">▼</span>
+                    </button>
+                    <div id="box-subitens-missao-${missao.id}" class="oculto" style="margin-top:6px; padding:6px 8px; background:#f8fafc; border-radius:8px; display:flex; flex-direction:column; gap:4px;">
+            `;
             subitens.forEach(s => {
                 subitensHtml += `
-                    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:11.5px; color:#475569; cursor:pointer;">
                         <input type="checkbox" ${s.concluido ? 'checked' : ''} ${concluida || falhada ? 'disabled' : ''} 
                                onchange="window.toggleSubitemMissao('${missao.id}', '${s.id}')">
                         <span style="${s.concluido ? 'text-decoration:line-through; opacity:0.6;' : ''}">${window.esc ? window.esc(s.texto) : s.texto}</span>
                     </label>
                 `;
             });
-            subitensHtml += '</div>';
+            subitensHtml += `</div></div>`;
         }
 
         card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-                <div style="flex:1;">
-                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
-                        <span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px; border:1px solid ${prioCor}; color:${prioCor};">
-                            ${prioTexto}
-                        </span>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
+                        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${prioCor};" title="${prioTexto}"></span>
                         ${tagEscopo}
-                        <span style="font-size:11px; color:var(--texto-suave, #64748b); font-weight:700; display:inline-flex; align-items:center; gap:3px;">
-                            <svg class="icone-svg" style="width:12px; height:12px; color:#d97706;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> +${missao.xp_recompensa || 20} XP
-                        </span>
-                        ${tagRecorrencia}
+                        <span style="font-size:10.5px; color:#b45309; font-weight:700;">+${missao.xp_recompensa || 20} XP</span>
                         ${badgeHorario}
-                        ${statusTag}
-                        ${badgeCumpridoPor}
+                        ${badgeCumprido}
                     </div>
-                    <strong style="font-size:14px; color:var(--texto-principal, #334155); ${concluida || falhada ? 'text-decoration:line-through;' : ''}">${missao.titulo}</strong>
+                    <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
+                        ${window.esc ? window.esc(missao.titulo) : missao.titulo}
+                    </strong>
                     ${subitensHtml}
                 </div>
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                     ${(!concluida && !falhada) ? `
-                        <div style="display:flex; flex-direction:column; gap:4px;">
-                            <button class="btn-sucesso" style="padding:4px 8px; font-size:10.5px; width:72px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                                Confirmar
-                            </button>
-                            <button class="btn-erro" style="padding:4px 8px; font-size:10.5px; width:72px;" onclick="window.falharMissaoDomestica('${missao.id}')">
-                                Falhou
-                            </button>
-                        </div>
+                        <button type="button" class="btn-sucesso" style="padding:6px 12px; font-size:11.5px; border-radius:10px; font-weight:800; display:inline-flex; align-items:center; gap:4px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                            <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Fiz
+                        </button>
                     ` : (falhada ? `
-                        <button class="btn-secundario" style="padding:5px 8px; font-size:10.5px; font-weight:700; color:#b45309; border:1px solid #f59e0b;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                        <button type="button" class="btn-secundario" style="padding:5px 8px; font-size:11px; font-weight:700; color:#b45309;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
                             Tentar
                         </button>
                     ` : `
-                        <button class="btn-secundario" style="padding:5px 8px; font-size:11px;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                        <button type="button" class="btn-secundario" style="padding:5px 8px; font-size:11px; color:#64748b;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
                             Refazer
                         </button>
                     `)}
 
                     <div style="position:relative;">
-                        <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:14px; line-height:1; font-weight:800;" onclick="window.alternarMenuAcoesMissao('${missao.id}')">
+                        <button type="button" class="btn-secundario" style="padding:5px 7px; font-size:13px; line-height:1; font-weight:800; border-radius:8px;" onclick="event.stopPropagation(); window.alternarMenuAcoesMissao('${missao.id}')">
                             ⋮
                         </button>
-                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:28px; background:#ffffff; border:1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.12); z-index:100; min-width:96px; overflow:hidden;">
-                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:12px; text-align:left; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
+                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:30px; background:#ffffff; border:1px solid rgba(217, 119, 6, 0.22); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:10000; min-width:115px; overflow:hidden;">
+                            ${(!concluida && !falhada) ? `
+                                <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#ef4444; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.falharMissaoDomestica('${missao.id}')">
+                                    Falhou
+                                </button>
+                            ` : ''}
+                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px; border-top:1px solid #f1f5f9;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
                                 <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar
                             </button>
-                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:12px; text-align:left; color:var(--cor-erro, #f43f5e); border-top:1px solid #f3f4f6; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.excluirMissao('${missao.id}')">
+                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:var(--cor-erro, #f43f5e); border-top:1px solid #f1f5f9; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.excluirMissao('${missao.id}')">
                                 <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Excluir
                             </button>
                         </div>
@@ -817,25 +825,41 @@ window.renderizarMissoesTela = function() {
 };
 
 // =========================================================================
-// 9. MENU DE AÇÕES & EDIÇÃO DE MISSÃO
+// 9. MENU DE AÇÕES SOBERANO COM ELEVAÇÃO DE Z-INDEX DO CARD PAI
 // =========================================================================
 
 window.alternarMenuAcoesMissao = function(id) {
     const menu = document.getElementById(`menu-drop-missao-${id}`);
+    const cardPai = document.getElementById(`card-missao-bloco-${id}`);
     if (!menu) return;
 
-    document.querySelectorAll('[id^="menu-drop-missao-"]').forEach(m => {
-        if (m.id !== `menu-drop-missao-${id}`) m.classList.add('oculto');
-    });
+    const estaOculto = menu.classList.contains('oculto');
 
-    menu.classList.toggle('oculto');
+    // Fecha todos os menus abertos e restabelece os z-index de todos os cards
+    document.querySelectorAll('[id^="menu-drop-missao-"]').forEach(m => m.classList.add('oculto'));
+    document.querySelectorAll('[id^="card-missao-bloco-"]').forEach(c => c.style.zIndex = '1');
+
+    if (estaOculto) {
+        menu.classList.remove('oculto');
+        if (cardPai) cardPai.style.zIndex = '999';
+    }
 };
+
+// Fecho automático ao clicar fora de qualquer menu aberto
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('[id^="menu-drop-missao-"]') && !e.target.closest('button[onclick*="alternarMenuAcoesMissao"]')) {
+        document.querySelectorAll('[id^="menu-drop-missao-"]').forEach(m => m.classList.add('oculto'));
+        document.querySelectorAll('[id^="card-missao-bloco-"]').forEach(c => c.style.zIndex = '1');
+    }
+});
 
 window.iniciarEdicaoMissao = function(id) {
     const missao = cacheMissoes.find(m => m.id === id);
     if (!missao) return;
 
     document.getElementById(`menu-drop-missao-${id}`)?.classList.add('oculto');
+    const cardPai = document.getElementById(`card-missao-bloco-${id}`);
+    if (cardPai) cardPai.style.zIndex = '1';
 
     const selModal = document.getElementById('edit-missao-responsavel');
     if (selModal) {
@@ -1145,7 +1169,7 @@ window.excluirMissao = async function(id) {
 };
 
 // =========================================================================
-// 11. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER AUTOMÁTICO
+// 11. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER AUTOMÁTICO REFINADO
 // =========================================================================
 
 window.inicializarMotorVoz = function() {
@@ -1159,7 +1183,7 @@ window.inicializarMotorVoz = function() {
 
     reconhecimentoVoz.onstart = function() {
         document.getElementById('btn-mic-gastos')?.classList.add('ouvindo');
-        window.mostrarToast("A ouvir... Diga por exemplo: 'Gastei 45 reais na farmácia' ou 'Recebi 1200 de salário'", "info");
+        window.mostrarToast("A ouvir... Diga por exemplo: 'Comprei arroz por 25 reais' ou 'Recebi 1200 de salário'", "info");
     };
 
     reconhecimentoVoz.onend = function() {
@@ -1186,9 +1210,10 @@ window.ouvirComandoVoz = function() {
 
 window.processarTextoTranscrito = function(frase) {
     if (!frase) return;
-    const texto = frase.toLowerCase();
+    const textoOriginal = frase.trim();
+    const texto = textoOriginal.toLowerCase();
 
-    // 1. Extração Inteligente do Valor Monetário
+    // 1. Deteção do Valor Numérico
     let valorDetectado = 0;
     const matchNumero = texto.match(/(\d+[\d.,]*)/);
     if (matchNumero) {
@@ -1196,22 +1221,22 @@ window.processarTextoTranscrito = function(frase) {
         valorDetectado = parseFloat(numStr) || 0;
     }
 
-    // 2. Classificação: Entrada vs Saída
-    const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o/i;
+    // 2. Deteção de Fluxo (Entrada vs Saída)
+    const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o|bonifica[cç][aã]o/i;
     const ehReceita = padroesEntrada.test(texto);
     const tipoTransacao = ehReceita ? 'entrada' : 'saida';
 
-    // 3. Classificação de Escopo: Pessoal vs Casa
+    // 3. Deteção de Escopo
     let escopo = 'pessoal';
     if (/casa|fam[ií]lia|lar|mercado|supermercado|condom[ií]nio|energia|luz|água|agua|internet|feira|aluguel|coletivo/i.test(texto)) {
         escopo = 'casa';
     }
 
-    // 4. Classificação Automática da Categoria
+    // 4. Inferência Semântica de Categoria
     let categoria = 'Geral';
-    if (/supermercado|mercado|a[cç]ougue|padaria|hortifr[uú]ti|feira|despensa/i.test(texto)) {
+    if (/supermercado|mercado|a[cç]ougue|padaria|hortifr[uú]ti|feira|despensa|arroz|feij[aã]o|leite|caf[eé]|carne/i.test(texto)) {
         categoria = 'Supermercado';
-    } else if (/almo[cç]o|jantar|lanche|pizza|restaurante|comida|ifood|caf[eé]|hamb[uú]rguer|a[cç]a[ií]/i.test(texto)) {
+    } else if (/almo[cç]o|jantar|lanche|pizza|restaurante|comida|ifood|hamb[uú]rguer|a[cç]a[ií]/i.test(texto)) {
         categoria = 'Alimentação';
     } else if (/uber|combust[ií]vel|gasolina|etanol|abasteci|posto|passagem|t[aá]xi|estacionamento|ped[aá]gio|mecanico|pneu/i.test(texto)) {
         categoria = 'Transporte';
@@ -1227,35 +1252,49 @@ window.processarTextoTranscrito = function(frase) {
         categoria = 'Salário';
     }
 
-    // 5. Limpeza da Descrição (Remove verbos e números comuns da fala para deixar o título limpo)
-    let descricaoLimpa = frase
-        .replace(/^(eu\s+)?(gastei|comprei|paguei|pago|recebi|ganhei|entrou|caiu|depositei)\s+/i, '')
-        .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/i, '')
-        .replace(/(\d+[\d.,]*)\s*(reais|real|r\$)/i, '')
-        .replace(/r\$\s*(\d+[\d.,]*)/i, '')
+    // 5. Higienização Cirúrgica do Item: Remoção total de verbos, numerais, moedas e preposições
+    let itemLimpo = textoOriginal;
+
+    // Remove verbos financeiros e pronomes iniciais
+    itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
+
+    // Remove padrões de menção de valor e unidades monetárias (ex: "por R$ 25", "no valor de 50 reais", "25,00")
+    itemLimpo = itemLimpo
+        .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/gi, '')
+        .replace(/\b(por|de|custou|foi)\s+(r\$\s*)?\d+[\d.,]*(\s*(reais|real|conto|mangos|centavos))?/gi, '')
+        .replace(/(r\$\s*)?\d+[\d.,]*\s*(reais|real|conto|mangos|centavos)?/gi, '')
+        .replace(/\b(reais|real|r\$)\b/gi, '')
         .trim();
 
-    if (!descricaoLimpa || descricaoLimpa.length < 2) {
-        descricaoLimpa = frase;
-    }
-    // Capitalizar a primeira letra
-    descricaoLimpa = descricaoLimpa.charAt(0).toUpperCase() + descricaoLimpa.slice(1);
+    // Remove preposições ou conectivos órfãos no início ou final da frase
+    itemLimpo = itemLimpo
+        .replace(/^(um|uma|uns|umas|de|do|da|no|na|o|a|os|as|por)\s+/i, '')
+        .replace(/\s+(por|de|no|na|em|com)$/i, '')
+        .replace(/^[,.\s-]+|[,.\s-]+$/g, '')
+        .trim();
 
-    // 6. Preenchimento Automático dos Campos de Registo Rápido
+    // Se a limpeza eliminar tudo ou se o comando for direto (ex: "Salário" ou "Bónus")
+    if (!itemLimpo || itemLimpo.length < 2) {
+        itemLimpo = ehReceita ? 'Salário' : (categoria !== 'Geral' ? categoria : 'Compra avulsa');
+    }
+
+    // Capitalização limpa da primeira letra
+    itemLimpo = itemLimpo.charAt(0).toUpperCase() + itemLimpo.slice(1);
+
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
     const selTipo = document.getElementById('select-fin-tipo');
     const selEscopo = document.getElementById('select-fin-escopo');
     const selCat = document.getElementById('select-fin-categoria');
 
-    if (inDesc) inDesc.value = descricaoLimpa;
+    if (inDesc) inDesc.value = itemLimpo;
     if (inVal && valorDetectado > 0) inVal.value = valorDetectado.toFixed(2);
     if (selTipo) selTipo.value = tipoTransacao;
     if (selEscopo) selEscopo.value = escopo;
     if (selCat) selCat.value = categoria;
 
     const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
-    window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${categoria})`);
+    window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${itemLimpo})`);
 };
 
 // =========================================================================
