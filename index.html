@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <!-- Regras Críticas de Resguardo para o Splash Screen e Banner PWA -->
+    <!-- Regras Críticas de Resguardo para o Splash Screen, Banner PWA e Sino Flutuante -->
     <style>
         .oculto {
             display: none !important;
@@ -107,6 +107,59 @@
         @keyframes slideUpPwa {
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Foto de Perfil Quadrada e Sino Flutuante no Canto Superior Direito */
+        .avatar-topo-usuario {
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 12px !important;
+            object-fit: cover;
+            border: 1.5px solid var(--cor-primaria, #d97706);
+            background: var(--suiri-surface-secondary-light, #fef9ea);
+            flex-shrink: 0;
+            cursor: pointer;
+            display: block;
+        }
+
+        .avatar-kids-circulo {
+            border-radius: 12px !important;
+        }
+
+        .btn-sino-flutuante-avatar {
+            position: absolute !important;
+            top: -4px !important;
+            right: -4px !important;
+            left: auto !important;
+            width: 22px !important;
+            height: 22px !important;
+            border-radius: 50% !important;
+            background: #ffffff;
+            border: 1.5px solid rgba(217, 119, 6, 0.3);
+            color: #d97706;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .btn-sino-flutuante-avatar.tem-pendencias {
+            background: #ef4444 !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+            animation: balancoSino 1.8s infinite ease-in-out;
+        }
+
+        @keyframes balancoSino {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(8deg); }
+            80% { transform: rotate(-8deg); }
         }
     </style>
 </head>
@@ -271,11 +324,18 @@
             <!-- =============================================================== -->
             <div id="painel-adulto-container">
                 <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; gap:8px;">
-                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
                         <input type="file" id="input-upload-avatar-membro" accept="image/*" class="oculto" onchange="window.processarUploadAvatar(event)">
-                        <div style="position: relative;" onclick="window.abrirSeletorFotoPerfil()">
-                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar">
+                        
+                        <!-- Contentor Avatar com Foto Quadrada e Sino Flutuante no Canto Superior Direito -->
+                        <div id="container-avatar-perfil-topo" style="position: relative; cursor: pointer;">
+                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()">
+                            
+                            <button type="button" id="btn-sino-notificacoes-topo" class="btn-sino-flutuante-avatar" onclick="event.stopPropagation(); window.abrirModalNotificacoesGerais();" title="Quadro de Notificações">
+                                <svg class="icone-svg" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            </button>
                         </div>
+
                         <div style="min-width: 0;">
                             <span id="nome-familia-topo" style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
                             <h3 id="nome-membro-topo" style="font-size: 14.5px; margin: 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
@@ -375,8 +435,14 @@
                             <button type="button" id="btn-aba-modo-mercado" class="btn-secundario" style="flex:1;" onclick="window.alternarVisualizacaoMercado('planilha')">No Mercado</button>
                         </div>
 
+                        <!-- Campo de Produto com Microfone Inteligente -->
                         <div style="position: relative; display: flex; flex-direction: column; gap: 6px;">
-                            <input type="text" id="input-novo-item-mercado" placeholder="Adicionar item à despensa..." oninput="window.filtrarAutocompleteMercado(this.value)">
+                            <div class="campo-com-voz">
+                                <input type="text" id="input-novo-item-mercado" placeholder="Produto ou fale no microfone..." oninput="window.filtrarAutocompleteMercado(this.value)">
+                                <button type="button" id="btn-mic-mercado" class="btn-microfone" onclick="window.ouvirComandoVozMercado()" title="Falar Produto">
+                                    <svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                </button>
+                            </div>
                             <div id="dropdown-autocomplete-mercado" class="autocomplete-dropdown oculto"></div>
 
                             <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 1fr; gap: 6px;">
@@ -699,6 +765,72 @@
     <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
     <!-- =================================================================== -->
 
+    <!-- MODAL DO SINO: QUADRO DE NOTIFICAÇÕES (HOJE, 7 DIAS & CARDÁPIO) -->
+    <div id="modal-notificacoes-gerais" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width: 440px; padding: 18px 16px; border-radius: 22px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center;">
+                        <svg class="icone-svg" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Quadro de Avisos</h3>
+                        <span style="font-size: 11px; color: var(--texto-suave, #64748b);">Contas, receitas, agenda e cardápios</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius: 8px;" onclick="window.fecharModalNotificacoesGerais()">✕</button>
+            </div>
+
+            <!-- Bloco 1: O que temos para Hoje -->
+            <div style="margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706); display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d97706;"></span>
+                        Para Hoje
+                    </span>
+                    <span id="contador-notif-hoje" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">0 pendência(s)</span>
+                </div>
+                <div id="lista-notificacoes-hoje" style="max-height: 24vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-size: 11.5px; color: var(--texto-suave); text-align: center; display: block; padding: 10px;">Nada agendado para o dia de hoje.</span>
+                </div>
+            </div>
+
+            <!-- Bloco 2: O que temos para os Próximos 7 Dias -->
+            <div style="margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0284c7;"></span>
+                        Próximos 7 Dias
+                    </span>
+                    <span id="contador-notif-semana" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">0 evento(s)</span>
+                </div>
+                <div id="lista-notificacoes-proximos-dias" style="max-height: 24vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-size: 11.5px; color: var(--texto-suave); text-align: center; display: block; padding: 10px;">Nenhuma despesa ou evento nos próximos 7 dias.</span>
+                </div>
+            </div>
+
+            <!-- Bloco 3: Sugestões de Refeições & Cardápio do Mês (IA com base nas compras) -->
+            <div style="border-top: 1px dashed var(--borda-delicada, #e2e8f0); padding-top: 12px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #10b981; display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                        Sugestões de Cardápio do Mês
+                    </span>
+                    <button type="button" id="btn-gerar-sugestoes-cardapio" class="btn-secundario" style="padding: 2px 6px; font-size: 10px; border-radius: 6px;" onclick="window.gerarSugestoesCardapioMesIA()">
+                        Atualizar IA
+                    </button>
+                </div>
+                <div id="lista-sugestoes-cardapio-mes" style="max-height: 22vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-size: 11px; color: var(--texto-suave); text-align: center; display: block; padding: 8px;">Conclua compras no mercado para receber ideias de cardápio com os itens da despensa.</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; border-top: 1px solid var(--borda-delicada, #f1f5f9); padding-top: 10px;">
+                <button type="button" class="btn-secundario" style="width: 100%; border-radius: 12px; font-weight: 700;" onclick="window.fecharModalNotificacoesGerais()">Fechar Quadro</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL NOVA MISSÃO -->
     <div id="modal-nova-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
@@ -974,7 +1106,7 @@
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px;">
                     <input type="checkbox" id="edit-beneficio-para-kids">
                     <span style="display:flex; align-items:center; gap:5px;">
-                        <svg class="icone-svg" style="width:14px; height:14px; color:#d97706;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                         <strong>Disponível na Lojinha Kids</strong> (Aparece para as crianças)
                     </span>
                 </label>
@@ -988,7 +1120,7 @@
         </div>
     </div>
 
-    <!-- MODAL DETALHES DO DIA DO CALENDÁRIO -->
+    <!-- MODAL DETALHES DO DIA DO CALENDÁRIO COM AÇÕES DE BAIXA -->
     <div id="modal-detalhes-dia-calendario" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -997,7 +1129,7 @@
             </div>
             <div id="conteudo-itens-dia-calendario"></div>
             <div style="margin-top: 10px;">
-                <button type="button" class="btn-secundario" style="width: 100%;" onclick="window.fecharModalDetalhesDiaCalendario()">Cancelar</button>
+                <button type="button" class="btn-secundario" style="width: 100%;" onclick="window.fecharModalDetalhesDiaCalendario()">Fechar</button>
             </div>
         </div>
     </div>
@@ -1028,9 +1160,9 @@
 
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
                     <span style="font-size: 11px; font-weight: 700;">Cor da Etiqueta:</span>
-                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#0ea5e9" checked> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0ea5e9;"></span> Azul</label>
-                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#10b981"> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981;"></span> Verde</label>
-                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#f59e0b"> <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#f59e0b;"></span> Âmbar</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#0ea5e9" checked> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#0ea5e9;"></span> Azul</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#10b981"> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#10b981;"></span> Verde</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#f59e0b"> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#f59e0b;"></span> Âmbar</label>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:6px;">
                     <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalNovoEventoCalendario()">Cancelar</button>
