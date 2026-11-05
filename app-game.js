@@ -340,7 +340,6 @@ window.MotorGamificacao = {
         { min: 0,     nome: 'Iniciante',     iconeChave: 'broto', cor: '#16a34a' }
     ],
 
-    // Catálogo Padrão Exclusivo para Kids (para_kids: true)
     PREMIOS_KIDS_PADRAO: [
         { id: 'game_time',        para_kids: true,  corFundo: '#e0f2fe', corBorda: '#38bdf8', iconeChave: 'trofeu',   titulo: '1h de Videogame / Tablet', custo: 200, descricao: 'Tempo extra de tela para jogar seus jogos favoritos.' },
         { id: 'escolher_desenho', para_kids: true,  corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'filme',    titulo: 'Escolher o Filme ou Desenho', custo: 250, descricao: 'Você escolhe a programação da família na TV!' },
@@ -349,7 +348,6 @@ window.MotorGamificacao = {
         { id: 'passeio_parque',   para_kids: true,  corFundo: '#dcfce7', corBorda: '#22c55e', iconeChave: 'broto',    titulo: 'Passeio Divertido ao Ar Livre', custo: 500, descricao: 'Um passeio alegre com brincadeiras no parque.' }
     ],
 
-    // Catálogo Padrão de Adultos (para_kids: false)
     PREMIOS_ADULTOS_PADRAO: [
         { id: 'folga_louca',      para_kids: false, corFundo: '#e0f2fe', corBorda: '#0284c7', iconeChave: 'medalha',  titulo: 'Folga da Louça do Dia', custo: 250, descricao: 'Outro membro da família assume a pia e a louça hoje.' },
         { id: 'massagem_ombros',  para_kids: false, corFundo: '#fef3c7', corBorda: '#f59e0b', iconeChave: 'coroa',    titulo: 'Massagem Relaxante nos Ombros', custo: 300, descricao: 'Momento de relaxamento merecido no fim do dia.' },
@@ -403,11 +401,11 @@ window.abrirModalRankingEquipe = async function() {
 
     if (window.modoKidsAtivo) {
         if (tituloLoja) tituloLoja.textContent = "Lojinha de Prêmios Kids";
-        if (btnNovoPremio) btnNovoPremio.classList.add('oculto'); // Criança não cadastra prêmios
+        if (btnNovoPremio) btnNovoPremio.classList.add('oculto');
         if (blocoPodio) blocoPodio.classList.remove('oculto');
     } else {
         if (tituloLoja) tituloLoja.textContent = "Loja de Recompensas do Lar";
-        if (btnNovoPremio) btnNovoPremio.classList.remove('oculto'); // Adulto gerencia tudo
+        if (btnNovoPremio) btnNovoPremio.classList.remove('oculto');
         if (blocoPodio && window.listaMembrosFamilia && window.listaMembrosFamilia.length <= 1) {
             blocoPodio.classList.add('oculto');
         } else if (blocoPodio) {
@@ -519,6 +517,7 @@ window.renderizarListaBeneficiosLoja = async function() {
     itensExibicao.forEach(b => {
         const card = document.createElement('div');
         card.className = 'card-premio-kids';
+        card.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--suiri-surface-secondary-light, #fef9ea); border:1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius:14px; margin-bottom:8px;';
 
         const podeResgatar = saldoXP >= b.custo;
         const ehPersonalizado = !!b.familia_id;
@@ -534,31 +533,31 @@ window.renderizarListaBeneficiosLoja = async function() {
         ` : '';
 
         card.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px; flex:1; margin-right:8px;">
-                <div class="icone-premio-wrapper" style="background:${bgIcone}; border:2px solid ${bordaIcone}; color:#334155; border-radius:12px; padding:8px;">
-                    <div style="width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
+            <div style="display:flex; align-items:center; gap:12px; flex:1; margin-right:8px; min-width:0;">
+                <div class="icone-premio-wrapper" style="background:${bgIcone}; border:1.5px solid ${bordaIcone}; color:#334155; border-radius:12px; padding:8px; flex-shrink:0;">
+                    <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
                         ${iconeItem}
                     </div>
                 </div>
-                <div>
-                    <strong style="font-size:14.5px; color:#1e293b; display:block;">${window.esc ? window.esc(b.titulo) : b.titulo}</strong>
+                <div style="min-width:0;">
+                    <strong style="font-size:14px; color:#1e293b; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${window.esc ? window.esc(b.titulo) : b.titulo}</strong>
                     <div style="font-size:11.5px; color:#64748b; margin-top:2px;">${window.esc ? window.esc(b.descricao || 'Recompensa da casa') : (b.descricao || 'Recompensa da casa')}</div>
                     ${tagPublicoKids}
-                    <div style="font-size:13px; font-weight:800; color:#d97706; margin-top:4px; display:inline-flex; align-items:center; gap:4px;">
+                    <div style="font-size:12.5px; font-weight:800; color:#d97706; margin-top:3px; display:inline-flex; align-items:center; gap:4px;">
                         ${iconeMoeda} ${b.custo} XP
                     </div>
                 </div>
             </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <button type="button" class="btn-sucesso" style="padding:9px 15px; font-size:12.5px; font-weight:800; border-radius:12px; opacity:${podeResgatar ? '1' : '0.4'};"
+            <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
+                <button type="button" class="btn-sucesso" style="padding:8px 14px; font-size:12px; font-weight:800; border-radius:10px; opacity:${podeResgatar ? '1' : '0.4'};"
                     ${!podeResgatar ? 'disabled' : ''} onclick="window.resgatarBeneficioLoja('${b.id}', ${b.custo}, '${window.esc ? window.esc(b.titulo) : b.titulo}')">
                     Resgatar
                 </button>
                 ${(!ehModoKids && ehPersonalizado) ? `
-                    <button type="button" class="btn-secundario" style="padding:8px 10px; font-size:11px; border-radius:10px;" onclick="window.abrirModalEditarBeneficioExistente('${b.id}', '${window.esc ? window.esc(b.titulo) : b.titulo}', '${window.esc ? window.esc(b.descricao || '') : (b.descricao || '')}', ${b.custo}, ${!!b.para_kids})" title="Editar">
+                    <button type="button" class="btn-secundario" style="padding:7px 9px; font-size:11px; border-radius:8px;" onclick="window.abrirModalEditarBeneficioExistente('${b.id}', '${window.esc ? window.esc(b.titulo) : b.titulo}', '${window.esc ? window.esc(b.descricao || '') : (b.descricao || '')}', ${b.custo}, ${!!b.para_kids})" title="Editar">
                         <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <button type="button" class="btn-erro" style="padding:8px 10px; font-size:11px; border-radius:10px;" onclick="window.excluirBeneficioLoja('${b.id}')" title="Excluir">
+                    <button type="button" class="btn-erro" style="padding:7px 9px; font-size:11px; border-radius:8px;" onclick="window.excluirBeneficioLoja('${b.id}')" title="Excluir">
                         <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 ` : ''}
@@ -605,7 +604,6 @@ window.resgatarBeneficioLoja = async function(id, custo, titulo) {
     window.perfilAtual.xp_total = novoSaldo;
     if (window.SonsSuiri) window.SonsSuiri.moedaXP();
 
-    // COMEMORAÇÃO INTEGRADA DO MASCOTE TAMAGOTCHI
     if (window.TamagotchiKids && typeof window.TamagotchiKids.aoCompletarMissao === 'function') {
         window.TamagotchiKids.aoCompletarMissao();
     }

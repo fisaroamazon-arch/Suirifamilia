@@ -2,8 +2,8 @@
 // SUIRI GESTÃO FAMILIAR - APP-INSTRUCAO.JS (100% COMPLETO E INTEGRAL)
 // Tour Interativo: Reposicionamento Dinâmico Inteligente (Topo / Rodapé)
 // Z-Index Absoluto e Bloqueio de Teclado Virtual no Mobile
-// Atualizado com: Trocar Membro, Modo Kids e Metas Anuais
-// Padrão de Diálogos e Ações: Confirmar / Cancelar
+// Atualizado com: Trocar Membro, Modo Kids, Metas Anuais & Nova Ordem Finanças
+// Padrão de Diálogos e Ações: Confirmar / Cancelar (Zero Emojis)
 // =========================================================================
 
 let passoTourAtual = 0;
@@ -28,7 +28,6 @@ function ajustarPosicaoModalTour(elementoAlvo) {
         return;
     }
 
-    // Calcula a posição do elemento no ecrã
     const rect = elementoAlvo.getBoundingClientRect();
     const alturaJanela = window.innerHeight;
 
@@ -37,7 +36,7 @@ function ajustarPosicaoModalTour(elementoAlvo) {
         modal.classList.remove('posicao-rodape');
         modal.classList.add('posicao-topo');
     } else {
-        // Se estiver no topo, move o modal para o rodapé
+        // Se estiver no topo, move o modal para o rodapé (acima da barra inferior fixa)
         modal.classList.remove('posicao-topo');
         modal.classList.add('posicao-rodape');
     }
@@ -96,12 +95,12 @@ async function simularCliqueVisual(elemento) {
 
 const passosTourGuiado = [
     // -------------------------------------------------------------
-    // ETAPA 1: TROCAR MEMBRO & PERFIS COMPARTILHADOS
+    // ETAPA 1: CABEÇALHO, PERFIL & TROCA RÁPIDA DE MEMBRO
     // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "Trocar Membro com 1 Toque",
-        descricao: "No topo, toque no botão circular com os dois perfis para alternar de usuário rapidamente. Cada pessoa da família tem seu próprio espaço, carteira e histórico de tarefas.",
+        titulo: "Perfil com Foto Ampliada & Troca de Membro",
+        descricao: "No topo, sua foto de perfil surge em destaque. Toque no botão 'Trocar' para alternar rapidamente entre os membros da casa. Cada familiar possui seu próprio histórico e carteira.",
         executarDemo: async () => {
             const btnTrocar = destacarElementoTour('#btn-trocar-membro-topo');
             await simularCliqueVisual(btnTrocar);
@@ -113,7 +112,7 @@ const passosTourGuiado = [
     {
         tela: 'inicio',
         titulo: "Planos & Metas do Ano",
-        descricao: "Logo abaixo do cabeçalho fica o painel de Metas do Ano. Toque em 'Ver Todos' para traçar grandes planos da Família (reformas, viagens) ou Metas Pessoais (cursos, leituras).",
+        descricao: "No fim da página inicial fica o painel de Metas do Ano. Toque em 'Ver Todos' para traçar grandes planos da Família (viagens, reformas) ou Metas Pessoais (cursos, estudos).",
         executarDemo: async () => {
             const btnMetas = destacarElementoTour('.cartao-geral button[onclick*="abrirModalMetasAnuais"]');
             await simularCliqueVisual(btnMetas);
@@ -129,56 +128,36 @@ const passosTourGuiado = [
     },
 
     // -------------------------------------------------------------
-    // ETAPA 2: MISSÕES, MURAL & GAMIFICAÇÃO
+    // ETAPA 2: MISSÕES COM ORDENAÇÃO INTELIGENTE
     // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "Mural de Recados Rápidos",
-        descricao: "Envie avisos para a casa toda ou para uma pessoa específica. Quem recebe toca em 'Lido' e quem enviou vê a confirmação em tempo real.",
+        titulo: "Nova Missão para a Casa",
+        descricao: "Cadastre tarefas para a família com checklist de etapas e horário limite. Conforme as missões são cumpridas, elas descem automaticamente para o final da lista!",
         executarDemo: async () => {
             if (typeof window.fecharModalMetasAnuais === 'function') window.fecharModalMetasAnuais();
-            const inRecado = destacarElementoTour('#input-novo-recado');
-            if (inRecado) {
-                await simularDigitacao(inRecado, "Favor colocar o lixo para fora hoje!");
-                await esperarMs(500);
-                const sel = destacarElementoTour('#select-recado-destinatario');
-                if (sel && sel.options.length > 0) sel.selectedIndex = 0;
-            }
-        },
-        limparDemo: () => {
-            const el = document.getElementById('input-novo-recado');
-            if (el) { el.value = ''; el.readOnly = false; }
-        }
-    },
-    {
-        tela: 'inicio',
-        titulo: "Nova Missão Familiar",
-        descricao: "Crie tarefas com XP e hora limite. As missões diárias reiniciam às 04:00 automaticamente. Se atrasar ganha metade dos pontos, e falhar desconta XP!",
-        executarDemo: async () => {
+            const btnIncluir = destacarElementoTour('button[onclick*="modal-nova-missao"]');
+            await simularCliqueVisual(btnIncluir);
+            document.getElementById('modal-nova-missao')?.classList.remove('oculto');
+            await esperarMs(400);
+
             const inTitulo = destacarElementoTour('#input-nova-missao-titulo');
             if (inTitulo) {
-                await simularDigitacao(inTitulo, "Regar as plantas do jardim");
+                await simularDigitacao(inTitulo, "Organizar brinquedos na sala");
                 await esperarMs(400);
                 destacarElementoTour('#select-nova-missao-prioridade');
-                await esperarMs(400);
-                const inHora = destacarElementoTour('#input-nova-missao-horario-limite');
-                if (inHora) {
-                    inHora.readOnly = true;
-                    inHora.value = "10:30";
-                }
             }
         },
         limparDemo: () => {
+            document.getElementById('modal-nova-missao')?.classList.add('oculto');
             const el1 = document.getElementById('input-nova-missao-titulo');
-            const el2 = document.getElementById('input-nova-missao-horario-limite');
             if (el1) { el1.value = ''; el1.readOnly = false; }
-            if (el2) { el2.value = ''; el2.readOnly = false; }
         }
     },
     {
         tela: 'inicio',
-        titulo: "Pense: Pílula Diária & Sabedoria",
-        descricao: "Às 07:00 da manhã o aplicativo sugere uma reflexão e dica financeira do dia para toda a família começar o dia com sabedoria.",
+        titulo: "Pense: Sabedoria Familiar",
+        descricao: "Às 07:00 da manhã, o aplicativo sugere uma frase inspiradora e uma dica prática de economia para toda a casa começar o dia com sabedoria.",
         executarDemo: async () => {
             const btnPense = destacarElementoTour('.btn-secundario[onclick*="abrirModalPilulaDia"]');
             await simularCliqueVisual(btnPense);
@@ -194,8 +173,8 @@ const passosTourGuiado = [
     },
     {
         tela: 'inicio',
-        titulo: "Pódio, Ofensiva & Loja de Recompensas",
-        descricao: "Acompanhe seus dias seguidos de ofensiva, veja o pódio familiar de XP e troque seus pontos acumulados por recompensas criadas pela própria família!",
+        titulo: "Ofensiva, Pódio & Recompensas",
+        descricao: "Acompanhe seus dias seguidos de ofensiva e troque os pontos (XP) ganhos nas tarefas por recompensas na lojinha da família!",
         executarDemo: async () => {
             if (typeof window.fecharModalPilulaDia === 'function') window.fecharModalPilulaDia();
             const btnLoja = destacarElementoTour('.btn-loja-topo');
@@ -216,102 +195,63 @@ const passosTourGuiado = [
     // -------------------------------------------------------------
     {
         tela: 'mercado',
-        titulo: "Mercado: Planejamento (Lista do Mês)",
-        descricao: "Na aba 'Lista do Mês', todos da casa podem incluir o que está faltando na despensa com sugestão de categoria e preço unitário.",
+        titulo: "Lista do Mês & No Mercado",
+        descricao: "Planeje as compras na aba 'Lista do Mês'. Ao chegar no mercado, mude para 'No Mercado' e transforme a lista em planilha viva com cálculo de carrinho em tempo real.",
         executarDemo: async () => {
             if (typeof window.fecharModalRankingEquipe === 'function') window.fecharModalRankingEquipe();
             if (typeof window.alternarVisualizacaoMercado === 'function') window.alternarVisualizacaoMercado('lista');
             
             const inProduto = destacarElementoTour('#input-novo-item-mercado');
             if (inProduto) {
-                await simularDigitacao(inProduto, "Café Torrado e Moído 500g");
+                await simularDigitacao(inProduto, "Azeite de Oliva Extra Virgem");
                 await esperarMs(400);
-                const inQtd = destacarElementoTour('#input-novo-item-qtd');
-                if (inQtd) { inQtd.readOnly = true; inQtd.value = "2"; }
-                const inUnit = destacarElementoTour('#input-novo-item-unit');
-                if (inUnit) { inUnit.readOnly = true; inUnit.value = "18.90"; }
-                await esperarMs(500);
                 destacarElementoTour('button[onclick*="adicionarItemMercado"]');
             }
         },
         limparDemo: () => {
             const inP = document.getElementById('input-novo-item-mercado');
-            const inQ = document.getElementById('input-novo-item-qtd');
-            const inU = document.getElementById('input-novo-item-unit');
             if (inP) { inP.value = ''; inP.readOnly = false; }
-            if (inQ) { inQ.value = '1'; inQ.readOnly = false; }
-            if (inU) { inU.value = ''; inU.readOnly = false; }
-        }
-    },
-    {
-        tela: 'mercado',
-        titulo: "Modo 'No Mercado' (Carrinho em Tempo Real)",
-        descricao: "Quando estiver no mercado, toque em 'No Mercado'. A lista vira uma planilha: você marca os itens comprados, ajusta o preço real e vê o total somado na hora!",
-        executarDemo: async () => {
-            const btnModo = destacarElementoTour('#btn-aba-modo-mercado');
-            await simularCliqueVisual(btnModo);
-            if (typeof window.alternarVisualizacaoMercado === 'function') {
-                window.alternarVisualizacaoMercado('planilha');
-            }
-            await esperarMs(500);
-            destacarElementoTour('.total-mercado-fixo');
-        },
-        limparDemo: () => {
-            if (typeof window.alternarVisualizacaoMercado === 'function') window.alternarVisualizacaoMercado('lista');
         }
     },
 
     // -------------------------------------------------------------
-    // ETAPA 4: FINANÇAS, CARTEIRA & MÚLTIPLOS COFRES
+    // ETAPA 4: ABA FINANÇAS (NOVA ESTRUTURA RIGOROSA)
     // -------------------------------------------------------------
     {
         tela: 'financeiro',
-        titulo: "Minha Carteira vs. Montante da Família",
-        descricao: "O Suiri separa claramente o que é seu dinheiro individual e qual o saldo total acumulado por toda a família reunida.",
+        titulo: "1º Item: Minha Carteira & Montante Coletivo",
+        descricao: "No topo das Finanças, visualize seu saldo pessoal separado do montante total acumulado por todos os membros com cartão da família.",
         executarDemo: async () => {
             destacarElementoTour('.box-carteira-topo');
             await esperarMs(1000);
-            destacarElementoTour('#grafico-barras-mes-anterior');
         },
         limparDemo: () => {}
     },
     {
         tela: 'financeiro',
-        titulo: "Reserva da Família: Múltiplos Cofres",
-        descricao: "Crie múltiplos objetivos compartilhados (ex: Viagem, Reforma, Emergência). Toque em '+ Guardar' para depositar na sua poupança pessoal ou em um cofre coletivo.",
+        titulo: "2º Item: Ler Cupom Fiscal com IA",
+        descricao: "Toque em 'Ler Cupom Fiscal (IA)' e escolha entre tirar foto na hora com a câmara ou carregar um comprovante da galeria para lançar tudo automaticamente!",
         executarDemo: async () => {
-            const btnCofre = destacarElementoTour('button[onclick*="abrirModalDefinirMeta"]');
-            await simularCliqueVisual(btnCofre);
-            if (typeof window.abrirModalDefinirMeta === 'function') {
-                window.abrirModalDefinirMeta();
-                await esperarMs(500);
-                const inTit = destacarElementoTour('#input-meta-titulo');
-                if (inTit) await simularDigitacao(inTit, "Viagem de Fim de Ano");
-                const inAlvo = destacarElementoTour('#input-meta-alvo');
-                if (inAlvo) { inAlvo.readOnly = true; inAlvo.value = "3500"; }
-            }
+            const btnCupom = destacarElementoTour('button[onclick*="abrirModalOpcoesCupomIA"]');
+            await simularCliqueVisual(btnCupom);
+            document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
+            await esperarMs(700);
         },
         limparDemo: () => {
-            if (typeof window.fecharModalDefinirMeta === 'function') window.fecharModalDefinirMeta();
-            const inT = document.getElementById('input-meta-titulo');
-            const inA = document.getElementById('input-meta-alvo');
-            if (inT) { inT.value = ''; inT.readOnly = false; }
-            if (inA) { inA.value = ''; inA.readOnly = false; }
+            document.getElementById('modal-escolha-origem-cupom')?.classList.add('oculto');
         }
     },
     {
         tela: 'financeiro',
-        titulo: "Lançamento Rápido por Voz",
-        descricao: "Toque no microfone e diga: 'Almoço de 35 reais'. O aplicativo detecta automaticamente o valor, categoriza a despesa e prepara para salvar!",
+        titulo: "3º Item: Registo Rápido com Microfone",
+        descricao: "Diga 'Almoço 45 reais' no microfone para a IA detetar valor, tipo e categoria de imediato, deixando tudo pronto para salvar com 1 toque.",
         executarDemo: async () => {
-            if (typeof window.fecharModalDefinirMeta === 'function') window.fecharModalDefinirMeta();
-            const btnMic = destacarElementoTour('#btn-mic-gastos');
-            await simularCliqueVisual(btnMic);
+            document.getElementById('modal-escolha-origem-cupom')?.classList.add('oculto');
             const inDesc = destacarElementoTour('#input-fin-descricao');
             if (inDesc) {
-                await simularDigitacao(inDesc, "Gasolina para o carro 150 reais");
+                await simularDigitacao(inDesc, "Combustível 120 reais");
                 const inVal = destacarElementoTour('#input-fin-valor');
-                if (inVal) { inVal.readOnly = true; inVal.value = "150.00"; }
+                if (inVal) { inVal.readOnly = true; inVal.value = "120.00"; }
                 const selCat = destacarElementoTour('#select-fin-categoria');
                 if (selCat) selCat.value = "Transporte";
             }
@@ -323,14 +263,36 @@ const passosTourGuiado = [
             if (inV) { inV.value = ''; inV.readOnly = false; }
         }
     },
+    {
+        tela: 'financeiro',
+        titulo: "4º Item: Balanço Familiar & Gráfico Comparativo",
+        descricao: "Agora alocado nas Finanças! Gere o fechamento do período, veja o gráfico comparativo de Renda vs Gastos Próprios por pessoa e exporte em PDF ou WhatsApp.",
+        executarDemo: async () => {
+            destacarElementoTour('#bloco-card-balanco-familiar');
+            await esperarMs(700);
+            destacarElementoTour('button[onclick*="gerarRelatorio"]');
+        },
+        limparDemo: () => {}
+    },
+    {
+        tela: 'financeiro',
+        titulo: "5º, 6º e 7º Itens: Extrato, Meta & Cofres",
+        descricao: "Logo abaixo ficam o Extrato Nominal detalhado, a barra de Meta de Poupança do mês e os Cofres do Lar para guardar reservas da casa.",
+        executarDemo: async () => {
+            destacarElementoTour('#lista-extrato-carteira');
+            await esperarMs(600);
+            destacarElementoTour('#bloco-card-cofres-compartilhados');
+        },
+        limparDemo: () => {}
+    },
 
     // -------------------------------------------------------------
-    // ETAPA 5: AGENDA FINANCEIRA & EVENTOS DA CASA
+    // ETAPA 5: CALENDÁRIO & CONTAS DA CASA
     // -------------------------------------------------------------
     {
         tela: 'calendario',
-        titulo: "Calendário Unificado da Casa",
-        descricao: "Visualize no calendário do mês: Contas a pagar (pontos vermelhos), Salários/Recebimentos (pontos verdes) e Compromissos da família (pontos coloridos).",
+        titulo: "Agenda & Contas da Casa",
+        descricao: "Acompanhe contas a pagar (pontos vermelhos), salários (pontos verdes) e eventos da família. Ao pagar uma conta, dê baixa para debitar na carteira na hora!",
         executarDemo: async () => {
             destacarElementoTour('#grid-calendario-container');
             await esperarMs(800);
@@ -338,63 +300,19 @@ const passosTourGuiado = [
         },
         limparDemo: () => {}
     },
-    {
-        tela: 'calendario',
-        titulo: "Agendar Novo Compromisso Familiar",
-        descricao: "Festas, reuniões escolares ou consultas médicas podem ser agendadas com horário e cor de etiqueta personalizada para todos os membros visualizarem.",
-        executarDemo: async () => {
-            const btnCompromisso = destacarElementoTour('button[onclick*="abrirModalNovoEventoCalendario"]');
-            await simularCliqueVisual(btnCompromisso);
-            if (typeof window.abrirModalNovoEventoCalendario === 'function') {
-                window.abrirModalNovoEventoCalendario();
-                await esperarMs(500);
-                const inEvTit = destacarElementoTour('#evento-titulo');
-                if (inEvTit) await simularDigitacao(inEvTit, "Reunião de Pais e Mestres");
-                const inIni = destacarElementoTour('#evento-hora-inicio');
-                if (inIni) { inIni.readOnly = true; inIni.value = "19:00"; }
-            }
-        },
-        limparDemo: () => {
-            if (typeof window.fecharModalNovoEventoCalendario === 'function') window.fecharModalNovoEventoCalendario();
-            const inT = document.getElementById('evento-titulo');
-            const inH = document.getElementById('evento-hora-inicio');
-            if (inT) { inT.value = ''; inT.readOnly = false; }
-            if (inH) { inH.value = ''; inH.readOnly = false; }
-        }
-    },
 
     // -------------------------------------------------------------
-    // ETAPA 6: MEMBROS DA FAMÍLIA, MODO KIDS & BALANÇO
+    // ETAPA 6: MEMBROS & PERFIL KIDS
     // -------------------------------------------------------------
     {
         tela: 'familia',
-        titulo: "Gestão dos Membros & Perfil Kids",
-        descricao: "Cadastre cada familiar com foto, papel e permissões. Marque 'Perfil Kids' para que crianças acessem com 1 toque no 'Trocar Membro', sem precisar de senha!",
+        titulo: "Membros da Família & Modo Kids",
+        descricao: "Cadastre cada familiar com foto e permissões. Ao ativar o 'Perfil Kids', as crianças acessam sua rotina gamificada com 1 toque, sem precisar de senha!",
         executarDemo: async () => {
-            if (typeof window.fecharModalNovoEventoCalendario === 'function') window.fecharModalNovoEventoCalendario();
             destacarElementoTour('#lista-membros-cadastrados');
             await esperarMs(800);
-            const btnAddMembro = destacarElementoTour('button[onclick*="abrirModalNovoMembro"]');
+            const btnAddMembro = destacarElementoTour('#btn-novo-membro-familia');
             await simularCliqueVisual(btnAddMembro);
-            if (typeof window.abrirModalNovoMembro === 'function') {
-                window.abrirModalNovoMembro();
-                await esperarMs(600);
-                destacarElementoTour('#modal-cadastro-familiar .modal-conteudo');
-            }
-        },
-        limparDemo: () => {
-            if (typeof window.fecharModalNovoMembro === 'function') window.fecharModalNovoMembro();
-        }
-    },
-    {
-        tela: 'familia',
-        titulo: "Balanço Financeiro Familiar em PDF",
-        descricao: "Selecione o período e filtre por membro para compilar um balanço detalhado, visualizar o comparativo de Renda vs Gastos e exportar para PDF ou WhatsApp!",
-        executarDemo: async () => {
-            if (typeof window.fecharModalNovoMembro === 'function') window.fecharModalNovoMembro();
-            destacarElementoTour('.cartao-geral:has(#filtro-membro-relatorio)');
-            await esperarMs(700);
-            destacarElementoTour('button[onclick*="gerarRelatorio"]');
         },
         limparDemo: () => {}
     }
@@ -493,7 +411,8 @@ window.encerrarTourInstrucoes = function() {
         'modal-definir-meta', 
         'modal-novo-evento-calendario', 
         'modal-cadastro-familiar',
-        'modal-metas-anuais'
+        'modal-metas-anuais',
+        'modal-escolha-origem-cupom'
     ].forEach(id => {
         document.getElementById(id)?.classList.add('oculto');
     });

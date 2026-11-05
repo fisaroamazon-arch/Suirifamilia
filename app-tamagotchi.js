@@ -169,7 +169,7 @@ window.TamagotchiKids = {
         const widget = document.createElement('div');
         widget.id = 'container-tamagotchi-kids';
         widget.style.cssText = `
-            position: fixed; bottom: 10px; right: 10px;
+            position: fixed; bottom: 18px; right: 14px;
             display: flex; align-items: flex-end; gap: 8px;
             z-index: 999; user-select: none; -webkit-tap-highlight-color: transparent;
         `;
@@ -346,7 +346,6 @@ window.TamagotchiKids = {
             box.style.width = '96px';
             box.style.height = '96px';
         } else if (comodo === 'sala') {
-            // Posicionado à esquerda, ao lado do botão de jogos (que fica em left: 44%)
             box.style.bottom = '7%';
             box.style.left = '16%';
             box.style.width = '105px';
@@ -415,12 +414,10 @@ window.TamagotchiKids = {
         this.exibirAnimacaoCentralGrande('banho', 'parabens', 'banheiro', 8500);
     },
 
-    // REDIRECIONAMENTO AO ARCADE DEDICADO (jogos.html)
     acaoTocarSala: function() {
         this.posicionarChuiriNoComodo('sala');
         this.tocarAudio('toque');
         
-        // Transição suave para a página dedicada aos jogos
         setTimeout(() => {
             window.location.href = 'jogos.html';
         }, 150);

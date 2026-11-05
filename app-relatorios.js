@@ -1,7 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-RELATORIOS.JS (100% COMPLETO E INTEGRAL)
 // Balanço Financeiro Familiar, PDF, WhatsApp & Gráfico Comparativo Chart.js em SVG
-// Padrão de Diálogos e Ações: Confirmar / Cancelar
+// Padrão de Diálogos e Ações: Confirmar / Cancelar (Zero Emojis)
 // =========================================================================
 
 let instanciaGraficoRendaGastos = null;
@@ -102,7 +102,7 @@ window.gerarRelatorio = async function() {
     const totalSaidasGeral = totalGastosCasa + totalGastosPessoais + totalSupermercado;
     const saldoLiquidoPeriodo = totalEntradas - totalSaidasGeral;
 
-    // Salva sumário para exportação WhatsApp
+    // Guarda sumário para exportação WhatsApp
     window.ultimoResumoRelatorio = {
         dtInicio,
         dtFim,

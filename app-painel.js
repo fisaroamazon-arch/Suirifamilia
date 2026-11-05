@@ -164,8 +164,8 @@ window.renderizarMembrosFamiliaPainel = function() {
 
         const bordaAvatar = ehKids ? 'border:2px solid #10b981;' : 'border:1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25));';
         const elementoAvatar = m.avatar_url 
-            ? `<img src="${m.avatar_url}" alt="${window.esc ? window.esc(m.nome) : m.nome}" style="width:38px; height:38px; border-radius:12px; object-fit:cover; ${bordaAvatar} flex-shrink:0;">`
-            : `<div style="width:38px; height:38px; border-radius:12px; background:var(--suiri-surface-secondary-light, #fef9ea); ${bordaAvatar} display:flex; align-items:center; justify-content:center; font-weight:800; color:${ehKids ? '#10b981' : 'var(--cor-primaria, #d97706)'}; flex-shrink:0;">
+            ? `<img src="${m.avatar_url}" alt="${window.esc ? window.esc(m.nome) : m.nome}" style="width:44px; height:44px; border-radius:12px; object-fit:cover; ${bordaAvatar} flex-shrink:0;">`
+            : `<div style="width:44px; height:44px; border-radius:12px; background:var(--suiri-surface-secondary-light, #fef9ea); ${bordaAvatar} display:flex; align-items:center; justify-content:center; font-weight:800; color:${ehKids ? '#10b981' : 'var(--cor-primaria, #d97706)'}; flex-shrink:0;">
                 ${(m.nome || 'F').charAt(0).toUpperCase()}
                </div>`;
 

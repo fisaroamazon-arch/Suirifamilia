@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <!-- Regras Críticas de Resguardo para o Splash Screen, Banner PWA e Sino Flutuante -->
+    <!-- Regras Críticas de Resguardo para o Splash Screen, Banner PWA, Bottom Bar e Avatar Ampliado -->
     <style>
         .oculto {
             display: none !important;
@@ -88,7 +88,7 @@
         /* Banner Flutuante de Instalação PWA */
         #banner-instalacao-pwa {
             position: fixed;
-            bottom: 64px;
+            bottom: 74px;
             left: 12px;
             right: 12px;
             background: var(--pastel-card, #ffffff);
@@ -109,30 +109,91 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Foto de Perfil Quadrada e Sino Flutuante no Canto Superior Direito */
+        /* Barra de Navegação Inferior Fixa (Estilo Bottom Bar Nativo) */
+        .bottom-nav-fixa-inferior {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            background: #ffffff !important;
+            border-top: 1.5px solid rgba(217, 119, 6, 0.18) !important;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06) !important;
+            z-index: 99990 !important;
+            padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)) 4px !important;
+        }
+
+        .bottom-nav-list {
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bottom-nav-item {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 3px !important;
+            padding: 6px 2px !important;
+            cursor: pointer !important;
+            color: #64748b !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            transition: color 0.15s ease, transform 0.15s ease !important;
+            user-select: none !important;
+        }
+
+        .bottom-nav-item .icone-svg {
+            width: 22px !important;
+            height: 22px !important;
+            stroke: currentColor !important;
+            fill: none !important;
+            stroke-width: 2 !important;
+        }
+
+        .bottom-nav-item.ativo {
+            color: #d97706 !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* Espaçamento inferior no container para o conteúdo não ficar sob a barra fixa */
+        main.container {
+            padding-bottom: 84px !important;
+        }
+
+        /* Foto de Perfil Destacada (Maior: 68px) e Sino Flutuante */
         .avatar-topo-usuario {
-            width: 42px !important;
-            height: 42px !important;
-            border-radius: 12px !important;
-            object-fit: cover;
-            border: 1.5px solid var(--cor-primaria, #d97706);
-            background: var(--suiri-surface-secondary-light, #fef9ea);
-            flex-shrink: 0;
-            cursor: pointer;
-            display: block;
+            width: 68px !important;
+            height: 68px !important;
+            border-radius: 16px !important;
+            object-fit: cover !important;
+            border: 2px solid var(--cor-primaria, #d97706) !important;
+            background: var(--suiri-surface-secondary-light, #fef9ea) !important;
+            flex-shrink: 0 !important;
+            cursor: pointer !important;
+            display: block !important;
+            box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2) !important;
         }
 
         .avatar-kids-circulo {
-            border-radius: 12px !important;
+            width: 68px !important;
+            height: 68px !important;
+            border-radius: 16px !important;
+            object-fit: cover !important;
         }
 
         .btn-sino-flutuante-avatar {
             position: absolute !important;
-            top: -4px !important;
-            right: -4px !important;
+            top: -5px !important;
+            right: -5px !important;
             left: auto !important;
-            width: 22px !important;
-            height: 22px !important;
+            width: 24px !important;
+            height: 24px !important;
             border-radius: 50% !important;
             background: #ffffff;
             border: 1.5px solid rgba(217, 119, 6, 0.3);
@@ -194,32 +255,6 @@
         </div>
     </div>
 
-    <!-- Barra de Navegação Superior Fixa -->
-    <nav class="bottom-nav oculto" id="barra-navegacao-principal">
-        <ul class="bottom-nav-list">
-            <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                <span id="nav-item-lbl-missoes">Missões</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="mercado" onclick="window.navegarParaTela('mercado')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                <span>Mercado</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="financeiro" onclick="window.navegarParaTela('financeiro')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                <span>Finanças</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="calendario" onclick="window.navegarParaTela('calendario')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                <span>Agenda</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="familia" onclick="window.navegarParaTela('familia')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span id="nav-item-lbl-familia">Família</span>
-            </li>
-        </ul>
-    </nav>
-
     <main class="container">
 
         <!-- =================================================================== -->
@@ -273,6 +308,12 @@
         <!-- =================================================================== -->
         <div id="tela-app" class="oculto">
 
+            <!-- 1º ITEM FIXO DO TOPO UNIVERSAL: BOTÃO DE APOIO AO PROJETO -->
+            <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 12px; margin-top: 4px; margin-bottom: 10px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 14px; color: #b45309; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15); transition: transform 0.15s ease, background 0.2s ease;">
+                <svg class="icone-svg" style="width: 16px; height: 16px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                <span>Apoiar o Projeto</span>
+            </button>
+
             <!-- =============================================================== -->
             <!-- MODO KIDS EXCLUSIVO                                             -->
             <!-- =============================================================== -->
@@ -323,58 +364,54 @@
             <!-- AMBIENTE DE ADULTOS                                             -->
             <!-- =============================================================== -->
             <div id="painel-adulto-container">
-                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; gap:8px;">
-                    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                
+                <!-- 2º ITEM DO TOPO: CARD DO USUÁRIO COM FOTO DE PERFIL BEM MAIOR (68PX) -->
+                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; gap:10px; margin-bottom: 12px; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
                         <input type="file" id="input-upload-avatar-membro" accept="image/*" class="oculto" onchange="window.processarUploadAvatar(event)">
                         
-                        <!-- Contentor Avatar com Foto Quadrada e Sino Flutuante no Canto Superior Direito -->
-                        <div id="container-avatar-perfil-topo" style="position: relative; cursor: pointer;">
-                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()">
+                        <!-- Contentor Avatar com Foto Ampliada (68px) e Sino Flutuante no Canto Superior Direito -->
+                        <div id="container-avatar-perfil-topo" style="position: relative; cursor: pointer; flex-shrink: 0;">
+                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()" title="Alterar Foto de Perfil">
                             
                             <button type="button" id="btn-sino-notificacoes-topo" class="btn-sino-flutuante-avatar" onclick="event.stopPropagation(); window.abrirModalNotificacoesGerais();" title="Quadro de Notificações">
-                                <svg class="icone-svg" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                <svg class="icone-svg" style="width: 13px; height: 13px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                             </button>
                         </div>
 
-                        <div style="min-width: 0;">
-                            <span id="nome-familia-topo" style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
-                            <h3 id="nome-membro-topo" style="font-size: 14.5px; margin: 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
+                        <div style="min-width: 0; flex: 1;">
+                            <span id="nome-familia-topo" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
+                            <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
+                            <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" style="margin-top: 4px; display: inline-flex;" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
+                                <svg class="icone-svg" style="width: 15px; height: 15px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span style="font-size: 10px; font-weight: 700; margin-left: 3px;">Trocar</span>
+                            </button>
                         </div>
-
-                        <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
-                            <svg class="icone-svg" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </button>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: auto auto; gap: 5px; flex-shrink: 0;">
-                        <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.abrirModalPilulaDia()">
+                    <div style="display: grid; grid-template-columns: auto auto; gap: 6px; flex-shrink: 0;">
+                        <button type="button" class="btn-secundario" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.abrirModalPilulaDia()">
                             Pense
                         </button>
-                        <a href="javascript:void(0)" class="btn-loja-topo" style="padding: 4px 8px; font-size: 11px; border-radius: 8px;" onclick="window.abrirModalRankingEquipe()">
+                        <a href="javascript:void(0)" class="btn-loja-topo" style="padding: 5px 8px; font-size: 11px; border-radius: 8px;" onclick="window.abrirModalRankingEquipe()">
                             <svg class="icone-svg icone-fogo" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                             <span id="contador-ofensiva-topo">0</span>d • Loja
                         </a>
 
-                        <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.iniciarTourInstrucoes()">
+                        <button type="button" class="btn-secundario" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.iniciarTourInstrucoes()">
                             Manual
                         </button>
-                        <button type="button" id="btn-sair-topo-app" class="btn-erro" style="padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.fazerLogoff()">
+                        <button type="button" id="btn-sair-topo-app" class="btn-erro" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.fazerLogoff()">
                             Sair
                         </button>
                     </div>
                 </header>
 
-                <!-- BOTÃO LONGO DE DESTAQUE: APOIAR O PROJETO -->
-                <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 12px; margin-bottom: 12px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 12px; color: #b45309; font-size: 12.5px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15); transition: transform 0.15s ease, background 0.2s ease;">
-                    <svg class="icone-svg" style="width: 15px; height: 15px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                    <span>Apoiar o Projeto</span>
-                </button>
-
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
                     
                     <!-- BOTÕES DE FILTRO E INCLUSÃO EM LINHA (CASA / MINHAS / + INCLUIR) -->
-                    <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 12px 0;">
+                    <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
                         <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('todas')">
                             <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             <span id="lbl-texto-filtro-casa-toda">Casa</span>
@@ -496,8 +533,35 @@
                     </div>
                 </section>
 
-                <!-- MÓDULO 3: FINANÇAS -->
+                <!-- =============================================================== -->
+                <!-- MÓDULO 3: FINANÇAS (REORDENADO COM EXATIDÃO ABSOLUTA)          -->
+                <!-- =============================================================== -->
                 <section id="secao-financeiro" class="secao-conteudo-app oculto">
+                    
+                    <!-- 1º ITEM: MINHA CARTEIRA / MONTANTE DA FAMÍLIA -->
+                    <div class="box-carteira-topo" style="margin-bottom: 12px;">
+                        <div class="card-saldo-carteira card-carteira-destaque-usuario">
+                            <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #d97706);">Minha Carteira</span>
+                            <h2 id="lbl-saldo-carteira-membro" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                        </div>
+                        <div id="bloco-card-montante-familia" class="card-saldo-carteira">
+                            <span id="lbl-titulo-montante-coletivo" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Montante da Família</span>
+                            <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                        </div>
+                    </div>
+
+                    <!-- 2º ITEM: LER CUPOM FISCAL (CÂMARA OU UPLOAD DE IMAGEM) -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <button type="button" class="btn-secundario" style="flex: 1; padding: 11px 12px; font-size: 13px; font-weight: 800; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706); background: #ffffff; color: var(--cor-primaria, #d97706);" onclick="window.abrirModalOpcoesCupomIA()">
+                            <svg class="icone-svg" style="width: 18px; height: 18px; color: var(--cor-primaria, #d97706);" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Ler Cupom Fiscal (IA)</span>
+                        </button>
+                        <!-- Inputs invisíveis acionados pelo modal de escolha -->
+                        <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
+                        <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
+                    </div>
+
+                    <!-- 3º ITEM: REGISTO RÁPIDO DE MOVIMENTAÇÃO -->
                     <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
                         <div class="campo-com-voz" style="margin-bottom: 8px;">
@@ -535,24 +599,34 @@
                         <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
                     </div>
 
-                    <div class="box-carteira-topo">
-                        <div class="card-saldo-carteira card-carteira-destaque-usuario">
-                            <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #d97706);">Minha Carteira</span>
-                            <h2 id="lbl-saldo-carteira-membro" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                    <!-- 4º ITEM: BALANÇO FINANCEIRO E COMPARATIVO: RENDA VS GASTO PRÓPRIO -->
+                    <div id="bloco-card-balanco-familiar" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                        <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                            <input type="date" id="data-inicio">
+                            <input type="date" id="data-fim">
                         </div>
-                        <div id="bloco-card-montante-familia" class="card-saldo-carteira">
-                            <span id="lbl-titulo-montante-coletivo" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Montante da Família</span>
-                            <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
-                        </div>
+                        <select id="filtro-membro-relatorio" style="margin-bottom: 8px;">
+                            <option value="todos">Todos os Membros (Casa)</option>
+                        </select>
+                        
+                        <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Confirmar Balanço</button>
                     </div>
 
-                    <!-- Barra de Ações Rápidas: Escanear Cupom Fiscal com IA -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <button type="button" class="btn-secundario" style="flex: 1; padding: 10px 12px; font-size: 12.5px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706);" onclick="document.getElementById('input-camera-cupom-ia').click()">
-                            <svg class="icone-svg" style="width: 17px; height: 17px; color: var(--cor-primaria, #d97706);" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                            <span>Ler Cupom Fiscal (IA)</span>
-                        </button>
-                        <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
+                    <div id="relatorio-pdf-container" class="oculto" style="margin-bottom: 12px;">
+                        <div id="area-resultados-relatorio"></div>
+                        
+                        <div class="cartao-geral" style="margin-top: 10px;">
+                            <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #334155);">Comparativo: Renda vs Gastos Próprios</h4>
+                            <div style="position: relative; height: 220px; width: 100%;">
+                                <canvas id="grafico-barras-renda-gastos"></canvas>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                            <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
+                            <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
+                        </div>
                     </div>
 
                     <!-- MURAL DE FINANÇAS E AVISOS DA CASA -->
@@ -591,7 +665,26 @@
                         </div>
                     </div>
 
+                    <!-- 5º ITEM: EXTRATO NOMINAL -->
+                    <div class="cartao-geral" style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="font-size: 14px; margin: 0;">Extrato Nominal</h3>
+                            <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                            <input type="date" id="extrato-filtro-inicio">
+                            <input type="date" id="extrato-filtro-fim">
+                        </div>
+                        <button type="button" class="btn-secundario" style="width: 100%; margin-bottom: 10px;" onclick="window.carregarExtratoPeriodo()">Atualizar Extrato</button>
+                        
+                        <div id="lista-extrato-carteira"></div>
+                    </div>
+
+                    <!-- 6º ITEM: META DO MÊS & 7º ITEM: RESERVA DA FAMÍLIA -->
                     <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
+                        
+                        <!-- 6º ITEM: META DO MÊS -->
                         <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -609,6 +702,7 @@
                             </div>
                         </div>
 
+                        <!-- 7º ITEM: RESERVA DA FAMÍLIA (COFRES DO LAR) -->
                         <div id="bloco-card-cofres-compartilhados" class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div>
@@ -622,21 +716,6 @@
                             </div>
                             <div id="lista-cofres-compartilhados" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
-                    </div>
-
-                    <div class="cartao-geral">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <h3 style="font-size: 14px; margin: 0;">Extrato Nominal</h3>
-                            <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                            <input type="date" id="extrato-filtro-inicio">
-                            <input type="date" id="extrato-filtro-fim">
-                        </div>
-                        <button type="button" class="btn-secundario" style="width: 100%; margin-bottom: 10px;" onclick="window.carregarExtratoPeriodo()">Atualizar Extrato</button>
-                        
-                        <div id="lista-extrato-carteira"></div>
                     </div>
                 </section>
 
@@ -707,35 +786,6 @@
                         <div id="lista-membros-cadastrados"></div>
                     </div>
 
-                    <div id="bloco-card-balanco-familiar" class="cartao-geral">
-                        <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                            <input type="date" id="data-inicio">
-                            <input type="date" id="data-fim">
-                        </div>
-                        <select id="filtro-membro-relatorio" style="margin-bottom: 8px;">
-                            <option value="todos">Todos os Membros (Casa)</option>
-                        </select>
-                        
-                        <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Confirmar Balanço</button>
-                    </div>
-
-                    <div id="relatorio-pdf-container" class="oculto">
-                        <div id="area-resultados-relatorio"></div>
-                        
-                        <div class="cartao-geral" style="margin-top: 10px;">
-                            <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #334155);">Comparativo: Renda vs Gastos Próprios</h4>
-                            <div style="position: relative; height: 220px; width: 100%;">
-                                <canvas id="grafico-barras-renda-gastos"></canvas>
-                            </div>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
-                            <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
-                            <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
-                        </div>
-                    </div>
-
                     <!-- CARTÃO APOIE O PROJETO (NA ABA FAMÍLIA) -->
                     <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); background: #fef9ea; margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
@@ -762,8 +812,59 @@
     </main>
 
     <!-- =================================================================== -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (ESTILO APP NATIVO)                -->
+    <!-- =================================================================== -->
+    <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
+        <ul class="bottom-nav-list">
+            <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
+                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span id="nav-item-lbl-missoes">Missões</span>
+            </li>
+            <li class="bottom-nav-item" data-tela="mercado" onclick="window.navegarParaTela('mercado')">
+                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                <span>Mercado</span>
+            </li>
+            <li class="bottom-nav-item" data-tela="financeiro" onclick="window.navegarParaTela('financeiro')">
+                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <span>Finanças</span>
+            </li>
+            <li class="bottom-nav-item" data-tela="calendario" onclick="window.navegarParaTela('calendario')">
+                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <span>Agenda</span>
+            </li>
+            <li class="bottom-nav-item" data-tela="familia" onclick="window.navegarParaTela('familia')">
+                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span id="nav-item-lbl-familia">Família</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- =================================================================== -->
     <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
     <!-- =================================================================== -->
+
+    <!-- MODAL OPÇÕES DE LEITURA DO CUPOM FISCAL (CÂMARA OU GALERIA) -->
+    <div id="modal-escolha-origem-cupom" class="modal-overlay oculto" style="z-index: 1000002;">
+        <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Ler Cupom com IA</h3>
+            <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 16px 0;">Como deseja capturar o cupom fiscal?</p>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" class="btn-principal" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.acionarOrigemCupom('camera')">
+                    <svg class="icone-svg" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Tirar Foto Agora (Câmera)
+                </button>
+                <button type="button" class="btn-secundario" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.acionarOrigemCupom('galeria')">
+                    <svg class="icone-svg" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    Carregar Imagem da Galeria
+                </button>
+                <button type="button" class="btn-secundario" style="width: 100%; padding: 10px; font-size: 12px; border-radius: 10px; margin-top: 4px;" onclick="window.fecharModalOpcoesCupomIA()">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DO SINO: QUADRO DE NOTIFICAÇÕES (HOJE, 7 DIAS & CARDÁPIO) -->
     <div id="modal-notificacoes-gerais" class="modal-overlay oculto">
@@ -1513,6 +1614,28 @@
 
             videoEl.addEventListener('ended', encerrarSplash);
             setTimeout(encerrarSplash, 5200);
+        };
+
+        // =========================================================================
+        // MOTOR DO MODAL DE OPÇÕES DE CAPTURA DO CUPOM FISCAL (CÂMARA / GALERIA)
+        // =========================================================================
+        window.abrirModalOpcoesCupomIA = function() {
+            document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
+        };
+
+        window.fecharModalOpcoesCupomIA = function() {
+            document.getElementById('modal-escolha-origem-cupom')?.classList.add('oculto');
+        };
+
+        window.acionarOrigemCupom = function(origem) {
+            window.fecharModalOpcoesCupomIA();
+            if (origem === 'camera') {
+                const elCam = document.getElementById('input-camera-cupom-ia');
+                if (elCam) elCam.click();
+            } else if (origem === 'galeria') {
+                const elGal = document.getElementById('input-galeria-cupom-ia');
+                if (elGal) elGal.click();
+            }
         };
 
         // =========================================================================

@@ -1,6 +1,7 @@
 /* ========================================================== */
-/* SUIRI NOSSO LAR - CSS-MODULOS.CSS (100% COMPLETO E LIMPO)  */
+/* SUIRI GESTÃO FAMILIAR - CSS-MODULOS.CSS (100% COMPLETO)     */
 /* Módulos: Perfil, Missões, Mercado, Finanças e Calendário   */
+/* Foto de Perfil 68px, Descompressão e Layouts Suaves        */
 /* ========================================================== */
 
 /* ---------------------------------------------------------- */
@@ -13,9 +14,9 @@
     gap: 10px;
     padding: 12px 14px;
     background: #ffffff;
-    border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.14));
+    border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));
     border-radius: 18px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 18px rgba(217, 119, 6, 0.05);
     margin-bottom: 12px;
 }
 
@@ -52,15 +53,19 @@
     transform: scale(0.96);
 }
 
+/* FOTO DE PERFIL DESTACADA (68px) */
 .avatar-topo-usuario {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1.5px solid var(--cor-primaria, #d97706);
-    background: var(--suiri-surface-secondary-light, #fef9ea);
-    flex-shrink: 0;
-    cursor: pointer;
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 16px !important;
+    object-fit: cover !important;
+    aspect-ratio: 1 / 1 !important;
+    border: 2px solid var(--cor-primaria, #d97706) !important;
+    background: var(--suiri-surface-secondary-light, #fef9ea) !important;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2) !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+    display: block !important;
 }
 
 /* ---------------------------------------------------------- */
@@ -96,9 +101,9 @@
 
 .item-missao-card.concluida,
 .cartao-geral.missao-concluida {
-    opacity: 0.75;
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    opacity: 0.72;
+    background: rgba(240, 253, 244, 0.65);
+    border-color: #bbf7d0;
 }
 
 .item-missao-info {
@@ -266,13 +271,13 @@
 
 .card-carteira-destaque-usuario {
     background: #ffffff;
-    border: 1.5px solid #10b981;
-    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.08);
+    border: 1.5px solid var(--cor-primaria, #d97706);
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.08);
 }
 
 .barra-progresso-fundo {
     width: 100%;
-    height: 7px;
+    height: 8px;
     background: #f1f5f9;
     border-radius: 999px;
     overflow: hidden;

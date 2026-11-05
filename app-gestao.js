@@ -1,5 +1,5 @@
 // =========================================================================
-// SUIRI NOSSO LAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
+// SUIRI GESTÃO FAMILIAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
 // Mercado com Reconhecimento de Voz Inteligente & Fallback Robusto,
 // Leitura de Cupom Fiscal, Sugestões de Cardápio Mensal no Quadro de Avisos,
 // Histórico de Preço Médio/Último, Extrato e Agendamentos Recorrentes.
@@ -254,6 +254,7 @@ window.salvarEdicaoTransacao = async function() {
     window.fecharModalEditarTransacao();
     window.mostrarToast("Lançamento confirmado e atualizado!");
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 
@@ -279,6 +280,7 @@ window.excluirTransacaoCarteira = async function(id) {
 
     window.mostrarToast("Lançamento removido com sucesso!");
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 
@@ -320,7 +322,8 @@ window.salvarAjusteCarteira = async function() {
     window.mostrarToast("Saldo retificado e confirmado com sucesso!");
     if (inputReal) inputReal.value = '';
     window.fecharModalCorrecaoCarteira();
-    if (typeof window.carregarCarteiraIndividual === 'function') window.carregarCarteiraIndividual();
+    if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 
@@ -416,7 +419,6 @@ window.processarItemMercadoPorVozIA = async function(frase) {
     const apiKey = obterChaveGemini();
     let sucessoIA = false;
 
-    // Tenta primeiro via Gemini se houver chave pública configurada
     if (apiKey && apiKey.length > 20 && !apiKey.startsWith("AQ.") && navigator.onLine) {
         try {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -447,7 +449,6 @@ window.processarItemMercadoPorVozIA = async function(frase) {
         }
     }
 
-    // Fallback semântico determinístico
     if (!sucessoIA) {
         window.processarItemMercadoLocalFallback(frase);
     }
@@ -456,20 +457,17 @@ window.processarItemMercadoPorVozIA = async function(frase) {
 window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
     let frase = fraseOriginal.toLowerCase().trim();
 
-    // Mapeamento de números por extenso para numerais
     const numerosExtenso = {
         'um': 1, 'uma': 1, 'dois': 2, 'duas': 2, 'três': 3, 'tres': 3,
         'quatro': 4, 'cinco': 5, 'seis': 6, 'sete': 7, 'oito': 8, 'nove': 9, 'dez': 10
     };
 
-    // 1. Extração Precisa do Valor Unitário / Preço
     let unit = 0;
     const padraoValor = /(?:por|custou|de|valor de|a|r\$)\s*(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real|cada)?/i;
     const matchValor = frase.match(padraoValor);
 
     if (matchValor) {
         unit = parseFloat(matchValor[1].replace(',', '.')) || 0;
-        // Remove a fatia do valor da frase para não colidir com a quantidade
         frase = frase.replace(matchValor[0], ' ');
     } else {
         const matchValorSimples = frase.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)/i);
@@ -479,11 +477,9 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
         }
     }
 
-    // 2. Extração Precisa da Quantidade
     let qtd = 1;
     let achouQtd = false;
 
-    // Procura número por extenso no início
     for (const [palavra, valorNum] of Object.entries(numerosExtenso)) {
         const regExtenso = new RegExp(`\\b${palavra}\\b`, 'i');
         if (regExtenso.test(frase)) {
@@ -494,7 +490,6 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
         }
     }
 
-    // Se não achou por extenso, procura numeral
     if (!achouQtd) {
         const matchQtd = frase.match(/(\d+(?:[.,]\d+)?)\s*(?:unidades|unidade|pct|pacotes|kg|latas|garrafas)?/i);
         if (matchQtd) {
@@ -503,7 +498,6 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
         }
     }
 
-    // 3. Limpeza do Nome do Produto e Correção Fonética (Ex: "olhos" -> "Óleo")
     let nomeLimpo = frase
         .replace(/\b(unidades|unidade|pct|pacotes|kg|quilos|latas|garrafas|caixas)\b/gi, '')
         .replace(/\b(por|custou|de|valor|cada|r\$|reais|real|conto|peguei|comprei|coloquei)\b/gi, '')
@@ -511,7 +505,6 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
         .replace(/\s+/g, ' ')
         .trim();
 
-    // Normalização no singular e correção fonética
     if (nomeLimpo === 'olhos' || nomeLimpo === 'oleos' || nomeLimpo === 'oleo' || nomeLimpo === 'óleo' || nomeLimpo === 'óleos') {
         nomeLimpo = 'Óleo';
     } else if (nomeLimpo === 'leites' || nomeLimpo === 'leite') {
@@ -607,7 +600,7 @@ window.processarCupomFiscalIA = async function(evento) {
             contents: [{
                 parts: [
                     {
-                        text: "Analise a imagem deste cupom fiscal. Extraia os produtos e devolva APENAS um array JSON válido sem markdown: [{\"nome\": \"Nome\", \"quantidade\": 1, \"valor_unitario\": 5.99, \"categoria\": \"Mercearia\"}]. Categorias: Mercearia, Açougue, Hortifrúti, Limpeza, Higiene, Laticínios, Padaria, Bebidas."
+                        text: "Analise a imagem deste cupom fiscal ou nota fiscal. Extraia o nome do estabelecimento, o valor total da compra e os produtos. Classifique em: Mercearia, Açougue, Hortifrúti, Limpeza, Higiene, Laticínios, Padaria, Bebidas, Geral. Responda EXATAMENTE com um JSON: {\"estabelecimento\": \"Nome\", \"total\": 0.00, \"categoria\": \"Categoria\", \"itens\": [{\"nome\": \"Item\", \"quantidade\": 1, \"valor_unitario\": 0.00, \"categoria\": \"Categoria\"}]}"
                     },
                     {
                         inlineData: {
@@ -635,44 +628,52 @@ window.processarCupomFiscalIA = async function(evento) {
 
         if (!textoResposta) throw new Error("Resposta da IA vazia.");
 
-        const itensExtraidos = JSON.parse(textoResposta);
+        const cupomExtraido = JSON.parse(textoResposta);
 
-        if (!Array.isArray(itensExtraidos) || itensExtraidos.length === 0) {
-            return window.mostrarToast("Nenhum item legível encontrado no cupom fiscal.", "erro");
-        }
+        // Preenche o formulário de Lançamento Rápido em Finanças
+        const inDesc = document.getElementById('input-fin-descricao');
+        const inVal = document.getElementById('input-fin-valor');
+        const selCat = document.getElementById('select-fin-categoria');
+        const selTipo = document.getElementById('select-fin-tipo');
+        const selEscopo = document.getElementById('select-fin-escopo');
 
-        const registros = itensExtraidos.map(item => {
-            const qtd = parseFloat(item.quantidade) || 1;
-            const unit = parseFloat(item.valor_unitario) || 0;
-            const subtotal = qtd * unit;
-            const cat = item.categoria || window.identificarSegmentoItem(item.nome);
+        if (inDesc) inDesc.value = cupomExtraido.estabelecimento || 'Cupom Fiscal';
+        if (inVal && cupomExtraido.total) inVal.value = Number(cupomExtraido.total).toFixed(2);
+        if (selCat && cupomExtraido.categoria) selCat.value = cupomExtraido.categoria;
+        if (selTipo) selTipo.value = 'saida';
+        if (selEscopo) selEscopo.value = 'casa';
 
-            return {
-                familia_id: window.familiaAtualId,
-                nome_item: String(item.nome || 'Produto').trim(),
-                segmento_categoria: cat,
-                criado_por: usuarioId,
-                status: 'comprado',
-                quantidade: qtd,
-                valor_unitario: unit,
-                valor_total: subtotal,
-                comprado: true,
-                no_carrinho: true
-            };
-        });
+        // Se houver itens detalhados, cadastra também no módulo de mercado
+        if (Array.isArray(cupomExtraido.itens) && cupomExtraido.itens.length > 0) {
+            const registros = cupomExtraido.itens.map(item => {
+                const qtd = parseFloat(item.quantidade) || 1;
+                const unit = parseFloat(item.valor_unitario) || 0;
+                const subtotal = qtd * unit;
+                const cat = item.categoria || window.identificarSegmentoItem(item.nome);
 
-        const { error: errInsert } = await cli.from('itens_mercado').insert(registros);
-        if (errInsert) throw errInsert;
+                return {
+                    familia_id: window.familiaAtualId,
+                    nome_item: String(item.nome || 'Produto').trim(),
+                    segmento_categoria: cat,
+                    criado_por: usuarioId,
+                    status: 'comprado',
+                    quantidade: qtd,
+                    valor_unitario: unit,
+                    valor_total: subtotal,
+                    comprado: true,
+                    no_carrinho: true
+                };
+            });
 
-        for (const r of registros) {
-            if (r.valor_unitario > 0) {
-                await window.atualizarEstatisticasPrecoCatalogo(r.nome_item, r.segmento_categoria, r.valor_unitario);
+            await cli.from('itens_mercado').insert(registros);
+            for (const r of registros) {
+                if (r.valor_unitario > 0) {
+                    await window.atualizarEstatisticasPrecoCatalogo(r.nome_item, r.segmento_categoria, r.valor_unitario);
+                }
             }
         }
 
-        window.mostrarToast(`${registros.length} itens do cupom adicionados ao carrinho!`);
-        window.alternarVisualizacaoMercado('planilha');
-        window.carregarItensMercado();
+        window.mostrarToast(`Cupom processado! R$ ${Number(cupomExtraido.total || 0).toFixed(2)} preenchidos em Finanças.`);
     } catch (erro) {
         console.error("Erro no cupom fiscal:", erro);
         window.mostrarToast("Falha ao ler o cupom. Verifique a chave ou tire foto mais nítida.", "erro");
@@ -1140,6 +1141,7 @@ window.finalizarCompraMercado = async function() {
     window.gerarGraficosFechamentoMercado(segmentos);
     window.carregarItensMercado();
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
 
     window.gerarSugestoesCardapioMesIA();
 };

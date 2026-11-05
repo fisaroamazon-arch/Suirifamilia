@@ -1,6 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
-// Missões com Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
+// Missões com Ordenação Inteligente (Cumpridas descem para o fim da lista),
+// Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
 // Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis,
@@ -148,7 +149,7 @@ window.carregarMissoesDoDia = async function() {
 };
 
 // =========================================================================
-// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS
+// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (COM ORDENAÇÃO: CUMPRIDAS DESCEM)
 // =========================================================================
 
 window.carregarMissoesKidsExclusiva = function() {
@@ -183,7 +184,16 @@ window.carregarMissoesKidsExclusiva = function() {
         return;
     }
 
-    missoesKids.forEach(missao => {
+    // Regra de Ordenação: Tarefas pendentes primeiro, cumpridas/falhadas descem para o final
+    const missoesKidsOrdenadas = [...missoesKids].sort((a, b) => {
+        const aPendente = (a.status === 'pendente');
+        const bPendente = (b.status === 'pendente');
+        if (aPendente && !bPendente) return -1;
+        if (!aPendente && bPendente) return 1;
+        return (a.prioridade || 2) - (b.prioridade || 2);
+    });
+
+    missoesKidsOrdenadas.forEach(missao => {
         const card = document.createElement('div');
         const concluida = missao.status === 'concluida';
         const falhada = missao.status === 'falhou';
@@ -194,6 +204,9 @@ window.carregarMissoesKidsExclusiva = function() {
         if (falhada) {
             card.style.background = '#fff5f5';
             card.style.borderColor = '#fca5a5';
+        }
+        if (concluida) {
+            card.style.opacity = '0.75';
         }
 
         const xpRecompensa = missao.xp_recompensa || 20;
@@ -658,7 +671,7 @@ window.adicionarNovaMissao = async function() {
 };
 
 // =========================================================================
-// 8. RENDERIZAÇÃO DESPOLUÍDA: HIERARQUIA VISUAL SUAVE & RESPIRO
+// 8. RENDERIZAÇÃO: ORDENAÇÃO INTELIGENTE (CUMPRIDAS DESCEM PARA O FIM)
 // =========================================================================
 
 window.renderizarMissoesTela = function() {
@@ -692,6 +705,15 @@ window.renderizarMissoesTela = function() {
         return;
     }
 
+    // Regra Principal: Missões pendentes no topo; cumpridas ou falhadas descem ao fim da sequência
+    listaExibicao.sort((a, b) => {
+        const aPendente = (a.status === 'pendente');
+        const bPendente = (b.status === 'pendente');
+        if (aPendente && !bPendente) return -1;
+        if (!aPendente && bPendente) return 1;
+        return (a.prioridade || 2) - (b.prioridade || 2);
+    });
+
     const agora = new Date();
     const horaAtualMinutos = agora.getHours() * 60 + agora.getMinutes();
 
@@ -706,11 +728,12 @@ window.renderizarMissoesTela = function() {
             margin-bottom: 8px;
             padding: 12px 14px;
             position: relative;
-            background: ${concluida ? 'rgba(240, 253, 244, 0.6)' : (falhada ? '#fff5f5' : '#ffffff')};
+            background: ${concluida ? 'rgba(240, 253, 244, 0.65)' : (falhada ? '#fff5f5' : '#ffffff')};
             border: 1px solid ${concluida ? '#bbf7d0' : (falhada ? '#fecaca' : 'rgba(217, 119, 6, 0.14)')};
             border-left: 3.5px solid ${missao.prioridade === 1 ? '#ef4444' : (missao.prioridade === 2 ? '#d97706' : '#10b981')};
             border-radius: 12px;
             z-index: 1;
+            transition: all 0.25s ease;
             ${concluida ? 'opacity: 0.72;' : ''}
         `;
 
@@ -835,7 +858,6 @@ window.alternarMenuAcoesMissao = function(id) {
 
     const estaOculto = menu.classList.contains('oculto');
 
-    // Fecha todos os menus abertos e restabelece os z-index de todos os cards
     document.querySelectorAll('[id^="menu-drop-missao-"]').forEach(m => m.classList.add('oculto'));
     document.querySelectorAll('[id^="card-missao-bloco-"]').forEach(c => c.style.zIndex = '1');
 
@@ -845,7 +867,6 @@ window.alternarMenuAcoesMissao = function(id) {
     }
 };
 
-// Fecho automático ao clicar fora de qualquer menu aberto
 document.addEventListener('click', (e) => {
     if (!e.target.closest('[id^="menu-drop-missao-"]') && !e.target.closest('button[onclick*="alternarMenuAcoesMissao"]')) {
         document.querySelectorAll('[id^="menu-drop-missao-"]').forEach(m => m.classList.add('oculto'));
@@ -1007,6 +1028,7 @@ window.concluirMissaoDomestica = async function(id) {
     missao.concluido_por = usuarioId;
     missao.proxima_execucao = proximaExec;
 
+    // Dispara nova ordenação imediata com a missão cumprida a descer ao fundo
     window.renderizarMissoesTela();
     window.carregarMissoesKidsExclusiva();
     window.renderizarHistoricoMissoesKidsADM();
@@ -1252,13 +1274,11 @@ window.processarTextoTranscrito = function(frase) {
         categoria = 'Salário';
     }
 
-    // 5. Higienização Cirúrgica do Item: Remoção total de verbos, numerais, moedas e preposições
+    // 5. Higienização Cirúrgica do Item
     let itemLimpo = textoOriginal;
 
-    // Remove verbos financeiros e pronomes iniciais
     itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
 
-    // Remove padrões de menção de valor e unidades monetárias (ex: "por R$ 25", "no valor de 50 reais", "25,00")
     itemLimpo = itemLimpo
         .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/gi, '')
         .replace(/\b(por|de|custou|foi)\s+(r\$\s*)?\d+[\d.,]*(\s*(reais|real|conto|mangos|centavos))?/gi, '')
@@ -1266,19 +1286,16 @@ window.processarTextoTranscrito = function(frase) {
         .replace(/\b(reais|real|r\$)\b/gi, '')
         .trim();
 
-    // Remove preposições ou conectivos órfãos no início ou final da frase
     itemLimpo = itemLimpo
         .replace(/^(um|uma|uns|umas|de|do|da|no|na|o|a|os|as|por)\s+/i, '')
         .replace(/\s+(por|de|no|na|em|com)$/i, '')
         .replace(/^[,.\s-]+|[,.\s-]+$/g, '')
         .trim();
 
-    // Se a limpeza eliminar tudo ou se o comando for direto (ex: "Salário" ou "Bónus")
     if (!itemLimpo || itemLimpo.length < 2) {
         itemLimpo = ehReceita ? 'Salário' : (categoria !== 'Geral' ? categoria : 'Compra avulsa');
     }
 
-    // Capitalização limpa da primeira letra
     itemLimpo = itemLimpo.charAt(0).toUpperCase() + itemLimpo.slice(1);
 
     const inDesc = document.getElementById('input-fin-descricao');

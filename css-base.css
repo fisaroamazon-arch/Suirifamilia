@@ -2,6 +2,7 @@
 /* SUIRI GESTOR FAMILIAR - CSS-BASE.CSS (100% COMPLETO)       */
 /* Tema Ouro Suave, Tons Pastéis, Notificações & MODO KIDS    */
 /* Cenário Fotográfico (Imagens JPG) com Sol/Lua Interativos  */
+/* Barra de Navegação Inferior Fixa & Avatar Ampliado         */
 /* ========================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -89,8 +90,8 @@ html, body {
 body {
     display: flex;
     justify-content: center;
-    padding-top: 68px;
-    padding-bottom: 36px;
+    padding-top: 14px;
+    padding-bottom: 92px; /* Margem de resguardo contra sobreposição da bottom bar */
     position: relative;
 }
 
@@ -196,67 +197,73 @@ h1, h2, h3, h4, span, p, label, strong {
 }
 
 /* ========================================================== */
-/* BARRA DE NAVEGAÇÃO SUPERIOR                                */
+/* BARRA DE NAVEGAÇÃO INFERIOR FIXA (BOTTOM DOCK NATIVO)      */
 /* ========================================================== */
-.bottom-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 60px;
-    background: rgba(255, 253, 248, 0.88);
-    border-bottom: 1px solid var(--borda-delicada);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 8px;
+.bottom-nav,
+.bottom-nav-fixa-inferior {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    height: 64px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-top: 1.5px solid var(--borda-delicada) !important;
+    border-bottom: none !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    z-index: 10000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px)) 8px !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05) !important;
 }
 
 .bottom-nav-list {
-    display: flex;
-    width: 100%;
-    max-width: 560px;
-    list-style: none;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2px;
+    display: flex !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    list-style: none !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 2px !important;
 }
 
 .bottom-nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    color: var(--texto-suave);
-    font-size: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 5px 2px;
-    border-radius: var(--raio-sm);
-    border: 1px solid transparent;
-    background: transparent;
-    transition: all 0.2s ease;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    color: var(--texto-suave) !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    padding: 6px 2px !important;
+    border-radius: var(--raio-sm) !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
 }
 
 .bottom-nav-item span {
-    white-space: nowrap;
-    letter-spacing: -0.2px;
+    white-space: nowrap !important;
+    letter-spacing: -0.2px !important;
 }
 
 .bottom-nav-item.ativo {
-    color: var(--cor-primaria);
-    background: var(--pastel-ouro);
-    border-color: rgba(217, 119, 6, 0.3);
-    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1);
+    color: var(--cor-primaria) !important;
+    background: var(--pastel-ouro) !important;
+    border-color: rgba(217, 119, 6, 0.3) !important;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1) !important;
+    transform: translateY(-1px) !important;
 }
 
 /* ========================================================== */
-/* CARTÕES E CABEÇALHO                                        */
+/* CARTÕES E CABEÇALHO DO MEMBRO                              */
 /* ========================================================== */
 .cartao-geral {
     background: var(--pastel-card);
@@ -277,21 +284,26 @@ h1, h2, h3, h4, span, p, label, strong {
     justify-content: space-between;
     align-items: center;
     background: var(--pastel-card);
-    border: 1px solid var(--borda-delicada);
+    border: 1.5px solid var(--borda-delicada);
     border-radius: var(--raio-lg);
     box-shadow: var(--sombra-elegante);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     padding: 12px 14px;
 }
 
+/* FOTO DE PERFIL BEM MAIOR (68px) */
 .avatar-topo-usuario {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
-    border: 2px solid var(--cor-primaria);
-    cursor: pointer;
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 16px !important;
+    object-fit: cover !important;
+    aspect-ratio: 1 / 1 !important;
+    border: 2px solid var(--cor-primaria) !important;
+    cursor: pointer !important;
+    background: var(--suiri-surface-secondary-light) !important;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2) !important;
+    flex-shrink: 0 !important;
+    display: block !important;
 }
 
 /* ========================================================== */
@@ -437,7 +449,7 @@ button {
 /* ========================================================== */
 #toast-container {
     position: fixed;
-    top: 72px;
+    top: 24px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -682,10 +694,13 @@ body.modo-kids-ativo #tela-kids-exclusiva {
 }
 
 .avatar-kids-circulo {
-    width: 52px; height: 52px; border-radius: 50%;
-    border: 3px solid #10b981; cursor: pointer;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
+    width: 68px !important; 
+    height: 68px !important; 
+    border-radius: 16px !important;
+    border: 3px solid #10b981 !important; 
+    cursor: pointer !important;
+    object-fit: cover !important;
+    aspect-ratio: 1 / 1 !important;
 }
 .titulo-kids-nome { font-size: 17px; font-weight: 800; color: #1e293b; margin: 0; }
 
@@ -760,7 +775,6 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
 }
 
 #btn-casinha-tamagotchi {
-    /* Casinha: Grande e destacada (o dobro do Chuíri) */
     width: 160px;
     height: 160px;
     cursor: pointer;
@@ -768,7 +782,6 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
 }
 
 #btn-chuiri-tamagotchi {
-    /* Chuíri: Metade do tamanho da casa */
     width: 80px;
     height: 80px;
     cursor: pointer;

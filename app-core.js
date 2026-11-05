@@ -590,7 +590,6 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
             imgKids.src = window.perfilAtual.avatar_url;
         }
 
-        // ATIVAÇÃO DIRETA DO MASCOTE TAMAGOTCHI NO MODO KIDS
         if (window.TamagotchiKids && typeof window.TamagotchiKids.montarWidgetNaTela === 'function') {
             window.TamagotchiKids.montarWidgetNaTela();
         }
@@ -606,7 +605,6 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         painelAdulto?.classList.remove('oculto');
         barraNav?.classList.remove('oculto');
 
-        // REMOVE O MASCOTE DA VISTA NO PERFIL ADULTO
         document.getElementById('container-tamagotchi-kids')?.remove();
         document.getElementById('modal-tamagotchi-cuidados')?.classList.add('oculto');
 
