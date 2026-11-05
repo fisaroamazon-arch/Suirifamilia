@@ -1,6 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-RELATORIOS.JS (100% COMPLETO E INTEGRAL)
-// Balanço Financeiro Familiar, PDF, WhatsApp & Gráfico Comparativo Chart.js em SVG
+// Balanço Financeiro Familiar com 4 Dimensões:
+// 1. Renda | 2. Despesas da Casa | 3. Gastos Próprios | 4. Transferências Enviadas
+// Membros sem cartão/Kids excluídos. Neutralidade patrimonial na família.
 // Padrão de Diálogos e Ações: Confirmar / Cancelar (Zero Emojis)
 // =========================================================================
 
@@ -26,12 +28,16 @@ window.gerarRelatorio = async function() {
 
     const hoje = new Date();
     if (!dtInicio) {
-        const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-        dtInicio = primeiroDia.toISOString().split('T')[0];
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        dtInicio = `${ano}-${mes}-01`;
         if (document.getElementById('data-inicio')) document.getElementById('data-inicio').value = dtInicio;
     }
     if (!dtFim) {
-        dtFim = hoje.toISOString().split('T')[0];
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        dtFim = `${ano}-${mes}-${dia}`;
         if (document.getElementById('data-fim')) document.getElementById('data-fim').value = dtFim;
     }
 
@@ -79,13 +85,25 @@ window.gerarRelatorio = async function() {
         .eq('familia_id', window.familiaAtualId)
         .eq('comprado', true);
 
-    // 3. Processamento de totais gerais
+    // 3. Processamento detalhado em 4 linhas
     let totalEntradas = 0;
     let totalGastosCasa = 0;
     let totalGastosPessoais = 0;
+    let totalTransferenciasInternas = 0;
 
     (transacoes || []).forEach(t => {
         const val = Number(t.valor || 0);
+        const ehTransferencia = (t.categoria === 'Transferência') || 
+                                (typeof t.descricao === 'string' && t.descricao.toLowerCase().includes('transferência'));
+
+        if (ehTransferencia) {
+            // Soma o montante transferido apenas uma vez (quando é saída/envio)
+            if (t.tipo === 'saida') {
+                totalTransferenciasInternas += val;
+            }
+            return;
+        }
+
         if (t.tipo === 'entrada') {
             totalEntradas += val;
         } else {
@@ -99,10 +117,10 @@ window.gerarRelatorio = async function() {
         totalSupermercado += (parseFloat(item.quantidade) || 0) * (parseFloat(item.valor_unitario) || 0);
     });
 
+    // Despesas operacionais reais da família (sem contar transferências que não saíram de casa)
     const totalSaidasGeral = totalGastosCasa + totalGastosPessoais + totalSupermercado;
     const saldoLiquidoPeriodo = totalEntradas - totalSaidasGeral;
 
-    // Guarda sumário para exportação WhatsApp
     window.ultimoResumoRelatorio = {
         dtInicio,
         dtFim,
@@ -110,11 +128,12 @@ window.gerarRelatorio = async function() {
         totalGastosCasa,
         totalGastosPessoais,
         totalSupermercado,
+        totalTransferenciasInternas,
         totalSaidasGeral,
         saldoLiquidoPeriodo
     };
 
-    // 4. Renderização do HTML do Balanço
+    // 4. Renderização com a 4ª linha de Transferência destacada
     const corSaldo = saldoLiquidoPeriodo >= 0 ? 'var(--cor-sucesso, #10b981)' : 'var(--cor-erro, #f43f5e)';
     const dataInicioFmt = dtInicio.split('-').reverse().join('/');
     const dataFimFmt = dtFim.split('-').reverse().join('/');
@@ -157,6 +176,12 @@ window.gerarRelatorio = async function() {
                         </span>
                         <strong>R$ ${totalGastosPessoais.toFixed(2)}</strong>
                     </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; color:#7c3aed; background:rgba(124, 58, 237, 0.05); padding:2px 6px; border-radius:6px; margin-top:2px;">
+                        <span style="display:flex; align-items:center; gap:5px; font-weight:600;">
+                            💸 Transferências entre Carteiras:
+                        </span>
+                        <strong>R$ ${totalTransferenciasInternas.toFixed(2)}</strong>
+                    </div>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -167,44 +192,69 @@ window.gerarRelatorio = async function() {
         `;
     }
 
-    // 5. Exibe os botões de ação
     btnPdf?.classList.remove('oculto');
     btnWhats?.classList.remove('oculto');
 
-    // 6. Constrói e renderiza o Gráfico de Duas Barras (Renda vs Gastos Próprios)
-    await window.renderizarGraficoDuasBarrasMembros(transacoes || []);
+    // 5. Renderiza o Gráfico com 4 Barras
+    await window.renderizarGraficoQuatroBarrasMembros(transacoes || []);
 };
 
 // =========================================================================
-// 2. GRÁFICO COMPARATIVO: RENDA VS GASTOS PRÓPRIOS POR MEMBRO
+// 2. GRÁFICO COMPARATIVO DE QUATRO BARRAS POR MEMBRO
 // =========================================================================
-window.renderizarGraficoDuasBarrasMembros = async function(transacoes) {
+window.renderizarGraficoQuatroBarrasMembros = async function(transacoes) {
     const canvas = document.getElementById('grafico-barras-renda-gastos');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    const membros = window.listaMembrosFamilia || [];
-    if (membros.length === 0) return;
+    // Filtra membros excluindo quem tem perfil Kids ou está sem cartão
+    const membrosElegiveis = (window.listaMembrosFamilia || []).filter(m => {
+        const ehKids = m.eh_kids === true || m.papel === 'dependente';
+        const temCartao = m.possui_cartao !== false;
+        return !ehKids && temCartao;
+    });
+
+    if (membrosElegiveis.length === 0) return;
 
     const rotulosMembros = [];
     const dadosRenda = [];
-    const dadosGastosProprios = [];
+    const dadosDespesasCasa = [];
+    const dadosGastosIndividuais = [];
+    const dadosTransferenciasEnviadas = [];
 
-    membros.forEach(m => {
+    membrosElegiveis.forEach(m => {
         rotulosMembros.push(m.nome.split(' ')[0]);
 
         let rendaMembro = 0;
-        let gastosMembro = 0;
+        let casaMembro = 0;
+        let pessoalMembro = 0;
+        let transferidoMembro = 0;
 
         transacoes.forEach(t => {
             if (t.membro_id === m.id) {
                 const valor = Number(t.valor || 0);
-                if (t.tipo === 'entrada') rendaMembro += valor;
-                else if (t.escopo === 'pessoal') gastosMembro += valor;
+                const ehTransferencia = (t.categoria === 'Transferência') || 
+                                        (typeof t.descricao === 'string' && t.descricao.toLowerCase().includes('transferência'));
+
+                if (t.tipo === 'entrada') {
+                    // Soma como recurso que entrou para a pessoa (salários ou transferências recebidas)
+                    rendaMembro += valor;
+                } else if (t.tipo === 'saida') {
+                    if (ehTransferencia) {
+                        // 4ª Barra: Quanto este membro transferiu para outro
+                        transferidoMembro += valor;
+                    } else if (t.escopo === 'casa') {
+                        casaMembro += valor;
+                    } else if (t.escopo === 'pessoal') {
+                        pessoalMembro += valor;
+                    }
+                }
             }
         });
 
         dadosRenda.push(rendaMembro);
-        dadosGastosProprios.push(gastosMembro);
+        dadosDespesasCasa.push(casaMembro);
+        dadosGastosIndividuais.push(pessoalMembro);
+        dadosTransferenciasEnviadas.push(transferidoMembro);
     });
 
     if (instanciaGraficoRendaGastos) {
@@ -218,20 +268,36 @@ window.renderizarGraficoDuasBarrasMembros = async function(transacoes) {
             labels: rotulosMembros,
             datasets: [
                 {
-                    label: 'Renda (R$)',
+                    label: 'Renda / Entradas (R$)',
                     data: dadosRenda,
                     backgroundColor: '#10b981',
-                    borderRadius: 6,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.6
+                    borderRadius: 4,
+                    barPercentage: 0.85,
+                    categoryPercentage: 0.7
+                },
+                {
+                    label: 'Despesas com a Casa (R$)',
+                    data: dadosDespesasCasa,
+                    backgroundColor: '#0284c7',
+                    borderRadius: 4,
+                    barPercentage: 0.85,
+                    categoryPercentage: 0.7
                 },
                 {
                     label: 'Gastos Próprios (R$)',
-                    data: dadosGastosProprios,
+                    data: dadosGastosIndividuais,
                     backgroundColor: '#f43f5e',
-                    borderRadius: 6,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.6
+                    borderRadius: 4,
+                    barPercentage: 0.85,
+                    categoryPercentage: 0.7
+                },
+                {
+                    label: 'Transferências Enviadas (R$)',
+                    data: dadosTransferenciasEnviadas,
+                    backgroundColor: '#8b5cf6',
+                    borderRadius: 4,
+                    barPercentage: 0.85,
+                    categoryPercentage: 0.7
                 }
             ]
         },
@@ -242,8 +308,8 @@ window.renderizarGraficoDuasBarrasMembros = async function(transacoes) {
                 legend: {
                     position: 'top',
                     labels: {
-                        boxWidth: 12,
-                        font: { size: 11, weight: '600' },
+                        boxWidth: 8,
+                        font: { size: 9.5, weight: '700' },
                         color: '#334155'
                     }
                 },
@@ -322,6 +388,7 @@ Período: ${res.dtInicio.split('-').reverse().join('/')} até ${res.dtFim.split(
   • Despesas da Casa: R$ ${res.totalGastosCasa.toFixed(2)}
   • Supermercado: R$ ${res.totalSupermercado.toFixed(2)}
   • Gastos Individuais: R$ ${res.totalGastosPessoais.toFixed(2)}
+  • Transferências Internas: R$ ${res.totalTransferenciasInternas.toFixed(2)}
 
 Resultado Líquido: R$ ${res.saldoLiquidoPeriodo.toFixed(2)}
 _Gerado via Suiri Gestão Familiar_`;

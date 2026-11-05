@@ -5,7 +5,8 @@
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
 // Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis,
-// Menu Dropdown com Z-Index Soberano & Leitura de Cupom Fiscal IA.
+// Menu Dropdown com Z-Index Soberano, Leitura de Cupom Fiscal IA
+// e Exibição Automática do Balanço Financeiro do Mês (Dia 01 até Hoje).
 // =========================================================================
 
 let cacheMissoes = [];
@@ -184,7 +185,6 @@ window.carregarMissoesKidsExclusiva = function() {
         return;
     }
 
-    // Regra de Ordenação: Tarefas pendentes primeiro, cumpridas/falhadas descem para o final
     const missoesKidsOrdenadas = [...missoesKids].sort((a, b) => {
         const aPendente = (a.status === 'pendente');
         const bPendente = (b.status === 'pendente');
@@ -705,7 +705,6 @@ window.renderizarMissoesTela = function() {
         return;
     }
 
-    // Regra Principal: Missões pendentes no topo; cumpridas ou falhadas descem ao fim da sequência
     listaExibicao.sort((a, b) => {
         const aPendente = (a.status === 'pendente');
         const bPendente = (b.status === 'pendente');
@@ -1028,7 +1027,6 @@ window.concluirMissaoDomestica = async function(id) {
     missao.concluido_por = usuarioId;
     missao.proxima_execucao = proximaExec;
 
-    // Dispara nova ordenação imediata com a missão cumprida a descer ao fundo
     window.renderizarMissoesTela();
     window.carregarMissoesKidsExclusiva();
     window.renderizarHistoricoMissoesKidsADM();
@@ -1455,6 +1453,9 @@ window.salvarTransacaoManual = async function() {
         await window.carregarCarteiraIndividual();
         if (typeof window.carregarExtratoPeriodo === 'function') window.carregarExtratoPeriodo();
         await window.renderizarGraficoBarrasMesAnterior();
+        
+        // Atualiza o balanço automático caso esteja na tela de Finanças
+        if (typeof window.gerarRelatorio === 'function') window.gerarRelatorio();
     }
 };
 
@@ -1967,7 +1968,7 @@ window.renderizarRecadosLar = function() {
                     `}
                     ${souAutor ? `
                         <button type="button" class="btn-erro" style="padding:4px 6px; font-size:10px; display:inline-flex; align-items:center;" onclick="window.excluirRecadoLar('${r.id}')" title="Eliminar recado">
-                            <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>
                         </button>
                     ` : ''}
                 </div>
@@ -2298,7 +2299,42 @@ window.verificarGatilhoPenseSeteManha = function() {
 };
 
 // =========================================================================
-// 18. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
+// 18. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
+// =========================================================================
+
+const navegarOriginal = window.navegarParaTela;
+window.navegarParaTela = function(nomeTela) {
+    if (typeof navegarOriginal === 'function') {
+        navegarOriginal(nomeTela);
+    }
+
+    if (nomeTela === 'financeiro') {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+
+        const dtInicio = `${ano}-${mes}-01`;
+        const dtFim = `${ano}-${mes}-${dia}`;
+
+        const inInicio = document.getElementById('data-inicio');
+        const inFim = document.getElementById('data-fim');
+
+        if (inInicio && !inInicio.value) inInicio.value = dtInicio;
+        if (inFim && !inFim.value) inFim.value = dtFim;
+
+        document.getElementById('relatorio-pdf-container')?.classList.remove('oculto');
+
+        setTimeout(() => {
+            if (typeof window.gerarRelatorio === 'function') {
+                window.gerarRelatorio();
+            }
+        }, 150);
+    }
+};
+
+// =========================================================================
+// 19. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
 // =========================================================================
 
 window.inicializarNavegacaoSwipe();
