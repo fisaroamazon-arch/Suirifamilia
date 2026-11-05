@@ -2,7 +2,8 @@
 // SUIRI GESTÃO FAMILIAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
 // Mercado com Reconhecimento de Voz Inteligente & Fallback Robusto,
 // Leitura de Cupom Fiscal, Sugestões de Cardápio Mensal no Quadro de Avisos,
-// Histórico de Preço Médio/Último, Extrato e Agendamentos Recorrentes.
+// Histórico de Preço Médio/Último, Extrato, Transferência de Saldo entre Carteiras
+// e Agendamentos Recorrentes.
 // Padrão de Diálogos: Confirmar / Cancelar (Zero Emojis - 100% SVG)
 // =========================================================================
 
@@ -325,6 +326,104 @@ window.salvarAjusteCarteira = async function() {
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
     if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
+};
+
+// =========================================================================
+// 1B. TRANSFERÊNCIA DE SALDO ENTRE CARTEIRAS DA FAMÍLIA
+// =========================================================================
+
+window.abrirModalTransferirSaldo = async function() {
+    const modal = document.getElementById('modal-transferir-saldo');
+    const selectDest = document.getElementById('transferencia-destinatario-id');
+    const inputValor = document.getElementById('transferencia-valor');
+    const cli = obterClienteSupabase();
+    const meuId = obterUsuarioId();
+
+    if (!modal) return;
+    if (inputValor) inputValor.value = '';
+
+    if (selectDest) {
+        selectDest.innerHTML = '<option value="">Carregando membros...</option>';
+
+        if (!window.listaMembrosFamilia || window.listaMembrosFamilia.length === 0) {
+            if (cli && window.familiaAtualId) {
+                const { data: membros } = await cli.from('membros')
+                    .select('id, nome, parentesco')
+                    .eq('familia_id', window.familiaAtualId);
+                window.listaMembrosFamilia = membros || [];
+            }
+        }
+
+        const outrosMembros = (window.listaMembrosFamilia || []).filter(m => m.id !== meuId);
+
+        if (outrosMembros.length === 0) {
+            selectDest.innerHTML = '<option value="">Nenhum outro familiar cadastrado</option>';
+        } else {
+            selectDest.innerHTML = '<option value="">Selecione o familiar...</option>' + 
+                outrosMembros.map(m => {
+                    const parentesco = m.parentesco ? ` (${m.parentesco})` : '';
+                    return `<option value="${m.id}">${m.nome}${parentesco}</option>`;
+                }).join('');
+        }
+    }
+
+    modal.classList.remove('oculto');
+};
+
+window.fecharModalTransferirSaldo = function() {
+    const modal = document.getElementById('modal-transferir-saldo');
+    if (modal) modal.classList.add('oculto');
+};
+
+window.confirmarTransferenciaSaldo = async function() {
+    const selectDest = document.getElementById('transferencia-destinatario-id');
+    const inputValor = document.getElementById('transferencia-valor');
+    const cli = obterClienteSupabase();
+    const remetenteId = obterUsuarioId();
+    const destinatarioId = selectDest?.value;
+    const valor = parseFloat(inputValor?.value);
+
+    if (!cli || !window.familiaAtualId) {
+        return window.mostrarToast("Sessão não identificada. Recarregue a página.", "erro");
+    }
+
+    if (!destinatarioId) {
+        return window.mostrarToast("Selecione o familiar de destino.", "erro");
+    }
+
+    if (isNaN(valor) || valor <= 0) {
+        return window.mostrarToast("Informe um valor válido maior que zero.", "erro");
+    }
+
+    window.mostrarToast("Efetuando transferência...", "info");
+
+    try {
+        const { data, error } = await cli.rpc('transferir_saldo_familiar', {
+            p_familia_id: window.familiaAtualId,
+            p_remetente_id: remetenteId,
+            p_destinatario_id: destinatarioId,
+            p_valor: valor
+        });
+
+        if (error) {
+            throw error;
+        }
+
+        if (data && data.sucesso === false) {
+            return window.mostrarToast(data.mensagem || "Não foi possível concluir a transferência.", "erro");
+        }
+
+        window.mostrarToast(data?.mensagem || "Transferência confirmada com sucesso!");
+        window.fecharModalTransferirSaldo();
+
+        if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
+        if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
+        if (typeof window.carregarExtratoPeriodo === 'function') window.carregarExtratoPeriodo();
+
+    } catch (err) {
+        console.error("Erro na transferência de saldo:", err);
+        window.mostrarToast("Erro ao transferir: " + (err.message || "Tente novamente."), "erro");
+    }
 };
 
 // =========================================================================
