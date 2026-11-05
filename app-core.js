@@ -1,8 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-CORE.JS (100% COMPLETO E INTEGRAL)
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
-// Modo Kids Isolado, Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline,
-// Splash de Vídeo, Autoexclusão Definitiva de Conta, Navegação & Zero Emojis (SVG)
+// Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
+// Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline & Zero Emojis (SVG)
 // =========================================================================
 
 // Configuração do Supabase
@@ -575,6 +575,20 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
 
     if (ehKids) {
         document.body.classList.add('modo-kids-ativo');
+
+        // =========================================================================
+        // CICLO HORÁRIO AUTOMÁTICO: ATIVAÇÃO DAS CLASSES DE CENÁRIO (DIA/TARDE/NOITE)
+        // =========================================================================
+        const horaAtual = new Date().getHours();
+        document.body.classList.remove('cenario-dia', 'cenario-tarde', 'cenario-noite');
+        if (horaAtual >= 6 && horaAtual < 16) {
+            document.body.classList.add('cenario-dia');
+        } else if (horaAtual >= 16 && horaAtual < 18.5) {
+            document.body.classList.add('cenario-tarde');
+        } else {
+            document.body.classList.add('cenario-noite');
+        }
+
         telaKids?.classList.remove('oculto');
         painelAdulto?.classList.add('oculto');
         barraNav?.classList.add('oculto');
@@ -600,7 +614,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
             window.carregarMissoesDoDia();
         }
     } else {
-        document.body.classList.remove('modo-kids-ativo');
+        document.body.classList.remove('modo-kids-ativo', 'cenario-dia', 'cenario-tarde', 'cenario-noite');
         telaKids?.classList.add('oculto');
         painelAdulto?.classList.remove('oculto');
         barraNav?.classList.remove('oculto');
