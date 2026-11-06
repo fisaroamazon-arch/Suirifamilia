@@ -326,7 +326,7 @@
             box-shadow: 0 0 22px #ffffff;
         }
 
-        /* CHUÍRI VOADOR (DOBRO DO TAMANHO & ROTAÇÃO SUTIL) */
+        /* CHUÍRI VOADOR */
         #chuiri-voador-gif-el {
             position: absolute;
             width: 100px;
@@ -338,7 +338,7 @@
             transition: transform 0.1s ease-out;
         }
 
-        /* CHUÍRI NO SKATE (QUEBRA-BLOCOS) */
+        /* CHUÍRI NO SKATE */
         #chuiri-skate-gif-el {
             position: absolute;
             width: 68px;
@@ -433,7 +433,7 @@
             </div>
         </div>
 
-        <!-- JOGO 1: CHUÍRI VOADOR (PROGRESSÃO DINÂMICA DE APROXIMAÇÃO) -->
+        <!-- JOGO 1: CHUÍRI VOADOR -->
         <div id="tela-flappy" class="area-jogo">
             <div class="painel-placar-flappy">
                 <div style="font-size:12px; font-weight:800; color:#e2e8f0; display:flex; align-items:center; gap:4px;">
@@ -456,7 +456,7 @@
             <canvas id="cv-flappy"></canvas>
         </div>
 
-        <!-- JOGO 2: QUEBRA-BLOCOS MÁGICO (SKATE NOVO, +20px E BLOQUINHOS MENORES) -->
+        <!-- JOGO 2: QUEBRA-BLOCOS MÁGICO -->
         <div id="tela-quebrablocos" class="area-jogo">
             <div class="painel-placar-flappy">
                 <div style="font-size:12px; font-weight:800; color:#fff;">
@@ -530,6 +530,17 @@
     </div>
 
     <script>
+        // =========================================================================
+        // FUNÇÃO DE VIBRAÇÃO HÁPTICA GENÉRICA (QUANDO PERMITIDO)
+        // =========================================================================
+        function tentarVibrar(duracao = 50) {
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate(duracao);
+                } catch(e) {}
+            }
+        }
+
         // =========================================================================
         // MOTOR DE ÁUDIO NATIVO COM NOTAS PURAS EXCLUSIVAS
         // =========================================================================
@@ -645,12 +656,15 @@
         };
 
         // =========================================================================
-        // 1. MOTOR DO CHUÍRI VOADOR (DISTANCIAMENTO INICIAL E APROXIMAÇÃO A CADA 50)
+        // 1. MOTOR DO CHUÍRI VOADOR (TRAVADO EM 40 FPS PARA FIXAR IPHONE 120HZ)
         // =========================================================================
         const MotorFlappy = {
             canvas: null, ctx: null, anim: null, rodando: false,
             obstaculosPassados: 0,
             moedasGanhasPartida: 0,
+            
+            ultimoFrame: 0,
+            fpsIntervalo: 25, // Trava cravada em 40 FPS (1000/40 = 25ms)
 
             chuiri: { x: 45, y: 220, w: 100, h: 100, grav: 0.36, imp: -6.0, vy: 0 },
             gifEl: null,
@@ -698,6 +712,7 @@
                 this.timer = 0;
                 this.padraoDiagonalAtivo = false;
                 this.qtdDiagonalRestante = 0;
+                tentarVibrar(40);
 
                 document.getElementById('placar-flappy').textContent = '0';
                 document.getElementById('placar-moedas-ganhas-flappy').textContent = '0';
@@ -711,7 +726,8 @@
 
                 this.rodando = true;
                 this.pular();
-                this.loop();
+                this.ultimoFrame = performance.now();
+                this.loop(this.ultimoFrame);
             },
 
             pular: function() {
@@ -726,16 +742,21 @@
                 if (this.gifEl) this.gifEl.style.display = 'none';
             },
 
-            loop: function() {
+            loop: function(timestamp) {
                 if (!MotorFlappy.rodando) return;
-                MotorFlappy.atualizar();
-                MotorFlappy.desenhar();
-                MotorFlappy.anim = requestAnimationFrame(MotorFlappy.loop);
+                MotorFlappy.anim = requestAnimationFrame((ts) => MotorFlappy.loop(ts));
+                
+                if (!timestamp) timestamp = performance.now();
+                const delta = timestamp - MotorFlappy.ultimoFrame;
+                
+                if (delta > MotorFlappy.fpsIntervalo) {
+                    MotorFlappy.ultimoFrame = timestamp - (delta % MotorFlappy.fpsIntervalo);
+                    MotorFlappy.atualizar();
+                    MotorFlappy.desenhar();
+                }
             },
 
             obterIntervaloSpawn: function() {
-                // Começa espaçado em 135 ticks (muito mais espaço nos primeiros 50).
-                // A cada 50 obstáculos superados, se aproxima 10% (multiplicador 0.90)
                 const blocosDe50 = Math.floor(this.obstaculosPassados / 50);
                 const fatorAproximacao = Math.pow(0.90, blocosDe50);
                 return Math.max(68, Math.round(135 * fatorAproximacao));
@@ -775,7 +796,6 @@
                     return this.fim();
                 }
 
-                // Leve levantada de cabeça ao subir
                 if (this.gifEl) {
                     this.gifEl.style.left = `${this.chuiri.x}px`;
                     this.gifEl.style.top = `${this.chuiri.y}px`;
@@ -791,7 +811,6 @@
                     }
                 });
 
-                // Spawn com aproximação a cada 50 obstáculos
                 this.timer++;
                 const intervaloSpawn = this.obterIntervaloSpawn();
                 if (this.timer > intervaloSpawn) {
@@ -805,7 +824,6 @@
                     });
                 }
 
-                // Colisão com os troncos
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
                     const ob = this.obstaculos[i];
                     ob.x -= 2.25;
@@ -823,7 +841,6 @@
                         this.obstaculosPassados++;
                         document.getElementById('placar-flappy').textContent = this.obstaculosPassados;
 
-                        // A CADA 10 OBSTÁCULOS GANHA 1 MOEDA
                         if (this.obstaculosPassados % 10 === 0) {
                             this.moedasGanhasPartida++;
                             GerenciadorArcade.adicionarMoedas(1);
@@ -882,7 +899,6 @@
 
                 ctx.clearRect(0, 0, w, h);
 
-                // Nuvens
                 this.nuvens.forEach(n => {
                     ctx.save();
                     ctx.translate(n.x, n.y);
@@ -898,13 +914,11 @@
                     ctx.restore();
                 });
 
-                // Troncos
                 this.obstaculos.forEach(ob => {
                     this.desenharTroncoSvg(ctx, ob.x, 0, this.larguraTronco, ob.topo, true);
                     this.desenharTroncoSvg(ctx, ob.x, ob.base, this.larguraTronco, h - ob.base, false);
                 });
 
-                // Gramado inferior
                 ctx.fillStyle = '#15803d';
                 ctx.fillRect(0, h - 24, w, 24);
                 ctx.fillStyle = '#166534';
@@ -913,6 +927,7 @@
 
             fim: function() {
                 this.parar();
+                tentarVibrar(60);
                 const ov = document.getElementById('over-flappy');
                 ov.innerHTML = `
                     <h2 style="color:#f87171; font-size:22px;">Opa, quase lá!</h2>
@@ -928,7 +943,7 @@
         };
 
         // =========================================================================
-        // 2. QUEBRA-BLOCOS MÁGICO (SKATE REDESENHADO, +20px E BLOQUINHOS MENORES)
+        // 2. QUEBRA-BLOCOS MÁGICO (TRAVADO EM 40 FPS)
         // =========================================================================
         const MotorQuebraBlocos = {
             canvas: null, ctx: null, anim: null, rodando: false,
@@ -940,6 +955,9 @@
             totalDestruidos: 0,
             moedasGanhas: 0,
             arrastando: false,
+            
+            ultimoFrame: 0,
+            fpsIntervalo: 25, 
 
             montar: function() {
                 this.canvas = document.getElementById('cv-quebrablocos');
@@ -950,7 +968,6 @@
 
                 this.chuiriGifEl = document.getElementById('chuiri-skate-gif-el');
 
-                // Posição: Mais 20px acima (canvas.height - 90px)
                 this.recalcularPosicaoSkate();
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
 
@@ -999,7 +1016,6 @@
             },
 
             recalcularPosicaoSkate: function() {
-                // Sobe +20px em relação ao anterior (base -90px) e sobe 2px a cada nova fase
                 const elevacaoFase = (this.faseAtual - 1) * 2;
                 this.skate.y = this.canvas.height - 90 - elevacaoFase;
             },
@@ -1008,6 +1024,7 @@
                 this.faseAtual = 1;
                 this.totalDestruidos = 0;
                 this.moedasGanhas = 0;
+                tentarVibrar(40);
                 document.getElementById('placar-quebrablocos-fase').textContent = '1';
                 document.getElementById('placar-quebrablocos-blocos').textContent = '0';
                 document.getElementById('placar-quebrablocos-moedas').textContent = '0';
@@ -1028,17 +1045,17 @@
 
                 this.gerarGradeBlocos();
                 this.rodando = true;
-                this.loop();
+                this.ultimoFrame = performance.now();
+                this.loop(this.ultimoFrame);
             },
 
             gerarGradeBlocos: function() {
                 this.blocos = [];
-                // BLOCOS MENORES E A CADA FASE AUMENTA UMA FILEIRA A MAIS
-                const linhas = 4 + (this.faseAtual - 1); // Fase 1 = 4 fileiras, Fase 2 = 5, Fase 3 = 6...
-                const colunas = 8; // Mais blocos e menores
+                const linhas = 4 + (this.faseAtual - 1);
+                const colunas = 8;
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
-                const alturaBloco = 12; // Bloquinhos finos e elegantes
+                const alturaBloco = 12;
                 const paletaCores = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#38bdf8', '#8b5cf6', '#ec4899'];
 
                 for (let l = 0; l < linhas; l++) {
@@ -1063,30 +1080,34 @@
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
             },
 
-            loop: function() {
+            loop: function(timestamp) {
                 if (!MotorQuebraBlocos.rodando) return;
-                MotorQuebraBlocos.atualizar();
-                MotorQuebraBlocos.desenhar();
-                MotorQuebraBlocos.anim = requestAnimationFrame(MotorQuebraBlocos.loop);
+                MotorQuebraBlocos.anim = requestAnimationFrame((ts) => MotorQuebraBlocos.loop(ts));
+                
+                if (!timestamp) timestamp = performance.now();
+                const delta = timestamp - MotorQuebraBlocos.ultimoFrame;
+                
+                if (delta > MotorQuebraBlocos.fpsIntervalo) {
+                    MotorQuebraBlocos.ultimoFrame = timestamp - (delta % MotorQuebraBlocos.fpsIntervalo);
+                    MotorQuebraBlocos.atualizar();
+                    MotorQuebraBlocos.desenhar();
+                }
             },
 
             atualizar: function() {
                 this.bola.x += this.bola.vx;
                 this.bola.y += this.bola.vy;
 
-                // Laterais
                 if (this.bola.x - this.bola.r <= 0 || this.bola.x + this.bola.r >= this.canvas.width) {
                     this.bola.vx *= -1;
                     AudioMotor.tocarTom(420, 0.05);
                 }
 
-                // Teto
                 if (this.bola.y - this.bola.r <= 0) {
                     this.bola.vy *= -1;
                     AudioMotor.tocarTom(420, 0.05);
                 }
 
-                // Colisão com o Skate
                 if (this.bola.y + this.bola.r >= this.skate.y && this.bola.y - this.bola.r <= this.skate.y + 12) {
                     if (this.bola.x >= this.skate.x && this.bola.x <= this.skate.x + this.skate.w) {
                         this.bola.vy = -Math.abs(this.bola.vy);
@@ -1097,7 +1118,6 @@
                     }
                 }
 
-                // Colisão com os Bloquinhos Menores
                 let vivosRestantes = 0;
                 this.blocos.forEach(b => {
                     if (!b.vivo) return;
@@ -1121,7 +1141,6 @@
                     }
                 });
 
-                // AVANÇO DE FASE: Barra sobe mais 2px e adiciona 1 nova fileira
                 if (vivosRestantes === 0) {
                     this.faseAtual++;
                     this.moedasGanhas += 3;
@@ -1130,12 +1149,11 @@
                     document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
                     
                     this.recalcularPosicaoSkate();
-                    this.gerarGradeBlocos(); // Gera com mais 1 fileira
+                    this.gerarGradeBlocos(); 
                     this.bola.vy *= 1.05;
                     AudioMotor.tocarTom(950, 0.25);
                 }
 
-                // Bola caiu
                 if (this.bola.y - this.bola.r > this.canvas.height) {
                     this.fim();
                 }
@@ -1143,13 +1161,10 @@
 
             desenharSkateEstilizado: function(ctx, x, y, w) {
                 ctx.save();
-
-                // 1. Trucks (eixos metálicos)
                 ctx.fillStyle = '#64748b';
                 ctx.fillRect(x + 18, y + 8, 8, 6);
                 ctx.fillRect(x + w - 26, y + 8, 8, 6);
 
-                // 2. Rodinhas com rolamento central
                 const desenharRoda = (rx, ry) => {
                     ctx.fillStyle = '#0f172a';
                     ctx.beginPath();
@@ -1163,7 +1178,6 @@
                 desenharRoda(x + 22, y + 15);
                 desenharRoda(x + w - 22, y + 15);
 
-                // 3. Deck Curvo Esportivo (Shape Aerodinâmico)
                 const gradDeck = ctx.createLinearGradient(x, y, x + w, y);
                 gradDeck.addColorStop(0, '#f59e0b');
                 gradDeck.addColorStop(0.18, '#fbbf24');
@@ -1175,12 +1189,10 @@
                 ctx.strokeStyle = '#78350f';
                 ctx.lineWidth = 2.2;
                 ctx.beginPath();
-                // Pontas suavemente levantadas (kicktail)
                 ctx.roundRect(x, y + 2, w, 8.5, [6, 6, 6, 6]);
                 ctx.fill();
                 ctx.stroke();
 
-                // 4. Lixa esportiva com listras duplas
                 ctx.fillStyle = '#0284c7';
                 ctx.fillRect(x + 8, y + 4, 12, 4);
                 ctx.fillRect(x + w - 20, y + 4, 12, 4);
@@ -1194,16 +1206,13 @@
                 const ctx = this.ctx;
                 ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Skate estilizado
                 this.desenharSkateEstilizado(ctx, this.skate.x, this.skate.y, this.skate.w);
 
-                // Bola
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.arc(this.bola.x, this.bola.y, this.bola.r, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Bloquinhos menores
                 this.blocos.forEach(b => {
                     if (!b.vivo) return;
                     ctx.fillStyle = b.cor;
@@ -1215,6 +1224,7 @@
 
             fim: function() {
                 this.parar();
+                tentarVibrar(60);
                 const ov = document.getElementById('over-quebrablocos');
                 ov.innerHTML = `
                     <h2 style="color:#f87171; font-size:22px;">A bolinha caiu!</h2>
@@ -1229,7 +1239,7 @@
         };
 
         // =========================================================================
-        // 3. JOGO DA VELHA (INTELIGÊNCIA DEFENSIVA E OFENSIVA APRIMORADA)
+        // 3. JOGO DA VELHA 
         // =========================================================================
         const MotorVelha = {
             tabuleiro: Array(9).fill(''),
@@ -1288,33 +1298,16 @@
             jogadaChuiriInteligente: function() {
                 if (this.fim) return;
 
-                // 1. Ganhar
                 let melhorCasa = this.encontrarCasaEstrategica('O');
-
-                // 2. Bloquear o jogador
-                if (melhorCasa === null) {
-                    melhorCasa = this.encontrarCasaEstrategica('X');
-                }
-
-                // 3. Dominar o Centro
-                if (melhorCasa === null && this.tabuleiro[4] === '') {
-                    melhorCasa = 4;
-                }
-
-                // 4. Cantos
+                if (melhorCasa === null) melhorCasa = this.encontrarCasaEstrategica('X');
+                if (melhorCasa === null && this.tabuleiro[4] === '') melhorCasa = 4;
                 if (melhorCasa === null) {
                     const cantos = [0, 2, 6, 8].filter(idx => this.tabuleiro[idx] === '');
-                    if (cantos.length > 0) {
-                        melhorCasa = cantos[Math.floor(Math.random() * cantos.length)];
-                    }
+                    if (cantos.length > 0) melhorCasa = cantos[Math.floor(Math.random() * cantos.length)];
                 }
-
-                // 5. Restante
                 if (melhorCasa === null) {
                     const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
-                    if (vazias.length > 0) {
-                        melhorCasa = vazias[Math.floor(Math.random() * vazias.length)];
-                    }
+                    if (vazias.length > 0) melhorCasa = vazias[Math.floor(Math.random() * vazias.length)];
                 }
 
                 if (melhorCasa !== null) {
@@ -1356,7 +1349,7 @@
         };
 
         // =========================================================================
-        // 4. ESTOURAR BOLHAS
+        // 4. ESTOURAR BOLHAS (TRAVADO EM 40 FPS & VIBRAÇÃO SUBTIL EM CADA BOLHA)
         // =========================================================================
         const MotorBolhas = {
             canvas: null, ctx: null, anim: null, rodando: false,
@@ -1368,6 +1361,9 @@
             intervaloSpawnMs: 1400,
             ultimoSpawn: 0,
             ultimoSpawnCoracao: 0,
+            
+            ultimoFrame: 0,
+            fpsIntervalo: 25,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-bolhas');
@@ -1389,6 +1385,7 @@
                 this.intervaloSpawnMs = 1400;
                 this.ultimoSpawn = performance.now();
                 this.ultimoSpawnCoracao = performance.now();
+                tentarVibrar(40);
 
                 document.getElementById('placar-bolhas-estouradas').textContent = '0';
                 document.getElementById('placar-bolhas-vidas').textContent = '5';
@@ -1396,7 +1393,8 @@
 
                 this.rodando = true;
                 for (let i = 0; i < 4; i++) this.criarBolha();
-                this.loop();
+                this.ultimoFrame = performance.now();
+                this.loop(this.ultimoFrame);
             },
 
             parar: function() {
@@ -1435,6 +1433,7 @@
                         this.vidas++;
                         document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
                         AudioMotor.tocarTom(980, 0.25);
+                        tentarVibrar(40);
                         return;
                     }
                 }
@@ -1447,31 +1446,43 @@
                         document.getElementById('placar-bolhas-estouradas').textContent = this.estouradas;
                         AudioMotor.tocarTom(720 + Math.random() * 200, 0.05);
 
+                        // Vibração extremamente subtil em CADA bolha (15ms)
+                        tentarVibrar(15);
+
                         if (this.estouradas % 20 === 0) {
                             GerenciadorArcade.adicionarMoedas(1);
                             AudioMotor.tocarTom(880, 0.18);
+                            // Um tick duplo para celebrar a moeda
+                            setTimeout(() => tentarVibrar(25), 50);
                         }
                         break;
                     }
                 }
             },
 
-            loop: function() {
+            loop: function(timestamp) {
                 if (!MotorBolhas.rodando) return;
-                MotorBolhas.atualizar();
-                MotorBolhas.desenhar();
-                MotorBolhas.anim = requestAnimationFrame(MotorBolhas.loop);
+                MotorBolhas.anim = requestAnimationFrame((ts) => MotorBolhas.loop(ts));
+                
+                if (!timestamp) timestamp = performance.now();
+                const delta = timestamp - MotorBolhas.ultimoFrame;
+                
+                if (delta > MotorBolhas.fpsIntervalo) {
+                    MotorBolhas.ultimoFrame = timestamp - (delta % MotorBolhas.fpsIntervalo);
+                    MotorBolhas.atualizar();
+                    MotorBolhas.desenhar();
+                }
             },
 
             atualizar: function() {
                 const agora = performance.now();
-                this.tempoDecorridoMs += 16.6;
+                this.tempoDecorridoMs += 25; // 40fps
 
                 if (agora - this.ultimoSpawn > this.intervaloSpawnMs) {
                     this.ultimoSpawn = agora;
                     this.criarBolha();
-                    const minutosPassados = Math.floor(this.tempoDecorridoMs / 120000);
-                    const fatorReducao = Math.pow(0.97, minutosPassados);
+                    const minutosPassados = Math.floor(this.tempoDecorridoMs / 60000);
+                    const fatorReducao = Math.pow(0.9, minutosPassados); 
                     this.intervaloSpawnMs = Math.max(350, 1400 * fatorReducao);
                 }
 
@@ -1494,6 +1505,7 @@
                         this.vidas--;
                         document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
                         AudioMotor.tocarTom(220, 0.2);
+                        tentarVibrar(50);
 
                         if (this.vidas <= 0) return this.fim();
                     }
@@ -1534,6 +1546,7 @@
 
             fim: function() {
                 this.parar();
+                tentarVibrar([60, 50, 60]);
                 const moedasFinais = Math.floor(this.estouradas / 20);
                 const ov = document.getElementById('over-bolhas');
                 ov.innerHTML = `
@@ -1549,7 +1562,7 @@
         };
 
         // =========================================================================
-        // 5. JOGO DA MEMÓRIA (50 MOEDAS AO COMPLETAR)
+        // 5. JOGO DA MEMÓRIA 
         // =========================================================================
         const MotorMemoria = {
             cartas: [], viradas: [], pares: 0,
@@ -1621,7 +1634,7 @@
         };
 
         // =========================================================================
-        // 6. GÊNIO SIMON POR FASES (SOM ÚNICO POR BOTÃO)
+        // 6. GÊNIO SIMON POR FASES
         // =========================================================================
         const MotorSimon = {
             faseAtual: 1,
@@ -1715,6 +1728,7 @@
             toqueUsuario: function(id) {
                 if (!this.jogando) return;
                 this.piscarBotao(id);
+                tentarVibrar(20);
 
                 if (id === this.sequencia[this.passo]) {
                     this.passo++;
@@ -1729,6 +1743,7 @@
                 } else {
                     this.jogando = false;
                     AudioMotor.tocarTom(160, 0.4, 'sawtooth');
+                    tentarVibrar([80, 50, 80]);
                     document.getElementById('status-simon').innerHTML = `<span style="color:#f87171;">Sequência incorreta! Tente a Fase ${this.faseAtual} novamente.</span>`;
                     document.getElementById('btn-iniciar-simon').textContent = `Repetir Fase ${this.faseAtual}`;
                     document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';

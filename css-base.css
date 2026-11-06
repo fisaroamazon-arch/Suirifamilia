@@ -419,29 +419,126 @@ button {
     color: var(--texto-principal);
 }
 
-.btn-circular-trocar-membro {
-    width: 32px;
-    height: 32px;
+/* ========================================================== */
+/* BOTÃO TROCAR MEMBRO INTEGRADO (PÍLULA HARMONIZADA)         */
+/* ========================================================== */
+.btn-circular-trocar-membro,
+#btn-trocar-membro-topo {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 12px !important;
+    background: var(--suiri-surface-secondary-light, #fef9ea) !important;
+    border: 1.5px solid rgba(217, 119, 6, 0.25) !important;
+    color: var(--cor-primaria, #d97706) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px 10px !important;
+    gap: 5px !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    margin-top: 4px !important;
+    box-shadow: 0 1px 3px rgba(217, 119, 6, 0.08) !important;
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.btn-circular-trocar-membro:hover,
+#btn-trocar-membro-topo:hover {
+    background: var(--pastel-ouro, #fef3c7) !important;
+    border-color: var(--cor-primaria, #d97706) !important;
+}
+
+.btn-circular-trocar-membro:active,
+#btn-trocar-membro-topo:active {
+    transform: scale(0.95) !important;
+}
+
+/* ========================================================== */
+/* SELETOR DE IDIOMAS COM BANDEIRAS FLUTUANTE (TOPO DIREITO)  */
+/* ========================================================== */
+#menu-idiomas-flutuante {
+    position: fixed;
+    top: 10px;
+    right: 14px;
+    z-index: 10000000;
+    user-select: none;
+}
+
+.btn-bandeira-ativa {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: var(--suiri-surface-secondary-light, #fef9ea);
-    border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25));
-    color: var(--cor-primaria, #d97706);
-    display: inline-flex;
+    background: #ffffff;
+    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 4px;
-    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease;
 }
 
-.btn-circular-trocar-membro:hover {
-    background: var(--pastel-ouro, #fef3c7);
-    border-color: var(--cor-primaria, #d97706);
-}
-
-.btn-circular-trocar-membro:active {
+.btn-bandeira-ativa:active {
     transform: scale(0.92);
+}
+
+.bandeira-icone-svg {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.dropdown-idiomas-bandeiras {
+    position: absolute;
+    top: 42px;
+    right: 0;
+    background: #ffffff;
+    border: 1.5px solid rgba(217, 119, 6, 0.25);
+    border-radius: 16px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    animation: surgimentoDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.item-idioma-opcao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #334155;
+    transition: background 0.15s ease;
+    width: 100%;
+}
+
+.item-idioma-opcao:hover {
+    background: #fef3c7;
+}
+
+@keyframes surgimentoDropdown {
+    from { opacity: 0; transform: translateY(-6px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Oculta o widget nativo original do Google */
+#google_translate_element {
+    display: none !important;
+}
+.skiptranslate iframe, .goog-te-banner-frame {
+    display: none !important;
+}
+body {
+    top: 0 !important;
 }
 
 /* ========================================================== */
@@ -553,6 +650,7 @@ button {
     height: 76px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
+    aspect-ratio: 1 / 1 !important;
     margin-bottom: 8px !important;
 }
 

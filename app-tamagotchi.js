@@ -1,8 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-TAMAGOTCHI.JS (100% COMPLETO E INTEGRAL)
-// Casinha Dobro do Tamanho (220px), Foto Interna em Tela Total (interna.jpg),
-// Ícones de Ação Direto nos Cômodos, Animações Grandes Centrais (~400px),
-// Redirecionamento Direto para o Arcade (jogos.html) & Mascote à Esquerda na Sala.
+// Casinha Dobro do Tamanho (220px), Imagem Interna Alinhada (interna.jpg),
+// Ícones Exatos nos Cômodos e Animações Executadas no Próprio Ambiente.
+// Redirecionamento Direto para o Arcade (jogos.html). Zero Emojis (SVG Puro).
 // =========================================================================
 
 window.TamagotchiKids = {
@@ -85,8 +85,7 @@ window.TamagotchiKids = {
         }
 
         if (estadoNome === 'dormir') {
-            const timestamp = Date.now();
-            imgs.forEach(img => { img.src = `${this.GIFS_CHUIRI.dormir}?t=${timestamp}`; });
+            imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormir; });
             this._timeoutAnimacao = setTimeout(() => {
                 imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormindo; });
             }, 10000);
@@ -94,8 +93,7 @@ window.TamagotchiKids = {
         }
 
         const srcEscolhido = this.GIFS_CHUIRI[estadoNome] || this.GIFS_CHUIRI.padrao;
-        const timestamp = Date.now();
-        imgs.forEach(img => { img.src = `${srcEscolhido}?t=${timestamp}`; });
+        imgs.forEach(img => { img.src = srcEscolhido; });
 
         if (duracaoTemporariaMs > 0) {
             this._timeoutAnimacao = setTimeout(() => {
@@ -175,7 +173,7 @@ window.TamagotchiKids = {
         `;
 
         widget.innerHTML = `
-            <!-- CASINHA COM O DOBRO DO TAMANHO (220px de largura x 260px de altura) -->
+            <!-- CASINHA COM O DOBRO DO TAMANHO (220px x 260px) -->
             <div id="btn-casinha-tamagotchi" title="Entrar na Casinha" style="width: 220px; height: 260px; cursor: pointer; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: flex-end; justify-content: center;">
                 <img src="${this.MIDIAS_CASA.externa}" alt="Casinha do Chuíri" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));" />
             </div>
@@ -246,7 +244,7 @@ window.TamagotchiKids = {
             modal.innerHTML = `
                 <div style="width: 100%; max-width: 440px; height: 98vh; max-height: 840px; background: #000000; border: 3px solid #f59e0b; border-radius: 26px; display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.6); box-sizing: border-box;">
                     
-                    <!-- BARRA ULTRA-COMPACTA NO TOPO -->
+                    <!-- BARRA COMPACTA NO TOPO -->
                     <div style="position: absolute; top: 0; left: 0; width: 100%; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%); pointer-events: auto;">
                         <div style="display:flex; align-items:center; gap:6px; background: rgba(0,0,0,0.65); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(245,158,11,0.5);">
                             <span style="font-size: 11px; font-weight: 800; color: #fde047; display:inline-flex; align-items:center; gap:4px;">
@@ -264,34 +262,34 @@ window.TamagotchiKids = {
                     <div style="flex: 1; position: relative; width: 100%; height: 100%; overflow: hidden; background: #000000; display: flex; align-items: center; justify-content: center;">
                         <img id="img-cenario-interna" src="${this.MIDIAS_CASA.internaFoto}" alt="Interior da Casa" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
 
-                        <!-- CAMADA DE ÍCONES DE CÔMODOS -->
+                        <!-- CAMADA DE ÍCONES DE CÔMODOS REPOSICIONADOS -->
                         <div id="camada-icones-comodos" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.3s ease;">
                             
-                            <!-- 1. QUARTO (CAMA) -->
-                            <div id="btn-acao-cama" title="Dormir na Cama" onclick="window.TamagotchiKids.acaoDormirCama()" style="position: absolute; top: 14%; left: 42%; width: 48px; height: 48px; border-radius: 50%; background: rgba(124, 58, 237, 0.9); border: 2.5px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
-                                <svg class="icone-svg" style="width:22px;height:22px;color:#ffffff;" viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                            <!-- 1. QUARTO (CAMA) - Alinhado no mezanino sobre a cama -->
+                            <div id="btn-acao-cama" title="Dormir na Cama" onclick="window.TamagotchiKids.acaoDormirCama()" style="position: absolute; top: 31%; left: 52%; width: 44px; height: 44px; border-radius: 50%; background: rgba(124, 58, 237, 0.9); border: 2px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
+                                <svg class="icone-svg" style="width:20px;height:20px;color:#ffffff;" viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
                             </div>
 
-                            <!-- 2. COZINHA (GELADEIRA) -->
-                            <div id="btn-acao-geladeira" title="Comer na Geladeira" onclick="window.TamagotchiKids.acaoTocarGeladeira()" style="position: absolute; top: 44%; left: 14%; width: 48px; height: 48px; border-radius: 50%; background: rgba(245, 158, 11, 0.92); border: 2.5px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
-                                <svg class="icone-svg" style="width:22px;height:22px;color:#ffffff;" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+                            <!-- 2. COZINHA (GELADEIRA) - Alinhado em cima da geladeira branca -->
+                            <div id="btn-acao-geladeira" title="Comer na Geladeira" onclick="window.TamagotchiKids.acaoTocarGeladeira()" style="position: absolute; top: 52%; left: 22%; width: 44px; height: 44px; border-radius: 50%; background: rgba(245, 158, 11, 0.92); border: 2px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
+                                <svg class="icone-svg" style="width:20px;height:20px;color:#ffffff;" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
                             </div>
 
-                            <!-- 3. BANHEIRO (BANHO) -->
-                            <div id="btn-acao-banho" title="Tomar Banho" onclick="window.TamagotchiKids.acaoTomarBanho()" style="position: absolute; top: 46%; right: 14%; width: 48px; height: 48px; border-radius: 50%; background: rgba(2, 132, 199, 0.92); border: 2.5px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
-                                <svg class="icone-svg" style="width:22px;height:22px;color:#ffffff;" viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1Z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2"/><line x1="4" y1="21" x2="5" y2="19"/><line x1="20" y1="21" x2="19" y2="19"/></svg>
+                            <!-- 3. BANHEIRO (BANHO) - Alinhado sobre a banheira -->
+                            <div id="btn-acao-banho" title="Tomar Banho" onclick="window.TamagotchiKids.acaoTomarBanho()" style="position: absolute; top: 57%; left: 65%; width: 44px; height: 44px; border-radius: 50%; background: rgba(2, 132, 199, 0.92); border: 2px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
+                                <svg class="icone-svg" style="width:20px;height:20px;color:#ffffff;" viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1Z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2"/><line x1="4" y1="21" x2="5" y2="19"/><line x1="20" y1="21" x2="19" y2="19"/></svg>
                             </div>
 
-                            <!-- 4. SALA (JOGOS NO SOFÁ) -->
-                            <div id="btn-acao-sala" title="Abrir Arcade de Jogos" onclick="window.TamagotchiKids.acaoTocarSala()" style="position: absolute; bottom: 8%; left: 44%; width: 48px; height: 48px; border-radius: 50%; background: rgba(16, 185, 129, 0.92); border: 2.5px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
-                                <svg class="icone-svg" style="width:22px;height:22px;color:#ffffff;" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+                            <!-- 4. SALA (JOGOS NO SOFÁ) - Alinhado na sala térrea -->
+                            <div id="btn-acao-sala" title="Abrir Arcade de Jogos" onclick="window.TamagotchiKids.acaoTocarSala()" style="position: absolute; bottom: 12%; left: 26%; width: 44px; height: 44px; border-radius: 50%; background: rgba(16, 185, 129, 0.92); border: 2px solid #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; pointer-events: auto;">
+                                <svg class="icone-svg" style="width:20px;height:20px;color:#ffffff;" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
                             </div>
 
                         </div>
 
-                        <!-- CHUÍRI POSICIONADO NO CÔMODO (OU CENTRO GRANDE ~400px DURANTE AÇÃO) -->
-                        <div id="container-chuiri-ativo" style="position: absolute; bottom: 6%; left: 16%; width: 105px; height: 105px; z-index: 35; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.3, 0.64, 1);">
-                            <img id="img-chuiri-animado-palco" src="${this.GIFS_CHUIRI.padrao}" alt="Chuíri" style="width:100%; height:100%; object-fit:contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));" />
+                        <!-- CHUÍRI (RENDERIZADO EXATAMENTE NO CÔMODO ATUAL) -->
+                        <div id="container-chuiri-ativo" style="position: absolute; bottom: 8%; left: 34%; width: 95px; height: 95px; z-index: 35; pointer-events: none; transition: all 0.35s cubic-bezier(0.34, 1.3, 0.64, 1);">
+                            <img id="img-chuiri-animado-palco" src="${this.GIFS_CHUIRI.padrao}" alt="Chuíri" style="width:100%; height:100%; object-fit:contain; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.55));" />
                         </div>
 
                     </div>
@@ -321,7 +319,7 @@ window.TamagotchiKids = {
         if (elBanho) elBanho.textContent = `${estado.higiene}%`;
     },
 
-    // 8. POSICIONAMENTO DO CHUÍRI NOS CÔMODOS
+    // 8. POSICIONAMENTO E ANIMAÇÃO DO CHUÍRI NO PRÓPRIO CÔMODO
     posicionarChuiriNoComodo: function(comodo) {
         const box = document.getElementById('container-chuiri-ativo');
         if (!box) return;
@@ -331,56 +329,46 @@ window.TamagotchiKids = {
         box.style.right = 'auto';
 
         if (comodo === 'quarto') {
-            box.style.bottom = '68%';
-            box.style.left = '48%';
-            box.style.width = '88px';
-            box.style.height = '88px';
+            // Em cima da cama no sótão
+            box.style.bottom = '64%';
+            box.style.left = '46%';
+            box.style.width = '84px';
+            box.style.height = '84px';
         } else if (comodo === 'cozinha') {
-            box.style.bottom = '38%';
-            box.style.left = '22%';
-            box.style.width = '96px';
-            box.style.height = '96px';
+            // Ao lado da mesa e geladeira
+            box.style.bottom = '36%';
+            box.style.left = '28%';
+            box.style.width = '90px';
+            box.style.height = '90px';
         } else if (comodo === 'banheiro') {
-            box.style.bottom = '38%';
-            box.style.left = '64%';
-            box.style.width = '96px';
-            box.style.height = '96px';
+            // Próximo à banheira
+            box.style.bottom = '36%';
+            box.style.left = '60%';
+            box.style.width = '90px';
+            box.style.height = '90px';
         } else if (comodo === 'sala') {
-            box.style.bottom = '7%';
-            box.style.left = '16%';
-            box.style.width = '105px';
-            box.style.height = '105px';
+            // Em frente à lareira / poltrona
+            box.style.bottom = '8%';
+            box.style.left = '34%';
+            box.style.width = '95px';
+            box.style.height = '95px';
         }
     },
 
-    // 9. ANIMAÇÃO DE DESTAQUE: TELA TOTAL NO CENTRO EM TAMANHO GRANDE (~400px)
-    exibirAnimacaoCentralGrande: function(estadoAnimacao, tipoAudio, comodoRetorno, duracaoMs = 8000) {
-        const box = document.getElementById('container-chuiri-ativo');
-        const camadaIcones = document.getElementById('camada-icones-comodos');
-
-        if (camadaIcones) camadaIcones.style.opacity = '0';
-
-        if (box) {
-            box.style.left = '50%';
-            box.style.bottom = '50%';
-            box.style.transform = 'translate(-50%, 50%)';
-            box.style.width = 'min(400px, 86vw)';
-            box.style.height = 'min(400px, 86vw)';
-        }
-
+    // 9. EXECUÇÃO DE ANIMAÇÕES NOS CÔMODOS
+    executarAcaoNoComodo: function(comodo, estadoAnimacao, tipoAudio, duracaoMs = 8000) {
+        this.posicionarChuiriNoComodo(comodo);
         this.definirEstadoAnimacao(estadoAnimacao);
         if (tipoAudio) this.tocarAudio(tipoAudio);
 
-        if (this._timeoutCentral) clearTimeout(this._timeoutCentral);
-        this._timeoutCentral = setTimeout(() => {
-            if (camadaIcones) camadaIcones.style.opacity = '1';
-            this.posicionarChuiriNoComodo(comodoRetorno);
+        if (this._timeoutAcaoComodo) clearTimeout(this._timeoutAcaoComodo);
+        this._timeoutAcaoComodo = setTimeout(() => {
             const voltaPara = this.dormindoNaCama ? 'dormindo' : 'padrao';
             this.definirEstadoAnimacao(voltaPara);
         }, duracaoMs);
     },
 
-    // 10. AÇÕES COM ANIMAÇÃO EXPANDIDA
+    // 10. AÇÕES DISPARADAS PELOS BOTÕES
     acaoDormirCama: function() {
         this.dormindoNaCama = !this.dormindoNaCama;
         const estado = this.obterEstado();
@@ -389,7 +377,9 @@ window.TamagotchiKids = {
             estado.energia = Math.min(100, estado.energia + 35);
             this.salvarEstado(estado);
             this.atualizarStatusCompacto();
-            this.exibirAnimacaoCentralGrande('dormir', 'saudacao', 'quarto', 9000);
+            this.posicionarChuiriNoComodo('quarto');
+            this.definirEstadoAnimacao('dormir');
+            this.tocarAudio('saudacao');
         } else {
             this.posicionarChuiriNoComodo('quarto');
             this.definirEstadoAnimacao('padrao');
@@ -402,7 +392,9 @@ window.TamagotchiKids = {
         estado.felicidade = Math.min(100, estado.felicidade + 10);
         this.salvarEstado(estado);
         this.atualizarStatusCompacto();
-        this.exibirAnimacaoCentralGrande('comendo', 'comida', 'cozinha', 8500);
+
+        // Animação comendo no próprio piso da cozinha
+        this.executarAcaoNoComodo('cozinha', 'comendo', 'comida', 8000);
     },
 
     acaoTomarBanho: function() {
@@ -411,16 +403,20 @@ window.TamagotchiKids = {
         estado.felicidade = Math.min(100, estado.felicidade + 10);
         this.salvarEstado(estado);
         this.atualizarStatusCompacto();
-        this.exibirAnimacaoCentralGrande('banho', 'parabens', 'banheiro', 8500);
+
+        // Animação banho no banheiro
+        this.executarAcaoNoComodo('banheiro', 'banho', 'parabens', 8000);
     },
 
     acaoTocarSala: function() {
         this.posicionarChuiriNoComodo('sala');
+        this.definirEstadoAnimacao('feliz', 3000);
         this.tocarAudio('toque');
         
+        // Redireciona diretamente para o arcade de jogos
         setTimeout(() => {
             window.location.href = 'jogos.html';
-        }, 150);
+        }, 350);
     }
 };
 

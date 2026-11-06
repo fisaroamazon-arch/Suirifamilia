@@ -1,6 +1,6 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
-// Missões com Ordenação Inteligente (Cumpridas descem para o fim da lista),
+// Missões com Ordenação Inteligente (Cumpridas Recolhíveis),
 // Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
@@ -193,6 +193,11 @@ window.carregarMissoesKidsExclusiva = function() {
         return (a.prioridade || 2) - (b.prioridade || 2);
     });
 
+    const wrapperPendentes = document.createElement('div');
+    const wrapperConcluidas = document.createElement('div');
+    wrapperConcluidas.id = 'container-concluidas-kids';
+    wrapperConcluidas.className = 'oculto';
+
     missoesKidsOrdenadas.forEach(missao => {
         const card = document.createElement('div');
         const concluida = missao.status === 'concluida';
@@ -289,13 +294,50 @@ window.carregarMissoesKidsExclusiva = function() {
                 `)}
             </div>
         `;
-        container.appendChild(card);
+        
+        if (concluida) {
+            wrapperConcluidas.appendChild(card);
+        } else {
+            wrapperPendentes.appendChild(card);
+        }
     });
+
+    container.appendChild(wrapperPendentes);
+
+    if (wrapperConcluidas.children.length > 0) {
+        const divToggle = document.createElement('div');
+        divToggle.style.cssText = 'text-align: center; margin: 16px 0 8px 0;';
+        divToggle.innerHTML = `
+            <button type="button" class="btn-secundario" style="padding: 8px 16px; font-size: 12px; font-weight: 800; border-radius: 14px; border: 1.5px dashed rgba(16, 185, 129, 0.4); color: #15803d; background: #f0fdf4; cursor: pointer;" onclick="window.alternarMissoesConcluidas('kids', ${wrapperConcluidas.children.length})">
+                <span id="txt-btn-concluidas-kids">Ver ${wrapperConcluidas.children.length} missões concluídas ▼</span>
+            </button>
+        `;
+        container.appendChild(divToggle);
+        container.appendChild(wrapperConcluidas);
+    }
 };
 
 // =========================================================================
-// 3. SUBITENS OPCIONAIS (CHECKLIST DAS MISSÕES)
+// 3. SUBITENS OPCIONAIS E ALTERNÂNCIA DE MISSÕES CONCLUÍDAS
 // =========================================================================
+
+window.alternarMissoesConcluidas = function(tipo, qtd) {
+    if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
+        window.SonsSuiri.popClique();
+    }
+    const container = document.getElementById(`container-concluidas-${tipo}`);
+    const spanTxt = document.getElementById(`txt-btn-concluidas-${tipo}`);
+    if (!container || !spanTxt) return;
+
+    if (container.classList.contains('oculto')) {
+        container.classList.remove('oculto');
+        spanTxt.textContent = `Ocultar tarefas concluídas ▲`;
+    } else {
+        container.classList.add('oculto');
+        const termo = tipo === 'kids' ? 'missões' : 'tarefas';
+        spanTxt.textContent = `Ver ${qtd} ${termo} concluídas ▼`;
+    }
+};
 
 window.toggleSubitemMissao = async function(missaoId, subitemId) {
     const supabase = obterClienteSupabase();
@@ -716,6 +758,11 @@ window.renderizarMissoesTela = function() {
     const agora = new Date();
     const horaAtualMinutos = agora.getHours() * 60 + agora.getMinutes();
 
+    const wrapperPendentes = document.createElement('div');
+    const wrapperConcluidas = document.createElement('div');
+    wrapperConcluidas.id = 'container-concluidas-adulto';
+    wrapperConcluidas.className = 'oculto';
+
     listaExibicao.forEach(missao => {
         const card = document.createElement('div');
         const concluida = missao.status === 'concluida';
@@ -842,8 +889,27 @@ window.renderizarMissoesTela = function() {
                 </div>
             </div>
         `;
-        container.appendChild(card);
+        
+        if (concluida) {
+            wrapperConcluidas.appendChild(card);
+        } else {
+            wrapperPendentes.appendChild(card);
+        }
     });
+
+    container.appendChild(wrapperPendentes);
+
+    if (wrapperConcluidas.children.length > 0) {
+        const divToggle = document.createElement('div');
+        divToggle.style.cssText = 'text-align: center; margin: 16px 0 8px 0;';
+        divToggle.innerHTML = `
+            <button type="button" class="btn-secundario" style="padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px dashed var(--borda-delicada); color: var(--texto-suave); cursor: pointer;" onclick="window.alternarMissoesConcluidas('adulto', ${wrapperConcluidas.children.length})">
+                <span id="txt-btn-concluidas-adulto">Ver ${wrapperConcluidas.children.length} tarefas concluídas ▼</span>
+            </button>
+        `;
+        container.appendChild(divToggle);
+        container.appendChild(wrapperConcluidas);
+    }
 };
 
 // =========================================================================
@@ -1193,10 +1259,10 @@ window.excluirMissao = async function(id) {
 // =========================================================================
 
 window.inicializarMotorVoz = function() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return;
 
-    reconhecimentoVoz = new SpeechRecognition();
+    reconhecimentoVoz = new SpeechRec();
     reconhecimentoVoz.lang = 'pt-BR';
     reconhecimentoVoz.continuous = false;
     reconhecimentoVoz.interimResults = false;

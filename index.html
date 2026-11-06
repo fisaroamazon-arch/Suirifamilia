@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <!-- Regras Críticas de Resguardo para o Splash Screen, Banner PWA, Bottom Bar e Avatar Ampliado -->
+    <!-- Regras Críticas de Resguardo -->
     <style>
         .oculto {
             display: none !important;
@@ -84,6 +84,31 @@
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
         }
+
+        /* Oculta a barra de tradução do Google e estiliza o seletor flutuante */
+        body { top: 0 !important; }
+        .skiptranslate iframe { display: none !important; }
+        
+        #google_translate_element {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 10000000;
+        }
+        .goog-te-gadget-simple {
+            background-color: #ffffff !important;
+            border: 1.5px solid var(--cor-primaria, #d97706) !important;
+            border-radius: 12px !important;
+            padding: 6px 10px !important;
+            font-size: 11.5px !important;
+            font-weight: 800 !important;
+            color: #334155 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        .goog-te-gadget-icon { display: none; }
+        .goog-te-menu-value span { color: #334155 !important; font-family: inherit !important; border: none !important; }
 
         /* Banner Flutuante de Instalação PWA */
         #banner-instalacao-pwa {
@@ -227,6 +252,51 @@
 <body>
 
     <!-- =================================================================== -->
+    <!-- SELETOR DE IDIOMAS POR BANDEIRAS (TOPO DIREITO)                     -->
+    <!-- =================================================================== -->
+    <div id="menu-idiomas-flutuante">
+        <button type="button" class="btn-bandeira-ativa" onclick="window.alternarMenuBandeiras()" title="Mudar Idioma">
+            <!-- Bandeira do Brasil (Padrão) -->
+            <svg class="bandeira-icone-svg" viewBox="0 0 36 36">
+                <rect width="36" height="36" rx="18" fill="#15803d"/>
+                <polygon points="18,5 33,18 18,31 3,18" fill="#facc15"/>
+                <circle cx="18" cy="18" r="7.5" fill="#1d4ed8"/>
+                <path d="M10.8 17.2 C12.5 15.5 16 15 25.2 18.2" stroke="#ffffff" stroke-width="1.2" fill="none"/>
+            </svg>
+        </button>
+        <div id="dropdown-lista-idiomas" class="dropdown-idiomas-bandeiras oculto">
+            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('pt')">
+                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
+                    <rect width="36" height="36" rx="18" fill="#15803d"/>
+                    <polygon points="18,5 33,18 18,31 3,18" fill="#facc15"/>
+                    <circle cx="18" cy="18" r="7.5" fill="#1d4ed8"/>
+                </svg>
+                Português
+            </button>
+            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('en')">
+                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
+                    <rect width="36" height="36" rx="18" fill="#1e3a8a"/>
+                    <path d="M0,0 L36,36 M36,0 L0,36" stroke="#ffffff" stroke-width="4"/>
+                    <path d="M0,0 L36,36 M36,0 L0,36" stroke="#b91c1c" stroke-width="2"/>
+                    <path d="M18,0 V36 M0,18 H36" stroke="#ffffff" stroke-width="6"/>
+                    <path d="M18,0 V36 M0,18 H36" stroke="#b91c1c" stroke-width="3.5"/>
+                </svg>
+                English
+            </button>
+            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('es')">
+                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
+                    <rect width="36" height="36" rx="18" fill="#b91c1c"/>
+                    <rect y="9" width="36" height="18" fill="#facc15"/>
+                </svg>
+                Español
+            </button>
+        </div>
+    </div>
+
+    <!-- Widget de Idiomas Invisível (Google Translate) -->
+    <div id="google_translate_element" style="display:none;"></div>
+
+    <!-- =================================================================== -->
     <!-- TELA DE SPLASH COM VÍDEO (Compatível com Android e iOS)             -->
     <!-- =================================================================== -->
     <div id="splash-screen-apresentacao" class="oculto">
@@ -366,8 +436,8 @@
             <div id="painel-adulto-container">
                 
                 <!-- 2º ITEM DO TOPO: CARD DO USUÁRIO COM FOTO DE PERFIL BEM MAIOR (68PX) -->
-                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; gap:10px; margin-bottom: 12px; border-radius: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; gap:10px; margin-bottom: 12px; border-radius: 18px;">
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
                         <input type="file" id="input-upload-avatar-membro" accept="image/*" class="oculto" onchange="window.processarUploadAvatar(event)">
                         
                         <!-- Contentor Avatar com Foto Ampliada (68px) e Sino Flutuante no Canto Superior Direito -->
@@ -382,26 +452,26 @@
                         <div style="min-width: 0; flex: 1;">
                             <span id="nome-familia-topo" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
                             <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
-                            <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" style="margin-top: 4px; display: inline-flex;" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
-                                <svg class="icone-svg" style="width: 15px; height: 15px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span style="font-size: 10px; font-weight: 700; margin-left: 3px;">Trocar</span>
+                            <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
+                                <svg class="icone-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span style="font-size: 11px; font-weight: 700;">Trocar</span>
                             </button>
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: auto auto; gap: 6px; flex-shrink: 0;">
-                        <button type="button" class="btn-secundario" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.abrirModalPilulaDia()">
+                        <button type="button" class="btn-secundario" style="padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 10px;" onclick="window.abrirModalPilulaDia()">
                             Pense
                         </button>
-                        <a href="javascript:void(0)" class="btn-loja-topo" style="padding: 5px 8px; font-size: 11px; border-radius: 8px;" onclick="window.abrirModalRankingEquipe()">
+                        <a href="javascript:void(0)" class="btn-loja-topo" style="padding: 6px 10px; font-size: 11px; border-radius: 10px;" onclick="window.abrirModalRankingEquipe()">
                             <svg class="icone-svg icone-fogo" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                             <span id="contador-ofensiva-topo">0</span>d • Loja
                         </a>
 
-                        <button type="button" class="btn-secundario" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.iniciarTourInstrucoes()">
+                        <button type="button" class="btn-secundario" style="padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 10px;" onclick="window.iniciarTourInstrucoes()">
                             Manual
                         </button>
-                        <button type="button" id="btn-sair-topo-app" class="btn-erro" style="padding: 5px 8px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="window.fazerLogoff()">
+                        <button type="button" id="btn-sair-topo-app" class="btn-erro" style="padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 10px;" onclick="window.fazerLogoff()">
                             Sair
                         </button>
                     </div>
@@ -533,9 +603,7 @@
                     </div>
                 </section>
 
-                <!-- =============================================================== -->
-                <!-- MÓDULO 3: FINANÇAS (REORDENADO COM EXATIDÃO ABSOLUTA)          -->
-                <!-- =============================================================== -->
+                <!-- MÓDULO 3: FINANÇAS -->
                 <section id="secao-financeiro" class="secao-conteudo-app oculto">
                     
                     <!-- 1º ITEM: MINHA CARTEIRA / MONTANTE DA FAMÍLIA -->
@@ -602,7 +670,7 @@
                         <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
                     </div>
 
-                    <!-- 4º ITEM: BALANÇO FINANCEIRO E COMPARATIVO: RENDA VS GASTO PRÓPRIO -->
+                    <!-- 4º ITEM: BALANÇO FINANCEIRO E COMPARATIVO -->
                     <div id="bloco-card-balanco-familiar" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
@@ -616,7 +684,8 @@
                         <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Confirmar Balanço</button>
                     </div>
 
-                    <div id="relatorio-pdf-container" class= style="margin-bottom: 12px;">
+                    <!-- CONTAINER EXCLUSIVO PARA O DOCUMENTO/PDF -->
+                    <div id="relatorio-pdf-container" class="oculto" style="margin-bottom: 12px;">
                         <div id="area-resultados-relatorio"></div>
                         
                         <div class="cartao-geral" style="margin-top: 10px;">
@@ -625,11 +694,12 @@
                                 <canvas id="grafico-barras-renda-gastos"></canvas>
                             </div>
                         </div>
+                    </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
-                            <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
-                            <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
-                        </div>
+                    <!-- BOTÕES DE EXPORTAÇÃO (FORA DO PDF PARA NÃO SAÍREM IMPRESSOS) -->
+                    <div id="acoes-botoes-relatorio" class="oculto" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; margin-bottom: 12px;">
+                        <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
+                        <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
                     </div>
 
                     <!-- MURAL DE FINANÇAS E AVISOS DA CASA -->
@@ -687,7 +757,6 @@
                     <!-- 6º ITEM: META DO MÊS & 7º ITEM: RESERVA DA FAMÍLIA -->
                     <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
                         
-                        <!-- 6º ITEM: META DO MÊS -->
                         <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -705,7 +774,6 @@
                             </div>
                         </div>
 
-                        <!-- 7º ITEM: RESERVA DA FAMÍLIA (COFRES DO LAR) -->
                         <div id="bloco-card-cofres-compartilhados" class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div>
@@ -789,7 +857,7 @@
                         <div id="lista-membros-cadastrados"></div>
                     </div>
 
-                    <!-- CARTÃO APOIE O PROJETO (NA ABA FAMÍLIA) -->
+                    <!-- CARTÃO APOIE O PROJETO -->
                     <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); background: #fef9ea; margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
@@ -846,7 +914,6 @@
     <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
     <!-- =================================================================== -->
 
-    <!-- MODAL TRANSFERIR SALDO ENTRE MEMBROS DA FAMÍLIA -->
     <div id="modal-transferir-saldo" class="modal-overlay oculto" style="z-index: 1000003;">
         <div class="modal-conteudo" style="max-width: 330px; padding: 20px 18px; border-radius: 22px; background: #ffffff;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
@@ -887,7 +954,6 @@
         </div>
     </div>
 
-    <!-- MODAL OPÇÕES DE LEITURA DO CUPOM FISCAL (CÂMARA OU GALERIA) -->
     <div id="modal-escolha-origem-cupom" class="modal-overlay oculto" style="z-index: 1000002;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
             <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
@@ -910,7 +976,6 @@
         </div>
     </div>
 
-    <!-- MODAL DO SINO: QUADRO DE NOTIFICAÇÕES (HOJE, 7 DIAS & CARDÁPIO) -->
     <div id="modal-notificacoes-gerais" class="modal-overlay oculto">
         <div class="modal-conteudo" style="max-width: 440px; padding: 18px 16px; border-radius: 22px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
@@ -926,7 +991,6 @@
                 <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius: 8px;" onclick="window.fecharModalNotificacoesGerais()">✕</button>
             </div>
 
-            <!-- Bloco 1: O que temos para Hoje -->
             <div style="margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706); display: flex; align-items: center; gap: 4px;">
@@ -940,7 +1004,6 @@
                 </div>
             </div>
 
-            <!-- Bloco 2: O que temos para os Próximos 7 Dias -->
             <div style="margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #0284c7; display: flex; align-items: center; gap: 4px;">
@@ -954,7 +1017,6 @@
                 </div>
             </div>
 
-            <!-- Bloco 3: Sugestões de Refeições & Cardápio do Mês (IA com base nas compras) -->
             <div style="border-top: 1px dashed var(--borda-delicada, #e2e8f0); padding-top: 12px; margin-bottom: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #10b981; display: flex; align-items: center; gap: 4px;">
@@ -976,7 +1038,6 @@
         </div>
     </div>
 
-    <!-- MODAL NOVA MISSÃO -->
     <div id="modal-nova-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1027,7 +1088,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE APOIO AO PROJETO (PIX COPIA E COLA) -->
     <div id="modal-apoie-projeto" class="modal-overlay oculto" style="z-index: 1000001;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
             <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
@@ -1052,7 +1112,6 @@
         </div>
     </div>
 
-    <!-- MODAL METAS DO ANO -->
     <div id="modal-metas-anuais" class="modal-overlay oculto">
         <div class="modal-conteudo" style="max-width: 440px; padding: 20px 18px; border-radius: 24px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
@@ -1100,7 +1159,6 @@
         </div>
     </div>
 
-    <!-- MODAL MASCOTE KIDS -->
     <div id="overlay-mascote-kids" class="modal-overlay oculto">
         <div class="modal-conteudo modal-mascote-container">
             <div id="box-animacao-mascote-kids" class="box-mascote-animacao"></div>
@@ -1112,7 +1170,6 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAÇÃO SUIRI -->
     <div id="modal-confirmacao-suiri" class="modal-overlay oculto" style="z-index: 1000000;">
         <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px;">
             <div style="width: 44px; height: 44px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
@@ -1127,7 +1184,6 @@
         </div>
     </div>
 
-    <!-- MODAIS DE FINANÇAS E COFRE -->
     <div id="modal-definir-meta-economia" class="modal-overlay oculto">
         <div class="modal-conteudo" style="max-width:300px; padding:16px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -1180,7 +1236,6 @@
         </div>
     </div>
 
-    <!-- MODAL PENSE (SABEDORIA FAMILIAR & FINANÇAS) -->
     <div id="modal-pilula-dia" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; border-radius: 20px; padding: 22px 18px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1196,7 +1251,6 @@
         </div>
     </div>
 
-    <!-- MODAL DA LOJA DE RECOMPENSAS -->
     <div id="modal-ranking-equipe" class="modal-overlay oculto">
         <div class="modal-conteudo" style="border-radius:24px; padding:18px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -1235,7 +1289,6 @@
         </div>
     </div>
 
-    <!-- MODAL CRIAR / EDITAR RECOMPENSA -->
     <div id="modal-editar-beneficio-loja" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1265,7 +1318,6 @@
         </div>
     </div>
 
-    <!-- MODAL DETALHES DO DIA DO CALENDÁRIO COM AÇÕES DE BAIXA -->
     <div id="modal-detalhes-dia-calendario" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1279,7 +1331,6 @@
         </div>
     </div>
 
-    <!-- MODAL NOVO COMPROMISSO CALENDÁRIO -->
     <div id="modal-novo-evento-calendario" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1317,7 +1368,6 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAR EXCLUSÃO DA AGENDA -->
     <div id="modal-confirmar-exclusao-agenda" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center;">
             <div class="modal-header">
@@ -1333,7 +1383,6 @@
         </div>
     </div>
 
-    <!-- MODAL CORREÇÃO DE CARTEIRA -->
     <div id="modal-correcao-carteira" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1349,7 +1398,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR TRANSAÇÃO -->
     <div id="modal-editar-transacao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1379,7 +1427,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR MERCADO -->
     <div id="modal-editar-mercado" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1411,7 +1458,6 @@
         </div>
     </div>
 
-    <!-- MODAL FECHAMENTO MERCADO -->
     <div id="modal-fechamento-mercado" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1432,7 +1478,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR MISSÃO -->
     <div id="modal-editar-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1469,7 +1514,6 @@
         </div>
     </div>
 
-    <!-- MODAL CADASTRO FAMILIAR -->
     <div id="modal-cadastro-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1514,7 +1558,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR FAMILIAR -->
     <div id="modal-editar-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1558,7 +1601,6 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRAÇÃO DE NÍVEL -->
     <div id="overlay-celebracao-subida-nivel" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; padding: 24px 16px;">
             <div id="celebracao-nivel-icone" style="margin-bottom: 10px;"></div>
@@ -1568,7 +1610,6 @@
         </div>
     </div>
 
-    <!-- MODAL MANUAL DE INSTRUÇÕES -->
     <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
         <div class="conteudo-tour-flutuante">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1597,8 +1638,47 @@
     <script src="app-instrucao.js"></script>
     <script src="app-tamagotchi.js"></script>
 
-    <!-- Gatilhos de Inicialização, PWA, Splash Screen com Áudio e Diálogos -->
+    <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET FLUTUANTE) -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'pt',
+                includedLanguages: 'pt,en,es',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <script>
+        // LÓGICA DO MENU DE IDIOMAS FLUTUANTE
+        window.alternarMenuBandeiras = function() {
+            const dropdown = document.getElementById('dropdown-lista-idiomas');
+            if (dropdown) dropdown.classList.toggle('oculto');
+        };
+
+        window.trocarIdiomaApp = function(siglaIdioma) {
+            const dropdown = document.getElementById('dropdown-lista-idiomas');
+            if (dropdown) dropdown.classList.add('oculto');
+
+            const selectGoogle = document.querySelector('#google_translate_element select');
+            if (selectGoogle) {
+                selectGoogle.value = siglaIdioma;
+                selectGoogle.dispatchEvent(new Event('change'));
+            } else {
+                document.cookie = `googtrans=/pt/${siglaIdioma}; path=/;`;
+                window.location.reload();
+            }
+        };
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('menu-idiomas-flutuante');
+            if (menu && !menu.contains(e.target)) {
+                document.getElementById('dropdown-lista-idiomas')?.classList.add('oculto');
+            }
+        });
+
         // =========================================================================
         // MOTOR DO SPLASH SCREEN COM ÁUDIO INTELIGENTE (10s a 2x = 5s)
         // =========================================================================
@@ -1660,9 +1740,6 @@
             setTimeout(encerrarSplash, 5200);
         };
 
-        // =========================================================================
-        // MOTOR DO MODAL DE OPÇÕES DE CAPTURA DO CUPOM FISCAL (CÂMARA / GALERIA)
-        // =========================================================================
         window.abrirModalOpcoesCupomIA = function() {
             document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
         };
@@ -1682,9 +1759,6 @@
             }
         };
 
-        // =========================================================================
-        // MOTOR DO MODAL DE APOIO (PIX COPIA E COLA)
-        // =========================================================================
         const CHAVE_PIX_APOIO_VALOR = "8f10257e-11a3-48e2-8672-58a6204b629d";
 
         window.abrirModalApoioPix = function() {
@@ -1729,9 +1803,6 @@
             window.fecharModalApoioPix();
         };
 
-        // =========================================================================
-        // MOTOR DE INSTALAÇÃO DO APPWEB (PWA - ANDROID & IOS)
-        // =========================================================================
         let eventoDiferidoPwa = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -1794,9 +1865,6 @@
             }
         });
 
-        // =========================================================================
-        // SEÇÕES RETRÁTEIS E DIÁLOGOS
-        // =========================================================================
         window.alternarSecaoRetratil = function(idConteudo, idSeta) {
             const el = document.getElementById(idConteudo);
             const seta = document.getElementById(idSeta);
@@ -1847,9 +1915,6 @@
             });
         };
 
-        // =========================================================================
-        // PENSE: MENSAGEM DIÁRIA (ONLINE COM FALLBACK LOCAL)
-        // =========================================================================
         const ACERVO_RESERVA_PENSE = [
             { frase: "A união da família é a força que supera qualquer desafio diário.", autor: "Sabedoria Familiar", dica: "Dica: Anote pequenos gastos do dia a dia para não ter surpresas no fim do mês." },
             { frase: "Pequenos gestos de cuidado constroem um lar harmonioso e acolhedor.", autor: "Sabedoria Familiar", dica: "Dica: Estabelecer uma reserva para emergências traz paz de espírito para toda a casa." },

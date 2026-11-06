@@ -138,7 +138,7 @@ window.alternarAbaLoginCadastro = function(aba) {
 };
 
 // =========================================================================
-// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH (TELA CHEIA, 2X, ÁUDIO SEGURO)
+// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH (TELA CHEIA, 2X, ÁUDIO SEGURO iOS)
 // =========================================================================
 window.gerenciarApresentacaoVideoSplash = function() {
     const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
@@ -163,15 +163,19 @@ window.gerenciarApresentacaoVideoSplash = function() {
         setTimeout(() => splashEl.remove(), 500);
     };
 
-    videoEl.playbackRate = 2.0;
-    videoEl.muted = false;
+    // Força atributos do Safari/iOS nativamente no JS para garantir o play
+    videoEl.setAttribute('playsinline', 'true');
+    videoEl.setAttribute('webkit-playsinline', 'true');
+    videoEl.muted = true; 
+
     const promessaPlay = videoEl.play();
 
     if (promessaPlay !== undefined) {
         promessaPlay.then(() => {
             videoEl.playbackRate = 2.0;
+            videoEl.muted = false; // Tenta desmutar, ignorado pelo iOS se não houver interação
         }).catch(() => {
-            console.warn("Autoplay com áudio restrito pelo navegador. Reproduzindo mudo.");
+            console.warn("Autoplay restrito pelo navegador móvel. Reproduzindo mudo.");
             videoEl.muted = true;
             videoEl.play();
             videoEl.playbackRate = 2.0;
