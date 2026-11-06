@@ -1,9 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-PAINEL.JS (100% COMPLETO E INTEGRAL)
-// Gestão de Membros, Adaptação Dinâmica Solo vs Família, Calendário com 
-// Privacidade Estrita (Eventos Pessoais vs Lar), Quadro de Notificações do
-// Sino Flutuante (Hoje + Próximos 7 Dias), Trava Permanente Anti-Duplicidade
-// e Persistência Concreta de Liquidação (Status Liquidado Definitivo).
+// Gestão de Membros com Nacionalidade/Bandeiras, Adaptação Solo vs Família,
+// Calendário com Privacidade Estrita, Notificações do Sino Flutuante
+// e Liquidação Definitiva com Persistência em Carteira.
 // =========================================================================
 
 window.listaMembrosFamilia = [];
@@ -35,6 +34,41 @@ function decodificarTextoSeguro(str) {
 }
 
 // =========================================================================
+// RENDERIZADOR VETORIAL DE BANDEIRAS DE PAÍSES (FORMATO RETANGULAR)
+// =========================================================================
+window.obterMiniBandeiraNacionalidade = function(cod) {
+    const c = String(cod || 'BR').toUpperCase();
+    const estilo = 'width:20px; height:14px; border-radius:2px; object-fit:cover; border:1px solid rgba(0,0,0,0.15); display:inline-block; vertical-align:middle; flex-shrink:0;';
+
+    switch (c) {
+        case 'BR':
+            return `<svg style="${estilo}" viewBox="0 0 720 480"><rect width="720" height="480" fill="#009b3a"/><polygon points="360,36 676,240 360,444 44,240" fill="#fedf00"/><circle cx="360" cy="240" r="120" fill="#002776"/><path d="M243 240 A120 120 0 0 1 477 240" stroke="#ffffff" stroke-width="15" fill="none"/></svg>`;
+        case 'US':
+            return `<svg style="${estilo}" viewBox="0 0 7410 3900"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/></svg>`;
+        case 'ES':
+            return `<svg style="${estilo}" viewBox="0 0 750 500"><rect width="750" height="500" fill="#c60b1e"/><rect y="125" width="750" height="250" fill="#ffc400"/></svg>`;
+        case 'PT':
+            return `<svg style="${estilo}" viewBox="0 0 600 400"><rect width="240" height="400" fill="#046a38"/><rect x="240" width="360" height="400" fill="#da291c"/><circle cx="240" cy="200" r="80" fill="#ffdd00"/></svg>`;
+        case 'AR':
+            return `<svg style="${estilo}" viewBox="0 0 800 500"><rect width="800" height="500" fill="#74acdf"/><rect y="166" width="800" height="168" fill="#ffffff"/><circle cx="400" cy="250" r="35" fill="#f6b40e"/></svg>`;
+        case 'UY':
+            return `<svg style="${estilo}" viewBox="0 0 900 600"><rect width="900" height="600" fill="#ffffff"/><path d="M0,66.6H900M0,200H900M0,333.3H900M0,466.6H900" stroke="#0038a8" stroke-width="66.6"/><rect width="300" height="300" fill="#ffffff"/><circle cx="150" cy="150" r="45" fill="#fcd116"/></svg>`;
+        case 'PY':
+            return `<svg style="${estilo}" viewBox="0 0 750 450"><rect width="750" height="150" fill="#d52b1e"/><rect y="150" width="750" height="150" fill="#ffffff"/><rect y="300" width="750" height="150" fill="#0038a8"/></svg>`;
+        case 'CL':
+            return `<svg style="${estilo}" viewBox="0 0 900 600"><rect width="900" height="600" fill="#d52b1e"/><rect width="900" height="300" fill="#ffffff"/><rect width="300" height="300" fill="#0039a6"/></svg>`;
+        case 'IT':
+            return `<svg style="${estilo}" viewBox="0 0 1500 1000"><rect width="500" height="1000" fill="#009246"/><rect x="500" width="500" height="1000" fill="#ffffff"/><rect x="1000" width="500" height="1000" fill="#ce2b37"/></svg>`;
+        case 'FR':
+            return `<svg style="${estilo}" viewBox="0 0 900 600"><rect width="300" height="600" fill="#002654"/><rect x="300" width="300" height="600" fill="#ffffff"/><rect x="600" width="300" height="600" fill="#ce1126"/></svg>`;
+        case 'DE':
+            return `<svg style="${estilo}" viewBox="0 0 1000 600"><rect width="1000" height="200" fill="#000000"/><rect y="200" width="1000" height="200" fill="#dd0000"/><rect y="400" width="1000" height="200" fill="#ffce00"/></svg>`;
+        default:
+            return `<span style="font-size:12px; display:inline-block; vertical-align:middle;">🌐</span>`;
+    }
+};
+
+// =========================================================================
 // 1. GESTÃO DE MEMBROS E ADAPTAÇÃO DINÂMICA (INDIVIDUAL VS FAMÍLIA)
 // =========================================================================
 
@@ -56,6 +90,16 @@ window.carregarListaMembrosPainel = async function() {
     window.aplicarAdaptacaoSoloOuFamilia();
     window.renderizarMembrosFamiliaPainel();
     window.atualizarTodosSeletoresMembros();
+    window.atualizarBandeiraPerfilTopo();
+};
+
+window.atualizarBandeiraPerfilTopo = function() {
+    const elBandeira = document.getElementById('bandeira-topo-usuario');
+    if (!elBandeira) return;
+
+    const meuPerfil = window.listaMembrosFamilia.find(m => m.id === obterUsuarioId()) || window.perfilAtual;
+    const nacionalidade = meuPerfil?.nacionalidade || 'BR';
+    elBandeira.innerHTML = window.obterMiniBandeiraNacionalidade(nacionalidade);
 };
 
 window.aplicarAdaptacaoSoloOuFamilia = function() {
@@ -128,6 +172,8 @@ window.renderizarMembrosFamiliaPainel = function() {
             
         const ehKids = m.eh_kids === true || m.papel === 'dependente';
 
+        const bandeiraNacionalidade = window.obterMiniBandeiraNacionalidade(m.nacionalidade || 'BR');
+
         const badgeCartao = m.possui_cartao 
             ? `<span style="font-size:10px; background:rgba(16,185,129,0.15); color:var(--cor-sucesso, #10b981); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:700; display:inline-flex; align-items:center; gap:3px;">
                 <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Cartão
@@ -173,8 +219,11 @@ window.renderizarMembrosFamiliaPainel = function() {
             <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
                 ${elementoAvatar}
                 <div style="min-width:0;">
-                    <h4 style="margin:0; font-size:14px; color:var(--texto-principal, #334155); display:flex; align-items:flex-wrap;">
-                        ${window.esc ? window.esc(m.nome) : m.nome} ${badgeCartao} ${badgeKids}
+                    <h4 style="margin:0; font-size:14px; color:var(--texto-principal, #334155); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span>${window.esc ? window.esc(m.nome) : m.nome}</span>
+                        ${bandeiraNacionalidade}
+                        ${badgeCartao}
+                        ${badgeKids}
                     </h4>
                     <div style="font-size:11px; color:var(--texto-suave, #64748b); margin-top:2px; display:flex; align-items:center; gap:4px;">
                         <span>${parentesco}</span>
@@ -262,6 +311,8 @@ window.atualizarTodosSeletoresMembros = function() {
 window.abrirModalNovoMembro = function() {
     const chkKids = document.getElementById('cad-familiar-modo-kids');
     if (chkKids) chkKids.checked = false;
+    const selNac = document.getElementById('cad-familiar-nacionalidade');
+    if (selNac) selNac.value = 'BR';
     document.getElementById('modal-cadastro-familiar')?.classList.remove('oculto');
 };
 
@@ -280,6 +331,7 @@ window.salvarNovoFamiliar = async function() {
     let senha = document.getElementById('cad-familiar-senha')?.value || '';
     const parentesco = document.getElementById('cad-familiar-parentesco')?.value.trim() || 'Familiar';
     const papel = document.getElementById('cad-familiar-papel')?.value || 'adulto';
+    const nacionalidade = document.getElementById('cad-familiar-nacionalidade')?.value || 'BR';
     const possuiCartao = document.getElementById('cad-familiar-cartao')?.checked || false;
     const ehKids = document.getElementById('cad-familiar-modo-kids')?.checked || (papel === 'dependente');
 
@@ -335,6 +387,7 @@ window.salvarNovoFamiliar = async function() {
                 cpf: cpfLimpo,
                 parentesco: parentesco,
                 papel: papel,
+                nacionalidade: nacionalidade,
                 possui_cartao: possuiCartao,
                 eh_kids: ehKids,
                 permissoes: perms,
@@ -342,6 +395,9 @@ window.salvarNovoFamiliar = async function() {
                 ofensiva_atual: 0
             }]);
             if (errInsert) return window.mostrarToast("Erro ao cadastrar: " + errInsert.message, "erro");
+        } else {
+            // Atualiza a nacionalidade no registro recém-criado
+            await cli.from('membros').update({ nacionalidade: nacionalidade }).eq('email', email);
         }
 
         window.mostrarToast(`${nome} cadastrado(a) com sucesso!`);
@@ -372,6 +428,7 @@ window.abrirModalEditarFamiliar = function(id) {
     setEl('edit-familiar-email', (m.email && m.email.includes('@suirifamilia.app')) ? '' : (m.email || ''));
     setEl('edit-familiar-parentesco', m.parentesco || '');
     setEl('edit-familiar-papel', m.papel || 'adulto');
+    setEl('edit-familiar-nacionalidade', m.nacionalidade || 'BR');
     setChk('edit-familiar-cartao', m.possui_cartao);
     setChk('edit-familiar-modo-kids', m.eh_kids === true || m.papel === 'dependente');
 
@@ -389,6 +446,7 @@ window.salvarEdicaoFamiliar = async function() {
     let email = document.getElementById('edit-familiar-email')?.value.trim().toLowerCase();
     const parentesco = document.getElementById('edit-familiar-parentesco')?.value.trim();
     const papel = document.getElementById('edit-familiar-papel')?.value;
+    const nacionalidade = document.getElementById('edit-familiar-nacionalidade')?.value || 'BR';
     const possuiCartao = document.getElementById('edit-familiar-cartao')?.checked || false;
     const ehKids = document.getElementById('edit-familiar-modo-kids')?.checked || (papel === 'dependente');
 
@@ -411,6 +469,7 @@ window.salvarEdicaoFamiliar = async function() {
         nome: nome,
         parentesco: parentesco,
         papel: papel,
+        nacionalidade: nacionalidade,
         possui_cartao: possuiCartao,
         eh_kids: ehKids,
         permissoes: perms
@@ -428,6 +487,7 @@ window.salvarEdicaoFamiliar = async function() {
         window.perfilAtual.nome = nome;
         window.perfilAtual.parentesco = parentesco;
         window.perfilAtual.papel = papel;
+        window.perfilAtual.nacionalidade = nacionalidade;
         window.perfilAtual.possui_cartao = possuiCartao;
         window.perfilAtual.eh_kids = ehKids;
         window.perfilAtual.permissoes = perms;
@@ -736,7 +796,6 @@ window.atualizarNotificacoesGeraisPainel = async function() {
     const listaContas = contas || [];
     const listaEventos = eventos || [];
 
-    // Mescla dados de memória caso o item já tenha sido liquidado nesta sessão
     listaContas.forEach(c => {
         const itemLocal = window.contasCalendarioAtual.find(x => x.id === c.id);
         if (itemLocal && (itemLocal.status === 'liquidado' || itemLocal.pago === true)) {
@@ -889,14 +948,12 @@ window.marcarItemAgendaComoLiquidado = async function(id, tipoEvento, valor, des
 
     window._contasEmProcessamentoDeBaixa.add(id);
 
-    // Atualiza imediatamente o cache de memória local
     const itemMemoria = window.contasCalendarioAtual.find(c => c.id === id);
     if (itemMemoria) {
         itemMemoria.status = 'liquidado';
         itemMemoria.pago = true;
     }
 
-    // Altera os botões na tela para o estado baixado em tempo real
     ['btn-baixa-cal-', 'btn-baixa-notif-', 'btn-baixa-sem-'].forEach(prefixo => {
         const btn = document.getElementById(prefixo + id);
         if (btn) {
@@ -910,7 +967,6 @@ window.marcarItemAgendaComoLiquidado = async function(id, tipoEvento, valor, des
         const hojeStr = new Date().toISOString().split('T')[0];
         const descricaoReal = decodificarTextoSeguro(descricao);
 
-        // 1. Gravação resiliente na agenda financeira
         let { error: errAgenda } = await cli.from('agenda_financeira').update({
             status: 'liquidado',
             pago: true
@@ -920,7 +976,6 @@ window.marcarItemAgendaComoLiquidado = async function(id, tipoEvento, valor, des
             await cli.from('agenda_financeira').update({ status: 'liquidado' }).eq('id', id);
         }
 
-        // 2. Inserção na carteira
         const payloadCompleto = {
             familia_id: window.familiaAtualId,
             membro_id: meuId,

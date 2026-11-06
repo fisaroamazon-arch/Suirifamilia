@@ -163,7 +163,6 @@ window.gerenciarApresentacaoVideoSplash = function() {
         setTimeout(() => splashEl.remove(), 500);
     };
 
-    // Força atributos do Safari/iOS nativamente no JS para garantir o play
     videoEl.setAttribute('playsinline', 'true');
     videoEl.setAttribute('webkit-playsinline', 'true');
     videoEl.muted = true; 
@@ -173,7 +172,7 @@ window.gerenciarApresentacaoVideoSplash = function() {
     if (promessaPlay !== undefined) {
         promessaPlay.then(() => {
             videoEl.playbackRate = 2.0;
-            videoEl.muted = false; // Tenta desmutar, ignorado pelo iOS se não houver interação
+            videoEl.muted = false;
         }).catch(() => {
             console.warn("Autoplay restrito pelo navegador móvel. Reproduzindo mudo.");
             videoEl.muted = true;
@@ -187,7 +186,7 @@ window.gerenciarApresentacaoVideoSplash = function() {
 };
 
 // =========================================================================
-// 4. AUTENTICAÇÃO REAL POR E-MAIL E CADASTRO DA FAMÍLIA (COM RESGUARDO)
+// 4. AUTENTICAÇÃO REAL POR E-MAIL E CADASTRO DA FAMÍLIA COM NACIONALIDADE
 // =========================================================================
 window.fazerLoginEmail = async function(email, senha) {
     if (!cliente) return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
@@ -214,13 +213,14 @@ window.fazerLoginEmail = async function(email, senha) {
     return true;
 };
 
-window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm, cpfAdm, senha }) {
+window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm, cpfAdm, senha, nacionalidade }) {
     if (!cliente) {
         return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
     }
 
     const emailLimpo = String(emailAdm || '').trim().toLowerCase();
     const cpfLimpo = window.limparCPF(cpfAdm);
+    const nac = nacionalidade || 'BR';
 
     if (!nomeFamilia || nomeFamilia.trim().length < 2) {
         return window.mostrarToast("Indique o nome da Família / Lar.", "erro");
@@ -302,6 +302,7 @@ window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm
         cpf: cpfLimpo,
         papel: 'adm',
         parentesco: 'Chefe do Lar',
+        nacionalidade: nac,
         possui_cartao: true,
         eh_kids: false,
         permissoes: { mercado: true, gastos: true, missoes: true, financeiro_adm: true },
@@ -458,7 +459,7 @@ window.abrirModalSenhaAdulto = function(membro) {
 };
 
 // =========================================================================
-// 7. MOTOR "TROCAR MEMBRO" (TELA CHEIA & AVATARES GRANDES)
+// 7. MOTOR "TROCAR MEMBRO" (TELA CHEIA & AVATARES GRANDES COM BANDEIRA)
 // =========================================================================
 window.abrirJanelaPrincipalQuiosque = function() {
     if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
@@ -526,9 +527,17 @@ window.renderizarAvataresQuiosque = function() {
 
         const avatarSrc = m.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
         const nomeCurto = String(m.nome || 'Membro').split(' ')[0];
+        const bandeirinha = (typeof window.obterMiniBandeiraNacionalidade === 'function')
+            ? window.obterMiniBandeiraNacionalidade(m.nacionalidade || 'BR')
+            : '';
 
         card.innerHTML = `
-            <img src="${avatarSrc}" class="avatar-quiosque-grande" style="border: 3px solid ${ehKids ? '#10b981' : 'var(--cor-primaria)'};">
+            <div style="position: relative; display: inline-block;">
+                <img src="${avatarSrc}" class="avatar-quiosque-grande" style="border: 3px solid ${ehKids ? '#10b981' : 'var(--cor-primaria)'};">
+                <span style="position: absolute; bottom: 4px; right: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
+                    ${bandeirinha}
+                </span>
+            </div>
             <strong style="font-size:14px; color:var(--texto-principal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center; margin-top:2px;">
                 ${esc(nomeCurto)}
             </strong>
@@ -580,9 +589,6 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
     if (ehKids) {
         document.body.classList.add('modo-kids-ativo');
 
-        // =========================================================================
-        // CICLO HORÁRIO AUTOMÁTICO: ATIVAÇÃO DAS CLASSES DE CENÁRIO (DIA/TARDE/NOITE)
-        // =========================================================================
         const horaAtual = new Date().getHours();
         document.body.classList.remove('cenario-dia', 'cenario-tarde', 'cenario-noite');
         if (horaAtual >= 6 && horaAtual < 16) {
@@ -635,6 +641,10 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         const imgAvatar = document.getElementById('img-avatar-topo');
         if (imgAvatar && window.perfilAtual.avatar_url) {
             imgAvatar.src = window.perfilAtual.avatar_url;
+        }
+
+        if (typeof window.atualizarBandeiraPerfilTopo === 'function') {
+            window.atualizarBandeiraPerfilTopo();
         }
 
         const navMercado = document.querySelector('.bottom-nav-item[data-tela="mercado"]');

@@ -85,30 +85,96 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Oculta a barra de tradução do Google e estiliza o seletor flutuante */
+        /* Oculta as molduras padrão de tradução */
         body { top: 0 !important; }
-        .skiptranslate iframe { display: none !important; }
-        
-        #google_translate_element {
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 10000000;
+        .skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
+        #google_translate_element { display: none !important; }
+
+        /* Estilização da Bandeira Retangular no Cabeçalho de Família */
+        .container-seletor-idioma-familia {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
         }
-        .goog-te-gadget-simple {
-            background-color: #ffffff !important;
-            border: 1.5px solid var(--cor-primaria, #d97706) !important;
-            border-radius: 12px !important;
-            padding: 6px 10px !important;
-            font-size: 11.5px !important;
-            font-weight: 800 !important;
-            color: #334155 !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-            display: flex !important;
-            align-items: center !important;
+
+        .btn-bandeira-retangular {
+            width: 36px;
+            height: 25px;
+            border-radius: 4px;
+            background: #ffffff;
+            border: 1.5px solid rgba(217, 119, 6, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+            transition: transform 0.15s ease, border-color 0.2s ease;
         }
-        .goog-te-gadget-icon { display: none; }
-        .goog-te-menu-value span { color: #334155 !important; font-family: inherit !important; border: none !important; }
+
+        .btn-bandeira-retangular:active {
+            transform: scale(0.95);
+        }
+
+        .bandeira-svg-retangular {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .dropdown-idiomas-retangular {
+            position: absolute;
+            top: 32px;
+            right: 0;
+            background: #ffffff;
+            border: 1.5px solid rgba(217, 119, 6, 0.25);
+            border-radius: 12px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: surgimentoDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            min-width: 125px;
+        }
+
+        .item-idioma-opcao-retangular {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #334155;
+            transition: background 0.15s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .item-idioma-opcao-retangular:hover {
+            background: #fef3c7;
+        }
+
+        .icone-bandeirinha-mini {
+            width: 22px;
+            height: 15px;
+            border-radius: 2px;
+            object-fit: cover;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        @keyframes surgimentoDropdown {
+            from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
         /* Banner Flutuante de Instalação PWA */
         #banner-instalacao-pwa {
@@ -134,7 +200,7 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Barra de Navegação Inferior Fixa (Estilo Bottom Bar Nativo) */
+        /* Barra de Navegação Inferior Fixa */
         .bottom-nav-fixa-inferior {
             position: fixed !important;
             bottom: 0 !important;
@@ -186,12 +252,10 @@
             transform: translateY(-1px) !important;
         }
 
-        /* Espaçamento inferior no container para o conteúdo não ficar sob a barra fixa */
         main.container {
             padding-bottom: 84px !important;
         }
 
-        /* Foto de Perfil Destacada (Maior: 68px) e Sino Flutuante */
         .avatar-topo-usuario {
             width: 68px !important;
             height: 68px !important;
@@ -251,64 +315,20 @@
 </head>
 <body>
 
-    <!-- =================================================================== -->
-    <!-- SELETOR DE IDIOMAS POR BANDEIRAS (TOPO DIREITO)                     -->
-    <!-- =================================================================== -->
-    <div id="menu-idiomas-flutuante">
-        <button type="button" class="btn-bandeira-ativa" onclick="window.alternarMenuBandeiras()" title="Mudar Idioma">
-            <!-- Bandeira do Brasil (Padrão) -->
-            <svg class="bandeira-icone-svg" viewBox="0 0 36 36">
-                <rect width="36" height="36" rx="18" fill="#15803d"/>
-                <polygon points="18,5 33,18 18,31 3,18" fill="#facc15"/>
-                <circle cx="18" cy="18" r="7.5" fill="#1d4ed8"/>
-                <path d="M10.8 17.2 C12.5 15.5 16 15 25.2 18.2" stroke="#ffffff" stroke-width="1.2" fill="none"/>
-            </svg>
-        </button>
-        <div id="dropdown-lista-idiomas" class="dropdown-idiomas-bandeiras oculto">
-            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('pt')">
-                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
-                    <rect width="36" height="36" rx="18" fill="#15803d"/>
-                    <polygon points="18,5 33,18 18,31 3,18" fill="#facc15"/>
-                    <circle cx="18" cy="18" r="7.5" fill="#1d4ed8"/>
-                </svg>
-                Português
-            </button>
-            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('en')">
-                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
-                    <rect width="36" height="36" rx="18" fill="#1e3a8a"/>
-                    <path d="M0,0 L36,36 M36,0 L0,36" stroke="#ffffff" stroke-width="4"/>
-                    <path d="M0,0 L36,36 M36,0 L0,36" stroke="#b91c1c" stroke-width="2"/>
-                    <path d="M18,0 V36 M0,18 H36" stroke="#ffffff" stroke-width="6"/>
-                    <path d="M18,0 V36 M0,18 H36" stroke="#b91c1c" stroke-width="3.5"/>
-                </svg>
-                English
-            </button>
-            <button type="button" class="item-idioma-opcao" onclick="window.trocarIdiomaApp('es')">
-                <svg class="bandeira-icone-svg" style="width:20px;height:20px;" viewBox="0 0 36 36">
-                    <rect width="36" height="36" rx="18" fill="#b91c1c"/>
-                    <rect y="9" width="36" height="18" fill="#facc15"/>
-                </svg>
-                Español
-            </button>
-        </div>
-    </div>
-
-    <!-- Widget de Idiomas Invisível (Google Translate) -->
+    <!-- Widget Invisível do Google Translate -->
     <div id="google_translate_element" style="display:none;"></div>
 
-    <!-- =================================================================== -->
-    <!-- TELA DE SPLASH COM VÍDEO (Compatível com Android e iOS)             -->
-    <!-- =================================================================== -->
+    <!-- TELA DE SPLASH COM VÍDEO -->
     <div id="splash-screen-apresentacao" class="oculto">
         <video id="video-intro-splash" playsinline webkit-playsinline preload="auto">
             <source src="intro.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- Container Centralizado de Notificações (Toasts) -->
+    <!-- Container Centralizado de Notificações -->
     <div id="toast-container"></div>
 
-    <!-- Banner Flutuante Convidando a Instalar o AppWeb -->
+    <!-- Banner Flutuante PWA -->
     <div id="banner-instalacao-pwa" class="oculto">
         <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff;">
@@ -360,12 +380,30 @@
                     <input type="email" id="cad-email-adm" placeholder="Seu E-mail principal">
                     <input type="text" id="cad-cpf-adm" placeholder="Seu CPF (apenas números)" maxlength="14" oninput="this.value = window.formatarCPF(this.value)">
                     <input type="password" id="cad-senha-adm" placeholder="Crie uma Senha (mín. 6 dígitos)">
+                    
+                    <!-- Seleção de Nacionalidade ADM -->
+                    <select id="cad-nacionalidade-adm">
+                        <option value="BR">🇧🇷 Brasil (Português)</option>
+                        <option value="US">🇺🇸 Estados Unidos (Inglês)</option>
+                        <option value="ES">🇪🇸 Espanha (Espanhol)</option>
+                        <option value="PT">🇵🇹 Portugal (Português)</option>
+                        <option value="UY">🇺🇾 Uruguai (Espanhol)</option>
+                        <option value="AR">🇦🇷 Argentina (Espanhol)</option>
+                        <option value="PY">🇵🇾 Paraguai (Espanhol)</option>
+                        <option value="CL">🇨🇱 Chile (Espanhol)</option>
+                        <option value="IT">🇮🇹 Itália (Italiano)</option>
+                        <option value="FR">🇫🇷 França (Francês)</option>
+                        <option value="DE">🇩🇪 Alemanha (Alemão)</option>
+                        <option value="OUTRO">🌐 Outro</option>
+                    </select>
+
                     <button type="button" class="btn-sucesso" onclick="window.cadastrarNovaFamiliaADM({
                         nomeFamilia: document.getElementById('cad-nome-familia').value,
                         nomeAdm: document.getElementById('cad-nome-adm').value,
                         emailAdm: document.getElementById('cad-email-adm').value,
                         cpfAdm: document.getElementById('cad-cpf-adm').value,
-                        senha: document.getElementById('cad-senha-adm').value
+                        senha: document.getElementById('cad-senha-adm').value,
+                        nacionalidade: document.getElementById('cad-nacionalidade-adm')?.value || 'BR'
                     })">
                         Confirmar
                     </button>
@@ -435,12 +473,11 @@
             <!-- =============================================================== -->
             <div id="painel-adulto-container">
                 
-                <!-- 2º ITEM DO TOPO: CARD DO USUÁRIO COM FOTO DE PERFIL BEM MAIOR (68PX) -->
+                <!-- CABEÇALHO DO USUÁRIO -->
                 <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; gap:10px; margin-bottom: 12px; border-radius: 18px;">
                     <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
                         <input type="file" id="input-upload-avatar-membro" accept="image/*" class="oculto" onchange="window.processarUploadAvatar(event)">
                         
-                        <!-- Contentor Avatar com Foto Ampliada (68px) e Sino Flutuante no Canto Superior Direito -->
                         <div id="container-avatar-perfil-topo" style="position: relative; cursor: pointer; flex-shrink: 0;">
                             <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()" title="Alterar Foto de Perfil">
                             
@@ -451,7 +488,10 @@
 
                         <div style="min-width: 0; flex: 1;">
                             <span id="nome-familia-topo" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
-                            <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
+                                <span id="bandeira-topo-usuario" style="display: inline-flex; align-items: center;"></span>
+                            </div>
                             <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
                                 <svg class="icone-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span style="font-size: 11px; font-weight: 700;">Trocar</span>
@@ -479,8 +519,6 @@
 
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
-                    
-                    <!-- BOTÕES DE FILTRO E INCLUSÃO EM LINHA (CASA / MINHAS / + INCLUIR) -->
                     <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
                         <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('todas')">
                             <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -508,7 +546,7 @@
                         <div id="lista-historico-kids-adm"></div>
                     </div>
 
-                    <!-- METAS DO ANO EXCLUSIVAS DA ABA MISSÕES (FUNDO DA TELA) -->
+                    <!-- METAS DO ANO -->
                     <div class="cartao-geral" style="padding: 12px 14px; margin-top: 16px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
@@ -542,7 +580,6 @@
                             <button type="button" id="btn-aba-modo-mercado" class="btn-secundario" style="flex:1;" onclick="window.alternarVisualizacaoMercado('planilha')">No Mercado</button>
                         </div>
 
-                        <!-- Campo de Produto com Microfone Inteligente -->
                         <div style="position: relative; display: flex; flex-direction: column; gap: 6px;">
                             <div class="campo-com-voz">
                                 <input type="text" id="input-novo-item-mercado" placeholder="Produto ou fale no microfone..." oninput="window.filtrarAutocompleteMercado(this.value)">
@@ -605,8 +642,6 @@
 
                 <!-- MÓDULO 3: FINANÇAS -->
                 <section id="secao-financeiro" class="secao-conteudo-app oculto">
-                    
-                    <!-- 1º ITEM: MINHA CARTEIRA / MONTANTE DA FAMÍLIA -->
                     <div class="box-carteira-topo" style="margin-bottom: 12px;">
                         <div class="card-saldo-carteira card-carteira-destaque-usuario">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -621,18 +656,15 @@
                         </div>
                     </div>
 
-                    <!-- 2º ITEM: LER CUPOM FISCAL (CÂMARA OU UPLOAD DE IMAGEM) -->
                     <div style="display: flex; gap: 8px; margin-bottom: 12px;">
                         <button type="button" class="btn-secundario" style="flex: 1; padding: 11px 12px; font-size: 13px; font-weight: 800; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706); background: #ffffff; color: var(--cor-primaria, #d97706);" onclick="window.abrirModalOpcoesCupomIA()">
                             <svg class="icone-svg" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                             <span>Ler Cupom Fiscal (IA)</span>
                         </button>
-                        <!-- Inputs invisíveis acionados pelo modal de escolha -->
                         <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
                         <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
                     </div>
 
-                    <!-- 3º ITEM: REGISTO RÁPIDO DE MOVIMENTAÇÃO -->
                     <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
                         <div class="campo-com-voz" style="margin-bottom: 8px;">
@@ -670,7 +702,6 @@
                         <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
                     </div>
 
-                    <!-- 4º ITEM: BALANÇO FINANCEIRO E COMPARATIVO -->
                     <div id="bloco-card-balanco-familiar" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
@@ -684,7 +715,6 @@
                         <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Confirmar Balanço</button>
                     </div>
 
-                    <!-- CONTAINER EXCLUSIVO PARA O DOCUMENTO/PDF -->
                     <div id="relatorio-pdf-container" class="oculto" style="margin-bottom: 12px;">
                         <div id="area-resultados-relatorio"></div>
                         
@@ -696,13 +726,11 @@
                         </div>
                     </div>
 
-                    <!-- BOTÕES DE EXPORTAÇÃO (FORA DO PDF PARA NÃO SAÍREM IMPRESSOS) -->
                     <div id="acoes-botoes-relatorio" class="oculto" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; margin-bottom: 12px;">
                         <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
                         <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
                     </div>
 
-                    <!-- MURAL DE FINANÇAS E AVISOS DA CASA -->
                     <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
                             <div style="display:flex; align-items:center; gap:6px;">
@@ -738,7 +766,6 @@
                         </div>
                     </div>
 
-                    <!-- 5º ITEM: EXTRATO NOMINAL -->
                     <div class="cartao-geral" style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <h3 style="font-size: 14px; margin: 0;">Extrato Nominal</h3>
@@ -754,9 +781,7 @@
                         <div id="lista-extrato-carteira"></div>
                     </div>
 
-                    <!-- 6º ITEM: META DO MÊS & 7º ITEM: RESERVA DA FAMÍLIA -->
                     <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
-                        
                         <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -845,14 +870,60 @@
                     </div>
                 </section>
 
-                <!-- MÓDULO 5: FAMÍLIA -->
+                <!-- MÓDULO 5: FAMÍLIA (COM O SELETOR DE IDIOMAS INTEGRADO AO LADO DE + NOVO MEMBRO) -->
                 <section id="secao-familia" class="secao-conteudo-app oculto">
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <h3 id="lbl-titulo-lista-membros" style="margin: 0; font-size: 15px;">Membros da Família</h3>
-                            <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 6px 12px; font-size: 11.5px;" onclick="window.abrirModalNovoMembro()">
-                                + Novo Membro
-                            </button>
+                            
+                            <!-- AGRUPAMENTO: BANDEIRA FORMATO RETANGULAR + BOTÃO + NOVO MEMBRO -->
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                
+                                <div class="container-seletor-idioma-familia" id="container-idiomas-familia">
+                                    <button type="button" class="btn-bandeira-retangular" onclick="window.alternarMenuBandeiras()" title="Alterar Idioma">
+                                        <!-- Renderiza a bandeira ativa com SVG retangular sem borda circular -->
+                                        <div id="icone-bandeira-ativa-container" style="width:100%; height:100%; display:flex;">
+                                            <svg class="bandeira-svg-retangular" viewBox="0 0 720 480">
+                                                <rect width="720" height="480" fill="#009b3a"/>
+                                                <polygon points="360,36 676,240 360,444 44,240" fill="#fedf00"/>
+                                                <circle cx="360" cy="240" r="120" fill="#002776"/>
+                                                <path d="M243 240 A120 120 0 0 1 477 240" stroke="#ffffff" stroke-width="15" fill="none"/>
+                                            </svg>
+                                        </div>
+                                    </button>
+
+                                    <!-- Dropdown de Idiomas com Bandeiras Retangulares -->
+                                    <div id="dropdown-lista-idiomas" class="dropdown-idiomas-retangular oculto">
+                                        <button type="button" class="item-idioma-opcao-retangular" onclick="window.trocarIdiomaApp('pt')">
+                                            <svg class="icone-bandeirinha-mini" viewBox="0 0 720 480">
+                                                <rect width="720" height="480" fill="#009b3a"/>
+                                                <polygon points="360,36 676,240 360,444 44,240" fill="#fedf00"/>
+                                                <circle cx="360" cy="240" r="120" fill="#002776"/>
+                                            </svg>
+                                            Português
+                                        </button>
+                                        <button type="button" class="item-idioma-opcao-retangular" onclick="window.trocarIdiomaApp('en')">
+                                            <svg class="icone-bandeirinha-mini" viewBox="0 0 7410 3900">
+                                                <rect width="7410" height="3900" fill="#b22234"/>
+                                                <path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/>
+                                                <rect width="2964" height="2100" fill="#3c3b6e"/>
+                                            </svg>
+                                            English
+                                        </button>
+                                        <button type="button" class="item-idioma-opcao-retangular" onclick="window.trocarIdiomaApp('es')">
+                                            <svg class="icone-bandeirinha-mini" viewBox="0 0 750 500">
+                                                <rect width="750" height="500" fill="#c60b1e"/>
+                                                <rect y="125" width="750" height="250" fill="#ffc400"/>
+                                            </svg>
+                                            Español
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 6px 12px; font-size: 11.5px;" onclick="window.abrirModalNovoMembro()">
+                                    + Novo Membro
+                                </button>
+                            </div>
                         </div>
                         <div id="lista-membros-cadastrados"></div>
                     </div>
@@ -883,7 +954,7 @@
     </main>
 
     <!-- =================================================================== -->
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (ESTILO APP NATIVO)                -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA                                   -->
     <!-- =================================================================== -->
     <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
         <ul class="bottom-nav-list">
@@ -1514,6 +1585,7 @@
         </div>
     </div>
 
+    <!-- MODAL CADASTRO FAMILIAR COM NACIONALIDADE -->
     <div id="modal-cadastro-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1527,6 +1599,23 @@
                 <input type="password" id="cad-familiar-senha" placeholder="Senha de Acesso (opcional no Modo Kids)">
                 <input type="text" id="cad-familiar-parentesco" placeholder="Parentesco (ex: Esposa, Filho, Mãe)">
                 
+                <!-- Nacionalidade do Membro -->
+                <label style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Nacionalidade / Bandeira:</label>
+                <select id="cad-familiar-nacionalidade">
+                    <option value="BR">🇧🇷 Brasil</option>
+                    <option value="US">🇺🇸 Estados Unidos</option>
+                    <option value="ES">🇪🇸 Espanha</option>
+                    <option value="PT">🇵🇹 Portugal</option>
+                    <option value="UY">🇺🇾 Uruguai</option>
+                    <option value="AR">🇦🇷 Argentina</option>
+                    <option value="PY">🇵🇾 Paraguai</option>
+                    <option value="CL">🇨🇱 Chile</option>
+                    <option value="IT">🇮🇹 Itália</option>
+                    <option value="FR">🇫🇷 França</option>
+                    <option value="DE">🇩🇪 Alemanha</option>
+                    <option value="OUTRO">🌐 Outro</option>
+                </select>
+
                 <select id="cad-familiar-papel" onchange="const chk = document.getElementById('cad-familiar-modo-kids'); if(chk && this.value === 'dependente') chk.checked = true;">
                     <option value="adulto">Membro Adulto</option>
                     <option value="dependente">Filho / Dependente</option>
@@ -1558,6 +1647,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR FAMILIAR COM NACIONALIDADE -->
     <div id="modal-editar-familiar" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1570,6 +1660,22 @@
                 <input type="email" id="edit-familiar-email" placeholder="E-mail (opcional no Modo Kids)">
                 <input type="text" id="edit-familiar-parentesco" placeholder="Parentesco">
                 
+                <label style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Nacionalidade / Bandeira:</label>
+                <select id="edit-familiar-nacionalidade">
+                    <option value="BR">🇧🇷 Brasil</option>
+                    <option value="US">🇺🇸 Estados Unidos</option>
+                    <option value="ES">🇪🇸 Espanha</option>
+                    <option value="PT">🇵🇹 Portugal</option>
+                    <option value="UY">🇺🇾 Uruguai</option>
+                    <option value="AR">🇦🇷 Argentina</option>
+                    <option value="PY">🇵🇾 Paraguai</option>
+                    <option value="CL">🇨🇱 Chile</option>
+                    <option value="IT">🇮🇹 Itália</option>
+                    <option value="FR">🇫🇷 França</option>
+                    <option value="DE">🇩🇪 Alemanha</option>
+                    <option value="OUTRO">🌐 Outro</option>
+                </select>
+
                 <select id="edit-familiar-papel">
                     <option value="adulto">Membro Adulto</option>
                     <option value="dependente">Filho / Dependente</option>
@@ -1638,7 +1744,7 @@
     <script src="app-instrucao.js"></script>
     <script src="app-tamagotchi.js"></script>
 
-    <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET FLUTUANTE) -->
+    <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET INVISÍVEL) -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
@@ -1652,15 +1758,30 @@
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-        // LÓGICA DO MENU DE IDIOMAS FLUTUANTE
+        // Catálogo de Bandeiras Retangulares SVG
+        window.SVGS_BANDEIRAS = {
+            'pt': `<svg class="bandeira-svg-retangular" viewBox="0 0 720 480"><rect width="720" height="480" fill="#009b3a"/><polygon points="360,36 676,240 360,444 44,240" fill="#fedf00"/><circle cx="360" cy="240" r="120" fill="#002776"/><path d="M243 240 A120 120 0 0 1 477 240" stroke="#ffffff" stroke-width="15" fill="none"/></svg>`,
+            'en': `<svg class="bandeira-svg-retangular" viewBox="0 0 7410 3900"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/></svg>`,
+            'es': `<svg class="bandeira-svg-retangular" viewBox="0 0 750 500"><rect width="750" height="500" fill="#c60b1e"/><rect y="125" width="750" height="250" fill="#ffc400"/></svg>`
+        };
+
+        // Alternância do menu de bandeiras
         window.alternarMenuBandeiras = function() {
             const dropdown = document.getElementById('dropdown-lista-idiomas');
             if (dropdown) dropdown.classList.toggle('oculto');
         };
 
+        // Troca do idioma ativo e atualização da bandeira exibida no botão
         window.trocarIdiomaApp = function(siglaIdioma) {
             const dropdown = document.getElementById('dropdown-lista-idiomas');
             if (dropdown) dropdown.classList.add('oculto');
+
+            localStorage.setItem('suiri_idioma_ativo', siglaIdioma);
+
+            const containerBtn = document.getElementById('icone-bandeira-ativa-container');
+            if (containerBtn && window.SVGS_BANDEIRAS[siglaIdioma]) {
+                containerBtn.innerHTML = window.SVGS_BANDEIRAS[siglaIdioma];
+            }
 
             const selectGoogle = document.querySelector('#google_translate_element select');
             if (selectGoogle) {
@@ -1672,15 +1793,24 @@
             }
         };
 
+        // Restaura a bandeira salva ao recarregar a tela
+        function restaurarBandeiraAtivaInicial() {
+            const idiomaSalvo = localStorage.getItem('suiri_idioma_ativo') || 'pt';
+            const containerBtn = document.getElementById('icone-bandeira-ativa-container');
+            if (containerBtn && window.SVGS_BANDEIRAS[idiomaSalvo]) {
+                containerBtn.innerHTML = window.SVGS_BANDEIRAS[idiomaSalvo];
+            }
+        }
+
         document.addEventListener('click', (e) => {
-            const menu = document.getElementById('menu-idiomas-flutuante');
+            const menu = document.getElementById('container-idiomas-familia');
             if (menu && !menu.contains(e.target)) {
                 document.getElementById('dropdown-lista-idiomas')?.classList.add('oculto');
             }
         });
 
         // =========================================================================
-        // MOTOR DO SPLASH SCREEN COM ÁUDIO INTELIGENTE (10s a 2x = 5s)
+        // MOTOR DO SPLASH SCREEN COM ÁUDIO INTELIGENTE
         // =========================================================================
         window.gerenciarApresentacaoVideoSplash = function() {
             const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
@@ -2012,7 +2142,6 @@
             }
         }
 
-        // Trava Defensiva contra erros de Linha 0 (Service Worker / PWA no TrebEdit)
         if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -2022,6 +2151,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            restaurarBandeiraAtivaInicial();
             window.gerenciarApresentacaoVideoSplash();
             setTimeout(verificarGatilhoPenseSeteManha, 1500);
             setTimeout(verificarSugestaoPwaIos, 2000);
