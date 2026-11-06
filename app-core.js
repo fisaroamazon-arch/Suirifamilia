@@ -3,6 +3,7 @@
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
 // Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline & Zero Emojis (SVG)
+// Ferramenta Avançada de Crop com Máscara Visual e Arrasto Livre (ATUALIZADO)
 // =========================================================================
 
 // Configuração do Supabase
@@ -32,7 +33,13 @@ window.esc = esc;
 // CATÁLOGO UNIVERSAL DE ÍCONES SVG (ZERO EMOJIS - ALTA DEFINIÇÃO)
 // =========================================================================
 window.IconesSuiri = {
+    // Ações e Decisões
     check: `<svg class="icone-svg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
+    xis: `<svg class="icone-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    joinha: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
+    joinhaInvertido: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`,
+    
+    // Adultos e Gerais
     fogo: `<svg class="icone-svg icone-fogo" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
     escudo: `<svg class="icone-svg icone-escudo" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
     coroa: `<svg class="icone-svg icone-coroa" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z"/></svg>`,
@@ -55,7 +62,39 @@ window.IconesSuiri = {
     familia: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
     alvo: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
     trocarMembro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    cadeado: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
+    cadeado: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+    
+    // Universo KIDS Lúdico e Rotina
+    escovaDente: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 20h3M4 14l16-16M3 15a4 4 0 0 0 4 4l-4 4"/></svg>`,
+    cama: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`,
+    banheira: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 12v4a8 8 0 0 0 16 0v-4zM2 12h20M7 20v2M17 20v2M10 5v2M14 5v2M12 3v4"/></svg>`,
+    livro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`,
+    vassoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21.9 2.1a1 1 0 0 0-1.4 0l-9.1 9.1-1.3-.2a2 2 0 0 0-2.2 1l-2.4 4.2-3.4 5.9a1 1 0 0 0 1.4 1.4l5.9-3.4 4.2-2.4a2 2 0 0 0 1-2.2l-.2-1.3 9.1-9.1a1 1 0 0 0 0-1.4z"/></svg>`,
+    patinha: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>`,
+    blocos: `<svg class="icone-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/><rect x="9" y="8" width="6" height="6"/></svg>`,
+    maca: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>`,
+    controle: `<svg class="icone-svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><circle cx="15" cy="13" r="1"/><circle cx="17" cy="11" r="1"/></svg>`,
+    gota: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+    estrela: `<svg class="icone-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    camisa: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>`,
+    lixo: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>`,
+    sol: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+    lua: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+    flor: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22V12M12 12a3 3 0 1 1 6 0 3 3 0 1 1-6 0ZM12 12a3 3 0 1 0-6 0 3 3 0 1 0 6 0ZM12 12a3 3 0 1 1 0-6 3 3 0 1 1 0 6ZM12 12a3 3 0 1 0 0 6 3 3 0 1 0 0-6ZM12 22c-2-2-4-2-4-2s2-2 4-2c2 0 4 2 4 2s-2 2-4 2Z"/></svg>`,
+    bola: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12a14.5 14.5 0 0 0 20 0"/></svg>`,
+    mochila: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10z"/><path d="M8 10h8M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M12 10v4"/></svg>`,
+    bicicleta: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2M12 17.5l-3-4-4 1.5"/></svg>`,
+    urso: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="13" r="6"/><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M12 15h.01"/></svg>`,
+    arvore: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22v-8M12 14A6 6 0 0 1 6 8c0-3.31 2.69-6 6-6s6 2.69 6 6a6 6 0 0 1-6 6Z"/></svg>`,
+    cenoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2.27 21.73a2.5 2.5 0 0 0 3.54 0l12.46-12.45a3.5 3.5 0 1 0-4.95-4.95L.86 16.78a2.5 2.5 0 0 0 1.41 4.95zM15 9l-6 6M17.5 3.5l3 3M19 2l3 3"/></svg>`,
+    foguete: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4.5 16.5l-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>`,
+    musica: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M6 18a3 3 0 1 0 3-3 3 3 0 0 0-3 3ZM18 16a3 3 0 1 0 3-3 3 3 0 0 0-3 3Z"/></svg>`,
+    tesoura: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>`,
+    pincel: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M15 10v6a3 3 0 0 1-6 0v-6"/><path d="M12 16v6"/><path d="M10 22h4"/></svg>`,
+    lapis: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
+    paleta: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2-2 3-4 3h-2a2 2 0 0 0-2 2v1a2 2 0 0 1-2 2Z"/><circle cx="7" cy="10" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14" cy="7" r="1"/><circle cx="17" cy="10" r="1"/></svg>`,
+    relogio: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    oculos: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M6 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/><path d="M18 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>`
 };
 
 // =========================================================================
@@ -138,7 +177,7 @@ window.alternarAbaLoginCadastro = function(aba) {
 };
 
 // =========================================================================
-// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH (TELA CHEIA, 2X, ÁUDIO SEGURO iOS)
+// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH
 // =========================================================================
 window.gerenciarApresentacaoVideoSplash = function() {
     const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
@@ -186,7 +225,7 @@ window.gerenciarApresentacaoVideoSplash = function() {
 };
 
 // =========================================================================
-// 4. AUTENTICAÇÃO REAL POR E-MAIL E CADASTRO DA FAMÍLIA COM NACIONALIDADE
+// 4. AUTENTICAÇÃO REAL E CADASTRO DA FAMÍLIA COM NACIONALIDADE
 // =========================================================================
 window.fazerLoginEmail = async function(email, senha) {
     if (!cliente) return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
@@ -324,8 +363,12 @@ window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm
 };
 
 // =========================================================================
-// 5. GESTÃO DE FOTO DE PERFIL (AVATAR)
+// 5. GESTÃO DE FOTO DE PERFIL (AVATAR) E FERRAMENTA DE CROP COM CANVAS
 // =========================================================================
+let imagemOriginalCrop = null;
+let coordsCrop = { x: 0, y: 0, scale: 1, startX: 0, startY: 0, dragging: false };
+const MAX_DIM = 240;
+
 window.abrirSeletorFotoPerfil = function() {
     document.getElementById('input-upload-avatar-membro')?.click();
 };
@@ -340,36 +383,170 @@ window.processarUploadAvatar = function(evento) {
 
     const leitor = new FileReader();
     leitor.onload = function(e) {
-        const img = new Image();
-        img.onload = async function() {
-            const canvas = document.createElement('canvas');
-            const MAX_DIM = 240;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-                if (width > MAX_DIM) {
-                    height = Math.round((height * MAX_DIM) / width);
-                    width = MAX_DIM;
-                }
-            } else {
-                if (height > MAX_DIM) {
-                    width = Math.round((width * MAX_DIM) / height);
-                    height = MAX_DIM;
-                }
+        imagemOriginalCrop = new Image();
+        imagemOriginalCrop.onload = function() {
+            coordsCrop = { x: 0, y: 0, scale: 1, startX: 0, startY: 0, dragging: false };
+            const container = document.querySelector('.crop-container');
+            if (container) {
+                 const rect = container.getBoundingClientRect();
+                 const imgRatio = imagemOriginalCrop.width / imagemOriginalCrop.height;
+                 
+                 // Ajusta a escala inicial para preencher a máscara visual (200x200)
+                 if (imgRatio > 1) {
+                     coordsCrop.scale = 200 / imagemOriginalCrop.height;
+                 } else {
+                     coordsCrop.scale = 200 / imagemOriginalCrop.width;
+                 }
+                 
+                 // Centraliza
+                 coordsCrop.x = (rect.width - (imagemOriginalCrop.width * coordsCrop.scale)) / 2;
+                 coordsCrop.y = (rect.height - (imagemOriginalCrop.height * coordsCrop.scale)) / 2;
             }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            const base64Data = canvas.toDataURL('image/jpeg', 0.8);
-            await window.guardarFotoPerfil(base64Data);
+            
+            document.getElementById('modal-crop-imagem')?.classList.remove('oculto');
+            desenharCanvasCrop();
         };
-        img.src = e.target.result;
+        imagemOriginalCrop.src = e.target.result;
     };
     leitor.readAsDataURL(file);
+    evento.target.value = '';
+};
+
+// Redesenha a imagem livre por trás da máscara de recorte fixa no Canvas
+function desenharCanvasCrop() {
+    const canvas = document.getElementById('canvas-crop');
+    if (!canvas || !imagemOriginalCrop) return;
+    
+    const container = document.querySelector('.crop-container') || canvas.parentElement;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    
+    canvas.width = rect.width || 300;
+    canvas.height = rect.height || 300;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const scaledW = imagemOriginalCrop.width * coordsCrop.scale;
+    const scaledH = imagemOriginalCrop.height * coordsCrop.scale;
+    
+    // Desenha a imagem arrastável
+    ctx.drawImage(imagemOriginalCrop, coordsCrop.x, coordsCrop.y, scaledW, scaledH);
+    
+    // Desenha a máscara escura de guia
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    const maskSize = 200;
+    
+    // Cria o furo circular/quadrado vazado no centro
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height / 2, maskSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    
+    // Borda verde delimitadora do recorte
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height / 2, maskSize / 2, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+function inicializarArrastoCrop() {
+    const canvas = document.getElementById('canvas-crop');
+    if (!canvas) return;
+
+    const startDrag = (e) => {
+        coordsCrop.dragging = true;
+        const pointer = e.touches ? e.touches[0] : e;
+        coordsCrop.startX = pointer.clientX - coordsCrop.x;
+        coordsCrop.startY = pointer.clientY - coordsCrop.y;
+    };
+
+    const drag = (e) => {
+        if (!coordsCrop.dragging) return;
+        e.preventDefault(); // Impede scroll indesejado ao arrastar a foto
+        const pointer = e.touches ? e.touches[0] : e;
+        coordsCrop.x = pointer.clientX - coordsCrop.startX;
+        coordsCrop.y = pointer.clientY - coordsCrop.startY;
+        desenharCanvasCrop();
+    };
+
+    const endDrag = () => {
+        coordsCrop.dragging = false;
+    };
+
+    canvas.addEventListener('mousedown', startDrag);
+    canvas.addEventListener('mousemove', drag);
+    window.addEventListener('mouseup', endDrag);
+    
+    canvas.addEventListener('touchstart', startDrag, { passive: false });
+    canvas.addEventListener('touchmove', drag, { passive: false });
+    window.addEventListener('touchend', endDrag);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    inicializarArrastoCrop();
+});
+
+window.ajustarZoomCrop = function(delta) {
+    if (!imagemOriginalCrop) return;
+    const canvas = document.getElementById('canvas-crop');
+    if (!canvas) return;
+    
+    const novaScale = Math.max(0.1, coordsCrop.scale + delta);
+    const centerOffsetX = (canvas.width / 2) - coordsCrop.x;
+    const centerOffsetY = (canvas.height / 2) - coordsCrop.y;
+    const ratio = novaScale / coordsCrop.scale;
+    
+    coordsCrop.x = (canvas.width / 2) - (centerOffsetX * ratio);
+    coordsCrop.y = (canvas.height / 2) - (centerOffsetY * ratio);
+    coordsCrop.scale = novaScale;
+    desenharCanvasCrop();
+};
+
+window.fecharModalCrop = function() {
+    document.getElementById('modal-crop-imagem')?.classList.add('oculto');
+    imagemOriginalCrop = null;
+};
+
+window.confirmarCropImagem = async function() {
+    if (!imagemOriginalCrop) return;
+    const canvas = document.getElementById('canvas-crop');
+    if (!canvas) return;
+    
+    const maskSize = 200;
+    const outputSize = 240; 
+    
+    const finalCanvas = document.createElement('canvas');
+    finalCanvas.width = outputSize;
+    finalCanvas.height = outputSize;
+    const fCtx = finalCanvas.getContext('2d');
+    
+    // Calcula as proporções exatas da imagem posicionada por trás do guia vazado
+    const maskX = (canvas.width - maskSize) / 2;
+    const maskY = (canvas.height - maskSize) / 2;
+    const scaleRatio = outputSize / maskSize;
+    
+    fCtx.fillStyle = '#ffffff'; 
+    fCtx.fillRect(0, 0, outputSize, outputSize);
+    
+    fCtx.save();
+    fCtx.scale(scaleRatio, scaleRatio);
+    fCtx.translate(-maskX, -maskY);
+    
+    const scaledW = imagemOriginalCrop.width * coordsCrop.scale;
+    const scaledH = imagemOriginalCrop.height * coordsCrop.scale;
+    
+    // Desenha o recorte baseando-se no posicionamento de arrasto feito pelo usuário
+    fCtx.drawImage(imagemOriginalCrop, coordsCrop.x, coordsCrop.y, scaledW, scaledH);
+    fCtx.restore();
+
+    const base64Data = finalCanvas.toDataURL('image/jpeg', 0.85);
+    window.fecharModalCrop();
+    await window.guardarFotoPerfil(base64Data);
 };
 
 window.guardarFotoPerfil = async function(base64Data) {
@@ -397,7 +574,7 @@ window.guardarFotoPerfil = async function(base64Data) {
         window.renderizarMembrosFamiliaPainel();
     }
 
-    window.mostrarToast("Foto de perfil atualizada!");
+    window.mostrarToast("Foto de perfil cortada e atualizada!");
 };
 
 // =========================================================================
@@ -757,16 +934,14 @@ window.verificarSessao = async function() {
 };
 
 // =========================================================================
-// 9. NAVEGAÇÃO REATIVA ENTRE TELAS (COM GATILHOS DIRETOS DE DADOS)
+// 9. NAVEGAÇÃO REATIVA ENTRE TELAS
 // =========================================================================
 window.navegarParaTela = function(nomeTela) {
     if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
         window.SonsSuiri.popClique();
     }
 
-    if (window.modoKidsAtivo) {
-        return;
-    }
+    if (window.modoKidsAtivo) return;
 
     window.telaAtualVisivel = nomeTela;
     const secoes = document.querySelectorAll('.secao-conteudo-app');
@@ -784,27 +959,15 @@ window.navegarParaTela = function(nomeTela) {
     });
 
     if (nomeTela === 'mercado') {
-        if (typeof window.carregarItensMercado === 'function') {
-            window.carregarItensMercado();
-        }
+        if (typeof window.carregarItensMercado === 'function') window.carregarItensMercado();
     } else if (nomeTela === 'financeiro') {
-        if (typeof window.carregarCarteiraIndividual === 'function') {
-            window.carregarCarteiraIndividual();
-        }
-        if (typeof window.carregarExtratoPeriodo === 'function') {
-            window.carregarExtratoPeriodo();
-        }
-        if (typeof window.carregarCofresCompartilhados === 'function') {
-            window.carregarCofresCompartilhados();
-        }
+        if (typeof window.carregarCarteiraIndividual === 'function') window.carregarCarteiraIndividual();
+        if (typeof window.carregarExtratoPeriodo === 'function') window.carregarExtratoPeriodo();
+        if (typeof window.carregarCofresCompartilhados === 'function') window.carregarCofresCompartilhados();
     } else if (nomeTela === 'calendario') {
-        if (typeof window.carregarDadosCalendarioMes === 'function') {
-            window.carregarDadosCalendarioMes();
-        }
+        if (typeof window.carregarDadosCalendarioMes === 'function') window.carregarDadosCalendarioMes();
     } else if (nomeTela === 'familia') {
-        if (typeof window.carregarListaMembrosPainel === 'function') {
-            window.carregarListaMembrosPainel();
-        }
+        if (typeof window.carregarListaMembrosPainel === 'function') window.carregarListaMembrosPainel();
     } else if (nomeTela === 'inicio') {
         if (typeof window.carregarMissoesDoDia === 'function') window.carregarMissoesDoDia();
         if (typeof window.carregarRecadosLar === 'function') window.carregarRecadosLar();
@@ -815,7 +978,7 @@ window.navegarParaTela = function(nomeTela) {
 };
 
 // =========================================================================
-// 10. ELIMINAÇÃO TOTAL DA PRÓPRIA CONTA (RPC DEFENSIVA + PURGAÇÃO DE DADOS)
+// 10. ELIMINAÇÃO TOTAL DA PRÓPRIA CONTA
 // =========================================================================
 window.solicitarExclusaoPropriaConta = async function() {
     if (!cliente || !window.usuarioAtual) {

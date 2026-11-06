@@ -904,3 +904,61 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
     border: 2.5px solid #10b981;
     pointer-events: none;
 }
+/* Padronização do Seletor de Abas (Kids vs Adultos) no Modal de Sugestões */
+.btn-filtro-missao {
+    padding: 8px 14px;
+    border: 1.5px solid var(--borda-delicada);
+    background: #f8fafc;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--texto-suave);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-filtro-missao.ativo {
+    background: #ffffff;
+    color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+}
+
+/* ========================================================== */
+/* FOTINHAS LADO A LADO E POSIÇÃO DA CASINHA                  */
+/* ========================================================== */
+
+/* Força as fotos a ficarem lado a lado sem margem negativa */
+.grupo-avatares-kids {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+    padding-left: 0 !important; 
+}
+
+.avatar-kids-mini {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 2.5px solid #f97316 !important; /* Laranja Padrão */
+    object-fit: cover !important;
+    margin-left: 0 !important; /* Remove a sobreposição */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15) !important;
+    background: #ffffff !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Acende a borda verde quando a classe correta é ativada pelo JS */
+.avatar-kids-mini.fez-missao {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Desce o Chuíri e a casinha para o rodapé da tela */
+#container-tamagotchi-kids,
+#palco-chuiri-kids {
+    bottom: -2px !important;
+    margin-bottom: 0px !important;
+}

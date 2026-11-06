@@ -1,12 +1,11 @@
 // =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
+// SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E REVISADO)
 // Missões com Ordenação Inteligente (Cumpridas Recolhíveis),
 // Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
-// Financeiro (Entradas / Saídas / Valores / Categorias), Metas Anuais, Zero Emojis,
-// Menu Dropdown com Z-Index Soberano, Leitura de Cupom Fiscal IA
-// e Exibição Automática do Balanço Financeiro do Mês (Dia 01 até Hoje).
+// Financeiro, Metas Anuais, Zero Emojis (Botões de Joinha Kids e X/V Adultos),
+// Seletor de SVGs para Missões e "Tinder" de Sugestões de Tarefas + FOTINHAS DINÂMICAS KIDS.
 // =========================================================================
 
 let cacheMissoes = [];
@@ -17,6 +16,55 @@ let canalRealtimeRecados = null;
 let instanciaGraficoMesAnterior = null;
 window.cofresCompartilhadosLista = [];
 window.recadosLarLista = [];
+
+// Extensão e Fallback de Segurança para o Catálogo de Ícones SVG
+const ICONES_OPERACIONAIS_EXTRAS = {
+    joinha: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
+    joinhaInvertido: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`,
+    xis: `<svg class="icone-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    relogio: `<svg class="icone-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    estrela: `<svg class="icone-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    urso: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="13" r="8"/><circle cx="9.5" cy="11.5" r="1"/><circle cx="14.5" cy="11.5" r="1"/><path d="M10 15.5a3.5 3.5 0 0 0 4 0"/></svg>`,
+    escovaDente: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M3 21L21 3"/><path d="M15 3l6 6"/><path d="M12 6l4 4"/></svg>`,
+    cama: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>`,
+    banheira: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1Z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2"/></svg>`,
+    gota: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+    livro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+    patinha: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>`,
+    flor: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/></svg>`,
+    bicicleta: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"/></svg>`,
+    sol: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+    bola: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M11.9 6.7l-3.9 2.8 1.5 4.6h4.8l1.5-4.6-3.9-2.8z"/></svg>`,
+    lua: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+    musica: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+    cenoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7z"/><path d="M15.39 9.61L19 6"/><path d="M16 14l4-1"/><path d="M10 8L9 4"/></svg>`
+};
+
+if (typeof window.IconesSuiri === 'object' && window.IconesSuiri !== null) {
+    Object.assign(window.IconesSuiri, ICONES_OPERACIONAIS_EXTRAS);
+} else {
+    window.IconesSuiri = { ...ICONES_OPERACIONAIS_EXTRAS };
+}
+
+const ICONE_FALLBACK = `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+
+function obterIconeSeguro(chave) {
+    if (!chave) return ICONE_FALLBACK;
+    if (window.IconesSuiri && window.IconesSuiri[chave]) {
+        return window.IconesSuiri[chave];
+    }
+    // Suporte Universal a Emojis (Fallback Inteligente)
+    if (String(chave).length <= 5) {
+        return `<div style="font-size: inherit; line-height: 1; display:flex; align-items:center; justify-content:center;">${chave}</div>`;
+    }
+    return ICONE_FALLBACK;
+}
+
+function obterPrimeiroNomeSeguro(nomeCompleto, padrao = 'Familiar') {
+    const str = String(nomeCompleto || '').trim();
+    if (!str) return padrao;
+    return str.split(' ')[0] || padrao;
+}
 
 function obterClienteSupabase() {
     return window.clienteSupabase || window.cliente || (typeof cliente !== 'undefined' ? cliente : null);
@@ -123,7 +171,7 @@ window.preencherSelectResponsaveisMissoes = async function() {
             const ehKids = m.eh_kids === true || m.papel === 'dependente';
             const opt = document.createElement('option');
             opt.value = m.id;
-            opt.textContent = `${m.nome.split(' ')[0]} ${ehKids ? '(Kids)' : ''}`;
+            opt.textContent = `${obterPrimeiroNomeSeguro(m.nome)} ${ehKids ? '(Kids)' : ''}`;
             selCriacao.appendChild(opt);
         });
     }
@@ -150,7 +198,7 @@ window.carregarMissoesDoDia = async function() {
 };
 
 // =========================================================================
-// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (COM ORDENAÇÃO: CUMPRIDAS DESCEM)
+// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (COM ÍCONES, JOINHAS E FOTINHAS)
 // =========================================================================
 
 window.carregarMissoesKidsExclusiva = function() {
@@ -167,7 +215,14 @@ window.carregarMissoesKidsExclusiva = function() {
         return ehParaMim || ehTodosKids;
     });
 
-    const pendentes = missoesKids.filter(m => m.status === 'pendente');
+    const pendentes = missoesKids.filter(m => {
+        // Se a tarefa é 'todos_kids' e possui uma lista de concluídos, verifico se EU já fiz
+        if (m.destinatario_kids === 'todos_kids' && Array.isArray(m.concluidos_por_array)) {
+            return !m.concluidos_por_array.includes(meuId);
+        }
+        return m.status === 'pendente';
+    });
+
     if (lblContador) {
         lblContador.textContent = `${pendentes.length} tarefa${pendentes.length === 1 ? '' : 's'}`;
     }
@@ -176,7 +231,7 @@ window.carregarMissoesKidsExclusiva = function() {
         container.innerHTML = `
             <div style="text-align:center; padding:32px 16px; background:#ffffff; border-radius:24px; border:2px dashed #fde68a;">
                 <div style="margin-bottom:8px; color:#f59e0b;">
-                    <svg class="icone-svg" style="width:48px; height:48px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    ${obterIconeSeguro('estrela')}
                 </div>
                 <strong style="font-size:16px; color:#1e293b; display:block;">Tudo pronto por aqui!</strong>
                 <p style="font-size:13px; color:#64748b; margin-top:4px;">Nenhuma tarefa pendente para você agora.</p>
@@ -186,8 +241,8 @@ window.carregarMissoesKidsExclusiva = function() {
     }
 
     const missoesKidsOrdenadas = [...missoesKids].sort((a, b) => {
-        const aPendente = (a.status === 'pendente');
-        const bPendente = (b.status === 'pendente');
+        const aPendente = (a.destinatario_kids === 'todos_kids' && Array.isArray(a.concluidos_por_array)) ? !a.concluidos_por_array.includes(meuId) : (a.status === 'pendente');
+        const bPendente = (b.destinatario_kids === 'todos_kids' && Array.isArray(b.concluidos_por_array)) ? !b.concluidos_por_array.includes(meuId) : (b.status === 'pendente');
         if (aPendente && !bPendente) return -1;
         if (!aPendente && bPendente) return 1;
         return (a.prioridade || 2) - (b.prioridade || 2);
@@ -200,12 +255,20 @@ window.carregarMissoesKidsExclusiva = function() {
 
     missoesKidsOrdenadas.forEach(missao => {
         const card = document.createElement('div');
-        const concluida = missao.status === 'concluida';
+        const ehTodosKids = missao.destinatario_kids === 'todos_kids';
+        
+        let concluidosArray = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
+        if (missao.status === 'concluida' && missao.concluido_por && !ehTodosKids) {
+            concluidosArray = [missao.concluido_por];
+        }
+
+        const euJaFiz = concluidosArray.includes(meuId);
+        const algumIrmaoJaFez = ehTodosKids && concluidosArray.length > 0 && !euJaFiz;
+        const concluida = euJaFiz || (missao.status === 'concluida' && !ehTodosKids);
         const falhada = missao.status === 'falhou';
-        const feitaPorMim = missao.concluido_por === meuId;
-        const feitaPorOutro = concluida && !feitaPorMim && missao.concluido_por;
 
         card.className = `card-missao-kids ${concluida ? 'concluida' : ''}`;
+        card.style.flexDirection = 'column';
         if (falhada) {
             card.style.background = '#fff5f5';
             card.style.borderColor = '#fca5a5';
@@ -216,10 +279,45 @@ window.carregarMissoesKidsExclusiva = function() {
 
         const xpRecompensa = missao.xp_recompensa || 20;
 
-        let nomeQuemFez = '';
-        if (feitaPorOutro && window.listaMembrosFamilia) {
-            const membroFez = window.listaMembrosFamilia.find(x => x.id === missao.concluido_por);
-            nomeQuemFez = membroFez ? membroFez.nome.split(' ')[0] : 'Outro participante';
+        let grupoAvataresHtml = '';
+        let mensagemIrmaoFezHtml = '';
+
+        // Construção Dinâmica dos Avatares para missões Todos Kids
+        if (ehTodosKids && window.listaMembrosFamilia) {
+            const todasCriancas = window.listaMembrosFamilia.filter(m => m.eh_kids || m.papel === 'dependente');
+            
+            if (todasCriancas.length > 0) {
+                grupoAvataresHtml = `<div class="grupo-avatares-kids" style="margin-top: 8px;">`;
+                todasCriancas.forEach(crianca => {
+                    const criancaFez = concluidosArray.includes(crianca.id);
+                    const fotoSrc = crianca.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
+                    
+                    // A classe aplicada é 'fez-missao' para acender a borda verde
+                    grupoAvataresHtml += `<img src="${fotoSrc}" class="avatar-kids-mini ${criancaFez ? 'fez-missao' : ''}" title="${esc(crianca.nome)}">`;
+                });
+                grupoAvataresHtml += `</div>`;
+
+                if (algumIrmaoJaFez) {
+                    const idPrimeiroFez = concluidosArray[0];
+                    const irmao = todasCriancas.find(c => c.id === idPrimeiroFez);
+                    if (irmao) {
+                        mensagemIrmaoFezHtml = `
+                            <div style="margin-top:6px; font-size:12px; font-weight:800; color:#b45309; display:flex; align-items:center; gap:4px; background:#fef3c7; padding:4px 8px; border-radius:8px;">
+                                ${obterPrimeiroNomeSeguro(irmao.nome)} concluiu a missão. Falta você!
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }
+
+        const iconeChave = missao.icone || 'estrela';
+        let iconeVisual = '';
+        
+        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
+            iconeVisual = `<div style="font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${iconeChave}</div>`;
+        } else {
+            iconeVisual = obterIconeSeguro(iconeChave);
         }
 
         const subitens = Array.isArray(missao.subitens) ? missao.subitens : [];
@@ -227,69 +325,75 @@ window.carregarMissoesKidsExclusiva = function() {
         if (subitens.length > 0) {
             subitensHtml = '<div style="margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; display:flex; flex-direction:column; gap:6px;">';
             subitens.forEach(s => {
+                const textoSub = window.esc ? window.esc(s.texto) : s.texto;
                 subitensHtml += `
                     <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:#334155; cursor:pointer;">
                         <input type="checkbox" style="width:16px; height:16px; accent-color:#10b981;" ${s.concluido ? 'checked' : ''} ${concluida || falhada ? 'disabled' : ''} 
                                onchange="window.toggleSubitemMissao('${missao.id}', '${s.id}')">
-                        <span style="${s.concluido ? 'text-decoration:line-through; opacity:0.6;' : 'font-weight:600;'}">${window.esc ? window.esc(s.texto) : s.texto}</span>
+                        <span style="${s.concluido ? 'text-decoration:line-through; opacity:0.6;' : 'font-weight:600;'}">${textoSub}</span>
                     </label>
                 `;
             });
             subitensHtml += '</div>';
         }
 
+        const tituloMissaoSeguro = window.esc ? window.esc(missao.titulo) : missao.titulo;
+
         card.innerHTML = `
-            <div style="flex:1; padding-right:12px;">
-                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
-                    <span style="font-size:11px; font-weight:800; background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:999px; display:inline-flex; align-items:center; gap:4px;">
-                        <svg class="icone-svg" style="width:13px; height:13px; color:#d97706;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> +${xpRecompensa} XP
-                    </span>
-                    ${missao.destinatario_kids === 'todos_kids' ? `
-                        <span style="font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:999px;">
-                            Todos Kids
-                        </span>
-                    ` : ''}
-                    ${missao.horario_limite ? `
-                        <span style="font-size:10px; font-weight:700; color:#0369a1; background:#e0f2fe; padding:2px 6px; border-radius:999px;">
-                            até ${missao.horario_limite.slice(0, 5)}
-                        </span>
-                    ` : ''}
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+                <div style="width: 54px; height: 54px; border-radius: 16px; background: ${concluida ? '#dcfce7' : (falhada ? '#fee2e2' : '#fef3c7')}; color: ${concluida ? '#10b981' : (falhada ? '#ef4444' : '#d97706')}; border: 2px solid ${concluida ? '#86efac' : (falhada ? '#fca5a5' : '#fde68a')}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    ${iconeVisual}
                 </div>
-                <strong style="font-size:15px; color:#1e293b; line-height:1.3; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
-                    ${window.esc ? window.esc(missao.titulo) : missao.titulo}
-                </strong>
 
-                ${feitaPorOutro ? `
-                    <div style="margin-top:6px; font-size:12px; font-weight:800; color:#15803d; display:flex; align-items:center; gap:4px;">
-                        Concluída primeiro por ${window.esc ? window.esc(nomeQuemFez) : nomeQuemFez}!
+                <div style="flex:1; min-width:0; padding-right:4px;">
+                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
+                        <span style="font-size:11px; font-weight:800; background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:999px; display:inline-flex; align-items:center; gap:4px;">
+                            ${obterIconeSeguro('moeda')} +${xpRecompensa} XP
+                        </span>
+                        ${ehTodosKids ? `
+                            <span style="font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:999px;">
+                                Todos Kids
+                            </span>
+                        ` : ''}
+                        ${missao.horario_limite ? `
+                            <span style="font-size:10px; font-weight:700; color:#0369a1; background:#e0f2fe; padding:2px 6px; border-radius:999px;">
+                                até ${missao.horario_limite.slice(0, 5)}
+                            </span>
+                        ` : ''}
                     </div>
-                ` : ''}
+                    
+                    <strong style="font-size:16px; color:#1e293b; line-height:1.2; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
+                        ${tituloMissaoSeguro}
+                    </strong>
+                    
+                    ${grupoAvataresHtml}
+                    ${mensagemIrmaoFezHtml}
 
-                ${feitaPorMim ? `
-                    <div style="margin-top:6px; font-size:12px; font-weight:800; color:#15803d;">
-                        Você completou esta missão!
-                    </div>
-                ` : ''}
+                    ${(concluida && !ehTodosKids) ? `
+                        <div style="margin-top:6px; font-size:12px; font-weight:800; color:#15803d;">
+                            Você completou esta missão!
+                        </div>
+                    ` : ''}
 
-                ${subitensHtml}
+                    ${subitensHtml}
+                </div>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex-shrink:0;">
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:12px; border-top: 1.5px dashed ${concluida || falhada ? 'transparent' : 'rgba(217, 119, 6, 0.2)'};">
                 ${(!concluida && !falhada) ? `
-                    <button type="button" class="btn-concluir-missao-kids" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: none; border-radius: 14px; padding: 8px 14px; font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35); cursor: pointer; transition: transform 0.15s ease;" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                        <svg class="icone-svg" style="width:15px; height:15px; stroke-width:3;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                        Fiz!
+                    <button type="button" style="flex:1; background: #ef4444; color: #ffffff; border: none; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35); cursor: pointer; transition: transform 0.15s ease;" onclick="window.falharMissaoDomestica('${missao.id}')">
+                        ${obterIconeSeguro('joinhaInvertido')} Não fiz
                     </button>
-                    <button type="button" class="btn-erro" style="padding:8px 12px; font-size:12px; font-weight:800; border-radius:14px;" onclick="window.falharMissaoDomestica('${missao.id}')">
-                        Não fiz
+                    <button type="button" style="flex:1; background: ${algumIrmaoJaFez ? '#f59e0b' : '#10b981'}; color: #ffffff; border: none; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 16px ${algumIrmaoJaFez ? 'rgba(245, 158, 11, 0.35)' : 'rgba(16, 185, 129, 0.35)'}; cursor: pointer; transition: transform 0.15s ease;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                        ${obterIconeSeguro('joinha')} Fiz!
                     </button>
                 ` : (falhada ? `
-                    <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11.5px; font-weight:800; border-radius:12px; border:1px solid #f59e0b; color:#b45309;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                    <button type="button" style="padding:10px 16px; background:#ffffff; font-size:13px; font-weight:800; border-radius:14px; border:2px solid #f59e0b; color:#b45309; width:100%; box-shadow: 0 4px 10px rgba(0,0,0,0.05);" onclick="window.reabrirMissaoDomestica('${missao.id}')">
                         Tentar Novamente
                     </button>
                 ` : `
-                    <span style="font-size:11px; font-weight:800; padding:6px 12px; border-radius:12px; background:#dcfce7; color:#15803d;">
-                        Cumprida
+                    <span style="font-size:13px; font-weight:800; padding:10px 16px; width:100%; text-align:center; border-radius:14px; background:#dcfce7; color:#15803d; border: 2px solid #86efac;">
+                        Missão Cumprida!
                     </span>
                 `)}
             </div>
@@ -376,7 +480,7 @@ window.adicionarLinhaSubitemCriacao = function() {
     div.className = 'linha-input-subitem';
     div.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
     div.innerHTML = `
-        <input type="text" class="input-subitem-item" placeholder="Sub-etapa (ex: Guardar sapatos, Arrumar cama)" style="flex:1; padding:7px 10px; font-size:12px;">
+        <input type="text" class="input-subitem-item" placeholder="Sub-etapa (ex: Guardar sapatos)" style="flex:1; padding:7px 10px; font-size:12px;">
         <button type="button" class="btn-erro" style="padding:4px 8px; font-size:12px; border-radius:8px;" onclick="this.parentElement.remove()">remover</button>
     `;
     container.appendChild(div);
@@ -423,13 +527,13 @@ window.renderizarHistoricoMissoesKidsADM = function() {
         let nomeAlvo = 'Todos Kids';
         if (m.atribuido_a && window.listaMembrosFamilia) {
             const membro = window.listaMembrosFamilia.find(x => x.id === m.atribuido_a);
-            if (membro) nomeAlvo = membro.nome.split(' ')[0];
+            if (membro) nomeAlvo = obterPrimeiroNomeSeguro(membro.nome);
         }
 
         let feitoPor = '';
         if (concluida && m.concluido_por && window.listaMembrosFamilia) {
             const quemFez = window.listaMembrosFamilia.find(x => x.id === m.concluido_por);
-            if (quemFez) feitoPor = ` - Feito por: ${quemFez.nome.split(' ')[0]}`;
+            if (quemFez) feitoPor = ` - Feito por: ${obterPrimeiroNomeSeguro(quemFez.nome)}`;
         }
 
         const linha = document.createElement('div');
@@ -565,7 +669,7 @@ window.inicializarNavegacaoSwipe = function() {
 };
 
 // =========================================================================
-// 7. CICLOS DE RECORRÊNCIA E REATIVAÇÃO AUTOMÁTICA ÀS 04:00
+// 7. CRIAÇÃO DE MISSÕES (INTEGRANDO O ÍCONE SVG E EMOJI) E REATIVAÇÃO
 // =========================================================================
 
 function calcularProximaDataExecucao(recorrenciaTipo, horarioReinicio) {
@@ -603,6 +707,7 @@ window.verificarReativacaoAutomaticaMissoes = async function() {
                     missao.status = 'pendente';
                     missao.concluido_em = null;
                     missao.concluido_por = null;
+                    missao.concluidos_por_array = [];
                     
                     if (Array.isArray(missao.subitens)) {
                         missao.subitens.forEach(s => s.concluido = false);
@@ -612,6 +717,7 @@ window.verificarReativacaoAutomaticaMissoes = async function() {
                         status: 'pendente',
                         concluido_em: null,
                         concluido_por: null,
+                        concluidos_por_array: [],
                         subitens: missao.subitens
                     }).eq('id', missao.id);
                 }
@@ -632,7 +738,13 @@ window.adicionarNovaMissao = async function() {
     const selResp = document.getElementById('select-nova-missao-responsavel');
     const inHoraLimite = document.getElementById('input-nova-missao-horario-limite');
     const inHoraReinicio = document.getElementById('input-nova-missao-horario-reinicio');
-
+    
+    // Captura Opcional de Emoji ou Ícone
+    const inputIcone = document.getElementById('input-nova-missao-icone');
+    const inputEmoji = document.getElementById('input-nova-missao-emoji');
+    const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
+    const iconeSimbolo = emojiVal || (inputIcone?.value || 'alvo');
+    
     const titulo = inTitulo?.value?.trim();
     const prio = parseInt(selPrio?.value || '2', 10);
     const recorrenciaTipo = selRecorrencia?.value || 'diaria_24h';
@@ -679,6 +791,7 @@ window.adicionarNovaMissao = async function() {
     const payload = {
         familia_id: window.familiaAtualId,
         titulo: titulo,
+        icone: iconeSimbolo,
         escopo: escopo,
         prioridade: prio,
         status: 'pendente',
@@ -688,18 +801,29 @@ window.adicionarNovaMissao = async function() {
         horario_reinicio: horaReinicio.length === 5 ? horaReinicio + ':00' : horaReinicio,
         atribuido_a: atribuidoA,
         destinatario_kids: destinatarioKids,
+        concluidos_por_array: [],
         subitens: subitens,
         criado_por: obterUsuarioId(),
         concluido_por: null
     };
 
-    const { data, error } = await supabase.from('missoes').insert([payload]).select().single();
+    let { data, error } = await supabase.from('missoes').insert([payload]).select().single();
+    
+    if (error && error.message && error.message.includes('icone')) {
+        const payloadSemIcone = { ...payload };
+        delete payloadSemIcone.icone;
+        const resFallback = await supabase.from('missoes').insert([payloadSemIcone]).select().single();
+        data = resFallback.data;
+        error = resFallback.error;
+    }
+
     if (error) {
         return window.mostrarToast("Erro ao criar missão: " + error.message, "erro");
     }
 
     if (inTitulo) inTitulo.value = '';
     if (inHoraLimite) inHoraLimite.value = '';
+    if (inputEmoji) inputEmoji.value = '';
     
     const containerSub = document.getElementById('container-inputs-subitens-criacao');
     if (containerSub) containerSub.innerHTML = '';
@@ -713,7 +837,7 @@ window.adicionarNovaMissao = async function() {
 };
 
 // =========================================================================
-// 8. RENDERIZAÇÃO: ORDENAÇÃO INTELIGENTE (CUMPRIDAS DESCEM PARA O FIM)
+// 8. RENDERIZAÇÃO ADULTOS: (BOTÃO V VERDE E X VERMELHO)
 // =========================================================================
 
 window.renderizarMissoesTela = function() {
@@ -786,6 +910,14 @@ window.renderizarMissoesTela = function() {
         const prioCor = missao.prioridade === 1 ? '#ef4444' : (missao.prioridade === 2 ? '#d97706' : '#10b981');
         const prioTexto = missao.prioridade === 1 ? 'Urgente' : (missao.prioridade === 2 ? 'Importante' : 'Tranquilo');
 
+        const iconeChave = missao.icone || 'alvo';
+        let svgIcone = '';
+        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
+            svgIcone = `<div style="font-size: 20px; line-height: 1;">${iconeChave}</div>`;
+        } else {
+            svgIcone = obterIconeSeguro(iconeChave);
+        }
+
         let badgeHorario = '';
         if (missao.horario_limite) {
             const partes = missao.horario_limite.split(':');
@@ -793,7 +925,7 @@ window.renderizarMissoesTela = function() {
             const atrasada = !concluida && !falhada && horaAtualMinutos > limiteMin;
             badgeHorario = `
                 <span style="font-size:10.5px; font-weight:700; color:${atrasada ? '#dc2626' : '#64748b'}; display:inline-flex; align-items:center; gap:3px;">
-                    <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    ${obterIconeSeguro('relogio')}
                     ${missao.horario_limite.slice(0, 5)} ${atrasada ? '(atrasada)' : ''}
                 </span>
             `;
@@ -806,7 +938,7 @@ window.renderizarMissoesTela = function() {
         let badgeCumprido = '';
         if (concluida && missao.concluido_por && window.listaMembrosFamilia) {
             const autor = window.listaMembrosFamilia.find(m => m.id === missao.concluido_por);
-            const nomeAutor = autor ? autor.nome.split(' ')[0] : 'Concluída';
+            const nomeAutor = autor ? obterPrimeiroNomeSeguro(autor.nome, 'Concluída') : 'Concluída';
             badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#15803d;">• Feito por ${nomeAutor}</span>`;
         } else if (falhada) {
             badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#ef4444;">• Não cumprida</span>`;
@@ -825,16 +957,19 @@ window.renderizarMissoesTela = function() {
                     <div id="box-subitens-missao-${missao.id}" class="oculto" style="margin-top:6px; padding:6px 8px; background:#f8fafc; border-radius:8px; display:flex; flex-direction:column; gap:4px;">
             `;
             subitens.forEach(s => {
+                const textoSub = window.esc ? window.esc(s.texto) : s.texto;
                 subitensHtml += `
                     <label style="display:flex; align-items:center; gap:6px; font-size:11.5px; color:#475569; cursor:pointer;">
                         <input type="checkbox" ${s.concluido ? 'checked' : ''} ${concluida || falhada ? 'disabled' : ''} 
                                onchange="window.toggleSubitemMissao('${missao.id}', '${s.id}')">
-                        <span style="${s.concluido ? 'text-decoration:line-through; opacity:0.6;' : ''}">${window.esc ? window.esc(s.texto) : s.texto}</span>
+                        <span style="${s.concluido ? 'text-decoration:line-through; opacity:0.6;' : ''}">${textoSub}</span>
                     </label>
                 `;
             });
             subitensHtml += `</div></div>`;
         }
+
+        const tituloMissaoSeguro = window.esc ? window.esc(missao.titulo) : missao.titulo;
 
         card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
@@ -846,17 +981,22 @@ window.renderizarMissoesTela = function() {
                         ${badgeHorario}
                         ${badgeCumprido}
                     </div>
-                    <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
-                        ${window.esc ? window.esc(missao.titulo) : missao.titulo}
-                    </strong>
+                    
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="color:${concluida ? '#10b981' : (falhada ? '#ef4444' : '#d97706')}; display:flex; align-items:center;">
+                            ${svgIcone}
+                        </span>
+                        <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
+                            ${tituloMissaoSeguro}
+                        </strong>
+                    </div>
                     ${subitensHtml}
                 </div>
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                     ${(!concluida && !falhada) ? `
                         <button type="button" class="btn-sucesso" style="padding:6px 12px; font-size:11.5px; border-radius:10px; font-weight:800; display:inline-flex; align-items:center; gap:4px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                            <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                            Fiz
+                            ${obterIconeSeguro('check')} Fiz
                         </button>
                     ` : (falhada ? `
                         <button type="button" class="btn-secundario" style="padding:5px 8px; font-size:11px; font-weight:700; color:#b45309;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
@@ -875,14 +1015,14 @@ window.renderizarMissoesTela = function() {
                         <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:30px; background:#ffffff; border:1px solid rgba(217, 119, 6, 0.22); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:10000; min-width:115px; overflow:hidden;">
                             ${(!concluida && !falhada) ? `
                                 <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#ef4444; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.falharMissaoDomestica('${missao.id}')">
-                                    Falhou
+                                    ${obterIconeSeguro('xis')} Falhou
                                 </button>
                             ` : ''}
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px; border-top:1px solid #f1f5f9;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
-                                <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar
+                                ${obterIconeSeguro('editar')} Editar
                             </button>
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:var(--cor-erro, #f43f5e); border-top:1px solid #f1f5f9; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.excluirMissao('${missao.id}')">
-                                <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Excluir
+                                ${obterIconeSeguro('excluir')} Excluir
                             </button>
                         </div>
                     </div>
@@ -913,7 +1053,7 @@ window.renderizarMissoesTela = function() {
 };
 
 // =========================================================================
-// 9. MENU DE AÇÕES SOBERANO COM ELEVAÇÃO DE Z-INDEX DO CARD PAI
+// 9. MENU DE AÇÕES SOBERANO E EDIÇÃO (COM RECUPERAÇÃO DO ÍCONE/EMOJI)
 // =========================================================================
 
 window.alternarMenuAcoesMissao = function(id) {
@@ -958,7 +1098,7 @@ window.iniciarEdicaoMissao = function(id) {
             window.listaMembrosFamilia.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.id;
-                opt.textContent = m.nome.split(' ')[0];
+                opt.textContent = obterPrimeiroNomeSeguro(m.nome);
                 selModal.appendChild(opt);
             });
         }
@@ -973,6 +1113,26 @@ window.iniciarEdicaoMissao = function(id) {
     setVal('edit-missao-titulo', missao.titulo || '');
     setVal('edit-missao-prioridade', missao.prioridade || '2');
     setVal('edit-missao-recorrencia', missao.recorrencia_tipo || 'diaria_24h');
+    
+    const iconeChave = missao.icone || 'alvo';
+    const inputEmoji = document.getElementById('edit-missao-emoji');
+    const inputIcone = document.getElementById('edit-missao-icone');
+    
+    // Distribui o valor para o emoji ou para o SVG dependendo do formato
+    if (inputEmoji) {
+        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
+            inputEmoji.value = iconeChave;
+            if (inputIcone) inputIcone.value = 'alvo';
+        } else {
+            inputEmoji.value = '';
+            if (inputIcone) inputIcone.value = iconeChave;
+        }
+    }
+    
+    const btnEditIcone = document.getElementById('btn-seletor-icone-edit');
+    if (btnEditIcone) {
+        btnEditIcone.innerHTML = obterIconeSeguro(iconeChave);
+    }
     
     let respSel = 'todos';
     if (missao.destinatario_kids === 'todos_kids') respSel = 'todos_kids';
@@ -999,6 +1159,11 @@ window.salvarEdicaoMissao = async function() {
     const respValor = document.getElementById('edit-missao-responsavel')?.value || 'todos';
     let horaLimite = document.getElementById('edit-missao-horario-limite')?.value?.trim() || null;
     const horaReinicio = document.getElementById('edit-missao-horario-reinicio')?.value || '04:00';
+    
+    // Captura o Emoji (Prioridade) ou o Ícone SVG
+    const inputEmoji = document.getElementById('edit-missao-emoji');
+    const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
+    const iconeSimbolo = emojiVal || (document.getElementById('edit-missao-icone')?.value || 'alvo');
 
     if (!titulo) return window.mostrarToast("O título não pode estar vazio.", "erro");
 
@@ -1025,8 +1190,9 @@ window.salvarEdicaoMissao = async function() {
 
     const xp = prio === 1 ? 40 : (prio === 2 ? 25 : 15);
 
-    const { error } = await supabase.from('missoes').update({
+    const payloadUpdate = {
         titulo: titulo,
+        icone: iconeSimbolo,
         escopo: escopo,
         atribuido_a: atribuidoA,
         destinatario_kids: destinatarioKids,
@@ -1035,7 +1201,15 @@ window.salvarEdicaoMissao = async function() {
         recorrencia_tipo: recorrenciaTipo,
         horario_limite: horaLimite,
         horario_reinicio: horaReinicio.length === 5 ? horaReinicio + ':00' : horaReinicio
-    }).eq('id', id);
+    };
+
+    let { error } = await supabase.from('missoes').update(payloadUpdate).eq('id', id);
+
+    if (error && error.message && error.message.includes('icone')) {
+        delete payloadUpdate.icone;
+        const resFallback = await supabase.from('missoes').update(payloadUpdate).eq('id', id);
+        error = resFallback.error;
+    }
 
     if (error) return window.mostrarToast("Erro ao atualizar: " + error.message, "erro");
 
@@ -1045,7 +1219,7 @@ window.salvarEdicaoMissao = async function() {
 };
 
 // =========================================================================
-// 10. CONCLUSÃO, CÁLCULO DE PRÓXIMA EXECUÇÃO E MASCOTE ANIMADO
+// 10. CONCLUSÃO E PENALIZAÇÃO (COM ATUALIZAÇÃO DO ARRAY DE TODOS KIDS)
 // =========================================================================
 
 window.concluirMissaoDomestica = async function(id) {
@@ -1080,13 +1254,26 @@ window.concluirMissaoDomestica = async function(id) {
         missao.subitens.forEach(s => s.concluido = true);
     }
 
-    await supabase.from('missoes').update({
+    // Tratamento Especial para o Array de Crianças (todos_kids)
+    let payloadAtualizacao = {
         status: 'concluida',
         concluido_em: agoraIso,
         concluido_por: usuarioId,
         proxima_execucao: proximaExec,
         subitens: missao.subitens
-    }).eq('id', id);
+    };
+
+    if (missao.destinatario_kids === 'todos_kids') {
+        const concluidosJaExistentes = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
+        if (!concluidosJaExistentes.includes(usuarioId)) {
+            concluidosJaExistentes.push(usuarioId);
+        }
+        
+        missao.concluidos_por_array = concluidosJaExistentes;
+        payloadAtualizacao.concluidos_por_array = concluidosJaExistentes;
+    }
+
+    await supabase.from('missoes').update(payloadAtualizacao).eq('id', id);
 
     missao.status = 'concluida';
     missao.concluido_em = agoraIso;
@@ -1122,7 +1309,7 @@ window.concluirMissaoDomestica = async function(id) {
                 window.dispararModalCelebracao(
                     "SUBIU DE NÍVEL!",
                     `Parabéns! Você alcançou o nível ${patamarDepois.nome} com ${novoXpTotal} XP!`,
-                    window.IconesSuiri?.trofeu || ''
+                    obterIconeSeguro('trofeu')
                 );
             }
         }
@@ -1161,7 +1348,9 @@ window.falharMissaoDomestica = async function(id) {
     const xpBase = Number(missao.xp_recompensa || 20);
     const penalidadeXP = Math.floor(xpBase / 2);
 
-    const confirmado = await window.confirmarAcaoSuiri(`Deseja confirmar a marcação de falha nesta missão? Você perderá ${penalidadeXP} XP.`);
+    const confirmado = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri(`Deseja confirmar a marcação de falha nesta missão? Você perderá ${penalidadeXP} XP.`)
+        : confirm(`Deseja confirmar a marcação de falha nesta missão? Você perderá ${penalidadeXP} XP.`);
     if (!confirmado) return;
 
     const supabase = obterClienteSupabase();
@@ -1222,6 +1411,7 @@ window.reabrirMissaoDomestica = async function(id) {
         status: 'pendente', 
         concluido_em: null,
         concluido_por: null,
+        concluidos_por_array: [],
         proxima_execucao: null,
         subitens: missao ? missao.subitens : []
     }).eq('id', id);
@@ -1230,6 +1420,7 @@ window.reabrirMissaoDomestica = async function(id) {
         missao.status = 'pendente';
         missao.concluido_em = null;
         missao.concluido_por = null;
+        missao.concluidos_por_array = [];
         missao.proxima_execucao = null;
     }
 
@@ -1240,7 +1431,9 @@ window.reabrirMissaoDomestica = async function(id) {
 };
 
 window.excluirMissao = async function(id) {
-    const confirmado = await window.confirmarAcaoSuiri("Tem certeza de que deseja confirmar a exclusão desta missão?");
+    const confirmado = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri("Tem certeza de que deseja confirmar a exclusão desta missão?")
+        : confirm("Tem certeza de que deseja confirmar a exclusão desta missão?");
     if (!confirmado) return;
 
     const supabase = obterClienteSupabase();
@@ -1255,7 +1448,223 @@ window.excluirMissao = async function(id) {
 };
 
 // =========================================================================
-// 11. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER AUTOMÁTICO REFINADO
+// 11. SISTEMA "TINDER" DE SUGESTÕES DA IA
+// =========================================================================
+
+window.sugestoesCacheKids = [
+    { titulo: "Guardar os brinquedos", icone: "urso", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "20:00:00" },
+    { titulo: "Escovar os dentes", icone: "escovaDente", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
+    { titulo: "Arrumar a cama", icone: "cama", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "10:00:00" },
+    { titulo: "Lavar as mãos antes de comer", icone: "banheira", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
+    { titulo: "Tomar banho", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "19:00:00" },
+    { titulo: "Fazer a lição de casa", icone: "livro", recorrencia_tipo: "semanal_7d", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "17:00:00" },
+    { titulo: "Tirar o próprio prato da mesa", icone: "refeicao", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
+    { titulo: "Beber água", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
+    { titulo: "Ler um livrinho", icone: "livro", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
+    { titulo: "Ajudar a cuidar do pet", icone: "patinha", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null }
+];
+
+window.sugestoesCacheAdultos = [
+    { titulo: "Meditar ou respirar fundo por 10 min", icone: "flor", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
+    { titulo: "Fazer 30 minutos de exercício físico", icone: "bicicleta", recorrencia_tipo: "semanal_7d", prioridade: 1, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
+    { titulo: "Acordar cedo (antes das 7h)", icone: "sol", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "07:00:00" },
+    { titulo: "Beber 2 litros de água no dia", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
+    { titulo: "Ler 15 páginas de um livro", icone: "livro", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
+    { titulo: "Fazer alongamento ao acordar", icone: "bola", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "09:00:00" },
+    { titulo: "Desligar telas 1 hora antes de dormir", icone: "lua", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "22:00:00" },
+    { titulo: "Planejar as tarefas do dia seguinte", icone: "agenda", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "21:00:00" },
+    { titulo: "Tirar 15 min para um hobby", icone: "musica", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
+    { titulo: "Fazer uma refeição 100% saudável", icone: "cenoura", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null }
+];
+
+window.sugestoesFilaAtual = [];
+
+window.abrirModalSugestoes = function() {
+    document.getElementById('modal-sugestoes-missoes')?.classList.remove('oculto');
+    window.carregarSugestoes('kids');
+};
+
+window.fecharModalSugestoes = function() {
+    document.getElementById('modal-sugestoes-missoes')?.classList.add('oculto');
+};
+
+window.carregarSugestoes = function(tipo) {
+    const btnKids = document.getElementById('btn-sugestao-kids');
+    const btnAdultos = document.getElementById('btn-sugestao-adultos');
+
+    if (btnKids && btnAdultos) {
+        if (tipo === 'kids') {
+            btnKids.className = 'btn-principal';
+            btnAdultos.className = 'btn-secundario';
+            window.sugestoesFilaAtual = [...window.sugestoesCacheKids];
+        } else {
+            btnAdultos.className = 'btn-principal';
+            btnKids.className = 'btn-secundario';
+            window.sugestoesFilaAtual = [...window.sugestoesCacheAdultos];
+        }
+    }
+
+    window.sugestoesFilaAtual.sort(() => Math.random() - 0.5);
+    window.renderizarCartaoSugestao();
+};
+
+window.renderizarCartaoSugestao = function() {
+    const cardAtual = document.getElementById('cartao-sugestao-atual');
+    const tituloEl = document.getElementById('titulo-sugestao-atual');
+    const iconeEl = document.getElementById('icone-sugestao-atual');
+    const freqEl = document.getElementById('frequencia-sugestao-atual');
+
+    if (!cardAtual || !tituloEl || !iconeEl || !freqEl) return;
+
+    if (window.sugestoesFilaAtual.length === 0) {
+        tituloEl.textContent = "Fim das ideias!";
+        iconeEl.innerHTML = obterIconeSeguro('check');
+        freqEl.textContent = "Volte mais tarde para novas sugestões.";
+        cardAtual.style.transform = 'scale(0.95)';
+        return;
+    }
+
+    cardAtual.style.transform = 'scale(1)';
+    const sugestao = window.sugestoesFilaAtual[0];
+
+    tituloEl.textContent = sugestao.titulo;
+    iconeEl.innerHTML = obterIconeSeguro(sugestao.icone);
+
+    let frequenciaTxt = "Diária";
+    if (sugestao.recorrencia_tipo === 'semanal_7d') frequenciaTxt = "Semanal";
+    
+    freqEl.textContent = `Sugestão ${frequenciaTxt}`;
+};
+
+window.recusarSugestao = function() {
+    if (window.sugestoesFilaAtual.length === 0) return;
+    const cardAtual = document.getElementById('cartao-sugestao-atual');
+    
+    if (cardAtual) {
+        cardAtual.style.transform = 'translateX(-30px) rotate(-5deg) scale(0.95)';
+        cardAtual.style.opacity = '0';
+    }
+
+    setTimeout(() => {
+        window.sugestoesFilaAtual.shift();
+        window.renderizarCartaoSugestao();
+        if (cardAtual) {
+            cardAtual.style.transform = 'translateX(0) rotate(0deg) scale(1)';
+            cardAtual.style.opacity = '1';
+        }
+    }, 200);
+};
+
+window.aceitarSugestao = async function() {
+    if (window.sugestoesFilaAtual.length === 0) return;
+    const supabase = obterClienteSupabase();
+    if (!window.familiaAtualId || !supabase) return window.mostrarToast("Erro de sessão.", "erro");
+
+    const sugestao = window.sugestoesFilaAtual[0];
+    const meuId = obterUsuarioId();
+    
+    const xpPadrao = sugestao.prioridade === 1 ? 40 : (sugestao.prioridade === 2 ? 25 : 15);
+    let atribuido = null;
+    if (sugestao.escopo === 'pessoal') atribuido = meuId;
+
+    const payload = {
+        familia_id: window.familiaAtualId,
+        titulo: sugestao.titulo,
+        icone: sugestao.icone,
+        escopo: sugestao.escopo,
+        prioridade: sugestao.prioridade,
+        status: 'pendente',
+        xp_recompensa: xpPadrao,
+        recorrencia_tipo: sugestao.recorrencia_tipo,
+        horario_limite: sugestao.horario_limite,
+        horario_reinicio: '04:00:00',
+        atribuido_a: atribuido,
+        destinatario_kids: sugestao.destinatario_kids,
+        criado_por: meuId,
+        concluido_por: null
+    };
+
+    const cardAtual = document.getElementById('cartao-sugestao-atual');
+    
+    if (cardAtual) {
+        cardAtual.style.transform = 'translateX(30px) rotate(5deg) scale(0.95)';
+        cardAtual.style.opacity = '0';
+    }
+
+    supabase.from('missoes').insert([payload]).select().single().then(({ data, error }) => {
+        if (!error && data) {
+            cacheMissoes.unshift(data);
+            window.renderizarMissoesTela();
+            window.carregarMissoesKidsExclusiva();
+        }
+    });
+
+    setTimeout(() => {
+        window.sugestoesFilaAtual.shift();
+        window.renderizarCartaoSugestao();
+        window.mostrarToast(`Missão "${sugestao.titulo}" adicionada com sucesso!`);
+        if (cardAtual) {
+            cardAtual.style.transform = 'translateX(0) rotate(0deg) scale(1)';
+            cardAtual.style.opacity = '1';
+        }
+    }, 200);
+};
+
+// =========================================================================
+// 12. SELETOR DE ÍCONES (GRELHA SVG PARA MISSÕES)
+// =========================================================================
+
+window.contextoIconeAtual = 'nova';
+
+window.abrirSeletorIcone = function(contexto) {
+    window.contextoIconeAtual = contexto;
+    const modal = document.getElementById('modal-seletor-icone');
+    const grade = document.getElementById('grid-icones-seletor');
+    if (!modal || !grade) return;
+
+    if (grade.innerHTML === '') {
+        let html = '';
+        if (window.IconesSuiri) {
+            for (const [chave, svgCode] of Object.entries(window.IconesSuiri)) {
+                if (['check', 'xis', 'joinha', 'joinhaInvertido'].includes(chave)) continue;
+                
+                html += `
+                    <button type="button" 
+                            style="width: 100%; aspect-ratio: 1/1; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #d97706; transition: border-color 0.15s ease;"
+                            onclick="window.selecionarIcone('${chave}')"
+                            title="${chave}">
+                        ${svgCode}
+                    </button>
+                `;
+            }
+        }
+        grade.innerHTML = html;
+    }
+
+    modal.classList.remove('oculto');
+};
+
+window.fecharSeletorIcone = function() {
+    document.getElementById('modal-seletor-icone')?.classList.add('oculto');
+};
+
+window.selecionarIcone = function(chaveIcone) {
+    const inputOculto = document.getElementById(`input-${window.contextoIconeAtual}-missao-icone`) || document.getElementById(`${window.contextoIconeAtual}-missao-icone`);
+    const btnPreview = document.getElementById(`btn-seletor-icone-${window.contextoIconeAtual}`);
+    
+    if (inputOculto) {
+        inputOculto.value = chaveIcone;
+    }
+    
+    if (btnPreview) {
+        btnPreview.innerHTML = obterIconeSeguro(chaveIcone);
+    }
+    
+    window.fecharSeletorIcone();
+};
+
+// =========================================================================
+// 13. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER FINANCEIRO
 // =========================================================================
 
 window.inicializarMotorVoz = function() {
@@ -1299,7 +1708,6 @@ window.processarTextoTranscrito = function(frase) {
     const textoOriginal = frase.trim();
     const texto = textoOriginal.toLowerCase();
 
-    // 1. Deteção do Valor Numérico
     let valorDetectado = 0;
     const matchNumero = texto.match(/(\d+[\d.,]*)/);
     if (matchNumero) {
@@ -1307,18 +1715,15 @@ window.processarTextoTranscrito = function(frase) {
         valorDetectado = parseFloat(numStr) || 0;
     }
 
-    // 2. Deteção de Fluxo (Entrada vs Saída)
     const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o|bonifica[cç][aã]o/i;
     const ehReceita = padroesEntrada.test(texto);
     const tipoTransacao = ehReceita ? 'entrada' : 'saida';
 
-    // 3. Deteção de Escopo
     let escopo = 'pessoal';
     if (/casa|fam[ií]lia|lar|mercado|supermercado|condom[ií]nio|energia|luz|água|agua|internet|feira|aluguel|coletivo/i.test(texto)) {
         escopo = 'casa';
     }
 
-    // 4. Inferência Semântica de Categoria
     let categoria = 'Geral';
     if (/supermercado|mercado|a[cç]ougue|padaria|hortifr[uú]ti|feira|despensa|arroz|feij[aã]o|leite|caf[eé]|carne/i.test(texto)) {
         categoria = 'Supermercado';
@@ -1338,7 +1743,6 @@ window.processarTextoTranscrito = function(frase) {
         categoria = 'Salário';
     }
 
-    // 5. Higienização Cirúrgica do Item
     let itemLimpo = textoOriginal;
 
     itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
@@ -1364,105 +1768,22 @@ window.processarTextoTranscrito = function(frase) {
 
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
+    const selCat = document.getElementById('select-fin-categoria');
     const selTipo = document.getElementById('select-fin-tipo');
     const selEscopo = document.getElementById('select-fin-escopo');
-    const selCat = document.getElementById('select-fin-categoria');
 
     if (inDesc) inDesc.value = itemLimpo;
     if (inVal && valorDetectado > 0) inVal.value = valorDetectado.toFixed(2);
+    if (selCat) selCat.value = categoria;
     if (selTipo) selTipo.value = tipoTransacao;
     if (selEscopo) selEscopo.value = escopo;
-    if (selCat) selCat.value = categoria;
 
     const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
     window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${itemLimpo})`);
 };
 
 // =========================================================================
-// 11B. MOTOR DE VISÃO COMPUTACIONAL (CUPÃO FISCAL COM IA GEMINI)
-// =========================================================================
-
-window.processarCupomFiscalIA = async function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    let apiKey = localStorage.getItem('suiri_gemini_api_key');
-    if (!apiKey) {
-        apiKey = prompt("Para a IA ler o cupom, insira a sua chave API do Google Gemini (Google AI Studio):");
-        if (!apiKey) {
-            window.mostrarToast("Chave da IA não fornecida.", "erro");
-            return;
-        }
-        localStorage.setItem('suiri_gemini_api_key', apiKey.trim());
-    }
-
-    window.mostrarToast("A IA está a analisar o seu cupom fiscal... Aguarde um momento.", "info");
-
-    try {
-        const base64String = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-
-        const promptText = `Analise este cupom fiscal ou nota fiscal. Identifique o nome principal do estabelecimento e o valor total exato pago. 
-        Classifique a compra numa destas categorias exatas: Supermercado, Alimentação, Moradia, Transporte, Saúde, Lazer, Educação, Geral.
-        Responda EXATAMENTE e APENAS com um objeto JSON válido, sem crases, blocos de código ou formatação markdown, estritamente com esta estrutura:
-        {"estabelecimento": "Nome", "total": 0.00, "categoria": "Categoria"}`;
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: promptText },
-                        { inline_data: { mime_type: file.type || "image/jpeg", data: base64String } }
-                    ]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        if (data.error) throw new Error(data.error.message);
-
-        const respostaIA = data.candidates[0].content.parts[0].text;
-        const jsonLimpo = respostaIA.replace(/```json/g, '').replace(/```/g, '').trim();
-        const dadosCupom = JSON.parse(jsonLimpo);
-
-        const inDesc = document.getElementById('input-fin-descricao');
-        const inVal = document.getElementById('input-fin-valor');
-        const selCat = document.getElementById('select-fin-categoria');
-        const selTipo = document.getElementById('select-fin-tipo');
-        const selEscopo = document.getElementById('select-fin-escopo');
-
-        if (inDesc) inDesc.value = dadosCupom.estabelecimento || '';
-        if (inVal) inVal.value = (dadosCupom.total || 0).toFixed(2);
-        if (selCat) {
-            const catValida = Array.from(selCat.options).map(o => o.value).includes(dadosCupom.categoria);
-            selCat.value = catValida ? dadosCupom.categoria : 'Geral';
-        }
-        if (selTipo) selTipo.value = 'saida';
-        if (selEscopo) selEscopo.value = 'casa';
-
-        window.mostrarToast(`Cupom lido! R$ ${(dadosCupom.total || 0).toFixed(2)} em ${dadosCupom.estabelecimento}. Confirme os dados e lance na carteira.`);
-    } catch (error) {
-        console.error("Erro na leitura IA:", error);
-        if (error.message && error.message.includes('API key not valid')) {
-            localStorage.removeItem('suiri_gemini_api_key');
-            window.mostrarToast("A sua chave API é inválida. Tente novamente.", "erro");
-        } else {
-            window.mostrarToast("Não foi possível processar o cupom. A imagem está nítida?", "erro");
-        }
-    } finally {
-        event.target.value = '';
-    }
-};
-
-// =========================================================================
-// 12. CARTEIRAS, MONTANTE & FILTRAGEM DE MEMBROS SEM CARTÃO
+// 14. CARTEIRAS, MONTANTE & FILTRAGEM DE MEMBROS SEM CARTÃO
 // =========================================================================
 
 window.salvarTransacaoManual = async function() {
@@ -1520,7 +1841,6 @@ window.salvarTransacaoManual = async function() {
         if (typeof window.carregarExtratoPeriodo === 'function') window.carregarExtratoPeriodo();
         await window.renderizarGraficoBarrasMesAnterior();
         
-        // Atualiza o balanço automático caso esteja na tela de Finanças
         if (typeof window.gerarRelatorio === 'function') window.gerarRelatorio();
     }
 };
@@ -1587,7 +1907,7 @@ window.carregarCarteiraIndividual = async function() {
 };
 
 // =========================================================================
-// 13. GRÁFICO EM BARRAS: GASTOS DO MÊS ANTERIOR POR SETOR (CHART.JS)
+// 15. GRÁFICO EM BARRAS: GASTOS DO MÊS ANTERIOR POR SETOR (CHART.JS)
 // =========================================================================
 
 window.renderizarGraficoBarrasMesAnterior = async function() {
@@ -1694,7 +2014,7 @@ window.renderizarGraficoBarrasMesAnterior = async function() {
 };
 
 // =========================================================================
-// 14. METAS: POUPANÇA INDIVIDUAL & RESERVA DA FAMÍLIA (COFRES)
+// 16. METAS: POUPANÇA INDIVIDUAL & RESERVA DA FAMÍLIA (COFRES)
 // =========================================================================
 
 window.abrirModalDefinirMetaEconomia = function() {
@@ -1956,7 +2276,7 @@ window.confirmarAporteMeta = async function() {
 };
 
 // =========================================================================
-// 15. MURAL DE RECADOS RÁPIDOS DO LAR
+// 17. MURAL DE RECADOS RÁPIDOS DO LAR
 // =========================================================================
 
 window.carregarRecadosLar = async function() {
@@ -1967,7 +2287,7 @@ window.carregarRecadosLar = async function() {
 
     if (!window.listaMembrosFamilia || window.listaMembrosFamilia.length === 0) {
         const { data: membros } = await cli.from('membros')
-            .select('id, nome')
+            .select('id, nome, eh_kids, papel')
             .eq('familia_id', window.familiaAtualId);
         window.listaMembrosFamilia = membros || [];
     }
@@ -2003,7 +2323,7 @@ window.renderizarRecadosLar = function() {
         let autorNome = 'Familiar';
         if (window.listaMembrosFamilia) {
             const m = window.listaMembrosFamilia.find(x => x.id === r.autor_id);
-            if (m) autorNome = m.nome.split(' ')[0];
+            if (m) autorNome = obterPrimeiroNomeSeguro(m.nome);
         }
 
         const lidosArray = Array.isArray(r.lido_por) ? r.lido_por : [];
@@ -2011,6 +2331,7 @@ window.renderizarRecadosLar = function() {
         const souAutor = r.autor_id === meuId;
 
         const dataFmt = r.criado_em ? new Date(r.criado_em).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const msgSegura = window.esc ? window.esc(r.mensagem) : r.mensagem;
 
         return `
             <div style="background:#ffffff; border:1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius:10px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
@@ -2020,7 +2341,7 @@ window.renderizarRecadosLar = function() {
                         <span style="font-size:9.5px; color:var(--texto-suave);">${dataFmt}</span>
                     </div>
                     <div style="font-size:12px; color:var(--texto-principal, #334155); word-break:break-word;">
-                        ${window.esc ? window.esc(r.mensagem) : r.mensagem}
+                        ${msgSegura}
                     </div>
                 </div>
 
@@ -2034,7 +2355,7 @@ window.renderizarRecadosLar = function() {
                     `}
                     ${souAutor ? `
                         <button type="button" class="btn-erro" style="padding:4px 6px; font-size:10px; display:inline-flex; align-items:center;" onclick="window.excluirRecadoLar('${r.id}')" title="Eliminar recado">
-                            <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            ${obterIconeSeguro('excluir')}
                         </button>
                     ` : ''}
                 </div>
@@ -2089,7 +2410,9 @@ window.marcarRecadoLido = async function(recadoId) {
 };
 
 window.excluirRecadoLar = async function(recadoId) {
-    const confirmado = await window.confirmarAcaoSuiri("Tem certeza de que deseja retirar este recado do mural?");
+    const confirmado = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri("Tem certeza de que deseja retirar este recado do mural?")
+        : confirm("Tem certeza de que deseja retirar este recado do mural?");
     if (!confirmado) return;
 
     const cli = obterClienteSupabase();
@@ -2104,7 +2427,7 @@ window.excluirRecadoLar = async function(recadoId) {
 };
 
 // =========================================================================
-// 16. GESTOR DE PLANOS & METAS ANUAIS
+// 18. GESTOR DE PLANOS & METAS ANUAIS
 // =========================================================================
 
 window.carregarMetasAnuais = async function() {
@@ -2257,7 +2580,9 @@ window.alternarStatusMetaAnual = async function(id, statusAtual) {
 };
 
 window.excluirMetaAnual = async function(id) {
-    const confirmado = await window.confirmarAcaoSuiri("Deseja realmente excluir este objetivo anual?");
+    const confirmado = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri("Deseja realmente excluir este objetivo anual?")
+        : confirm("Deseja realmente excluir este objetivo anual?");
     if (!confirmado) return;
 
     const cli = obterClienteSupabase();
@@ -2312,6 +2637,9 @@ window.renderizarMetasAnuaisModal = function() {
             ${concluida ? 'opacity: 0.85; background: #f0fdf4;' : ''}
         `;
 
+        const catSegura = window.esc ? window.esc(meta.categoria || 'Geral') : (meta.categoria || 'Geral');
+        const titSeguro = window.esc ? window.esc(meta.titulo) : meta.titulo;
+
         itemEl.innerHTML = `
             <div style="flex:1; min-width:0;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
@@ -2319,11 +2647,11 @@ window.renderizarMetasAnuaisModal = function() {
                         ${meta.ano || 2026}
                     </span>
                     <span style="font-size:10px; font-weight:700; color:var(--texto-suave);">
-                        ${window.esc ? window.esc(meta.categoria || 'Geral') : (meta.categoria || 'Geral')}
+                        ${catSegura}
                     </span>
                 </div>
                 <strong style="font-size:13.5px; color:var(--texto-principal); line-height:1.3; display:block; ${concluida ? 'text-decoration:line-through; color:#64748b;' : ''}">
-                    ${window.esc ? window.esc(meta.titulo) : meta.titulo}
+                    ${titSeguro}
                 </strong>
             </div>
 
@@ -2342,7 +2670,7 @@ window.renderizarMetasAnuaisModal = function() {
 };
 
 // =========================================================================
-// 17. GATILHO MATINAL DAS 07:00 AM (PENSE - UMA VEZ AO DIA)
+// 19. GATILHO MATINAL DAS 07:00 AM (PENSE - UMA VEZ AO DIA)
 // =========================================================================
 
 window.verificarGatilhoPenseSeteManha = function() {
@@ -2365,7 +2693,7 @@ window.verificarGatilhoPenseSeteManha = function() {
 };
 
 // =========================================================================
-// 18. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
+// 20. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
 // =========================================================================
 
 const navegarOriginal = window.navegarParaTela;
@@ -2400,7 +2728,7 @@ window.navegarParaTela = function(nomeTela) {
 };
 
 // =========================================================================
-// 19. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
+// 21. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
 // =========================================================================
 
 window.inicializarNavegacaoSwipe();
