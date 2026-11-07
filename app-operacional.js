@@ -4,8 +4,8 @@
 // Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
 // Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
 // Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
-// Financeiro, Metas Anuais, Zero Emojis (Botões de Joinha Kids e X/V Adultos),
-// Seletor de SVGs para Missões e "Tinder" de Sugestões de Tarefas + FOTINHAS DINÂMICAS KIDS.
+// Financeiro, Metas Anuais, Emojis Concordantes Kids + Fotinhas Lado a Lado,
+// Explosão de Confetes ao Concluir e Seletor de SVGs.
 // =========================================================================
 
 let cacheMissoes = [];
@@ -53,7 +53,6 @@ function obterIconeSeguro(chave) {
     if (window.IconesSuiri && window.IconesSuiri[chave]) {
         return window.IconesSuiri[chave];
     }
-    // Suporte Universal a Emojis (Fallback Inteligente)
     if (String(chave).length <= 5) {
         return `<div style="font-size: inherit; line-height: 1; display:flex; align-items:center; justify-content:center;">${chave}</div>`;
     }
@@ -77,6 +76,32 @@ function obterUsuarioId() {
 function ehAdministrador() {
     return window.perfilAtual?.papel === 'adm' || window.perfilAtual?.papel === 'admin_familia';
 }
+
+// Disparo visual de partículas festivas e vibração tátil suave ao concluir missão
+window.dispararParticulasSucesso = function() {
+    try {
+        if (navigator.vibrate) navigator.vibrate(40);
+    } catch (e) {}
+
+    const cores = ['#10b981', '#f59e0b', '#38bdf8', '#ec4899', '#fde047'];
+    for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particula-confete-suiri';
+        const cor = cores[i % cores.length];
+        const angulo = (Math.PI * 2 * i) / 18;
+        const distancia = 55 + Math.random() * 65;
+        const tx = Math.cos(angulo) * distancia;
+        const ty = Math.sin(angulo) * distancia - 30;
+
+        p.style.backgroundColor = cor;
+        p.style.left = '50%';
+        p.style.top = '45%';
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+    }
+};
 
 // =========================================================================
 // 1. INICIALIZAÇÃO E ESCUTA EM TEMPO REAL (SUPABASE REALTIME)
@@ -198,7 +223,7 @@ window.carregarMissoesDoDia = async function() {
 };
 
 // =========================================================================
-// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (COM ÍCONES, JOINHAS E FOTINHAS)
+// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (EMOJIS CONCORDANTES & FOTINHAS)
 // =========================================================================
 
 window.carregarMissoesKidsExclusiva = function() {
@@ -216,7 +241,6 @@ window.carregarMissoesKidsExclusiva = function() {
     });
 
     const pendentes = missoesKids.filter(m => {
-        // Se a tarefa é 'todos_kids' e possui uma lista de concluídos, verifico se EU já fiz
         if (m.destinatario_kids === 'todos_kids' && Array.isArray(m.concluidos_por_array)) {
             return !m.concluidos_por_array.includes(meuId);
         }
@@ -229,10 +253,8 @@ window.carregarMissoesKidsExclusiva = function() {
 
     if (missoesKids.length === 0) {
         container.innerHTML = `
-            <div style="text-align:center; padding:32px 16px; background:#ffffff; border-radius:24px; border:2px dashed #fde68a;">
-                <div style="margin-bottom:8px; color:#f59e0b;">
-                    ${obterIconeSeguro('estrela')}
-                </div>
+            <div style="text-align:center; padding:32px 16px; background:rgba(255,255,255,0.88); border-radius:24px; border:2px dashed #fde68a;">
+                <div style="font-size:38px; margin-bottom:8px;">🌟</div>
                 <strong style="font-size:16px; color:#1e293b; display:block;">Tudo pronto por aqui!</strong>
                 <p style="font-size:13px; color:#64748b; margin-top:4px;">Nenhuma tarefa pendente para você agora.</p>
             </div>
@@ -274,7 +296,7 @@ window.carregarMissoesKidsExclusiva = function() {
             card.style.borderColor = '#fca5a5';
         }
         if (concluida) {
-            card.style.opacity = '0.75';
+            card.style.opacity = '0.78';
         }
 
         const xpRecompensa = missao.xp_recompensa || 20;
@@ -282,7 +304,7 @@ window.carregarMissoesKidsExclusiva = function() {
         let grupoAvataresHtml = '';
         let mensagemIrmaoFezHtml = '';
 
-        // Construção Dinâmica dos Avatares para missões Todos Kids
+        // Fotinhas lado a lado nas missões Todos Kids
         if (ehTodosKids && window.listaMembrosFamilia) {
             const todasCriancas = window.listaMembrosFamilia.filter(m => m.eh_kids || m.papel === 'dependente');
             
@@ -291,9 +313,8 @@ window.carregarMissoesKidsExclusiva = function() {
                 todasCriancas.forEach(crianca => {
                     const criancaFez = concluidosArray.includes(crianca.id);
                     const fotoSrc = crianca.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
-                    
-                    // A classe aplicada é 'fez-missao' para acender a borda verde
-                    grupoAvataresHtml += `<img src="${fotoSrc}" class="avatar-kids-mini ${criancaFez ? 'fez-missao' : ''}" title="${esc(crianca.nome)}">`;
+                    const nomeCurto = window.esc ? window.esc(crianca.nome) : crianca.nome;
+                    grupoAvataresHtml += `<img src="${fotoSrc}" class="avatar-kids-mini ${criancaFez ? 'fez-missao' : ''}" title="${nomeCurto}">`;
                 });
                 grupoAvataresHtml += `</div>`;
 
@@ -303,7 +324,7 @@ window.carregarMissoesKidsExclusiva = function() {
                     if (irmao) {
                         mensagemIrmaoFezHtml = `
                             <div style="margin-top:6px; font-size:12px; font-weight:800; color:#b45309; display:flex; align-items:center; gap:4px; background:#fef3c7; padding:4px 8px; border-radius:8px;">
-                                ${obterPrimeiroNomeSeguro(irmao.nome)} concluiu a missão. Falta você!
+                                ${obterPrimeiroNomeSeguro(irmao.nome)} já completou a tarefa, falta você!
                             </div>
                         `;
                     }
@@ -311,14 +332,12 @@ window.carregarMissoesKidsExclusiva = function() {
             }
         }
 
-        const iconeChave = missao.icone || 'estrela';
-        let iconeVisual = '';
-        
-        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
-            iconeVisual = `<div style="font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${iconeChave}</div>`;
-        } else {
-            iconeVisual = obterIconeSeguro(iconeChave);
-        }
+        // Detector inteligente de Emoji concordante com o título da tarefa Kids
+        const emojiKids = (typeof window.obterEmojiConcordanteKids === 'function')
+            ? window.obterEmojiConcordanteKids(missao.titulo, missao.icone)
+            : (missao.icone && String(missao.icone).length <= 4 ? missao.icone : '🌟');
+
+        const iconeVisual = `<div style="font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12)); user-select: none;">${emojiKids}</div>`;
 
         const subitens = Array.isArray(missao.subitens) ? missao.subitens : [];
         let subitensHtml = '';
@@ -341,7 +360,7 @@ window.carregarMissoesKidsExclusiva = function() {
 
         card.innerHTML = `
             <div style="display:flex; gap:12px; align-items:flex-start;">
-                <div style="width: 54px; height: 54px; border-radius: 16px; background: ${concluida ? '#dcfce7' : (falhada ? '#fee2e2' : '#fef3c7')}; color: ${concluida ? '#10b981' : (falhada ? '#ef4444' : '#d97706')}; border: 2px solid ${concluida ? '#86efac' : (falhada ? '#fca5a5' : '#fde68a')}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="width: 56px; height: 56px; border-radius: 18px; background: ${concluida ? '#dcfce7' : (falhada ? '#fee2e2' : '#fef3c7')}; border: 2px solid ${concluida ? '#86efac' : (falhada ? '#fca5a5' : '#fde68a')}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                     ${iconeVisual}
                 </div>
 
@@ -362,7 +381,7 @@ window.carregarMissoesKidsExclusiva = function() {
                         ` : ''}
                     </div>
                     
-                    <strong style="font-size:16px; color:#1e293b; line-height:1.2; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
+                    <strong style="font-size:16px; color:#1e293b; line-height:1.25; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
                         ${tituloMissaoSeguro}
                     </strong>
                     
@@ -739,11 +758,10 @@ window.adicionarNovaMissao = async function() {
     const inHoraLimite = document.getElementById('input-nova-missao-horario-limite');
     const inHoraReinicio = document.getElementById('input-nova-missao-horario-reinicio');
     
-    // Captura Opcional de Emoji ou Ícone
     const inputIcone = document.getElementById('input-nova-missao-icone');
     const inputEmoji = document.getElementById('input-nova-missao-emoji');
     const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
-    const iconeSimbolo = emojiVal || (inputIcone?.value || 'alvo');
+    let iconeSimbolo = emojiVal || (inputIcone?.value || 'alvo');
     
     const titulo = inTitulo?.value?.trim();
     const prio = parseInt(selPrio?.value || '2', 10);
@@ -770,10 +788,17 @@ window.adicionarNovaMissao = async function() {
         atribuidoA = respValor;
     }
 
+    if (!titulo) return window.mostrarToast("Digite o título da missão!", "erro");
+
+    // Se a missão for para uma criança ou todos_kids e não tiver emoji definido, escolhe automaticamente o emoji concordante
+    const membroAlvo = (window.listaMembrosFamilia || []).find(m => m.id === atribuidoA);
+    const ehParaCrianca = (destinatarioKids === 'todos_kids') || (membroAlvo && (membroAlvo.eh_kids || membroAlvo.papel === 'dependente'));
+    if (ehParaCrianca && typeof window.obterEmojiConcordanteKids === 'function') {
+        iconeSimbolo = window.obterEmojiConcordanteKids(titulo, emojiVal || iconeSimbolo);
+    }
+
     let horaLimite = inHoraLimite?.value?.trim() || null;
     if (horaLimite && horaLimite.length === 5) horaLimite += ':00';
-
-    if (!titulo) return window.mostrarToast("Digite o título da missão!", "erro");
 
     const subitens = [];
     document.querySelectorAll('.input-subitem-item').forEach(inp => {
@@ -830,6 +855,7 @@ window.adicionarNovaMissao = async function() {
 
     if (data) cacheMissoes.unshift(data);
 
+    document.getElementById('modal-nova-missao')?.classList.add('oculto');
     window.renderizarMissoesTela();
     window.carregarMissoesKidsExclusiva();
     window.renderizarHistoricoMissoesKidsADM();
@@ -1118,7 +1144,6 @@ window.iniciarEdicaoMissao = function(id) {
     const inputEmoji = document.getElementById('edit-missao-emoji');
     const inputIcone = document.getElementById('edit-missao-icone');
     
-    // Distribui o valor para o emoji ou para o SVG dependendo do formato
     if (inputEmoji) {
         if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
             inputEmoji.value = iconeChave;
@@ -1160,7 +1185,6 @@ window.salvarEdicaoMissao = async function() {
     let horaLimite = document.getElementById('edit-missao-horario-limite')?.value?.trim() || null;
     const horaReinicio = document.getElementById('edit-missao-horario-reinicio')?.value || '04:00';
     
-    // Captura o Emoji (Prioridade) ou o Ícone SVG
     const inputEmoji = document.getElementById('edit-missao-emoji');
     const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
     const iconeSimbolo = emojiVal || (document.getElementById('edit-missao-icone')?.value || 'alvo');
@@ -1219,7 +1243,7 @@ window.salvarEdicaoMissao = async function() {
 };
 
 // =========================================================================
-// 10. CONCLUSÃO E PENALIZAÇÃO (COM ATUALIZAÇÃO DO ARRAY DE TODOS KIDS)
+// 10. CONCLUSÃO E PENALIZAÇÃO (COM CONFETES E ARRAY DE TODOS KIDS)
 // =========================================================================
 
 window.concluirMissaoDomestica = async function(id) {
@@ -1227,6 +1251,8 @@ window.concluirMissaoDomestica = async function(id) {
     const missao = cacheMissoes.find(m => m.id === id);
     const usuarioId = obterUsuarioId();
     if (!missao || !usuarioId || !supabase) return;
+
+    window.dispararParticulasSucesso();
 
     const agora = new Date();
     const agoraIso = agora.toISOString();
@@ -1254,7 +1280,6 @@ window.concluirMissaoDomestica = async function(id) {
         missao.subitens.forEach(s => s.concluido = true);
     }
 
-    // Tratamento Especial para o Array de Crianças (todos_kids)
     let payloadAtualizacao = {
         status: 'concluida',
         concluido_em: agoraIso,
@@ -1448,170 +1473,7 @@ window.excluirMissao = async function(id) {
 };
 
 // =========================================================================
-// 11. SISTEMA "TINDER" DE SUGESTÕES DA IA
-// =========================================================================
-
-window.sugestoesCacheKids = [
-    { titulo: "Guardar os brinquedos", icone: "urso", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "20:00:00" },
-    { titulo: "Escovar os dentes", icone: "escovaDente", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
-    { titulo: "Arrumar a cama", icone: "cama", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "10:00:00" },
-    { titulo: "Lavar as mãos antes de comer", icone: "banheira", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
-    { titulo: "Tomar banho", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "19:00:00" },
-    { titulo: "Fazer a lição de casa", icone: "livro", recorrencia_tipo: "semanal_7d", prioridade: 1, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: "17:00:00" },
-    { titulo: "Tirar o próprio prato da mesa", icone: "refeicao", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
-    { titulo: "Beber água", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
-    { titulo: "Ler um livrinho", icone: "livro", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null },
-    { titulo: "Ajudar a cuidar do pet", icone: "patinha", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "kids", destinatario_kids: "todos_kids", horario_limite: null }
-];
-
-window.sugestoesCacheAdultos = [
-    { titulo: "Meditar ou respirar fundo por 10 min", icone: "flor", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
-    { titulo: "Fazer 30 minutos de exercício físico", icone: "bicicleta", recorrencia_tipo: "semanal_7d", prioridade: 1, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
-    { titulo: "Acordar cedo (antes das 7h)", icone: "sol", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "07:00:00" },
-    { titulo: "Beber 2 litros de água no dia", icone: "gota", recorrencia_tipo: "diaria_24h", prioridade: 1, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
-    { titulo: "Ler 15 páginas de um livro", icone: "livro", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
-    { titulo: "Fazer alongamento ao acordar", icone: "bola", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "09:00:00" },
-    { titulo: "Desligar telas 1 hora antes de dormir", icone: "lua", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "22:00:00" },
-    { titulo: "Planejar as tarefas do dia seguinte", icone: "agenda", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: "21:00:00" },
-    { titulo: "Tirar 15 min para um hobby", icone: "musica", recorrencia_tipo: "diaria_24h", prioridade: 3, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null },
-    { titulo: "Fazer uma refeição 100% saudável", icone: "cenoura", recorrencia_tipo: "diaria_24h", prioridade: 2, escopo: "pessoal", destinatario_kids: "individual", horario_limite: null }
-];
-
-window.sugestoesFilaAtual = [];
-
-window.abrirModalSugestoes = function() {
-    document.getElementById('modal-sugestoes-missoes')?.classList.remove('oculto');
-    window.carregarSugestoes('kids');
-};
-
-window.fecharModalSugestoes = function() {
-    document.getElementById('modal-sugestoes-missoes')?.classList.add('oculto');
-};
-
-window.carregarSugestoes = function(tipo) {
-    const btnKids = document.getElementById('btn-sugestao-kids');
-    const btnAdultos = document.getElementById('btn-sugestao-adultos');
-
-    if (btnKids && btnAdultos) {
-        if (tipo === 'kids') {
-            btnKids.className = 'btn-principal';
-            btnAdultos.className = 'btn-secundario';
-            window.sugestoesFilaAtual = [...window.sugestoesCacheKids];
-        } else {
-            btnAdultos.className = 'btn-principal';
-            btnKids.className = 'btn-secundario';
-            window.sugestoesFilaAtual = [...window.sugestoesCacheAdultos];
-        }
-    }
-
-    window.sugestoesFilaAtual.sort(() => Math.random() - 0.5);
-    window.renderizarCartaoSugestao();
-};
-
-window.renderizarCartaoSugestao = function() {
-    const cardAtual = document.getElementById('cartao-sugestao-atual');
-    const tituloEl = document.getElementById('titulo-sugestao-atual');
-    const iconeEl = document.getElementById('icone-sugestao-atual');
-    const freqEl = document.getElementById('frequencia-sugestao-atual');
-
-    if (!cardAtual || !tituloEl || !iconeEl || !freqEl) return;
-
-    if (window.sugestoesFilaAtual.length === 0) {
-        tituloEl.textContent = "Fim das ideias!";
-        iconeEl.innerHTML = obterIconeSeguro('check');
-        freqEl.textContent = "Volte mais tarde para novas sugestões.";
-        cardAtual.style.transform = 'scale(0.95)';
-        return;
-    }
-
-    cardAtual.style.transform = 'scale(1)';
-    const sugestao = window.sugestoesFilaAtual[0];
-
-    tituloEl.textContent = sugestao.titulo;
-    iconeEl.innerHTML = obterIconeSeguro(sugestao.icone);
-
-    let frequenciaTxt = "Diária";
-    if (sugestao.recorrencia_tipo === 'semanal_7d') frequenciaTxt = "Semanal";
-    
-    freqEl.textContent = `Sugestão ${frequenciaTxt}`;
-};
-
-window.recusarSugestao = function() {
-    if (window.sugestoesFilaAtual.length === 0) return;
-    const cardAtual = document.getElementById('cartao-sugestao-atual');
-    
-    if (cardAtual) {
-        cardAtual.style.transform = 'translateX(-30px) rotate(-5deg) scale(0.95)';
-        cardAtual.style.opacity = '0';
-    }
-
-    setTimeout(() => {
-        window.sugestoesFilaAtual.shift();
-        window.renderizarCartaoSugestao();
-        if (cardAtual) {
-            cardAtual.style.transform = 'translateX(0) rotate(0deg) scale(1)';
-            cardAtual.style.opacity = '1';
-        }
-    }, 200);
-};
-
-window.aceitarSugestao = async function() {
-    if (window.sugestoesFilaAtual.length === 0) return;
-    const supabase = obterClienteSupabase();
-    if (!window.familiaAtualId || !supabase) return window.mostrarToast("Erro de sessão.", "erro");
-
-    const sugestao = window.sugestoesFilaAtual[0];
-    const meuId = obterUsuarioId();
-    
-    const xpPadrao = sugestao.prioridade === 1 ? 40 : (sugestao.prioridade === 2 ? 25 : 15);
-    let atribuido = null;
-    if (sugestao.escopo === 'pessoal') atribuido = meuId;
-
-    const payload = {
-        familia_id: window.familiaAtualId,
-        titulo: sugestao.titulo,
-        icone: sugestao.icone,
-        escopo: sugestao.escopo,
-        prioridade: sugestao.prioridade,
-        status: 'pendente',
-        xp_recompensa: xpPadrao,
-        recorrencia_tipo: sugestao.recorrencia_tipo,
-        horario_limite: sugestao.horario_limite,
-        horario_reinicio: '04:00:00',
-        atribuido_a: atribuido,
-        destinatario_kids: sugestao.destinatario_kids,
-        criado_por: meuId,
-        concluido_por: null
-    };
-
-    const cardAtual = document.getElementById('cartao-sugestao-atual');
-    
-    if (cardAtual) {
-        cardAtual.style.transform = 'translateX(30px) rotate(5deg) scale(0.95)';
-        cardAtual.style.opacity = '0';
-    }
-
-    supabase.from('missoes').insert([payload]).select().single().then(({ data, error }) => {
-        if (!error && data) {
-            cacheMissoes.unshift(data);
-            window.renderizarMissoesTela();
-            window.carregarMissoesKidsExclusiva();
-        }
-    });
-
-    setTimeout(() => {
-        window.sugestoesFilaAtual.shift();
-        window.renderizarCartaoSugestao();
-        window.mostrarToast(`Missão "${sugestao.titulo}" adicionada com sucesso!`);
-        if (cardAtual) {
-            cardAtual.style.transform = 'translateX(0) rotate(0deg) scale(1)';
-            cardAtual.style.opacity = '1';
-        }
-    }, 200);
-};
-
-// =========================================================================
-// 12. SELETOR DE ÍCONES (GRELHA SVG PARA MISSÕES)
+// 11. SELETOR DE ÍCONES (GRELHA SVG PARA MISSÕES)
 // =========================================================================
 
 window.contextoIconeAtual = 'nova';
@@ -1664,7 +1526,7 @@ window.selecionarIcone = function(chaveIcone) {
 };
 
 // =========================================================================
-// 13. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER FINANCEIRO
+// 12. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER FINANCEIRO
 // =========================================================================
 
 window.inicializarMotorVoz = function() {
@@ -1783,7 +1645,7 @@ window.processarTextoTranscrito = function(frase) {
 };
 
 // =========================================================================
-// 14. CARTEIRAS, MONTANTE & FILTRAGEM DE MEMBROS SEM CARTÃO
+// 13. CARTEIRAS, MONTANTE & FILTRAGEM DE MEMBROS SEM CARTÃO
 // =========================================================================
 
 window.salvarTransacaoManual = async function() {
@@ -1907,7 +1769,7 @@ window.carregarCarteiraIndividual = async function() {
 };
 
 // =========================================================================
-// 15. GRÁFICO EM BARRAS: GASTOS DO MÊS ANTERIOR POR SETOR (CHART.JS)
+// 14. GRÁFICO EM BARRAS: GASTOS DO MÊS ANTERIOR POR SETOR (CHART.JS)
 // =========================================================================
 
 window.renderizarGraficoBarrasMesAnterior = async function() {
@@ -2014,7 +1876,7 @@ window.renderizarGraficoBarrasMesAnterior = async function() {
 };
 
 // =========================================================================
-// 16. METAS: POUPANÇA INDIVIDUAL & RESERVA DA FAMÍLIA (COFRES)
+// 15. METAS: POUPANÇA INDIVIDUAL & RESERVA DA FAMÍLIA (COFRES)
 // =========================================================================
 
 window.abrirModalDefinirMetaEconomia = function() {
@@ -2276,7 +2138,7 @@ window.confirmarAporteMeta = async function() {
 };
 
 // =========================================================================
-// 17. MURAL DE RECADOS RÁPIDOS DO LAR
+// 16. MURAL DE RECADOS RÁPIDOS DO LAR (COM CONFIRMAÇÃO NOMINAL DE LEITURA)
 // =========================================================================
 
 window.carregarRecadosLar = async function() {
@@ -2330,6 +2192,17 @@ window.renderizarRecadosLar = function() {
         const jaLi = lidosArray.includes(meuId);
         const souAutor = r.autor_id === meuId;
 
+        let nomesQuemLeu = [];
+        if (window.listaMembrosFamilia && lidosArray.length > 0) {
+            nomesQuemLeu = window.listaMembrosFamilia
+                .filter(m => lidosArray.includes(m.id))
+                .map(m => m.id === meuId ? 'Você' : obterPrimeiroNomeSeguro(m.nome));
+        }
+
+        const infoQuemLeu = nomesQuemLeu.length > 0
+            ? `<div style="font-size:10px; color:var(--cor-sucesso, #10b981); margin-top:3px; font-weight:700;">✓ Lido por: ${nomesQuemLeu.join(', ')}</div>`
+            : '';
+
         const dataFmt = r.criado_em ? new Date(r.criado_em).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
         const msgSegura = window.esc ? window.esc(r.mensagem) : r.mensagem;
 
@@ -2343,12 +2216,13 @@ window.renderizarRecadosLar = function() {
                     <div style="font-size:12px; color:var(--texto-principal, #334155); word-break:break-word;">
                         ${msgSegura}
                     </div>
+                    ${infoQuemLeu}
                 </div>
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                     ${!jaLi ? `
-                        <button type="button" class="btn-secundario" style="padding:4px 6px; font-size:10px;" onclick="window.marcarRecadoLido('${r.id}')" title="Marcar como lido">
-                            Lido
+                        <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10px; font-weight:700;" onclick="window.marcarRecadoLido('${r.id}')" title="Marcar como lido">
+                            Marcar Lido
                         </button>
                     ` : `
                         <span style="font-size:10px; font-weight:700; color:var(--cor-sucesso, #10b981);">Lido</span>
@@ -2427,7 +2301,7 @@ window.excluirRecadoLar = async function(recadoId) {
 };
 
 // =========================================================================
-// 18. GESTOR DE PLANOS & METAS ANUAIS
+// 17. GESTOR DE PLANOS & METAS ANUAIS
 // =========================================================================
 
 window.carregarMetasAnuais = async function() {
@@ -2573,8 +2447,11 @@ window.alternarStatusMetaAnual = async function(id, statusAtual) {
         if (item) item.concluida = novoStatus;
         window.atualizarResumoMiniPainelMetas();
         window.renderizarMetasAnuaisModal();
-        if (novoStatus && window.SonsSuiri && typeof window.SonsSuiri.sucessoMissao === 'function') {
-            window.SonsSuiri.sucessoMissao();
+        if (novoStatus) {
+            window.dispararParticulasSucesso();
+            if (window.SonsSuiri && typeof window.SonsSuiri.sucessoMissao === 'function') {
+                window.SonsSuiri.sucessoMissao();
+            }
         }
     }
 };
@@ -2670,7 +2547,7 @@ window.renderizarMetasAnuaisModal = function() {
 };
 
 // =========================================================================
-// 19. GATILHO MATINAL DAS 07:00 AM (PENSE - UMA VEZ AO DIA)
+// 18. GATILHO MATINAL DAS 07:00 AM (PENSE - UMA VEZ AO DIA)
 // =========================================================================
 
 window.verificarGatilhoPenseSeteManha = function() {
@@ -2693,7 +2570,7 @@ window.verificarGatilhoPenseSeteManha = function() {
 };
 
 // =========================================================================
-// 20. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
+// 19. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
 // =========================================================================
 
 const navegarOriginal = window.navegarParaTela;
@@ -2728,7 +2605,7 @@ window.navegarParaTela = function(nomeTela) {
 };
 
 // =========================================================================
-// 21. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
+// 20. INICIALIZAÇÃO AUTOMÁTICA SEGURA DO SWIPE & LISTENERS
 // =========================================================================
 
 window.inicializarNavegacaoSwipe();

@@ -1,8 +1,9 @@
 /* ========================================================== */
 /* SUIRI GESTOR FAMILIAR - CSS-BASE.CSS (100% COMPLETO)       */
 /* Tema Ouro Suave, Tons Pastéis, Notificações & MODO KIDS    */
-/* Cenário Fotográfico (Imagens JPG) com Sol/Lua Interativos  */
-/* Barra de Navegação Inferior Fixa & Avatar Ampliado         */
+/* Transições Ultra-Suaves Direcionais entre Janelas e Modais */
+/* Barra de Navegação Inferior Fixa, Avatar Ampliado,         */
+/* Casinha 220px Alinhada & Animações de Partículas/Confetes  */
 /* ========================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -64,11 +65,9 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* 
-======================================================
-REMOÇÃO DO GRADIENTE GLOBAL NO HTML QUANDO KIDS ATIVO
-======================================================
-*/
+/* ====================================================== */
+/* REMOÇÃO DO GRADIENTE GLOBAL NO HTML QUANDO KIDS ATIVO  */
+/* ====================================================== */
 html:has(body.modo-kids-ativo) {
     background-image: none !important;
     background-color: transparent !important;
@@ -91,7 +90,7 @@ body {
     display: flex;
     justify-content: center;
     padding-top: 14px;
-    padding-bottom: 92px; /* Margem de resguardo contra sobreposição da bottom bar */
+    padding-bottom: 92px;
     position: relative;
 }
 
@@ -120,27 +119,105 @@ h1, h2, h3, h4, span, p, label, strong {
 }
 
 /* ========================================================== */
-/* TRANSIÇÃO SUAVE ENTRE JANELAS / TELAS                      */
+/* TRANSIÇÕES ULTRA-SUAVES ENTRE JANELAS E MODAIS (GPU 60FPS) */
 /* ========================================================== */
 .secao-conteudo-app {
+    width: 100%;
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
     will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
+/* Entrada padrão suave (quando não há direção lateral específica) */
 .secao-conteudo-app:not(.oculto) {
-    animation: animacaoTransicaoJanelaSuave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: transicaoJanelaPadraoSuave 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes animacaoTransicaoJanelaSuave {
+/* Entrada deslizando da direita (avançando na navegação) */
+.secao-conteudo-app.animar-entrada-direita:not(.oculto) {
+    animation: deslizarEntradaDireitaSuave 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Entrada deslizando da esquerda (voltando na navegação) */
+.secao-conteudo-app.animar-entrada-esquerda:not(.oculto) {
+    animation: deslizarEntradaEsquerdaSuave 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes transicaoJanelaPadraoSuave {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.985);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+@keyframes deslizarEntradaDireitaSuave {
+    0% {
+        opacity: 0;
+        transform: translate3d(28px, 0, 0) scale(0.99);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+@keyframes deslizarEntradaEsquerdaSuave {
+    0% {
+        opacity: 0;
+        transform: translate3d(-28px, 0, 0) scale(0.99);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+/* Suavização da abertura de todas as janelas flutuantes (Modais) */
+.modal-overlay:not(.oculto) {
+    animation: fadeOverlayModalSuave 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.modal-overlay:not(.oculto) .modal-conteudo {
+    animation: zoomConteudoModalSuave 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeOverlayModalSuave {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomConteudoModalSuave {
     from {
         opacity: 0;
-        transform: translate3d(0, 10px, 0);
+        transform: translate3d(0, 16px, 0) scale(0.95);
     }
     to {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(1);
     }
+}
+
+/* Suavização nativa para View Transitions API (Navegadores modernos) */
+::view-transition-old(root) {
+    animation: 0.22s cubic-bezier(0.4, 0, 1, 1) both fadeOutViewTransition;
+}
+::view-transition-new(root) {
+    animation: 0.36s cubic-bezier(0.22, 1, 0.36, 1) both fadeInViewTransition;
+}
+
+@keyframes fadeOutViewTransition {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.985); }
+}
+@keyframes fadeInViewTransition {
+    from { opacity: 0; transform: scale(0.99); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* ========================================================== */
@@ -246,7 +323,7 @@ h1, h2, h3, h4, span, p, label, strong {
     border-radius: var(--raio-sm) !important;
     border: 1px solid transparent !important;
     background: transparent !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 .bottom-nav-item span {
@@ -259,7 +336,7 @@ h1, h2, h3, h4, span, p, label, strong {
     background: var(--pastel-ouro) !important;
     border-color: rgba(217, 119, 6, 0.3) !important;
     box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1) !important;
-    transform: translateY(-1px) !important;
+    transform: translateY(-2px) !important;
 }
 
 /* ========================================================== */
@@ -272,11 +349,11 @@ h1, h2, h3, h4, span, p, label, strong {
     padding: 14px 16px;
     margin-bottom: 14px;
     box-shadow: var(--sombra-elegante);
-    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s ease;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
 }
 
 .cartao-geral:active {
-    transform: scale(0.988);
+    transform: scale(0.992);
 }
 
 .cabecalho-app {
@@ -387,11 +464,11 @@ button {
     white-space: normal;
     text-align: center;
     line-height: 1.25;
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.15s ease;
 }
 
 .btn-principal:active, .btn-sucesso:active, .btn-erro:active, .btn-secundario:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
 }
 
 .btn-principal {
@@ -402,15 +479,15 @@ button {
 }
 
 .btn-sucesso {
-    background: var(--cor-sucesso);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: #ffffff;
-    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.22);
 }
 
 .btn-erro {
-    background: var(--cor-erro);
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
     color: #ffffff;
-    box-shadow: 0 3px 8px rgba(244, 63, 94, 0.2);
+    box-shadow: 0 3px 8px rgba(244, 63, 94, 0.22);
 }
 
 .btn-secundario {
@@ -569,9 +646,9 @@ body {
     text-align: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    animation: surgimentoToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: surgimentoToast 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .toast-sucesso {
@@ -595,7 +672,7 @@ body {
 @keyframes surgimentoToast {
     from { 
         opacity: 0; 
-        transform: translateY(-10px) scale(0.96); 
+        transform: translateY(-12px) scale(0.95); 
     }
     to { 
         opacity: 1; 
@@ -638,7 +715,7 @@ body {
     background: #ffffff;
     border: 2px solid #e2e8f0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
 }
 
 .card-usuario-quiosque:active {
@@ -690,7 +767,7 @@ body.modo-kids-ativo.cenario-dia {
     background-attachment: fixed !important;
     min-height: 100vh !important;
     padding-top: 14px !important;
-    padding-bottom: 22vh !important;
+    padding-bottom: 270px !important;
     transition: background-image 1.2s ease-in-out !important;
 }
 
@@ -771,7 +848,8 @@ body.modo-kids-ativo #painel-adulto-container {
 
 body.modo-kids-ativo #tela-kids-exclusiva {
     display: block !important;
-    animation: animacaoTransicaoJanelaSuave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    padding-bottom: 260px !important;
+    animation: transicaoJanelaPadraoSuave 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ========================================================== */
@@ -781,10 +859,10 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(253, 230, 138, 0.5);
+    border: 2px solid rgba(253, 230, 138, 0.65);
     border-radius: 24px;
     padding: 12px 16px;
     margin-bottom: 14px;
@@ -806,8 +884,8 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(254, 243, 199, 0.85);
-    border: 1.5px solid rgba(253, 230, 138, 0.85);
+    background: rgba(254, 243, 199, 0.92);
+    border: 1.5px solid rgba(253, 230, 138, 0.95);
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 13px;
@@ -822,10 +900,10 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     gap: 14px;
     width: 100%;
     padding: 16px 20px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(236, 72, 153, 0.9) 50%, rgba(139, 92, 246, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(236, 72, 153, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 26px;
     color: #ffffff !important;
     box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
@@ -836,55 +914,72 @@ body.modo-kids-ativo #tela-kids-exclusiva {
 .btn-lojinha-kids-gigante:active { transform: scale(0.96); }
 
 .card-missao-kids {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 2px solid rgba(226, 232, 240, 0.8);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(226, 232, 240, 0.9);
     border-radius: 22px;
     padding: 14px 16px;
     margin-bottom: 12px;
     display: flex;
     justify-content: space-between;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-missao-kids.concluida {
-    background: rgba(240, 253, 244, 0.85) !important;
-    border-color: rgba(134, 239, 172, 0.8) !important;
+    background: rgba(240, 253, 244, 0.9) !important;
+    border-color: rgba(134, 239, 172, 0.9) !important;
     border-left: 8px solid #10b981 !important;
 }
 
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid #38bdf8 !important; border-top: 2px solid rgba(186, 230, 253, 0.5) !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 2px solid rgba(251, 207, 232, 0.5) !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 2px solid rgba(253, 230, 138, 0.5) !important; }
-body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid rgba(167, 243, 208, 0.5) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid #38bdf8 !important; border-top: 2px solid rgba(186, 230, 253, 0.6) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 2px solid rgba(251, 207, 232, 0.6) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 2px solid rgba(253, 230, 138, 0.6) !important; }
+body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid rgba(167, 243, 208, 0.6) !important; }
 
 /* ========================================================== */
-/* TAMAGOTCHI MONSTRINHO E CASINHA APOIADOS NO CHÃO (JPG)     */
+/* TAMAGOTCHI CHUÍRI E CASINHA APOIADOS NO RODAPÉ             */
 /* ========================================================== */
-#container-tamagotchi-kids {
-    position: fixed;
-    bottom: 18px; 
-    right: 14px;
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    z-index: 999;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+#container-tamagotchi-kids,
+.palco-flutuante-chuiri-kids {
+    position: fixed !important;
+    bottom: -2px !important;
+    right: 12px !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    z-index: 999 !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 #btn-casinha-tamagotchi {
-    width: 160px;
-    height: 160px;
+    width: 220px;
+    height: 260px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    pointer-events: auto;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #btn-chuiri-tamagotchi {
-    width: 80px;
-    height: 80px;
+    width: 130px;
+    height: 130px;
     cursor: pointer;
+    pointer-events: auto;
     position: relative;
-    transition: transform 0.2s ease;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (max-width: 400px) {
+    #btn-casinha-tamagotchi {
+        width: 185px !important;
+        height: 220px !important;
+    }
+    #btn-chuiri-tamagotchi {
+        width: 110px !important;
+        height: 110px !important;
+    }
 }
 
 #balao-fala-tamagotchi {
@@ -904,7 +999,7 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
     border: 2.5px solid #10b981;
     pointer-events: none;
 }
-/* Padronização do Seletor de Abas (Kids vs Adultos) no Modal de Sugestões */
+
 .btn-filtro-missao {
     padding: 8px 14px;
     border: 1.5px solid var(--borda-delicada);
@@ -925,10 +1020,8 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
 }
 
 /* ========================================================== */
-/* FOTINHAS LADO A LADO E POSIÇÃO DA CASINHA                  */
+/* FOTINHAS LADO A LADO NAS MISSÕES TODOS KIDS                */
 /* ========================================================== */
-
-/* Força as fotos a ficarem lado a lado sem margem negativa */
 .grupo-avatares-kids {
     display: flex !important;
     align-items: center !important;
@@ -942,23 +1035,40 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
     width: 44px !important;
     height: 44px !important;
     border-radius: 50% !important;
-    border: 2.5px solid #f97316 !important; /* Laranja Padrão */
+    border: 2.5px solid #f97316 !important;
     object-fit: cover !important;
-    margin-left: 0 !important; /* Remove a sobreposição */
+    margin-left: 0 !important;
     box-shadow: 0 3px 6px rgba(0,0,0,0.15) !important;
     background: #ffffff !important;
     transition: all 0.3s ease !important;
 }
 
-/* Acende a borda verde quando a classe correta é ativada pelo JS */
 .avatar-kids-mini.fez-missao {
     border-color: #10b981 !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.55) !important;
+    transform: scale(1.06);
 }
 
-/* Desce o Chuíri e a casinha para o rodapé da tela */
-#container-tamagotchi-kids,
-#palco-chuiri-kids {
-    bottom: -2px !important;
-    margin-bottom: 0px !important;
+/* ========================================================== */
+/* EFEITO DE PARTÍCULAS / CONFETES AO CONCLUIR MISSÃO         */
+/* ========================================================== */
+.particula-confete-suiri {
+    position: fixed;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999999;
+    animation: explodirParticulaSuiri 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes explodirParticulaSuiri {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx, 40px), var(--ty, -60px)) scale(0.2) rotate(240deg);
+    }
 }

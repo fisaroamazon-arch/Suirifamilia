@@ -1,13 +1,15 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-GESTAO.JS (100% COMPLETO E INTEGRAL)
 // Mercado com Reconhecimento de Voz Inteligente & Fallback Robusto,
-// Leitura de Cupom Fiscal, Sugestões de Cardápio Mensal no Quadro de Avisos,
-// Histórico de Preço Médio/Último, Extrato, Transferência de Saldo entre Carteiras
-// e Agendamentos Recorrentes.
-// Padrão de Diálogos: Confirmar / Cancelar (Zero Emojis - 100% SVG)
+// Leitura de Cupom Fiscal (Atualizado para Gemini 2.5 Flash),
+// Sugestões de Cardápio Mensal no Quadro de Avisos,
+// Histórico de Preço Médio/Último, Extrato com Pesquisa Instantânea,
+// Transferência de Saldo entre Carteiras e Agendamentos Recorrentes.
+// Padrão de Diálogos: Concordo / Cancelar (Zero Emojis - 100% SVG)
 // =========================================================================
 
 window.itensMercadoAtual = [];
+window.cacheTransacoesExtrato = [];
 let itemParaExcluirAgendaId = null;
 let reconhecimentoVozMercado = null;
 
@@ -57,13 +59,43 @@ window.identificarSegmentoItem = function(nomeItem) {
 };
 
 // =========================================================================
-// 1. CHECAGEM DE EXTRATO NOMINAL COM PRIVACIDADE INDIVIDUAL
+// 1. CHECAGEM DE EXTRATO NOMINAL COM PRIVACIDADE E BUSCA INSTANTÂNEA
 // =========================================================================
+
+window.garantirBarraBuscaExtrato = function() {
+    const containerLista = document.getElementById('lista-extrato-carteira');
+    if (!containerLista || document.getElementById('barra-busca-rapida-extrato')) return;
+
+    const barra = document.createElement('div');
+    barra.id = 'barra-busca-rapida-extrato';
+    barra.style.cssText = 'display:flex; gap:6px; margin-bottom:10px; align-items:center;';
+    barra.innerHTML = `
+        <input type="text" id="input-busca-texto-extrato" placeholder="Buscar no extrato (ex: mercado, luz, nome...)" 
+               style="flex:1; padding:8px 10px; font-size:12px; border-radius:10px;" 
+               oninput="window.filtrarListaExtratoMemoria()">
+        <select id="select-busca-categoria-extrato" style="width:130px; padding:8px 26px 8px 8px; font-size:11.5px; border-radius:10px;" onchange="window.filtrarListaExtratoMemoria()">
+            <option value="todas">Categorias</option>
+            <option value="Supermercado">Supermercado</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Educação">Educação</option>
+            <option value="Salário">Salário</option>
+            <option value="Transferência">Transferência</option>
+            <option value="Geral">Geral</option>
+        </select>
+    `;
+    containerLista.parentNode.insertBefore(barra, containerLista);
+};
 
 window.carregarExtratoPeriodo = async function() {
     const container = document.getElementById('lista-extrato-carteira');
     const cli = obterClienteSupabase();
     if (!container || !window.familiaAtualId || !cli) return;
+
+    window.garantirBarraBuscaExtrato();
 
     let dtInicio = document.getElementById('extrato-filtro-inicio')?.value;
     let dtFim = document.getElementById('extrato-filtro-fim')?.value;
@@ -109,17 +141,54 @@ window.carregarExtratoPeriodo = async function() {
         error = resFallback.error;
     }
 
-    container.innerHTML = '';
-    const lista = (!error && transacoes) ? transacoes : [];
+    window.cacheTransacoesExtrato = (!error && transacoes) ? transacoes : [];
+    window.filtrarListaExtratoMemoria();
+};
 
-    if (lista.length === 0) {
-        container.innerHTML = '<span class="status-texto" style="font-size:11px; text-align:center; display:block; padding:12px 0;">Nenhuma movimentação registrada no período.</span>';
+window.filtrarListaExtratoMemoria = function() {
+    const container = document.getElementById('lista-extrato-carteira');
+    if (!container) return;
+
+    const termoBusca = (document.getElementById('input-busca-texto-extrato')?.value || '').toLowerCase().trim();
+    const catFiltro = document.getElementById('select-busca-categoria-extrato')?.value || 'todas';
+    const usuarioConectadoId = obterUsuarioId();
+
+    const listaFiltrada = (window.cacheTransacoesExtrato || []).filter(t => {
+        const ehMeuLancamento = (t.membro_id === usuarioConectadoId);
+        const ehPrivativo = (t.escopo === 'pessoal' || t.eh_privado === true);
+
+        let descVisivel = t.descricao || 'Sem descrição';
+        let catVisivel = t.categoria || 'Geral';
+        if (ehPrivativo && !ehMeuLancamento) {
+            descVisivel = t.tipo === 'entrada' ? 'Entrada Particular' : 'Gasto Pessoal';
+            catVisivel = 'Privativo';
+        }
+
+        if (catFiltro !== 'todas' && catVisivel !== catFiltro) {
+            return false;
+        }
+
+        if (termoBusca) {
+            let nomeMembro = 'familiar';
+            if (window.listaMembrosFamilia) {
+                const m = window.listaMembrosFamilia.find(x => x.id === t.membro_id);
+                if (m && m.nome) nomeMembro = m.nome.toLowerCase();
+            }
+            const textoCombinado = `${descVisivel} ${catVisivel} ${nomeMembro} ${t.valor || ''}`.toLowerCase();
+            if (!textoCombinado.includes(termoBusca)) return false;
+        }
+
+        return true;
+    });
+
+    container.innerHTML = '';
+
+    if (listaFiltrada.length === 0) {
+        container.innerHTML = '<span class="status-texto" style="font-size:11px; text-align:center; display:block; padding:12px 0;">Nenhuma movimentação encontrada para este filtro.</span>';
         return;
     }
 
-    const usuarioConectadoId = obterUsuarioId();
-
-    lista.forEach(t => {
+    listaFiltrada.forEach(t => {
         const item = document.createElement('div');
         item.className = 'cartao-geral';
         item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 14px; margin-bottom:8px; border-radius:14px;';
@@ -159,6 +228,8 @@ window.carregarExtratoPeriodo = async function() {
             ? `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Pessoal</span>`
             : `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Casa</span>`;
 
+        const descSegura = window.esc ? window.esc(descricaoVisivel) : descricaoVisivel;
+
         item.innerHTML = `
             <div style="flex:1; min-width:0; padding-right:8px;">
                 <div style="font-size:13.5px; font-weight:700; color:var(--texto-principal, #334155); display:flex; align-items:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -168,7 +239,7 @@ window.carregarExtratoPeriodo = async function() {
                 <div style="font-size:11px; color:var(--texto-suave, #64748b); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                     <span>${dataFmt}</span>
                     <span>•</span>
-                    <span>Ref: <em>${descricaoVisivel}</em></span>
+                    <span>Ref: <em>${descSegura}</em></span>
                     <span>•</span>
                     ${tagEscopoSvg}
                 </div>
@@ -475,7 +546,7 @@ window.atualizarEstatisticasPrecoCatalogo = async function(nomeProduto, categori
 };
 
 // =========================================================================
-// 2B. MICROFONE INTELIGENTE NO MERCADO COM PARSER SEMÂNTICO PRECISO
+// 2B. MICROFONE INTELIGENTE NO MERCADO (GEMINI 2.5 FLASH + PARSER LOCAL)
 // =========================================================================
 
 window.ouvirComandoVozMercado = function() {
@@ -520,7 +591,7 @@ window.processarItemMercadoPorVozIA = async function(frase) {
 
     if (apiKey && apiKey.length > 20 && !apiKey.startsWith("AQ.") && navigator.onLine) {
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const promptText = `Analise a seguinte frase dita para adicionar um item de supermercado: "${frase}".
             Identifique o produto no singular, a quantidade e o valor unitário.
             Responda EXATAMENTE e APENAS com um JSON válido:
@@ -655,7 +726,7 @@ window.aplicarValoresDetectadosMercado = async function(nome, qtd, unit) {
 };
 
 // =========================================================================
-// 2C. MOTOR DE IA: LEITURA DE CUPOM FISCAL (GEMINI VISION)
+// 2C. MOTOR DE IA: LEITURA DE CUPOM FISCAL (GEMINI 2.5 FLASH VISION)
 // =========================================================================
 
 window.processarCupomFiscalIA = async function(evento) {
@@ -679,7 +750,7 @@ window.processarCupomFiscalIA = async function(evento) {
         }
     }
 
-    window.mostrarToast("Analisando cupom com IA... Aguarde.", "info");
+    window.mostrarToast("Analisando cupom com Gemini 2.5... Aguarde.", "info");
 
     try {
         const base64Data = await new Promise((resolve, reject) => {
@@ -693,7 +764,7 @@ window.processarCupomFiscalIA = async function(evento) {
         });
 
         const chaveAtiva = obterChaveGemini();
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chaveAtiva}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveAtiva}`;
 
         const payload = {
             contents: [{
@@ -729,7 +800,6 @@ window.processarCupomFiscalIA = async function(evento) {
 
         const cupomExtraido = JSON.parse(textoResposta);
 
-        // Preenche o formulário de Lançamento Rápido em Finanças
         const inDesc = document.getElementById('input-fin-descricao');
         const inVal = document.getElementById('input-fin-valor');
         const selCat = document.getElementById('select-fin-categoria');
@@ -742,7 +812,6 @@ window.processarCupomFiscalIA = async function(evento) {
         if (selTipo) selTipo.value = 'saida';
         if (selEscopo) selEscopo.value = 'casa';
 
-        // Se houver itens detalhados, cadastra também no módulo de mercado
         if (Array.isArray(cupomExtraido.itens) && cupomExtraido.itens.length > 0) {
             const registros = cupomExtraido.itens.map(item => {
                 const qtd = parseFloat(item.quantidade) || 1;
@@ -1278,7 +1347,7 @@ window.fecharModalGraficosMercado = function() {
 };
 
 // =========================================================================
-// 3B. SUGESTÕES DE CARDÁPIO DO MÊS (IA COM FALLBACK LOCAL INTELIGENTE)
+// 3B. SUGESTÕES DE CARDÁPIO DO MÊS (GEMINI 2.5 FLASH + FALLBACK LOCAL)
 // =========================================================================
 
 window.gerarSugestoesCardapioMesIA = async function() {
@@ -1316,7 +1385,7 @@ window.gerarSugestoesCardapioMesIA = async function() {
 
     if (apiKey && apiKey.length > 20 && !apiKey.startsWith("AQ.") && navigator.onLine) {
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const promptText = `Com base nestes alimentos comprados para a família: ${alimentos.join(', ')}.
             Sugira exatamente 3 refeições práticas, nutritivas e económicas para o mês.
             Responda EXATAMENTE com um array JSON válido sem markdown, sem crases:

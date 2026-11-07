@@ -1,6 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-CORE.JS (100% COMPLETO E INTEGRAL)
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
+// PIN Real Individual para Adultos, Modal Nativo "Concordo / Cancelar",
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
 // Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline & Zero Emojis (SVG)
 // Ferramenta Avançada de Crop com Máscara Visual e Arrasto Livre (ATUALIZADO)
@@ -39,6 +40,12 @@ window.IconesSuiri = {
     joinha: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
     joinhaInvertido: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`,
     
+    // Cabeçalho e Atalhos Principais
+    lampada: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`,
+    livrinho: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+    loja: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.1L21 9"/><path d="M3 9v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="M3 9h18"/><path d="M9 22V12h6v10"/></svg>`,
+    porta: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M15 3h-4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`,
+
     // Adultos e Gerais
     fogo: `<svg class="icone-svg icone-fogo" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
     escudo: `<svg class="icone-svg icone-escudo" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
@@ -98,7 +105,7 @@ window.IconesSuiri = {
 };
 
 // =========================================================================
-// 1. UTILITÁRIOS: CPF E FORMATAÇÃO DE MOEDA
+// 1. UTILITÁRIOS: CPF, FORMATAÇÃO DE MOEDA & DIÁLOGO PERSONALIZADO
 // =========================================================================
 window.validarCPF = function(cpf) {
     cpf = String(cpf || '').replace(/\D/g, '');
@@ -128,6 +135,51 @@ window.formatarCPF = function(v) {
 window.formatarMoedaBRL = function(valor) {
     const v = Number(valor) || 0;
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+// Modal Nativo Personalizado "Concordo / Cancelar" (Substitui o confirm nativo do navegador)
+window.confirmarAcaoSuiri = function(mensagem, titulo = 'Confirmação') {
+    return new Promise((resolve) => {
+        let modal = document.getElementById('modal-confirmacao-nativo-suiri');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modal-confirmacao-nativo-suiri';
+            modal.className = 'modal-overlay';
+            modal.style.zIndex = '1000005';
+            modal.innerHTML = `
+                <div class="modal-conteudo" style="max-width: 340px; text-align: center; padding: 22px 18px; border-radius: 22px; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #ffffff;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                        ${window.IconesSuiri?.escudo || ''}
+                    </div>
+                    <h3 id="titulo-confirmacao-suiri" style="margin: 0 0 6px 0; font-size: 16px; color: var(--texto-principal); font-weight: 800;"></h3>
+                    <p id="texto-confirmacao-suiri" style="font-size: 13px; color: var(--texto-suave); line-height: 1.45; margin: 0 0 18px 0;"></p>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btn-cancelar-confirmacao-suiri" class="btn-secundario" style="flex: 1; padding: 11px; border-radius: 12px; font-weight: 700;">Cancelar</button>
+                        <button type="button" id="btn-concordo-confirmacao-suiri" class="btn-principal" style="flex: 1; padding: 11px; border-radius: 12px; font-weight: 800;">Concordo</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const elTit = document.getElementById('titulo-confirmacao-suiri');
+        const elTxt = document.getElementById('texto-confirmacao-suiri');
+        const btnCanc = document.getElementById('btn-cancelar-confirmacao-suiri');
+        const btnConc = document.getElementById('btn-concordo-confirmacao-suiri');
+
+        if (elTit) elTit.textContent = titulo;
+        if (elTxt) elTxt.textContent = mensagem;
+
+        modal.classList.remove('oculto');
+
+        const fechar = (decisao) => {
+            modal.classList.add('oculto');
+            resolve(decisao);
+        };
+
+        if (btnCanc) btnCanc.onclick = () => fechar(false);
+        if (btnConc) btnConc.onclick = () => fechar(true);
+    });
 };
 
 // =========================================================================
@@ -391,16 +443,14 @@ window.processarUploadAvatar = function(evento) {
                  const rect = container.getBoundingClientRect();
                  const imgRatio = imagemOriginalCrop.width / imagemOriginalCrop.height;
                  
-                 // Ajusta a escala inicial para preencher a máscara visual (200x200)
                  if (imgRatio > 1) {
                      coordsCrop.scale = 200 / imagemOriginalCrop.height;
                  } else {
                      coordsCrop.scale = 200 / imagemOriginalCrop.width;
                  }
                  
-                 // Centraliza
-                 coordsCrop.x = (rect.width - (imagemOriginalCrop.width * coordsCrop.scale)) / 2;
-                 coordsCrop.y = (rect.height - (imagemOriginalCrop.height * coordsCrop.scale)) / 2;
+                 coordsCrop.x = ((rect.width || 300) - (imagemOriginalCrop.width * coordsCrop.scale)) / 2;
+                 coordsCrop.y = ((rect.height || 300) - (imagemOriginalCrop.height * coordsCrop.scale)) / 2;
             }
             
             document.getElementById('modal-crop-imagem')?.classList.remove('oculto');
@@ -412,7 +462,6 @@ window.processarUploadAvatar = function(evento) {
     evento.target.value = '';
 };
 
-// Redesenha a imagem livre por trás da máscara de recorte fixa no Canvas
 function desenharCanvasCrop() {
     const canvas = document.getElementById('canvas-crop');
     if (!canvas || !imagemOriginalCrop) return;
@@ -430,23 +479,19 @@ function desenharCanvasCrop() {
     const scaledW = imagemOriginalCrop.width * coordsCrop.scale;
     const scaledH = imagemOriginalCrop.height * coordsCrop.scale;
     
-    // Desenha a imagem arrastável
     ctx.drawImage(imagemOriginalCrop, coordsCrop.x, coordsCrop.y, scaledW, scaledH);
     
-    // Desenha a máscara escura de guia
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const maskSize = 200;
     
-    // Cria o furo circular/quadrado vazado no centro
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, maskSize / 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
     
-    // Borda verde delimitadora do recorte
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -467,7 +512,7 @@ function inicializarArrastoCrop() {
 
     const drag = (e) => {
         if (!coordsCrop.dragging) return;
-        e.preventDefault(); // Impede scroll indesejado ao arrastar a foto
+        e.preventDefault();
         const pointer = e.touches ? e.touches[0] : e;
         coordsCrop.x = pointer.clientX - coordsCrop.startX;
         coordsCrop.y = pointer.clientY - coordsCrop.startY;
@@ -525,7 +570,6 @@ window.confirmarCropImagem = async function() {
     finalCanvas.height = outputSize;
     const fCtx = finalCanvas.getContext('2d');
     
-    // Calcula as proporções exatas da imagem posicionada por trás do guia vazado
     const maskX = (canvas.width - maskSize) / 2;
     const maskY = (canvas.height - maskSize) / 2;
     const scaleRatio = outputSize / maskSize;
@@ -540,7 +584,6 @@ window.confirmarCropImagem = async function() {
     const scaledW = imagemOriginalCrop.width * coordsCrop.scale;
     const scaledH = imagemOriginalCrop.height * coordsCrop.scale;
     
-    // Desenha o recorte baseando-se no posicionamento de arrasto feito pelo usuário
     fCtx.drawImage(imagemOriginalCrop, coordsCrop.x, coordsCrop.y, scaledW, scaledH);
     fCtx.restore();
 
@@ -578,7 +621,7 @@ window.guardarFotoPerfil = async function(base64Data) {
 };
 
 // =========================================================================
-// 6. MODAL DE SENHA / PIN DE ADULTO
+// 6. MODAL DE PIN REAL E INDIVIDUAL DE ADULTO (BLINDADO CONTRA CRIANÇAS)
 // =========================================================================
 window.abrirModalSenhaAdulto = function(membro) {
     if (!membro) return;
@@ -590,44 +633,117 @@ window.abrirModalSenhaAdulto = function(membro) {
         modal.className = 'modal-overlay';
         modal.style.zIndex = '1000002';
         modal.innerHTML = `
-            <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 20px; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #ffffff;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #ffffff;">
+                <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
                     ${window.IconesSuiri?.cadeado || ''}
                 </div>
-                <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal);">Acesso Restrito</h3>
+                <h3 id="titulo-pin-adulto" style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal); font-weight: 800;">Acesso Restrito</h3>
                 <p id="subtitulo-pin-adulto" style="font-size: 12.5px; color: var(--texto-suave); line-height: 1.4; margin: 0 0 14px 0;"></p>
-                <input type="password" id="input-pin-acesso-adulto" placeholder="Digite seu PIN ou senha" style="text-align: center; font-size: 15px; letter-spacing: 2px; margin-bottom: 14px;">
+                <input type="password" inputmode="numeric" maxlength="8" id="input-pin-acesso-adulto" placeholder="PIN de 4 dígitos" style="text-align: center; font-size: 17px; font-weight: 800; letter-spacing: 4px; margin-bottom: 12px;">
+                <div id="box-redefinir-pin-cpf" class="oculto" style="margin-bottom: 12px; text-align: left; background: #fef9ea; padding: 10px; border-radius: 12px; border: 1px dashed rgba(217,119,6,0.3);">
+                    <label style="font-size: 11px; font-weight: 700; color: #92400e; display: block; margin-bottom: 4px;">Confirme os 4 primeiros dígitos do CPF do titular para redefinir o PIN:</label>
+                    <input type="text" inputmode="numeric" maxlength="4" id="input-cpf-recuperar-pin" placeholder="Ex: 1234" style="text-align: center; font-size: 14px; font-weight: 700;">
+                </div>
                 <div style="display: flex; gap: 8px;">
                     <button type="button" class="btn-secundario" style="flex: 1;" onclick="document.getElementById('modal-pin-acesso-adulto').classList.add('oculto')">Cancelar</button>
-                    <button type="button" id="btn-confirmar-pin-adulto" class="btn-principal" style="flex: 1;">Confirmar</button>
+                    <button type="button" id="btn-confirmar-pin-adulto" class="btn-principal" style="flex: 1;">Concordo</button>
                 </div>
+                <button type="button" id="btn-esqueci-pin-adulto" style="background:none; border:none; color:var(--texto-suave); font-size:11px; font-weight:700; margin-top:12px; cursor:pointer; text-decoration:underline;">Esqueci ou quero trocar meu PIN</button>
             </div>
         `;
         document.body.appendChild(modal);
     }
 
-    const primeiroNome = String(membro.nome || 'Usuário').split(' ')[0];
+    const primeiroNome = String(membro.nome || 'Utilizador').split(' ')[0];
+    const chavePinLocal = `suiri_pin_adulto_${membro.id}`;
+    const pinSalvo = (membro.permissoes && membro.permissoes.pin_acesso) || localStorage.getItem(chavePinLocal) || '';
+
+    const tituloEl = document.getElementById('titulo-pin-adulto');
     const sub = document.getElementById('subtitulo-pin-adulto');
     const input = document.getElementById('input-pin-acesso-adulto');
     const btnConfirmar = document.getElementById('btn-confirmar-pin-adulto');
+    const btnEsqueci = document.getElementById('btn-esqueci-pin-adulto');
+    const boxCpf = document.getElementById('box-redefinir-pin-cpf');
+    const inputCpf = document.getElementById('input-cpf-recuperar-pin');
 
-    if (sub) sub.textContent = `Acesso restrito para ${primeiroNome}. Digite sua senha:`;
+    if (boxCpf) boxCpf.classList.add('oculto');
+    if (inputCpf) inputCpf.value = '';
+
+    let modoDefinirNovoPin = !pinSalvo;
+
+    const atualizarTextosModalPin = () => {
+        if (modoDefinirNovoPin) {
+            if (tituloEl) tituloEl.textContent = `Criar PIN de ${primeiroNome}`;
+            if (sub) sub.textContent = `Crie um PIN numérico de 4 dígitos para proteger o perfil de ${primeiroNome} das crianças:`;
+            if (input) input.placeholder = "Novo PIN (4 dígitos)";
+            if (btnEsqueci) btnEsqueci.style.display = 'none';
+        } else {
+            if (tituloEl) tituloEl.textContent = `Olá, ${primeiroNome}`;
+            if (sub) sub.textContent = `Digite o seu PIN de acesso para entrar no seu perfil adulto:`;
+            if (input) input.placeholder = "Digite seu PIN";
+            if (btnEsqueci) btnEsqueci.style.display = 'inline-block';
+        }
+    };
+
+    atualizarTextosModalPin();
+
     if (input) {
         input.value = '';
-        setTimeout(() => input.focus(), 200);
+        setTimeout(() => input.focus(), 180);
+    }
+
+    if (btnEsqueci) {
+        btnEsqueci.onclick = () => {
+            boxCpf?.classList.remove('oculto');
+            modoDefinirNovoPin = true;
+            if (tituloEl) tituloEl.textContent = `Redefinir PIN de ${primeiroNome}`;
+            if (sub) sub.textContent = `Digite um novo PIN acima e confirme os 4 primeiros dígitos do CPF abaixo:`;
+        };
     }
 
     if (btnConfirmar) {
-        btnConfirmar.onclick = () => {
-            const pin = input?.value ? input.value.trim() : '';
-            if (pin.length >= 4) {
+        btnConfirmar.onclick = async () => {
+            const pinDigitado = input?.value ? input.value.trim() : '';
+            if (pinDigitado.length < 4) {
+                return window.mostrarToast("O PIN deve ter pelo menos 4 dígitos.", "erro");
+            }
+
+            if (modoDefinirNovoPin) {
+                // Se já tinha um PIN antes e clicou em "Esqueci", valida os 4 primeiros dígitos do CPF da família/membro
+                if (pinSalvo) {
+                    const cpfRef = window.limparCPF(membro.cpf || window.dadosFamiliaAtual?.cpf_adm_principal || '');
+                    const cpfDigitado = (inputCpf?.value || '').replace(/\D/g, '');
+                    if (cpfRef.length >= 4 && cpfDigitado !== cpfRef.slice(0, 4)) {
+                        return window.mostrarToast("Os 4 primeiros dígitos do CPF não conferem.", "erro");
+                    }
+                }
+
+                localStorage.setItem(chavePinLocal, pinDigitado);
+                const novasPerms = { ...(membro.permissoes || {}), pin_acesso: pinDigitado };
+                membro.permissoes = novasPerms;
+
+                if (cliente) {
+                    await cliente.from('membros').update({ permissoes: novasPerms }).eq('id', membro.id);
+                }
+
+                modal.classList.add('oculto');
+                window.perfilAtual = membro;
+                window.fecharJanelaPrincipalQuiosque();
+                window.aplicarRegrasPerfilKidsOuAdulto();
+                window.mostrarToast(`PIN guardado! Sessão ativa para ${primeiroNome}.`);
+            } else {
+                if (pinDigitado !== String(pinSalvo)) {
+                    if (window.SonsSuiri && typeof window.SonsSuiri.somFalhaAcolhedor === 'function') {
+                        window.SonsSuiri.somFalhaAcolhedor();
+                    }
+                    return window.mostrarToast("PIN incorreto! Tente novamente.", "erro");
+                }
+
                 modal.classList.add('oculto');
                 window.perfilAtual = membro;
                 window.fecharJanelaPrincipalQuiosque();
                 window.aplicarRegrasPerfilKidsOuAdulto();
                 window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
-            } else {
-                window.mostrarToast("PIN ou senha deve conter ao menos 4 dígitos.", "erro");
             }
         };
     }
@@ -731,7 +847,7 @@ window.selecionarUsuarioQuiosque = function(membroId) {
     if (!membro) return;
 
     const ehKids = membro.eh_kids === true || membro.papel === 'dependente';
-    const primeiroNome = String(membro.nome || 'Usuário').split(' ')[0];
+    const primeiroNome = String(membro.nome || 'Utilizador').split(' ')[0];
 
     if (ehKids) {
         window.perfilAtual = membro;
@@ -742,14 +858,7 @@ window.selecionarUsuarioQuiosque = function(membroId) {
         }
         window.mostrarToast(`Olá, ${primeiroNome}! As tuas missões estão prontas!`);
     } else {
-        if (typeof window.abrirModalSenhaAdulto === 'function') {
-            window.abrirModalSenhaAdulto(membro);
-        } else {
-            window.perfilAtual = membro;
-            window.fecharJanelaPrincipalQuiosque();
-            window.aplicarRegrasPerfilKidsOuAdulto();
-            window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
-        }
+        window.abrirModalSenhaAdulto(membro);
     }
 };
 
@@ -807,7 +916,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         barraNav?.classList.remove('oculto');
 
         document.getElementById('container-tamagotchi-kids')?.remove();
-        document.getElementById('modal-tamagotchi-cuidados')?.classList.add('oculto');
+        document.getElementById('modal-casinha-chuiri')?.remove();
 
         const elNomeMembro = document.getElementById('nome-membro-topo');
         if (elNomeMembro) elNomeMembro.textContent = window.perfilAtual.nome;
@@ -985,15 +1094,17 @@ window.solicitarExclusaoPropriaConta = async function() {
         return window.mostrarToast("Sessão não identificada para exclusão.", "erro");
     }
 
-    const primeiroAviso = window.confirmarAcaoSuiri
-        ? await window.confirmarAcaoSuiri("Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados, tarefas e registos serão eliminados de forma irreversível.", "Eliminar Conta")
-        : confirm("Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados serão eliminados.");
+    const primeiroAviso = await window.confirmarAcaoSuiri(
+        "Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados, tarefas e registos serão eliminados de forma irreversível.",
+        "Eliminar Conta"
+    );
 
     if (!primeiroAviso) return;
 
-    const segundoAviso = window.confirmarAcaoSuiri
-        ? await window.confirmarAcaoSuiri("Esta é uma ação definitiva e sem retorno. Deseja confirmar agora a remoção completa?", "Confirmação Final")
-        : confirm("Esta é uma ação definitiva e sem retorno. Deseja confirmar agora?");
+    const segundoAviso = await window.confirmarAcaoSuiri(
+        "Esta é uma ação definitiva e sem retorno. Deseja confirmar agora a remoção completa?",
+        "Confirmação Final"
+    );
 
     if (!segundoAviso) return;
 
