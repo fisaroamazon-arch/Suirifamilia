@@ -2,6 +2,7 @@
 // SUIRI GESTÃO FAMILIAR - APP-CORE.JS (100% COMPLETO E INTEGRAL)
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
 // PIN Real Individual para Adultos, Modal Nativo "Concordo / Cancelar",
+// Transições Direcionais Inteligentes (Direita/Esquerda),
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
 // Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline & Zero Emojis (SVG)
 // Ferramenta Avançada de Crop com Máscara Visual e Arrasto Livre (ATUALIZADO)
@@ -847,7 +848,7 @@ window.selecionarUsuarioQuiosque = function(membroId) {
     if (!membro) return;
 
     const ehKids = membro.eh_kids === true || membro.papel === 'dependente';
-    const primeiroNome = String(membro.nome || 'Utilizador').split(' ')[0];
+    const primeiroNome = String(membro.nome || 'Usuário').split(' ')[0];
 
     if (ehKids) {
         window.perfilAtual = membro;
@@ -858,7 +859,14 @@ window.selecionarUsuarioQuiosque = function(membroId) {
         }
         window.mostrarToast(`Olá, ${primeiroNome}! As tuas missões estão prontas!`);
     } else {
-        window.abrirModalSenhaAdulto(membro);
+        if (typeof window.abrirModalSenhaAdulto === 'function') {
+            window.abrirModalSenhaAdulto(membro);
+        } else {
+            window.perfilAtual = membro;
+            window.fecharJanelaPrincipalQuiosque();
+            window.aplicarRegrasPerfilKidsOuAdulto();
+            window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
+        }
     }
 };
 
@@ -916,7 +924,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         barraNav?.classList.remove('oculto');
 
         document.getElementById('container-tamagotchi-kids')?.remove();
-        document.getElementById('modal-casinha-chuiri')?.remove();
+        document.getElementById('modal-tamagotchi-cuidados')?.classList.add('oculto');
 
         const elNomeMembro = document.getElementById('nome-membro-topo');
         if (elNomeMembro) elNomeMembro.textContent = window.perfilAtual.nome;
@@ -1043,7 +1051,7 @@ window.verificarSessao = async function() {
 };
 
 // =========================================================================
-// 9. NAVEGAÇÃO REATIVA ENTRE TELAS
+// 9. NAVEGAÇÃO REATIVA ENTRE TELAS (COM DIREÇÃO E SWIPE)
 // =========================================================================
 window.navegarParaTela = function(nomeTela) {
     if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
@@ -1052,12 +1060,32 @@ window.navegarParaTela = function(nomeTela) {
 
     if (window.modoKidsAtivo) return;
 
+    const ordemTelas = ['inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
+    const indexAtual = ordemTelas.indexOf(window.telaAtualVisivel || 'inicio');
+    const indexDestino = ordemTelas.indexOf(nomeTela);
+    let direcaoClasse = '';
+
+    if (indexDestino > indexAtual) {
+        direcaoClasse = 'animar-entrada-direita';
+    } else if (indexDestino < indexAtual) {
+        direcaoClasse = 'animar-entrada-esquerda';
+    }
+
     window.telaAtualVisivel = nomeTela;
+    
     const secoes = document.querySelectorAll('.secao-conteudo-app');
-    secoes.forEach(sec => sec.classList.add('oculto'));
+    secoes.forEach(sec => {
+        sec.classList.add('oculto');
+        sec.classList.remove('animar-entrada-direita', 'animar-entrada-esquerda');
+    });
 
     const telaAlvo = document.getElementById(`secao-${nomeTela}`);
-    if (telaAlvo) telaAlvo.classList.remove('oculto');
+    if (telaAlvo) {
+        if (direcaoClasse) {
+            telaAlvo.classList.add(direcaoClasse);
+        }
+        telaAlvo.classList.remove('oculto');
+    }
 
     document.querySelectorAll('.bottom-nav-item').forEach(btn => {
         if (btn.getAttribute('data-tela') === nomeTela) {
@@ -1094,17 +1122,15 @@ window.solicitarExclusaoPropriaConta = async function() {
         return window.mostrarToast("Sessão não identificada para exclusão.", "erro");
     }
 
-    const primeiroAviso = await window.confirmarAcaoSuiri(
-        "Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados, tarefas e registos serão eliminados de forma irreversível.",
-        "Eliminar Conta"
-    );
+    const primeiroAviso = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri("Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados, tarefas e registos serão eliminados de forma irreversível.", "Eliminar Conta")
+        : confirm("Tem a certeza absoluta de que pretende eliminar a sua conta? Todos os seus dados serão eliminados.");
 
     if (!primeiroAviso) return;
 
-    const segundoAviso = await window.confirmarAcaoSuiri(
-        "Esta é uma ação definitiva e sem retorno. Deseja confirmar agora a remoção completa?",
-        "Confirmação Final"
-    );
+    const segundoAviso = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri("Esta é uma ação definitiva e sem retorno. Deseja confirmar agora a remoção completa?", "Confirmação Final")
+        : confirm("Esta é uma ação definitiva e sem retorno. Deseja confirmar agora?");
 
     if (!segundoAviso) return;
 
