@@ -1,22 +1,51 @@
 // =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-INSTRUCAO.JS (100% COMPLETO E DETALHADO)
-// Tour Interativo Premium: Animações Lentas, Reposicionamento Dinâmico
-// Z-Index Absoluto, Foco Visual Prolongado e Explicações Detalhadas
+// SUIRI GESTÃO FAMILIAR - APP-INSTRUCAO.JS (100% COMPLETO E CONTROLADO)
+// Tour Interativo Passo a Passo com Áudio Sincronizado, Fuga de Janela
+// e Controle Manual por Clique ("Próximo" avança e toca o respectivo áudio)
 // =========================================================================
 
 let passoTourAtual = 0;
 let canceladorExecucaoDemo = false;
 let elementoFocadoAnterior = null;
+let audioTourAtual = null;
 
 // =========================================================================
-// 1. UTILITÁRIOS DE ANIMAÇÃO E SIMULAÇÃO (RITMO LENTO E ELEGANTE)
+// 1. GERENCIADOR DE ÁUDIO (audios/instrucao/)
+// =========================================================================
+
+function pararAudioInstrucao() {
+    if (audioTourAtual) {
+        audioTourAtual.pause();
+        audioTourAtual.currentTime = 0;
+        audioTourAtual.onended = null;
+        audioTourAtual.onerror = null;
+        audioTourAtual = null;
+    }
+}
+
+function reproduzirAudioPasso(nomeArquivo) {
+    pararAudioInstrucao();
+    if (!nomeArquivo) return;
+
+    try {
+        audioTourAtual = new Audio(`audios/instrucao/${nomeArquivo}`);
+        audioTourAtual.play().catch(erro => {
+            console.warn("Aviso de áudio:", erro);
+        });
+    } catch (e) {
+        console.error("Erro ao carregar o arquivo de áudio:", e);
+    }
+}
+
+// =========================================================================
+// 2. UTILITÁRIOS VISUAIS E FUGA INTELIGENTE DA JANELA
 // =========================================================================
 
 function esperarMs(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Inteligência de Posicionamento: Foge do elemento destacado
+// A janela sai da frente de onde a instrução está apontando
 function ajustarPosicaoModalTour(elementoAlvo) {
     const modal = document.getElementById('modal-tour-instrucoes');
     if (!modal) return;
@@ -30,12 +59,12 @@ function ajustarPosicaoModalTour(elementoAlvo) {
     const rect = elementoAlvo.getBoundingClientRect();
     const alturaJanela = window.innerHeight;
 
-    // Se o elemento está na metade inferior, o manual sobe para o topo.
-    // Se o elemento está no topo, o manual desce para o rodapé.
+    // Se o elemento estiver da metade para baixo, a janela sobe para o topo
     if (rect.top > (alturaJanela / 2) - 60) {
         modal.classList.remove('posicao-rodape');
         modal.classList.add('posicao-topo');
     } else {
+        // Se estiver no topo, a janela desce para o rodapé
         modal.classList.remove('posicao-topo');
         modal.classList.add('posicao-rodape');
     }
@@ -53,16 +82,14 @@ function removerDestaqueElemento() {
 
 function destacarElementoTour(seletorOuElemento) {
     removerDestaqueElemento();
+    if (canceladorExecucaoDemo) return null;
+
     const el = typeof seletorOuElemento === 'string' ? document.querySelector(seletorOuElemento) : seletorOuElemento;
     
     if (el) {
         el.classList.add('destaque-tour-foco');
         elementoFocadoAnterior = el;
-        
-        // Rola a tela suavemente para deixar o elemento bem no centro da visão
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Move o modal de instrução para fora do caminho
         ajustarPosicaoModalTour(el);
     } else {
         ajustarPosicaoModalTour(null);
@@ -70,14 +97,13 @@ function destacarElementoTour(seletorOuElemento) {
     return el;
 }
 
-// Simulação de digitação LENTA e humana (bloqueando teclado virtual)
-async function simularDigitacao(elementoInput, texto, velocidade = 85) {
-    if (!elementoInput) return;
-    elementoInput.readOnly = true; // Impede que o teclado do celular suba
+// Digitação simulada com pausas humanas e sem abrir teclado no celular
+async function simularDigitacao(elementoInput, texto, velocidade = 80) {
+    if (!elementoInput || canceladorExecucaoDemo) return;
+    elementoInput.readOnly = true;
     elementoInput.value = '';
     
-    // Pausa dramática antes de começar a digitar
-    await esperarMs(500); 
+    await esperarMs(400); 
     
     for (let i = 0; i < texto.length; i++) {
         if (canceladorExecucaoDemo) {
@@ -85,74 +111,71 @@ async function simularDigitacao(elementoInput, texto, velocidade = 85) {
             return;
         }
         elementoInput.value += texto.charAt(i);
-        await esperarMs(velocidade + (Math.random() * 30)); // Variação leve para parecer real
+        await esperarMs(velocidade + (Math.random() * 25));
     }
     
-    // Pausa após terminar de digitar para o utilizador ler
-    await esperarMs(800); 
+    await esperarMs(600); 
 }
 
-// Efeito de toque demorado na tela
+// Clique simulado
 async function simularCliqueVisual(elemento) {
-    if (!elemento) return;
-    await esperarMs(400); // Aguarda o olho do utilizador focar no botão
+    if (!elemento || canceladorExecucaoDemo) return;
+    await esperarMs(350);
     elemento.classList.add('clique-simulado-tour');
-    await esperarMs(350); // Mantém o botão "pressionado" visualmente
+    await esperarMs(300);
     elemento.classList.remove('clique-simulado-tour');
-    await esperarMs(400); // Pausa para a próxima janela abrir
+    await esperarMs(350);
 }
 
 // =========================================================================
-// 2. ROTEIRO DETALHADO DOS PASSOS DO TOUR
+// 3. ROTEIRO DOS QUADROS (CADA UM COM SEU ÁUDIO E ANIMAÇÃO)
 // =========================================================================
 
 const passosTourGuiado = [
     // -------------------------------------------------------------
-    // ETAPA 1: CABEÇALHO, PERFIL & TROCA RÁPIDA DE MEMBRO
+    // QUADRO 1: APRESENTAÇÃO GERAL (Toca áudio 1 e aguarda "Próximo")
     // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "O Seu Perfil e Troca Rápida",
-        descricao: "Bem-vindo ao Suiri! No topo da tela, a sua foto de perfil está em destaque. Se tocar no botão de duas pessoas ao lado, pode alternar para o perfil do seu parceiro ou dos seus filhos rapidamente. Perfis adultos são protegidos por um PIN de segurança, enquanto o perfil 'Kids' entra de imediato para facilitar o uso das crianças.",
+        titulo: "Bem-vindo ao Suiri Gestão Familiar",
+        descricao: "Este é o seu centro de comando. Aqui a família organiza tarefas, controla compras de supermercado, gere finanças individuais e conjuntas, e motiva as crianças com gamificação. Toque em 'Próximo' para conhecer o sistema passo a passo.",
+        audio: "guia_geral_1.mp3",
         executarDemo: async () => {
-            const btnTrocar = destacarElementoTour('#btn-trocar-membro-topo');
-            await simularCliqueVisual(btnTrocar);
-            await esperarMs(1200);
             destacarElementoTour('#cabecalho-topo-usuario');
         },
         limparDemo: () => {}
     },
+
+    // -------------------------------------------------------------
+    // QUADRO 2: PERFIS E TROCA DE MEMBRO (Toca áudio 2)
+    // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "Visão de Longo Prazo: Metas Anuais",
-        descricao: "Logo abaixo do cabeçalho, temos os Planos do Ano. É aqui que planeamos os grandes sonhos: uma viagem em família, um curso novo ou a reforma da casa. Pode criar objetivos privados (apenas para si) ou coletivos (para toda a casa acompanhar).",
+        titulo: "Passo 1: Perfis e Troca de Membro",
+        descricao: "No topo da tela, sua foto de perfil está em destaque. Tocando no botão de dois membros ao lado, você alterna rapidamente para o parceiro ou filhos. Perfis adultos exigem PIN de 4 dígitos, enquanto o perfil Kids entra direto.",
+        audio: "guia_geral_2.mp3",
         executarDemo: async () => {
-            const btnMetas = destacarElementoTour('.cartao-geral button[onclick*="abrirModalMetasAnuais"]');
-            await simularCliqueVisual(btnMetas);
-            if (typeof window.abrirModalMetasAnuais === 'function') {
-                window.abrirModalMetasAnuais();
-                await esperarMs(1000);
-                destacarElementoTour('#modal-metas-anuais .modal-conteudo');
-            }
+            const btnTrocar = destacarElementoTour('#btn-trocar-membro-topo');
+            await simularCliqueVisual(btnTrocar);
+            await esperarMs(1000);
+            destacarElementoTour('#cabecalho-topo-usuario');
         },
-        limparDemo: () => {
-            if (typeof window.fecharModalMetasAnuais === 'function') window.fecharModalMetasAnuais();
-        }
+        limparDemo: () => {}
     },
 
     // -------------------------------------------------------------
-    // ETAPA 2: MISSÕES, REGRAS E PENALIDADES
+    // QUADRO 3: MISSÕES E REGRAS (Toca áudio 3)
     // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "Atribuir Missões (Com Responsabilidade)",
-        descricao: "Ao criar uma tarefa, pode atribuí-la à casa, a um indivíduo ou às crianças (Modo Kids). Defina a prioridade e um horário limite. Atenção: missões cumpridas no prazo dão 100% dos pontos (XP). Se passar da hora limite, a recompensa cai para metade. Se marcar como 'Não Fiz', haverá penalidade de perda de XP!",
+        titulo: "Passo 2: Atribuir Missões e Regras",
+        descricao: "Ao criar uma tarefa, defina prioridade e horário limite. Concluir no prazo dá 100% de XP. Se passar da hora, a recompensa cai para metade. Se marcar 'Não Fiz', há penalidade de perda de XP!",
+        audio: "guia_geral_3.mp3",
         executarDemo: async () => {
-            if (typeof window.fecharModalMetasAnuais === 'function') window.fecharModalMetasAnuais();
             const btnIncluir = destacarElementoTour('button[onclick*="modal-nova-missao"]');
             await simularCliqueVisual(btnIncluir);
             document.getElementById('modal-nova-missao')?.classList.remove('oculto');
-            await esperarMs(800);
+            await esperarMs(600);
 
             const inTitulo = destacarElementoTour('#input-nova-missao-titulo');
             if (inTitulo) {
@@ -166,34 +189,21 @@ const passosTourGuiado = [
             if (el1) { el1.value = ''; el1.readOnly = false; }
         }
     },
+
+    // -------------------------------------------------------------
+    // QUADRO 4: LOJINHA E RECOMPENSAS (Toca áudio 4)
+    // -------------------------------------------------------------
     {
         tela: 'inicio',
-        titulo: "Sabedoria Diária: O Momento 'Pense'",
-        descricao: "Às 07:00 da manhã de cada dia, o aplicativo recebe-o com uma frase inspiradora e uma dica prática de economia. Uma excelente forma de toda a família começar a jornada com foco e sabedoria financeira.",
+        titulo: "Passo 3: A Lojinha de Recompensas",
+        descricao: "O XP ganho nas tarefas tem valor real! Toque na Loja no topo para resgatar prêmios combinados pela família. Para as crianças, os pontos podem até ser convertidos em mesada financeira.",
+        audio: "guia_geral_4.mp3",
         executarDemo: async () => {
-            const btnPense = destacarElementoTour('.btn-secundario[onclick*="abrirModalPilulaDia"]');
-            await simularCliqueVisual(btnPense);
-            if (typeof window.abrirModalPilulaDia === 'function') {
-                window.abrirModalPilulaDia();
-                await esperarMs(1000);
-                destacarElementoTour('#modal-pilula-dia .modal-conteudo');
-            }
-        },
-        limparDemo: () => {
-            if (typeof window.fecharModalPilulaDia === 'function') window.fecharModalPilulaDia();
-        }
-    },
-    {
-        tela: 'inicio',
-        titulo: "A Lojinha de Recompensas e o Pódio",
-        descricao: "Os pontos de XP não servem apenas para subir de nível! Eles têm valor real. Toque no ícone da 'Loja' no topo para trocar o seu esforço por prémios definidos pela família (ex: 'Passe livre da louça' ou 'Escolher o jantar'). No caso das crianças, os pontos podem até ser convertidos em mesada.",
-        executarDemo: async () => {
-            if (typeof window.fecharModalPilulaDia === 'function') window.fecharModalPilulaDia();
             const btnLoja = destacarElementoTour('.btn-loja-topo');
             await simularCliqueVisual(btnLoja);
             if (typeof window.abrirModalRankingEquipe === 'function') {
                 window.abrirModalRankingEquipe();
-                await esperarMs(1000);
+                await esperarMs(800);
                 destacarElementoTour('#modal-ranking-equipe .modal-conteudo');
             }
         },
@@ -203,17 +213,32 @@ const passosTourGuiado = [
     },
 
     // -------------------------------------------------------------
-    // ETAPA 3: SUPERMERCADO INTELIGENTE E IA
+    // QUADRO 5: MODO KIDS E MASCOTE CHUÍRI (Toca áudio 5)
+    // -------------------------------------------------------------
+    {
+        tela: 'inicio',
+        titulo: "Passo 4: O Mascote Chuíri (Modo Kids)",
+        descricao: "No perfil Kids, as crianças não veem botões bancários. Elas cumprem suas tarefas e usam as moedas para alimentar o Chuíri, que tem níveis de fome, sono e banho em tempo real.",
+        audio: "guia_geral_5.mp3",
+        executarDemo: async () => {
+            destacarElementoTour('#cabecalho-topo-usuario');
+            await esperarMs(1200);
+        },
+        limparDemo: () => {}
+    },
+
+    // -------------------------------------------------------------
+    // QUADRO 6: SUPERMERCADO INTELIGENTE (Toca áudio 6)
     // -------------------------------------------------------------
     {
         tela: 'mercado',
-        titulo: "O Supermercado: Planeamento vs. Execução",
-        descricao: "Aba Mercado: Primeiro, planeie o mês adicionando itens em falta na 'Lista'. Quando for ao supermercado, mude para 'No Mercado'. A lista vira uma planilha viva: digite o preço e veja o total do carrinho aumentar.",
+        titulo: "Passo 5: Supermercado e IA",
+        descricao: "Na aba Mercado, planeie na 'Lista do Mês'. No supermercado, use 'No Mercado' e digite os preços. O app avisa com borda verde promoções e vermelha inflação, além de ler notas por IA.",
+        audio: "guia_geral_6.mp3",
         executarDemo: async () => {
-            if (typeof window.fecharModalRankingEquipe === 'function') window.fecharModalRankingEquipe();
             if (typeof window.alternarVisualizacaoMercado === 'function') window.alternarVisualizacaoMercado('lista');
-            
-            await esperarMs(800);
+            await esperarMs(500);
+
             const inProduto = destacarElementoTour('#input-novo-item-mercado');
             if (inProduto) {
                 await simularDigitacao(inProduto, "Azeite de Oliva Extra Virgem", 60);
@@ -225,96 +250,52 @@ const passosTourGuiado = [
             if (inP) { inP.value = ''; inP.readOnly = false; }
         }
     },
-    {
-        tela: 'mercado',
-        titulo: "Alertas Históricos de Preços",
-        descricao: "O Suiri decora todos os preços. Se na planilha do supermercado o preço de um item tiver uma borda verde, parabéns, encontrou uma promoção abaixo da média! Se ficar com borda vermelha espessa, significa que o produto sofreu inflação. Na finalização, o app gera sugestões de cardápios com os ingredientes que comprou.",
-        executarDemo: async () => {
-            destacarElementoTour('#bloco-lista-planejamento-mercado');
-            await esperarMs(1200);
-        },
-        limparDemo: () => {}
-    },
 
     // -------------------------------------------------------------
-    // ETAPA 4: ABA FINANÇAS (LANÇAMENTOS E CARTEIRAS)
+    // QUADRO 7: FINANÇAS, CARTEIRAS E VOZ (Toca áudio 7)
     // -------------------------------------------------------------
     {
         tela: 'financeiro',
-        titulo: "Carteiras Separadas e Transparentes",
-        descricao: "Repare no topo: 'Minha Carteira' reflete apenas o SEU dinheiro e os seus lançamentos. O 'Montante da Família' abaixo é a soma de todos os membros. Pode realizar 'Transferências' entre carteiras de forma imediata (ex: dar mesada ao filho).",
+        titulo: "Passo 6: Finanças por Voz e Transferências",
+        descricao: "Minha Carteira mostra seu saldo pessoal. O Montante Familiar soma o patrimônio de todos. Toque no microfone para lançar gastos falando, ou transfira saldos entre familiares.",
+        audio: "guia_geral_7.mp3",
         executarDemo: async () => {
             destacarElementoTour('.box-carteira-topo');
-            await esperarMs(1500);
-        },
-        limparDemo: () => {}
-    },
-    {
-        tela: 'financeiro',
-        titulo: "Lançamentos Rápidos: Voz e IA",
-        descricao: "Não tem paciência para digitar? Toque no Microfone e diga 'Combustível 120 reais' – o sistema preenche tudo por si. Ou clique em 'Ler Cupom Fiscal (IA)' e tire uma foto do recibo para a Inteligência Artificial extrair todos os gastos automaticamente.",
-        executarDemo: async () => {
+            await esperarMs(1000);
             const btnCupom = destacarElementoTour('button[onclick*="abrirModalOpcoesCupomIA"]');
             await simularCliqueVisual(btnCupom);
             document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
-            await esperarMs(1200);
+            await esperarMs(1000);
         },
         limparDemo: () => {
             document.getElementById('modal-escolha-origem-cupom')?.classList.add('oculto');
         }
     },
-    {
-        tela: 'financeiro',
-        titulo: "Balanço, Extrato Nominal e Cofres",
-        descricao: "Ao rolar a página de finanças, encontrará: o Balanço Oficial (que gera PDFs com gráficos comparativos de quem gastou mais), o Extrato Detalhado de todas as transações, e os Cofres da Família, que exibem uma barra de progresso visual para as vossas economias conjuntas.",
-        executarDemo: async () => {
-            destacarElementoTour('#bloco-card-balanco-familiar');
-            await esperarMs(1200);
-            destacarElementoTour('#lista-extrato-carteira');
-        },
-        limparDemo: () => {}
-    },
 
     // -------------------------------------------------------------
-    // ETAPA 5: CALENDÁRIO E DEBITOS
+    // QUADRO 8: CALENDÁRIO, COFRES E METAS (Toca áudio 8)
     // -------------------------------------------------------------
     {
         tela: 'calendario',
-        titulo: "Agenda Integrada com as Finanças",
-        descricao: "O calendário mostra compromissos (Azul), contas a pagar (Vermelho) e a receber (Verde). A grande vantagem: ao tocar em 'Já Pago' no calendário, a conta desaparece da agenda e o valor é debitado de imediato na sua carteira de finanças!",
+        titulo: "Passo 7: Calendário, Cofres e Relatórios",
+        descricao: "Agende contas no Calendário. Ao clicar em 'Já Pago', o valor é debitado na hora da sua carteira. Acompanhe os Cofres Compartilhados e gere relatórios do mês em PDF.",
+        audio: "guia_geral_8.mp3",
         executarDemo: async () => {
             destacarElementoTour('#grid-calendario-container');
-            await esperarMs(1500);
-        },
-        limparDemo: () => {}
-    },
-
-    // -------------------------------------------------------------
-    // ETAPA 6: FAMÍLIA, KIDS E CONCLUSÃO
-    // -------------------------------------------------------------
-    {
-        tela: 'familia',
-        titulo: "Gestão do Lar e Modo Kids",
-        descricao: "Na aba Família, o Administrador gere quem entra, edita permissões e cadastra as crianças. Quando entra no 'Perfil Kids', o aplicativo transforma-se numa casinha animada com o mascote Chuíri, onde a criança cumpre rotinas sem qualquer acesso a dados bancários dos adultos.",
-        executarDemo: async () => {
-            destacarElementoTour('#lista-membros-cadastrados');
             await esperarMs(1200);
-            const btnAddMembro = destacarElementoTour('#btn-novo-membro-familia');
-            await simularCliqueVisual(btnAddMembro);
         },
         limparDemo: () => {}
     }
 ];
 
 // =========================================================================
-// 3. CONTROLE DE NAVEGAÇÃO E EXECUÇÃO FLUIDA DO TOUR
+// 4. CONTROLE DE NAVEGAÇÃO ("PRÓXIMO" E "ANTERIOR")
 // =========================================================================
 
 window.iniciarTourInstrucoes = async function() {
     passoTourAtual = 0;
     canceladorExecucaoDemo = false;
 
-    // Desfoca qualquer campo ativo para evitar teclado nativo na tela
     if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
     }
@@ -328,12 +309,19 @@ window.iniciarTourInstrucoes = async function() {
 };
 
 window.renderizarPassoTourAtual = async function() {
+    // Interrompe imediatamente qualquer demo ou áudio do quadro anterior
     canceladorExecucaoDemo = true;
-    await esperarMs(80); // Micro-pausa para garantir limpeza
+    pararAudioInstrucao();
+    await esperarMs(60);
     canceladorExecucaoDemo = false;
 
     const passo = passosTourGuiado[passoTourAtual];
     if (!passo) return;
+
+    // Dispara o áudio correspondente a este quadro
+    if (passo.audio) {
+        reproduzirAudioPasso(passo.audio);
+    }
 
     const lblNumero = document.getElementById('tour-passo-numero');
     const lblTitulo = document.getElementById('tour-passo-titulo');
@@ -341,7 +329,7 @@ window.renderizarPassoTourAtual = async function() {
     const btnAnt = document.getElementById('btn-tour-anterior');
     const btnProx = document.getElementById('btn-tour-proximo');
 
-    if (lblNumero) lblNumero.textContent = `Guia Completo • Passo ${passoTourAtual + 1} de ${passosTourGuiado.length}`;
+    if (lblNumero) lblNumero.textContent = `Manual • Passo ${passoTourAtual + 1} de ${passosTourGuiado.length}`;
     if (lblTitulo) lblTitulo.textContent = passo.titulo;
     if (lblDesc) lblDesc.textContent = passo.descricao;
 
@@ -355,18 +343,19 @@ window.renderizarPassoTourAtual = async function() {
         `).join('');
     }
 
-    // Navega para a aba correta com antecedência
+    // Muda para a aba correspondente do quadro
     if (passo.tela && typeof window.navegarParaTela === 'function') {
         window.navegarParaTela(passo.tela);
-        await esperarMs(400); // Aguarda a animação de deslizamento da tela terminar
+        await esperarMs(400);
     }
 
-    try {
-        if (typeof passo.executarDemo === 'function') {
+    // Executa a animação/destaque deste quadro
+    if (!canceladorExecucaoDemo && typeof passo.executarDemo === 'function') {
+        try {
             await passo.executarDemo();
+        } catch (e) {
+            console.warn("Tour demo:", e);
         }
-    } catch (e) {
-        console.warn("Tour em execução:", e);
     }
 };
 
@@ -382,19 +371,26 @@ window.navegarTour = async function(direcao) {
     removerDestaqueElemento();
 
     const novoPasso = passoTourAtual + direcao;
+
+    // Se o usuário clicar em "Próximo", avança para o próximo quadro e toca o respectivo áudio
     if (novoPasso >= 0 && novoPasso < passosTourGuiado.length) {
         passoTourAtual = novoPasso;
         await window.renderizarPassoTourAtual();
     } else if (novoPasso >= passosTourGuiado.length) {
-        window.encerrarTourInstrucoes();
+        window.encerrarTourInstrucoes(true);
     }
 };
 
-window.encerrarTourInstrucoes = function() {
+window.encerrarTourInstrucoes = function(tocarAgradecimento = false) {
     canceladorExecucaoDemo = true;
     removerDestaqueElemento();
+    pararAudioInstrucao();
 
-    // Executa a limpeza em todas as rotinas caso algo fique preso
+    // Se concluiu todas as etapas, toca o áudio final de agradecimento
+    if (tocarAgradecimento) {
+        reproduzirAudioPasso("guia_final_agradecimento.mp3");
+    }
+
     passosTourGuiado.forEach(p => {
         if (typeof p.limparDemo === 'function') {
             try { p.limparDemo(); } catch (e) {}
@@ -421,6 +417,6 @@ window.encerrarTourInstrucoes = function() {
     }
     
     if (typeof window.mostrarToast === 'function') {
-        window.mostrarToast("Manual concluído! Bons registos e excelente gestão familiar!");
+        window.mostrarToast("Manual concluído! Bons registros familiares!");
     }
 };
