@@ -1,11 +1,8 @@
 // =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E REVISADO)
-// Missões com Ordenação Inteligente (Cumpridas Recolhíveis),
-// Subitens Despoluídos, Isolamento Kids vs Adultos, Realtime,
-// Integração Mascote Tamagotchi Monstrinho, Carregamento Imediato de Cofres,
-// Filtro de Membros Sem Cartão, Reconhecimento de Voz Inteligente com Parser
-// Financeiro, Metas Anuais, Emojis Concordantes Kids + Fotinhas Lado a Lado,
-// Explosão de Confetes ao Concluir e Seletor de SVGs.
+// SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
+// Missões com Ordenação Inteligente, Subitens Despoluídos, Realtime,
+// Fotinhas Cooperativas Ampliadas (Verde, Laranja, Vermelho), Emojis Puros,
+// Mesada Gamificada, Mural de Recados, Cofres Compartilhados e Voz.
 // =========================================================================
 
 let cacheMissoes = [];
@@ -16,6 +13,7 @@ let canalRealtimeRecados = null;
 let instanciaGraficoMesAnterior = null;
 window.cofresCompartilhadosLista = [];
 window.recadosLarLista = [];
+window.metasAnuaisLista = [];
 
 // Extensão e Fallback de Segurança para o Catálogo de Ícones SVG
 const ICONES_OPERACIONAIS_EXTRAS = {
@@ -46,10 +44,13 @@ if (typeof window.IconesSuiri === 'object' && window.IconesSuiri !== null) {
     window.IconesSuiri = { ...ICONES_OPERACIONAIS_EXTRAS };
 }
 
-const ICONE_FALLBACK = `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+const ICONE_FALLBACK = `⭐`;
 
 function obterIconeSeguro(chave) {
     if (!chave) return ICONE_FALLBACK;
+    if (typeof window.obterIconeSeguroFormatador === 'function') {
+        return window.obterIconeSeguroFormatador(chave);
+    }
     if (window.IconesSuiri && window.IconesSuiri[chave]) {
         return window.IconesSuiri[chave];
     }
@@ -77,7 +78,6 @@ function ehAdministrador() {
     return window.perfilAtual?.papel === 'adm' || window.perfilAtual?.papel === 'admin_familia';
 }
 
-// Disparo visual de partículas festivas e vibração tátil suave ao concluir missão
 window.dispararParticulasSucesso = function() {
     try {
         if (navigator.vibrate) navigator.vibrate(40);
@@ -104,7 +104,7 @@ window.dispararParticulasSucesso = function() {
 };
 
 // =========================================================================
-// 1. INICIALIZAÇÃO E ESCUTA EM TEMPO REAL (SUPABASE REALTIME)
+// 1. INICIALIZAÇÃO E ESCUTA EM TEMPO REAL
 // =========================================================================
 
 window.iniciarModuloMissoes = async function() {
@@ -141,7 +141,7 @@ window.iniciarRealtimeMissoes = function() {
             })
             .subscribe();
     } catch (e) {
-        console.warn("Modo realtime operando defensivamente em segundo plano:", e);
+        console.warn("Realtime de missoes restrito", e);
     }
 };
 
@@ -166,7 +166,7 @@ window.iniciarRealtimeRecados = function() {
             })
             .subscribe();
     } catch (e) {
-        console.warn("Modo realtime de recados ativo defensivamente:", e);
+        console.warn("Realtime de recados restrito", e);
     }
 };
 
@@ -178,7 +178,7 @@ window.preencherSelectResponsaveisMissoes = async function() {
     if (!membros || membros.length === 0) {
         const { data } = await supabase
             .from('membros')
-            .select('id, nome, papel, eh_kids, possui_cartao')
+            .select('id, nome, papel, eh_kids, possui_cartao, avatar_url')
             .eq('familia_id', window.familiaAtualId)
             .order('nome');
         membros = data || [];
@@ -223,7 +223,7 @@ window.carregarMissoesDoDia = async function() {
 };
 
 // =========================================================================
-// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS (EMOJIS CONCORDANTES & FOTINHAS)
+// 2. RENDERIZADOR EXCLUSIVO DA TELA KIDS
 // =========================================================================
 
 window.carregarMissoesKidsExclusiva = function() {
@@ -280,14 +280,17 @@ window.carregarMissoesKidsExclusiva = function() {
         const ehTodosKids = missao.destinatario_kids === 'todos_kids';
         
         let concluidosArray = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
+        let falhadosArray = Array.isArray(missao.falhados_por_array) ? missao.falhados_por_array : [];
+
         if (missao.status === 'concluida' && missao.concluido_por && !ehTodosKids) {
             concluidosArray = [missao.concluido_por];
         }
 
         const euJaFiz = concluidosArray.includes(meuId);
+        const euFalhei = falhadosArray.includes(meuId) || (missao.status === 'falhou' && !ehTodosKids);
         const algumIrmaoJaFez = ehTodosKids && concluidosArray.length > 0 && !euJaFiz;
         const concluida = euJaFiz || (missao.status === 'concluida' && !ehTodosKids);
-        const falhada = missao.status === 'falhou';
+        const falhada = euFalhei;
 
         card.className = `card-missao-kids ${concluida ? 'concluida' : ''}`;
         card.style.flexDirection = 'column';
@@ -304,17 +307,30 @@ window.carregarMissoesKidsExclusiva = function() {
         let grupoAvataresHtml = '';
         let mensagemIrmaoFezHtml = '';
 
-        // Fotinhas lado a lado nas missões Todos Kids
         if (ehTodosKids && window.listaMembrosFamilia) {
             const todasCriancas = window.listaMembrosFamilia.filter(m => m.eh_kids || m.papel === 'dependente');
             
             if (todasCriancas.length > 0) {
-                grupoAvataresHtml = `<div class="grupo-avatares-kids" style="margin-top: 8px;">`;
+                grupoAvataresHtml = `<div class="grupo-avatares-kids" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">`;
                 todasCriancas.forEach(crianca => {
                     const criancaFez = concluidosArray.includes(crianca.id);
+                    const criancaFalhou = falhadosArray.includes(crianca.id);
+
+                    // Sistema Tricolor: Verde (Fez), Vermelho (Falhou), Laranja (Pendente)
+                    let corBorda = '#f59e0b'; // Laranja pendente
+                    let sombra = 'none';
+
+                    if (criancaFez) {
+                        corBorda = '#10b981'; // Verde brilhante
+                        sombra = '0 0 10px rgba(16, 185, 129, 0.7)';
+                    } else if (criancaFalhou) {
+                        corBorda = '#ef4444'; // Vermelho falha
+                        sombra = '0 0 8px rgba(239, 68, 68, 0.6)';
+                    }
+
                     const fotoSrc = crianca.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
                     const nomeCurto = window.esc ? window.esc(crianca.nome) : crianca.nome;
-                    grupoAvataresHtml += `<img src="${fotoSrc}" class="avatar-kids-mini ${criancaFez ? 'fez-missao' : ''}" title="${nomeCurto}">`;
+                    grupoAvataresHtml += `<img src="${fotoSrc}" style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid ${corBorda}; box-shadow: ${sombra}; object-fit: cover; background: #fff; transition: transform 0.2s ease;" title="${nomeCurto}">`;
                 });
                 grupoAvataresHtml += `</div>`;
 
@@ -332,12 +348,7 @@ window.carregarMissoesKidsExclusiva = function() {
             }
         }
 
-        // Detector inteligente de Emoji concordante com o título da tarefa Kids
-        const emojiKids = (typeof window.obterEmojiConcordanteKids === 'function')
-            ? window.obterEmojiConcordanteKids(missao.titulo, missao.icone)
-            : (missao.icone && String(missao.icone).length <= 4 ? missao.icone : '🌟');
-
-        const iconeVisual = `<div style="font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12)); user-select: none;">${emojiKids}</div>`;
+        const iconeVisual = `<div style="font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12)); user-select: none;">${missao.icone || '⭐'}</div>`;
 
         const subitens = Array.isArray(missao.subitens) ? missao.subitens : [];
         let subitensHtml = '';
@@ -440,10 +451,6 @@ window.carregarMissoesKidsExclusiva = function() {
     }
 };
 
-// =========================================================================
-// 3. SUBITENS OPCIONAIS E ALTERNÂNCIA DE MISSÕES CONCLUÍDAS
-// =========================================================================
-
 window.alternarMissoesConcluidas = function(tipo, qtd) {
     if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
         window.SonsSuiri.popClique();
@@ -506,7 +513,7 @@ window.adicionarLinhaSubitemCriacao = function() {
 };
 
 // =========================================================================
-// 4. HISTÓRICO DE MISSÕES KIDS PARA O ADMINISTRADOR
+// 4. HISTÓRICO DE MISSÕES KIDS PARA O ADMINISTRADOR & CONVERSÃO EM MESADA
 // =========================================================================
 
 window.renderizarHistoricoMissoesKidsADM = function() {
@@ -519,6 +526,22 @@ window.renderizarHistoricoMissoesKidsADM = function() {
     }
 
     container.classList.remove('oculto');
+    
+    let totalXPKids = 0;
+    if (window.listaMembrosFamilia) {
+        window.listaMembrosFamilia.forEach(m => {
+            if (m.eh_kids || m.papel === 'dependente') {
+                totalXPKids += Number(m.xp_total || 0);
+            }
+        });
+    }
+    const lblXPDisp = document.getElementById('lbl-xp-disponivel-conversao');
+    if (lblXPDisp) lblXPDisp.textContent = `${totalXPKids} XP`;
+
+    const taxa = JSON.parse(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`) || '{"qtd": 100, "valor": 5.00}');
+    const lblTaxa = document.getElementById('lbl-taxa-conversao-xp');
+    if (lblTaxa) lblTaxa.textContent = `${taxa.qtd} XP = R$ ${Number(taxa.valor).toFixed(2)}`;
+    
     const corpoLista = document.getElementById('lista-historico-kids-adm');
     if (!corpoLista) return;
 
@@ -594,6 +617,99 @@ window.renderizarHistoricoMissoesKidsADM = function() {
 
         corpoLista.appendChild(linha);
     });
+};
+
+window.abrirModalConfigurarTaxaXP = function() {
+    const taxa = JSON.parse(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`) || '{"qtd": 100, "valor": 5.00}');
+    const inQtd = document.getElementById('input-taxa-xp-quantidade');
+    const inVal = document.getElementById('input-taxa-xp-valor');
+    if(inQtd) inQtd.value = taxa.qtd;
+    if(inVal) inVal.value = Number(taxa.valor).toFixed(2);
+    document.getElementById('modal-configurar-taxa-xp')?.classList.remove('oculto');
+};
+
+window.fecharModalConfigurarTaxaXP = function() {
+    document.getElementById('modal-configurar-taxa-xp')?.classList.add('oculto');
+};
+
+window.salvarTaxaConversaoXP = function() {
+    const qtd = parseInt(document.getElementById('input-taxa-xp-quantidade')?.value, 10);
+    const val = parseFloat(document.getElementById('input-taxa-xp-valor')?.value);
+    
+    if(isNaN(qtd) || isNaN(val) || qtd <= 0 || val <= 0) {
+        return window.mostrarToast("Valores inválidos para a taxa.", "erro");
+    }
+    
+    localStorage.setItem(`suiri_taxa_xp_${window.familiaAtualId}`, JSON.stringify({qtd, valor: val}));
+    window.fecharModalConfigurarTaxaXP();
+    window.renderizarHistoricoMissoesKidsADM();
+    window.mostrarToast("Taxa de câmbio salva com sucesso!");
+};
+
+window.converterXPParaMesada = async function() {
+    const supabase = obterClienteSupabase();
+    if(!supabase || !window.listaMembrosFamilia) return;
+
+    const criancas = window.listaMembrosFamilia.filter(m => m.eh_kids || m.papel === 'dependente');
+    if(criancas.length === 0) {
+        return window.mostrarToast("Nenhuma criança cadastrada para converter XP.", "erro");
+    }
+
+    const taxa = JSON.parse(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`) || '{"qtd": 100, "valor": 5.00}');
+    let criancasAptas = criancas.filter(c => Number(c.xp_total || 0) >= taxa.qtd);
+
+    if(criancasAptas.length === 0) {
+        return window.mostrarToast(`As crianças ainda não atingiram o mínimo de ${taxa.qtd} XP para a conversão.`, "alerta");
+    }
+
+    const confirmado = window.confirmarAcaoSuiri
+        ? await window.confirmarAcaoSuiri(`Deseja abater os XP de todas as crianças elegíveis e enviar o dinheiro real para o cofrinho delas? (Taxa: ${taxa.qtd} XP = R$ ${taxa.valor})`, "Conversão de Mesada")
+        : confirm(`Deseja abater os XP de todas as crianças e enviar o dinheiro real para o cofrinho delas?`);
+        
+    if(!confirmado) return;
+
+    window.mostrarToast("Processando câmbio...", "info");
+    let conversoesFeitas = 0;
+
+    for(const crianca of criancasAptas) {
+        const xpAtual = Number(crianca.xp_total || 0);
+        const blocos = Math.floor(xpAtual / taxa.qtd);
+        const valorReais = blocos * taxa.valor;
+        const xpRestante = xpAtual % taxa.qtd;
+
+        const resMembro = await supabase.from('membros').update({ xp_total: xpRestante }).eq('id', crianca.id);
+        
+        if(!resMembro.error) {
+            crianca.xp_total = xpRestante;
+
+            const hojeStr = new Date().toISOString().split('T')[0];
+            const payloadExtrato = {
+                familia_id: window.familiaAtualId,
+                membro_id: crianca.id,
+                tipo: 'entrada',
+                escopo: 'pessoal',
+                eh_privado: true,
+                descricao: `Câmbio de XP (${blocos * taxa.qtd} XP = Mesada)`,
+                categoria: 'Salário', 
+                valor: valorReais,
+                data_transacao: hojeStr
+            };
+            
+            let resTrans = await supabase.from('transacoes').insert([payloadExtrato]);
+            if(resTrans.error && resTrans.error.message.includes('relation "public.transacoes" does not exist')){
+                await supabase.from('transacoes_financeiras').insert([payloadExtrato]);
+            }
+            
+            conversoesFeitas++;
+        }
+    }
+
+    if(conversoesFeitas > 0) {
+        window.mostrarToast("Mesada processada com sucesso! O dinheiro já está na carteira das crianças.");
+        window.renderizarHistoricoMissoesKidsADM();
+        
+        if(typeof window.carregarCarteiraIndividual === 'function') window.carregarCarteiraIndividual();
+    }
 };
 
 // =========================================================================
@@ -688,7 +804,7 @@ window.inicializarNavegacaoSwipe = function() {
 };
 
 // =========================================================================
-// 7. CRIAÇÃO DE MISSÕES (INTEGRANDO O ÍCONE SVG E EMOJI) E REATIVAÇÃO
+// 7. CRIAÇÃO DE MISSÕES E REATIVAÇÃO
 // =========================================================================
 
 function calcularProximaDataExecucao(recorrenciaTipo, horarioReinicio) {
@@ -727,6 +843,7 @@ window.verificarReativacaoAutomaticaMissoes = async function() {
                     missao.concluido_em = null;
                     missao.concluido_por = null;
                     missao.concluidos_por_array = [];
+                    missao.falhados_por_array = [];
                     
                     if (Array.isArray(missao.subitens)) {
                         missao.subitens.forEach(s => s.concluido = false);
@@ -737,6 +854,7 @@ window.verificarReativacaoAutomaticaMissoes = async function() {
                         concluido_em: null,
                         concluido_por: null,
                         concluidos_por_array: [],
+                        falhados_por_array: [],
                         subitens: missao.subitens
                     }).eq('id', missao.id);
                 }
@@ -761,7 +879,7 @@ window.adicionarNovaMissao = async function() {
     const inputIcone = document.getElementById('input-nova-missao-icone');
     const inputEmoji = document.getElementById('input-nova-missao-emoji');
     const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
-    let iconeSimbolo = emojiVal || (inputIcone?.value || 'alvo');
+    let iconeSimbolo = emojiVal || (inputIcone?.value || '⭐');
     
     const titulo = inTitulo?.value?.trim();
     const prio = parseInt(selPrio?.value || '2', 10);
@@ -790,7 +908,6 @@ window.adicionarNovaMissao = async function() {
 
     if (!titulo) return window.mostrarToast("Digite o título da missão!", "erro");
 
-    // Se a missão for para uma criança ou todos_kids e não tiver emoji definido, escolhe automaticamente o emoji concordante
     const membroAlvo = (window.listaMembrosFamilia || []).find(m => m.id === atribuidoA);
     const ehParaCrianca = (destinatarioKids === 'todos_kids') || (membroAlvo && (membroAlvo.eh_kids || membroAlvo.papel === 'dependente'));
     if (ehParaCrianca && typeof window.obterEmojiConcordanteKids === 'function') {
@@ -827,6 +944,7 @@ window.adicionarNovaMissao = async function() {
         atribuido_a: atribuidoA,
         destinatario_kids: destinatarioKids,
         concluidos_por_array: [],
+        falhados_por_array: [],
         subitens: subitens,
         criado_por: obterUsuarioId(),
         concluido_por: null
@@ -863,7 +981,7 @@ window.adicionarNovaMissao = async function() {
 };
 
 // =========================================================================
-// 8. RENDERIZAÇÃO ADULTOS: (BOTÃO V VERDE E X VERMELHO)
+// 8. RENDERIZAÇÃO ADULTOS E FOTINHAS COOPERATIVAS AMPLIADAS (TRICOLOR)
 // =========================================================================
 
 window.renderizarMissoesTela = function() {
@@ -898,8 +1016,15 @@ window.renderizarMissoesTela = function() {
     }
 
     listaExibicao.sort((a, b) => {
-        const aPendente = (a.status === 'pendente');
-        const bPendente = (b.status === 'pendente');
+        const aColetiva = (a.escopo === 'casa' || !a.escopo) && !a.atribuido_a;
+        const bColetiva = (b.escopo === 'casa' || !b.escopo) && !b.atribuido_a;
+        
+        const aConcluidos = Array.isArray(a.concluidos_por_array) ? a.concluidos_por_array : [];
+        const bConcluidos = Array.isArray(b.concluidos_por_array) ? b.concluidos_por_array : [];
+
+        const aPendente = aColetiva ? !aConcluidos.includes(meuId) : (a.status === 'pendente');
+        const bPendente = bColetiva ? !bConcluidos.includes(meuId) : (b.status === 'pendente');
+
         if (aPendente && !bPendente) return -1;
         if (!aPendente && bPendente) return 1;
         return (a.prioridade || 2) - (b.prioridade || 2);
@@ -915,8 +1040,19 @@ window.renderizarMissoesTela = function() {
 
     listaExibicao.forEach(missao => {
         const card = document.createElement('div');
-        const concluida = missao.status === 'concluida';
-        const falhada = missao.status === 'falhou';
+        const ehColetiva = (missao.escopo === 'casa' || !missao.escopo) && !missao.atribuido_a;
+        
+        let concluidosArray = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
+        let falhadosArray = Array.isArray(missao.falhados_por_array) ? missao.falhados_por_array : [];
+
+        if (missao.status === 'concluida' && missao.concluido_por && !ehColetiva) {
+            concluidosArray = [missao.concluido_por];
+        }
+
+        const euJaFiz = concluidosArray.includes(meuId);
+        const euFalhei = falhadosArray.includes(meuId) || (missao.status === 'falhou' && !ehColetiva);
+        const concluida = euJaFiz || (missao.status === 'concluida' && !ehColetiva);
+        const falhada = euFalhei;
 
         card.id = `card-missao-bloco-${missao.id}`;
         card.className = `cartao-geral ${concluida ? 'missao-concluida' : ''}`;
@@ -936,10 +1072,10 @@ window.renderizarMissoesTela = function() {
         const prioCor = missao.prioridade === 1 ? '#ef4444' : (missao.prioridade === 2 ? '#d97706' : '#10b981');
         const prioTexto = missao.prioridade === 1 ? 'Urgente' : (missao.prioridade === 2 ? 'Importante' : 'Tranquilo');
 
-        const iconeChave = missao.icone || 'alvo';
+        const iconeChave = missao.icone || '⭐';
         let svgIcone = '';
         if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
-            svgIcone = `<div style="font-size: 20px; line-height: 1;">${iconeChave}</div>`;
+            svgIcone = `<div style="font-size: 22px; line-height: 1;">${iconeChave}</div>`;
         } else {
             svgIcone = obterIconeSeguro(iconeChave);
         }
@@ -962,12 +1098,42 @@ window.renderizarMissoesTela = function() {
             : `<span style="font-size:10px; font-weight:700; color:#64748b;">Casa</span>`;
 
         let badgeCumprido = '';
-        if (concluida && missao.concluido_por && window.listaMembrosFamilia) {
+        if (concluida && missao.concluido_por && window.listaMembrosFamilia && !ehColetiva) {
             const autor = window.listaMembrosFamilia.find(m => m.id === missao.concluido_por);
             const nomeAutor = autor ? obterPrimeiroNomeSeguro(autor.nome, 'Concluída') : 'Concluída';
             badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#15803d;">• Feito por ${nomeAutor}</span>`;
         } else if (falhada) {
             badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#ef4444;">• Não cumprida</span>`;
+        }
+
+        // Fotinhas cooperativas dos adultos ampliadas (Verde, Laranja, Vermelho)
+        let grupoAvataresHtml = '';
+        if (ehColetiva && window.listaMembrosFamilia) {
+            const adultos = window.listaMembrosFamilia.filter(m => !m.eh_kids && m.papel !== 'dependente');
+            if (adultos.length > 0) {
+                grupoAvataresHtml = `<div class="grupo-avatares-adultos" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">`;
+                adultos.forEach(adulto => {
+                    const adultoFez = concluidosArray.includes(adulto.id);
+                    const adultoFalhou = falhadosArray.includes(adulto.id);
+
+                    let corBorda = '#f59e0b'; // Laranja pendente
+                    let sombra = 'none';
+
+                    if (adultoFez) {
+                        corBorda = '#10b981'; // Verde brilhante
+                        sombra = '0 0 10px rgba(16, 185, 129, 0.7)';
+                    } else if (adultoFalhou) {
+                        corBorda = '#ef4444'; // Vermelho falha
+                        sombra = '0 0 8px rgba(239, 68, 68, 0.6)';
+                    }
+
+                    const fotoSrc = adulto.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
+                    const nomeCurto = window.esc ? window.esc(adulto.nome) : adulto.nome;
+                    
+                    grupoAvataresHtml += `<img src="${fotoSrc}" style="width: 38px; height: 38px; border-radius: 50%; border: 3px solid ${corBorda}; box-shadow: ${sombra}; object-fit: cover; background: #fff; transition: transform 0.2s ease;" title="${nomeCurto}">`;
+                });
+                grupoAvataresHtml += `</div>`;
+            }
         }
 
         const subitens = Array.isArray(missao.subitens) ? missao.subitens : [];
@@ -1016,6 +1182,7 @@ window.renderizarMissoesTela = function() {
                             ${tituloMissaoSeguro}
                         </strong>
                     </div>
+                    ${grupoAvataresHtml}
                     ${subitensHtml}
                 </div>
 
@@ -1079,7 +1246,7 @@ window.renderizarMissoesTela = function() {
 };
 
 // =========================================================================
-// 9. MENU DE AÇÕES SOBERANO E EDIÇÃO (COM RECUPERAÇÃO DO ÍCONE/EMOJI)
+// 9. MENU DE AÇÕES SOBERANO E EDIÇÃO
 // =========================================================================
 
 window.alternarMenuAcoesMissao = function(id) {
@@ -1140,23 +1307,20 @@ window.iniciarEdicaoMissao = function(id) {
     setVal('edit-missao-prioridade', missao.prioridade || '2');
     setVal('edit-missao-recorrencia', missao.recorrencia_tipo || 'diaria_24h');
     
-    const iconeChave = missao.icone || 'alvo';
+    const iconeChave = missao.icone || '⭐';
     const inputEmoji = document.getElementById('edit-missao-emoji');
-    const inputIcone = document.getElementById('edit-missao-icone');
+    const inputIcone = document.getElementById('input-edit-missao-icone');
     
     if (inputEmoji) {
-        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
-            inputEmoji.value = iconeChave;
-            if (inputIcone) inputIcone.value = 'alvo';
-        } else {
-            inputEmoji.value = '';
-            if (inputIcone) inputIcone.value = iconeChave;
-        }
+        inputEmoji.value = iconeChave;
+    }
+    if (inputIcone) {
+        inputIcone.value = iconeChave;
     }
     
-    const btnEditIcone = document.getElementById('btn-seletor-icone-edit');
+    const btnEditIcone = document.getElementById('btn-icone-edit-missao');
     if (btnEditIcone) {
-        btnEditIcone.innerHTML = obterIconeSeguro(iconeChave);
+        btnEditIcone.innerHTML = `<span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">${iconeChave}</span>`;
     }
     
     let respSel = 'todos';
@@ -1187,7 +1351,7 @@ window.salvarEdicaoMissao = async function() {
     
     const inputEmoji = document.getElementById('edit-missao-emoji');
     const emojiVal = inputEmoji ? inputEmoji.value.trim() : '';
-    const iconeSimbolo = emojiVal || (document.getElementById('edit-missao-icone')?.value || 'alvo');
+    const iconeSimbolo = emojiVal || (document.getElementById('input-edit-missao-icone')?.value || '⭐');
 
     if (!titulo) return window.mostrarToast("O título não pode estar vazio.", "erro");
 
@@ -1243,7 +1407,7 @@ window.salvarEdicaoMissao = async function() {
 };
 
 // =========================================================================
-// 10. CONCLUSÃO E PENALIZAÇÃO (COM CONFETES E ARRAY DE TODOS KIDS)
+// 10. CONCLUSÃO E PENALIZAÇÃO (FOTINHAS COOPERATIVAS APLICADAS - TRICOLOR)
 // =========================================================================
 
 window.concluirMissaoDomestica = async function(id) {
@@ -1288,14 +1452,25 @@ window.concluirMissaoDomestica = async function(id) {
         subitens: missao.subitens
     };
 
-    if (missao.destinatario_kids === 'todos_kids') {
-        const concluidosJaExistentes = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
+    const ehTodosKids = missao.destinatario_kids === 'todos_kids';
+    const ehColetivaCasa = (missao.escopo === 'casa' || !missao.escopo) && !missao.atribuido_a;
+
+    if (ehTodosKids || ehColetivaCasa) {
+        const concluidosJaExistentes = Array.isArray(missao.concluidos_por_array) ? [...missao.concluidos_por_array] : [];
         if (!concluidosJaExistentes.includes(usuarioId)) {
             concluidosJaExistentes.push(usuarioId);
         }
         
+        // Remove dos que falharam caso tenha recuperado a tarefa
+        const falhadosExistentes = Array.isArray(missao.falhados_por_array) 
+            ? missao.falhados_por_array.filter(uid => uid !== usuarioId) 
+            : [];
+
         missao.concluidos_por_array = concluidosJaExistentes;
+        missao.falhados_por_array = falhadosExistentes;
+
         payloadAtualizacao.concluidos_por_array = concluidosJaExistentes;
+        payloadAtualizacao.falhados_por_array = falhadosExistentes;
     }
 
     await supabase.from('missoes').update(payloadAtualizacao).eq('id', id);
@@ -1338,6 +1513,14 @@ window.concluirMissaoDomestica = async function(id) {
                 );
             }
         }
+    }
+
+    if (typeof window.SistemaEmblemas !== 'undefined') {
+        window.SistemaEmblemas.adicionarProgresso('primeiro_passo', 1);
+        if (missao.icone === '🧹' || missao.icone === '🧽' || missao.icone === 'vassoura' || missao.icone === 'louca') {
+            window.SistemaEmblemas.adicionarProgresso('guardiao_limpeza', 1);
+        }
+        window.SistemaEmblemas.avaliarEmblemas();
     }
 
     await supabase.from('membros').update({
@@ -1384,14 +1567,38 @@ window.falharMissaoDomestica = async function(id) {
     const agora = new Date().toISOString();
     const proximaExec = calcularProximaDataExecucao(missao.recorrencia_tipo, missao.horario_reinicio);
 
-    await supabase.from('missoes').update({
-        status: 'falhou',
+    const ehTodosKids = missao.destinatario_kids === 'todos_kids';
+    const ehColetivaCasa = (missao.escopo === 'casa' || !missao.escopo) && !missao.atribuido_a;
+
+    let payloadAtualizacao = {
         concluido_em: agora,
         concluido_por: usuarioId,
         proxima_execucao: proximaExec
-    }).eq('id', id);
+    };
 
-    missao.status = 'falhou';
+    if (ehTodosKids || ehColetivaCasa) {
+        const falhadosExistentes = Array.isArray(missao.falhados_por_array) ? [...missao.falhados_por_array] : [];
+        if (!falhadosExistentes.includes(usuarioId)) {
+            falhadosExistentes.push(usuarioId);
+        }
+
+        // Remove dos concluídos caso tenha marcado falha
+        const concluidosExistentes = Array.isArray(missao.concluidos_por_array)
+            ? missao.concluidos_por_array.filter(uid => uid !== usuarioId)
+            : [];
+
+        missao.falhados_por_array = falhadosExistentes;
+        missao.concluidos_por_array = concluidosExistentes;
+
+        payloadAtualizacao.falhados_por_array = falhadosExistentes;
+        payloadAtualizacao.concluidos_por_array = concluidosExistentes;
+    } else {
+        payloadAtualizacao.status = 'falhou';
+        missao.status = 'falhou';
+    }
+
+    await supabase.from('missoes').update(payloadAtualizacao).eq('id', id);
+
     missao.concluido_em = agora;
     missao.concluido_por = usuarioId;
     missao.proxima_execucao = proximaExec;
@@ -1428,24 +1635,47 @@ window.reabrirMissaoDomestica = async function(id) {
     if (!supabase) return;
 
     const missao = cacheMissoes.find(x => x.id === id);
-    if (missao && Array.isArray(missao.subitens)) {
-        missao.subitens.forEach(s => s.concluido = false);
-    }
+    const usuarioId = obterUsuarioId();
 
-    await supabase.from('missoes').update({ 
-        status: 'pendente', 
+    const ehTodosKids = missao && missao.destinatario_kids === 'todos_kids';
+    const ehColetivaCasa = missao && (missao.escopo === 'casa' || !missao.escopo) && !missao.atribuido_a;
+
+    let payload = {
+        status: 'pendente',
         concluido_em: null,
         concluido_por: null,
-        concluidos_por_array: [],
-        proxima_execucao: null,
-        subitens: missao ? missao.subitens : []
-    }).eq('id', id);
+        proxima_execucao: null
+    };
+
+    if (ehTodosKids || ehColetivaCasa) {
+        const novosConcluidos = (missao.concluidos_por_array || []).filter(uid => uid !== usuarioId);
+        const novosFalhados = (missao.falhados_por_array || []).filter(uid => uid !== usuarioId);
+
+        missao.concluidos_por_array = novosConcluidos;
+        missao.falhados_por_array = novosFalhados;
+
+        payload.concluidos_por_array = novosConcluidos;
+        payload.falhados_por_array = novosFalhados;
+    } else {
+        payload.concluidos_por_array = [];
+        payload.falhados_por_array = [];
+        if (missao) {
+            missao.concluidos_por_array = [];
+            missao.falhados_por_array = [];
+        }
+    }
+
+    if (missao && Array.isArray(missao.subitens)) {
+        missao.subitens.forEach(s => s.concluido = false);
+        payload.subitens = missao.subitens;
+    }
+
+    await supabase.from('missoes').update(payload).eq('id', id);
 
     if (missao) {
         missao.status = 'pendente';
         missao.concluido_em = null;
         missao.concluido_por = null;
-        missao.concluidos_por_array = [];
         missao.proxima_execucao = null;
     }
 
@@ -1473,57 +1703,81 @@ window.excluirMissao = async function(id) {
 };
 
 // =========================================================================
-// 11. SELETOR DE ÍCONES (GRELHA SVG PARA MISSÕES)
+// 11. SELETOR VISUAL DE EMOJIS PUROS (SEM DEPENDÊNCIA DE SVGS)
 // =========================================================================
 
 window.contextoIconeAtual = 'nova';
+window.abaAtivaSeletorSimbolo = 'emoji';
 
-window.abrirSeletorIcone = function(contexto) {
-    window.contextoIconeAtual = contexto;
-    const modal = document.getElementById('modal-seletor-icone');
-    const grade = document.getElementById('grid-icones-seletor');
-    if (!modal || !grade) return;
+window.abrirSeletorIconesSVG = function(contexto) {
+    window.contextoIconeAtual = contexto; 
+    const modal = document.getElementById('modal-seletor-icones-svg');
+    if (!modal) return;
 
-    if (grade.innerHTML === '') {
-        let html = '';
-        if (window.IconesSuiri) {
-            for (const [chave, svgCode] of Object.entries(window.IconesSuiri)) {
-                if (['check', 'xis', 'joinha', 'joinhaInvertido'].includes(chave)) continue;
-                
-                html += `
-                    <button type="button" 
-                            style="width: 100%; aspect-ratio: 1/1; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #d97706; transition: border-color 0.15s ease;"
-                            onclick="window.selecionarIcone('${chave}')"
-                            title="${chave}">
-                        ${svgCode}
-                    </button>
-                `;
-            }
-        }
-        grade.innerHTML = html;
-    }
+    const inputBusca = document.getElementById('input-busca-simbolos');
+    if (inputBusca) inputBusca.value = '';
 
+    window.filtrarCatalogoSimbolos('');
     modal.classList.remove('oculto');
 };
 
-window.fecharSeletorIcone = function() {
-    document.getElementById('modal-seletor-icone')?.classList.add('oculto');
+window.fecharSeletorIconesSVG = function() {
+    document.getElementById('modal-seletor-icones-svg')?.classList.add('oculto');
 };
 
-window.selecionarIcone = function(chaveIcone) {
-    const inputOculto = document.getElementById(`input-${window.contextoIconeAtual}-missao-icone`) || document.getElementById(`${window.contextoIconeAtual}-missao-icone`);
-    const btnPreview = document.getElementById(`btn-seletor-icone-${window.contextoIconeAtual}`);
+window.filtrarCatalogoSimbolos = function(termoOriginal) {
+    const termo = (termoOriginal || '').toLowerCase().trim();
+    const gridEmoji = document.getElementById('grid-emojis-opcoes');
+    const msgVazio = document.getElementById('msg-nenhum-simbolo');
+
+    if (!gridEmoji) return;
+    let html = '';
+    let totalVisivel = 0;
+
+    const catalogo = window.CatalogoEmojisSuiri || [];
+    catalogo.forEach(item => {
+        const tags = item.tags.toLowerCase();
+        if (!termo || tags.includes(termo)) {
+            html += `
+                <button type="button" 
+                        style="width: 100%; aspect-ratio: 1/1; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.1s ease;"
+                        onclick="window.selecionarEmojiComoSimbolo('${item.emoji}')">
+                    ${item.emoji}
+                </button>
+            `;
+            totalVisivel++;
+        }
+    });
+
+    gridEmoji.innerHTML = html;
+
+    if (msgVazio) {
+        if (totalVisivel === 0) msgVazio.classList.remove('oculto');
+        else msgVazio.classList.add('oculto');
+    }
+};
+
+window.selecionarEmojiComoSimbolo = function(emojiCaractere) {
+    const inputOculto = document.getElementById(`input-${window.contextoIconeAtual}-missao-icone`);
+    const btnPreview = document.getElementById(`btn-icone-${window.contextoIconeAtual}-missao`);
+    const spanSvg = document.getElementById(`svg-preview-${window.contextoIconeAtual}-missao`);
     
     if (inputOculto) {
-        inputOculto.value = chaveIcone;
+        inputOculto.value = emojiCaractere;
     }
     
-    if (btnPreview) {
-        btnPreview.innerHTML = obterIconeSeguro(chaveIcone);
+    const renderEmoji = `<span style="font-size:32px; line-height:1; user-select:none;">${emojiCaractere}</span>`;
+    if (spanSvg) {
+        spanSvg.innerHTML = renderEmoji;
+    } else if (btnPreview) {
+        btnPreview.innerHTML = `<span id="svg-preview-${window.contextoIconeAtual}-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px;">${renderEmoji}</span>`;
     }
     
-    window.fecharSeletorIcone();
+    window.fecharSeletorIconesSVG();
 };
+
+// Aliás para compatibilidade
+window.selecionarIconeSVG = window.selecionarEmojiComoSimbolo;
 
 // =========================================================================
 // 12. MOTOR DE RECONHECIMENTO DE VOZ INTELIGENTE & PARSER FINANCEIRO
@@ -2138,7 +2392,7 @@ window.confirmarAporteMeta = async function() {
 };
 
 // =========================================================================
-// 16. MURAL DE RECADOS RÁPIDOS DO LAR (COM CONFIRMAÇÃO NOMINAL DE LEITURA)
+// 16. MURAL DE RECADOS RÁPIDOS DO LAR
 // =========================================================================
 
 window.carregarRecadosLar = async function() {
@@ -2149,7 +2403,7 @@ window.carregarRecadosLar = async function() {
 
     if (!window.listaMembrosFamilia || window.listaMembrosFamilia.length === 0) {
         const { data: membros } = await cli.from('membros')
-            .select('id, nome, eh_kids, papel')
+            .select('id, nome, eh_kids, papel, avatar_url')
             .eq('familia_id', window.familiaAtualId);
         window.listaMembrosFamilia = membros || [];
     }

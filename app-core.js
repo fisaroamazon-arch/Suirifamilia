@@ -4,8 +4,8 @@
 // PIN Real Individual para Adultos, Modal Nativo "Concordo / Cancelar",
 // Transições Direcionais Inteligentes (Direita/Esquerda),
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
-// Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline & Zero Emojis (SVG)
-// Ferramenta Avançada de Crop com Máscara Visual e Arrasto Livre (ATUALIZADO)
+// Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline (IndexedDB)
+// SVGs Coloridos Ilustrados com Preenchimento e Catálogo com Busca Semântica
 // =========================================================================
 
 // Configuração do Supabase
@@ -32,78 +32,196 @@ var esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
 window.esc = esc;
 
 // =========================================================================
-// CATÁLOGO UNIVERSAL DE ÍCONES SVG (ZERO EMOJIS - ALTA DEFINIÇÃO)
+// CATÁLOGO UNIVERSAL DE ÍCONES SVG COLORIDOS E ILUSTRADOS COM PREENCHIMENTO
 // =========================================================================
 window.IconesSuiri = {
-    // Ações e Decisões
-    check: `<svg class="icone-svg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
-    xis: `<svg class="icone-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-    joinha: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
-    joinhaInvertido: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`,
-    
-    // Cabeçalho e Atalhos Principais
-    lampada: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`,
-    livrinho: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
-    loja: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.1L21 9"/><path d="M3 9v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="M3 9h18"/><path d="M9 22V12h6v10"/></svg>`,
-    porta: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M15 3h-4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`,
+    // --- CASA, LIMPEZA & ROTINA DOMÉSTICA ---
+    vassoura: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#D97706" d="M38 4l6 6-18 18-6-6L38 4z"/><path fill="#92400E" d="M42 2l4 4-4 4-4-4 4-4z"/><path fill="#FBBF24" d="M12 28l8 8-12 10H4l-2-2 2-6 10-10z"/><path fill="#F59E0B" d="M14 36l-8 6h4l6-4-2-2z"/></svg>`,
+    cama: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="44" height="24" x="2" y="18" fill="#60A5FA" rx="4"/><path fill="#3B82F6" d="M2 30h44v12H2z"/><circle cx="12" cy="14" r="6" fill="#FDE047"/><rect width="14" height="8" x="6" y="20" fill="#FFFFFF" rx="3"/><rect width="14" height="8" x="24" y="20" fill="#FFFFFF" rx="3"/><path fill="#1E40AF" d="M2 38h4v6H2zm40 0h4v6h-4z"/></svg>`,
+    banheira: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#38BDF8" d="M6 22h36a2 2 0 0 1 2 2v6a12 12 0 0 1-12 12H16A12 12 0 0 1 4 30v-6a2 2 0 0 1 2-2z"/><path fill="#0284C7" d="M10 22V10a4 4 0 0 1 4-4h2v4h-2a2 2 0 0 0-2 2v6h-2z"/><circle cx="20" cy="14" r="2" fill="#E0F2FE"/><circle cx="26" cy="12" r="3" fill="#E0F2FE"/><circle cx="32" cy="15" r="2" fill="#E0F2FE"/><path fill="#64748B" d="M10 42v4h4v-4h-4zm24 0v4h4v-4h-4z"/></svg>`,
+    louca: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="2"/><circle cx="24" cy="24" r="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><circle cx="24" cy="24" r="9" fill="#38BDF8" opacity="0.35"/><path fill="#F59E0B" d="M24 8v32M8 24h32"/></svg>`,
+    lixo: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#64748B" d="M10 14l3 28a4 4 0 0 0 4 4h14a4 4 0 0 0 4-4l3-28H10z"/><rect width="36" height="6" x="6" y="8" fill="#475569" rx="2"/><rect width="12" height="4" x="18" y="4" fill="#334155" rx="2"/><path fill="#94A3B8" d="M18 18v20h3V18h-3zm9 0v20h3V18h-3z"/></svg>`,
+    camisa: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#3B82F6" d="M38 10l8 6-4 8-6-3v21a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V21l-6 3-4-8 8-6 8 4h8l8-4z"/><path fill="#1D4ED8" d="M20 10l4 6 4-6-4-2-4 2z"/><circle cx="24" cy="22" r="1.5" fill="#FFFFFF"/><circle cx="24" cy="28" r="1.5" fill="#FFFFFF"/><circle cx="24" cy="34" r="1.5" fill="#FFFFFF"/></svg>`,
+    casa: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#EF4444" d="M24 4L2 22h6v20a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V22h6L24 4z"/><path fill="#FDE047" d="M20 30h8v14h-8z"/><rect width="8" height="8" x="12" y="20" fill="#60A5FA" rx="1"/><rect width="8" height="8" x="28" y="20" fill="#60A5FA" rx="1"/></svg>`,
+    planta: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#D97706" d="M14 26l3 18h14l3-18H14z"/><path fill="#22C55E" d="M24 26V10c0-6 8-8 12-4s-2 14-12 20z"/><path fill="#16A34A" d="M24 26V14c0-5-7-7-10-3s1 12 10 15z"/></svg>`,
 
-    // Adultos e Gerais
-    fogo: `<svg class="icone-svg icone-fogo" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
-    escudo: `<svg class="icone-svg icone-escudo" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    coroa: `<svg class="icone-svg icone-coroa" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z"/></svg>`,
-    heroi: `<svg class="icone-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    trofeu: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7v4h10v-4h-2c-.55 0-1-.45-1-1v-2.34c3.27-.79 5-3.24 5-6.66H6c0 3.42 1.73 5.87 5 6.66z"/></svg>`,
-    medalha: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>`,
-    broto: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
-    moeda: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>`,
-    presente: `<svg class="icone-svg" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>`,
-    louca: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8"/></svg>`,
-    filme: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="15" x="2" y="5" rx="2"/><polyline points="8 2 12 5 16 2"/></svg>`,
-    refeicao: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 11v11"/><path d="M6 2v20"/><path d="M9 2v4a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/></svg>`,
-    editar: `<svg class="icone-svg" viewBox="0 0 24 24" style="width:13px; height:13px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-    excluir: `<svg class="icone-svg" viewBox="0 0 24 24" style="width:13px; height:13px;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
-    mic: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>`,
-    carrinho: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>`,
-    casa: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-    carteira: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
-    agenda: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`,
-    familia: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    alvo: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
-    trocarMembro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    cadeado: `<svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-    
-    // Universo KIDS Lúdico e Rotina
-    escovaDente: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 20h3M4 14l16-16M3 15a4 4 0 0 0 4 4l-4 4"/></svg>`,
-    cama: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`,
-    banheira: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 12v4a8 8 0 0 0 16 0v-4zM2 12h20M7 20v2M17 20v2M10 5v2M14 5v2M12 3v4"/></svg>`,
-    livro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`,
-    vassoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21.9 2.1a1 1 0 0 0-1.4 0l-9.1 9.1-1.3-.2a2 2 0 0 0-2.2 1l-2.4 4.2-3.4 5.9a1 1 0 0 0 1.4 1.4l5.9-3.4 4.2-2.4a2 2 0 0 0 1-2.2l-.2-1.3 9.1-9.1a1 1 0 0 0 0-1.4z"/></svg>`,
-    patinha: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>`,
-    blocos: `<svg class="icone-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/><rect x="9" y="8" width="6" height="6"/></svg>`,
-    maca: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>`,
-    controle: `<svg class="icone-svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><circle cx="15" cy="13" r="1"/><circle cx="17" cy="11" r="1"/></svg>`,
-    gota: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
-    estrela: `<svg class="icone-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    camisa: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>`,
-    lixo: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>`,
-    sol: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
-    lua: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
-    flor: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22V12M12 12a3 3 0 1 1 6 0 3 3 0 1 1-6 0ZM12 12a3 3 0 1 0-6 0 3 3 0 1 0 6 0ZM12 12a3 3 0 1 1 0-6 3 3 0 1 1 0 6ZM12 12a3 3 0 1 0 0 6 3 3 0 1 0 0-6ZM12 22c-2-2-4-2-4-2s2-2 4-2c2 0 4 2 4 2s-2 2-4 2Z"/></svg>`,
-    bola: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12a14.5 14.5 0 0 0 20 0"/></svg>`,
-    mochila: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10z"/><path d="M8 10h8M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M12 10v4"/></svg>`,
-    bicicleta: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2M12 17.5l-3-4-4 1.5"/></svg>`,
-    urso: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="13" r="6"/><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M12 15h.01"/></svg>`,
-    arvore: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22v-8M12 14A6 6 0 0 1 6 8c0-3.31 2.69-6 6-6s6 2.69 6 6a6 6 0 0 1-6 6Z"/></svg>`,
-    cenoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2.27 21.73a2.5 2.5 0 0 0 3.54 0l12.46-12.45a3.5 3.5 0 1 0-4.95-4.95L.86 16.78a2.5 2.5 0 0 0 1.41 4.95zM15 9l-6 6M17.5 3.5l3 3M19 2l3 3"/></svg>`,
-    foguete: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4.5 16.5l-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>`,
-    musica: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M6 18a3 3 0 1 0 3-3 3 3 0 0 0-3 3ZM18 16a3 3 0 1 0 3-3 3 3 0 0 0-3 3Z"/></svg>`,
-    tesoura: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>`,
-    pincel: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M15 10v6a3 3 0 0 1-6 0v-6"/><path d="M12 16v6"/><path d="M10 22h4"/></svg>`,
-    lapis: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
-    paleta: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2-2 3-4 3h-2a2 2 0 0 0-2 2v1a2 2 0 0 1-2 2Z"/><circle cx="7" cy="10" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14" cy="7" r="1"/><circle cx="17" cy="10" r="1"/></svg>`,
-    relogio: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-    oculos: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M6 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/><path d="M18 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>`
+    // --- REFEIÇÃO, ALIMENTOS & MERCADO ---
+    refeicao: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/><circle cx="24" cy="24" r="12" fill="#F59E0B"/><path fill="#EA580C" d="M20 20a4 4 0 0 1 8 0c0 3-4 7-4 7s-4-4-4-7z"/><path fill="#22C55E" d="M28 26a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill="#94A3B8" d="M4 12v24h3V24h2v12h3V12c-2 0-3 2-4 3-1-1-2-3-4-3zm36 0v24h4V12c-4 0-4 6-4 12z"/></svg>`,
+    carrinho: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="18" cy="42" r="4" fill="#334155"/><circle cx="38" cy="42" r="4" fill="#334155"/><path fill="#F59E0B" d="M4 6h6l6 24h22l4-18H14"/><path fill="#EF4444" d="M22 14h18v10H24l-2-10z"/></svg>`,
+    maca: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#EF4444" d="M24 12c-3-4-8-4-12-1s-4 10-1 18c3 7 11 15 13 15s10-8 13-15c3-8 2-15-1-18s-9-3-12 1z"/><path fill="#15803D" d="M24 12c0-5 3-8 6-9-1 4-3 7-6 9z"/><circle cx="18" cy="22" r="2" fill="#FECDD3" opacity="0.6"/></svg>`,
+    cenoura: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#F97316" d="M36 12L12 44c-2 2-6 0-5-3L20 4l16 8z"/><path fill="#22C55E" d="M28 8c2-4 7-6 12-6-1 5-4 9-8 10l-4-4zm6 6c4-1 9 1 12 5-4 2-8 1-11-2l-1-3z"/></svg>`,
+
+    // --- FINANÇAS, CONTAS & TRABALHO ---
+    carteira: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="40" height="28" x="4" y="10" fill="#92400E" rx="5"/><path fill="#B45309" d="M4 18h40v4H4z"/><path fill="#FDE047" d="M32 20h12v10H32a4 4 0 0 1 0-8z"/><circle cx="38" cy="24" r="2" fill="#B45309"/></svg>`,
+    moeda: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#FBBF24"/><circle cx="24" cy="24" r="16" fill="#F59E0B"/><path fill="#FEF08A" d="M24 14v20M18 18h10a4 4 0 0 1 0 8H18a4 4 0 0 0 0 8h12"/></svg>`,
+    conta: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#F1F5F9" d="M8 4h32v40l-6-4-6 4-6-4-6 4-8-4V4z"/><path fill="#3B82F6" d="M14 12h20v4H14zm0 8h20v3H14zm0 7h14v3H14z"/><circle cx="34" cy="34" r="6" fill="#22C55E"/><path fill="#FFFFFF" d="m32 34 2 2 4-4"/></svg>`,
+    agenda: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="40" height="36" x="4" y="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" rx="4"/><path fill="#EF4444" d="M4 8h40v10H4z"/><rect width="4" height="8" x="12" y="4" fill="#334155" rx="2"/><rect width="4" height="8" x="32" y="4" fill="#334155" rx="2"/><circle cx="16" cy="26" r="2" fill="#3B82F6"/><circle cx="24" cy="26" r="2" fill="#F59E0B"/><circle cx="32" cy="26" r="2" fill="#10B981"/><circle cx="16" cy="34" r="2" fill="#8B5CF6"/><circle cx="24" cy="34" r="2" fill="#EC4899"/><circle cx="32" cy="34" r="2" fill="#64748B"/></svg>`,
+    relogio: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#0284C7"/><circle cx="24" cy="24" r="16" fill="#FFFFFF"/><path fill="#0F172A" d="M22 14h4v11h6v4H22z"/><circle cx="24" cy="24" r="2" fill="#EF4444"/></svg>`,
+
+    // --- MANUTENÇÃO, SERVIÇOS & TECNOLOGIA ---
+    raio: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#FACC15" stroke="#EAB308" stroke-width="2" d="M26 2L8 26h14l-2 20 18-24H24l2-20z"/></svg>`,
+    agua: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#38BDF8" d="M24 4C24 4 10 18 10 28a14 14 0 0 0 28 0C38 18 24 4 24 4z"/><path fill="#BAE6FD" d="M20 20a6 6 0 0 0-6 6c0 1 1 1 1 0a4 4 0 0 1 4-4c1 0 1-1 1-2z"/></svg>`,
+    gota: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#0284C7" d="M24 6S12 18 12 28a12 12 0 0 0 24 0c0-10-12-22-12-22z"/><circle cx="20" cy="26" r="3" fill="#BAE6FD"/></svg>`,
+    wifi: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#3B82F6" d="M24 34a4 4 0 1 1-4 4 4 4 0 0 1 4-4zm-12-8a16 16 0 0 1 24 0l-4 4a11 11 0 0 0-16 0zm-8-8a27 27 0 0 1 40 0l-4 4a22 22 0 0 0-32 0z"/></svg>`,
+    carro: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#EF4444" d="M8 22l6-10h20l6 10H8z"/><path fill="#DC2626" d="M4 22h40v14a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V22z"/><circle cx="14" cy="38" r="5" fill="#1E293B"/><circle cx="34" cy="38" r="5" fill="#1E293B"/><rect width="18" height="6" x="15" y="14" fill="#E0F2FE" rx="2"/></svg>`,
+    martelo: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#D97706" d="M14 26l8 8-16 12-4-4 12-16z"/><path fill="#64748B" d="M20 18l8-8 12 12-8 8-12-12z"/><rect width="8" height="18" x="30" y="4" fill="#475569" rx="2" transform="rotate(45 34 13)"/></svg>`,
+    tesoura: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="12" cy="36" r="6" fill="#F59E0B"/><circle cx="36" cy="36" r="6" fill="#F59E0B"/><path fill="#94A3B8" d="m14 32 18-24 4 2-16 26zm20 0L16 8l-4 2 16 26z"/></svg>`,
+    lampada: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#FDE047" d="M24 4a14 14 0 0 0-9 24c2 3 3 6 3 8h12c0-2 1-5 3-8a14 14 0 0 0-9-24z"/><rect width="10" height="6" x="19" y="38" fill="#94A3B8" rx="2"/><path fill="#64748B" d="M21 44h6v2h-6z"/></svg>`,
+
+    // --- SAÚDE, HIGIENE, AUTOCUIDADO & EXERCÍCIO ---
+    ioga: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="10" r="5" fill="#F59E0B"/><path fill="#10B981" d="M24 18c-5 0-10 4-10 9 0 3 2 5 5 5 2 0 4-2 5-4 1 2 3 4 5 4 3 0 5-2 5-5 0-5-5-9-10-9z"/><path fill="#059669" d="M12 36c4-3 8-4 12-4s8 1 12 4c2 2 1 6-2 6H14c-3 0-4-4-2-6z"/></svg>`,
+    treino: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="8" height="24" x="4" y="12" fill="#64748B" rx="3"/><rect width="6" height="18" x="12" y="15" fill="#475569" rx="2"/><rect width="20" height="6" x="14" y="21" fill="#94A3B8"/><rect width="6" height="18" x="30" y="15" fill="#475569" rx="2"/><rect width="8" height="24" x="36" y="12" fill="#64748B" rx="3"/></svg>`,
+    coracao: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#EF4444" d="M24 42s-16-10-20-21a11 11 0 0 1 19-8l1 2 1-2a11 11 0 0 1 19 8c-4 11-20 21-20 21z"/></svg>`,
+    remedio: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="16" height="32" x="16" y="8" fill="#EF4444" rx="8" transform="rotate(45 24 24)"/><path fill="#FFFFFF" d="M16 16l16 16c4-4 4-12 0-16s-12-4-16 0z"/></svg>`,
+    escovaDente: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="6" height="36" x="14" y="6" fill="#38BDF8" rx="3" transform="rotate(-30 17 24)"/><rect width="10" height="12" x="26" y="6" fill="#FFFFFF" rx="2"/><path fill="#0284C7" d="M28 8h6v2h-6zm0 4h6v2h-6z"/></svg>`,
+    oculos: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="14" cy="24" r="10" fill="#E0F2FE" stroke="#334155" stroke-width="3"/><circle cx="34" cy="24" r="10" fill="#E0F2FE" stroke="#334155" stroke-width="3"/><path fill="none" stroke="#334155" stroke-width="3" d="M24 24h0M4 22l6-4M44 22l-6-4"/></svg>`,
+
+    // --- ESTUDO, LAZER & FAMÍLIA ---
+    livro: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#3B82F6" d="M6 10c8-2 16 0 18 3v27c-4-2-12-3-18-1V10z"/><path fill="#2563EB" d="M42 10c-8-2-16 0-18 3v27c4-2 12-3 18-1V10z"/><path fill="#DBEAFE" d="M8 12c6-1 12 1 14 3v22c-4-2-9-2-14-1V12zm32 0c-6-1-12 1-14 3v22c4-2 9-2 14-1V12z"/></svg>`,
+    lapis: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#F59E0B" d="m32 6 10 10L16 42l-10 2 2-10L32 6z"/><path fill="#EF4444" d="m36 2 8 8-4 4-8-8 4-4z"/><path fill="#1E293B" d="m6 44 4-1-3-3-1 4z"/></svg>`,
+    mochila: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="28" height="32" x="10" y="12" fill="#8B5CF6" rx="6"/><path fill="#6D28D9" d="M14 26h20v14H14z"/><path fill="#C4B5FD" d="M18 12V8a6 6 0 0 1 12 0v4"/><circle cx="24" cy="30" r="2" fill="#FDE047"/></svg>`,
+    controle: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="40" height="24" x="4" y="12" fill="#1E293B" rx="8"/><circle cx="14" cy="24" r="6" fill="#334155"/><path fill="#FFFFFF" d="M14 20v8M10 24h8"/><circle cx="32" cy="22" r="2" fill="#EF4444"/><circle cx="36" cy="26" r="2" fill="#F59E0B"/><circle cx="28" cy="26" r="2" fill="#10B981"/><circle cx="32" cy="30" r="2" fill="#3B82F6"/></svg>`,
+    filme: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="40" height="30" x="4" y="9" fill="#E11D48" rx="4"/><polygon points="20,18 32,24 20,30" fill="#FFFFFF"/></svg>`,
+    musica: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="14" cy="34" r="6" fill="#8B5CF6"/><circle cx="36" cy="30" r="6" fill="#8B5CF6"/><path fill="#6D28D9" d="M20 34V10l22-4v24h-4V12L20 15v19z"/></svg>`,
+    bicicleta: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="12" cy="32" r="8" fill="none" stroke="#0284C7" stroke-width="4"/><circle cx="36" cy="32" r="8" fill="none" stroke="#0284C7" stroke-width="4"/><path fill="none" stroke="#EF4444" stroke-width="4" stroke-linecap="round" d="M12 32l10-14h8l6 14m-14 0V18"/></svg>`,
+    bola: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/><polygon points="24,14 31,19 28,27 20,27 17,19" fill="#0F172A"/><path stroke="#0F172A" stroke-width="2" d="m24 14 0-8m7 13 7-4m-3 8 7 3m-15 3-4 7m-6-13-7-3m7-7-4-6"/></svg>`,
+    patinha: `<svg class="icone-svg" viewBox="0 0 48 48"><ellipse cx="24" cy="30" rx="9" ry="7" fill="#F97316"/><circle cx="14" cy="18" r="4" fill="#FB923C"/><circle cx="21" cy="14" r="4.5" fill="#FB923C"/><circle cx="27" cy="14" r="4.5" fill="#FB923C"/><circle cx="34" cy="18" r="4" fill="#FB923C"/></svg>`,
+    sol: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="12" fill="#F59E0B"/><path fill="#FBBF24" d="M24 2v6M24 40v6M2 24h6M40 24h6M8.4 8.4l4.3 4.3M35.3 35.3l4.3 4.3M8.4 39.6l4.3-4.3M35.3 12.7l4.3-4.3"/></svg>`,
+    lua: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#FDE047" d="M34 8a18 18 0 1 0 6 30c-12-2-18-14-13-24a17 17 0 0 0-7-6z"/><polygon points="34,14 36,18 40,18 37,21 38,25 34,23 30,25 31,21 28,18 32,18" fill="#F59E0B"/></svg>`,
+    familia: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="16" cy="16" r="6" fill="#F59E0B"/><circle cx="32" cy="16" r="6" fill="#3B82F6"/><circle cx="24" cy="24" r="5" fill="#EC4899"/><path fill="#F59E0B" d="M6 38c0-5 5-9 10-9s10 4 10 9v4H6z"/><path fill="#3B82F6" d="M22 38c0-5 5-9 10-9s10 4 10 9v4H22z"/></svg>`,
+
+    // --- CONQUISTAS & DESTAQUES ---
+    fogo: `<svg class="icone-svg icone-fogo" viewBox="0 0 48 48"><path fill="#EF4444" d="M24 4s12 10 12 24a14 14 0 0 1-28 0c0-10 8-16 16-24z"/><path fill="#F59E0B" d="M24 18s7 6 7 14a8 8 0 0 1-16 0c0-6 5-10 9-14z"/><path fill="#FEF08A" d="M24 28a4 4 0 0 1 4 4 4 4 0 0 1-8 0c0-3 4-4 4-4z"/></svg>`,
+    escudo: `<svg class="icone-svg icone-escudo" viewBox="0 0 48 48"><path fill="#3B82F6" d="M24 4s16 4 16 14c0 14-16 26-16 26S8 32 8 18C8 8 24 4 24 4z"/><path fill="#60A5FA" d="M24 8v32c8-7 12-16 12-22 0-8-12-10-12-10z"/><polygon points="24,14 27,21 34,22 29,26 30,33 24,29 18,33 19,26 14,22 21,21" fill="#FEF08A"/></svg>`,
+    coroa: `<svg class="icone-svg icone-coroa" viewBox="0 0 48 48"><path fill="#F59E0B" d="M6 38l4-22 8 8 6-16 6 16 8-8 4 22H6z"/><rect width="36" height="6" x="6" y="38" fill="#D97706" rx="2"/><circle cx="10" cy="16" r="3" fill="#EF4444"/><circle cx="24" cy="8" r="3" fill="#3B82F6"/><circle cx="38" cy="16" r="3" fill="#10B981"/></svg>`,
+    trofeu: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#FBBF24" d="M14 6h20v14a10 10 0 0 1-20 0V6z"/><path fill="#F59E0B" d="M14 8H8a6 6 0 0 0 6 6v-2a4 4 0 0 1-4-4h4V8zm20 0h6a6 6 0 0 1-6 6v-2a4 4 0 0 0 4-4h-4V8z"/><path fill="#D97706" d="M22 26h4v8h-4zm-8 8h20v6H14z"/></svg>`,
+    medalha: `<svg class="icone-svg" viewBox="0 0 48 48"><path fill="#3B82F6" d="M16 4l8 16L12 36l-4-8z"/><path fill="#EF4444" d="M32 4l-8 16 12 16 4-8z"/><circle cx="24" cy="30" r="12" fill="#FBBF24"/><circle cx="24" cy="30" r="9" fill="#F59E0B"/><polygon points="24,24 26,28 30,29 27,32 28,36 24,34 20,36 21,32 18,29 22,28" fill="#FFFFFF"/></svg>`,
+    presente: `<svg class="icone-svg" viewBox="0 0 48 48"><rect width="36" height="24" x="6" y="18" fill="#EC4899" rx="3"/><rect width="40" height="8" x="4" y="12" fill="#F43F5E" rx="2"/><path fill="#FDE047" d="M21 12h6v30h-6zM4 15h40v2H4z"/><path fill="#F59E0B" d="M24 12c-4-6-10 0-3 3h3zm0 0c4-6 10 0 3 3h-3z"/></svg>`,
+    alvo: `<svg class="icone-svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#EF4444"/><circle cx="24" cy="24" r="14" fill="#FFFFFF"/><circle cx="24" cy="24" r="8" fill="#EF4444"/><circle cx="24" cy="24" r="3" fill="#FDE047"/></svg>`
 };
+
+// =========================================================================
+// MAPEAMENTO SEMÂNTICO DE BUSCA PARA OS ÍCONES
+// =========================================================================
+window.TagsIconesSuiri = {
+    vassoura: 'vassoura varrer limpeza faxina arrumar chao po poeira casa higiene',
+    cama: 'cama quarto arrumar dormir sono lencol acordar descanso',
+    banheira: 'banheira banho lavar chuveiro higiene agua relaxar espuma',
+    louca: 'louca prato pia lavar cozinha comida jantar almoco copos talheres',
+    lixo: 'lixo lixeira descartar saco reciclagem coleta limpeza entulho',
+    camisa: 'camisa roupa lavar passar dobrar guardar varal lavanderia tecido',
+    casa: 'casa lar residencia familia organizar comodos sala teto reforma',
+    planta: 'planta regar jardim flor horta cuidar regador natureza vaso',
+    refeicao: 'refeicao prato almoco jantar comida cozinhar chef garfo faca alimentar',
+    carrinho: 'carrinho mercado compras supermercado feira despensa mantimentos comprar',
+    maca: 'maca fruta lanche saudavel dieta comida nutricao alimentar',
+    cenoura: 'cenoura vegetal legume feira horta salada vitamina saudavel',
+    carteira: 'carteira dinheiro financas pagar saldo cartao economia banco',
+    moeda: 'moeda dinheiro centavos valor mesada pagar salario cofre economia',
+    conta: 'conta boleto fatura pagar recibo divida agua luz energia internet taxa',
+    agenda: 'agenda calendario compromisso horario data dia evento reuniao marcar',
+    relogio: 'relogio tempo hora prazo limite alarme despertar acordar minutos',
+    raio: 'raio energia luz eletricidade tomada forca lampada perigo voltagem',
+    agua: 'agua beber hidratar torneira filtro copo garrafa banho encanamento',
+    gota: 'gota agua pingar vazar torneira regar chuva hidratacao',
+    wifi: 'wifi internet rede conexao computador celular roteador online',
+    carro: 'carro automovel veiculo lavar mecânico abastecer gasolina viagem transito',
+    martelo: 'martelo ferramenta conserto reforma prego bater obra oficina reparo',
+    tesoura: 'tesoura cortar papel artesanato cabelo costura tecido material',
+    lampada: 'lampada ideia luz trocar iluminacao quarto sala pensar',
+    ioga: 'ioga yoga alongamento meditar paz equilibrio zen respirar postura relaxamento',
+    treino: 'treino academia exercicio peso haltere muscular forca fitness correr saude',
+    coracao: 'coracao saude amor carinho bem estar vida amar cuidar',
+    remedio: 'remedio farmacia pilula remedios dor doente medicacao vitamina saude',
+    escovaDente: 'escova dente escovar dentes bucal sorriso pasta dental acordar',
+    oculos: 'oculos ler leitura ver oculista estudar computador enxergar',
+    livro: 'livro ler leitura estudar tarefa licao escola faculdade aprender historia',
+    lapis: 'lapis caneta escrever desenhar licao tarefa anotar caderno pintar',
+    mochila: 'mochila escola aula material guardar viagem passeio bolsa',
+    controle: 'controle videogame jogo jogar videogame play game videogame diversao',
+    filme: 'filme cinema tv assistir televisao serie pipoca video desenho',
+    musica: 'musica cancao tocar violao instrumento ouvir som dancar',
+    bicicleta: 'bicicleta pedalar passeio bike esporte ar livre parque andar',
+    bola: 'bola futebol esporte chutar jogo quadra brincar jogar',
+    patinha: 'patinha pet cachorro gato animal passear racao cuidar veterinario bicho',
+    sol: 'sol dia acordar manha parque caminhar calor ar livre',
+    lua: 'lua noite dormir descansar cama sono estrelas boa noite',
+    familia: 'familia pais filhos reuniao conversar almoco uniao lar',
+    fogo: 'fogo ofensiva chama foco meta energia calor dias implacavel',
+    escudo: 'escudo protecao defesa seguranca cuidar proteger heroi',
+    coroa: 'coroa rei rainha lider conquista vitoria campeao adm primeiro lugar',
+    trofeu: 'trofeu premio vitoria campeao primeiro ganhar ouro recompensa',
+    medalha: 'medalha premio destaque reconhecimento vitoria honra prata bronze',
+    presente: 'presente recompensa premio surpresa aniversario loja resgatar mimo',
+    alvo: 'alvo missao objetivo foco meta tarefa acertar cumprir'
+};
+
+// =========================================================================
+// CATÁLOGO DE EMOJIS CATEGORIZADOS PARA A ABA "EMOJIS" COM PALAVRAS-CHAVE
+// =========================================================================
+window.CatalogoEmojisSuiri = [
+    // Tarefas, Casa e Organização
+    { emoji: '🧹', tags: 'vassoura varrer limpeza faxina po' },
+    { emoji: '🛏️', tags: 'cama quarto dormir sono descansar arrumar' },
+    { emoji: '🧺', tags: 'roupa lavanderia cesto lavar' },
+    { emoji: '🧼', tags: 'sabao lavar banho espuma higiene limpeza' },
+    { emoji: '🧽', tags: 'esponja louca pia lavar' },
+    { emoji: '🗑️', tags: 'lixo lixeira descartar' },
+    { emoji: '🪴', tags: 'planta regar vaso flor regador' },
+    { emoji: '🚿', tags: 'chuveiro banho agua lavar' },
+    { emoji: '🪣', tags: 'balde esfregão agua faxina' },
+    { emoji: '🪟', tags: 'janela vidro limpar abrir' },
+    { emoji: '📦', tags: 'caixa guardar organizar mudanca pacote' },
+    { emoji: '🔑', tags: 'chave trancar porta casa fechar' },
+    // Saúde, Exercício e Autocuidado
+    { emoji: '🧘', tags: 'ioga yoga meditar zen relaxar respirar' },
+    { emoji: '🏃', tags: 'correr corrida exercicio cardio esteira treino' },
+    { emoji: '🏋️', tags: 'musculacao peso academia treino forca' },
+    { emoji: '🚴', tags: 'bicicleta pedalar bike pedal esporte' },
+    { emoji: '🚶', tags: 'caminhar caminhada passos ar livre' },
+    { emoji: '💊', tags: 'remedio comprimido pilula vitamina farmacia' },
+    { emoji: '🦷', tags: 'dente escovar escova dentista bucal' },
+    { emoji: '💧', tags: 'agua hidratar beber copo sede' },
+    { emoji: '🥗', tags: 'salada dieta saudavel comida vegetais' },
+    { emoji: '🍎', tags: 'maca fruta lanche comida saudavel' },
+    { emoji: '😴', tags: 'dormir sono descanso soneca cama' },
+    // Mercado e Cozinha
+    { emoji: '🛒', tags: 'carrinho mercado compras supermercado feira' },
+    { emoji: '🍳', tags: 'cozinhar fritar ovo cafe comida cafe' },
+    { emoji: '🍲', tags: 'sopa panela almoço jantar comida refeicao' },
+    { emoji: '🥩', tags: 'carne churrasco acougue bife' },
+    { emoji: '🍞', tags: 'pao padaria cafe cafe torrada' },
+    { emoji: '🥛', tags: 'leite copo laticinios beber' },
+    { emoji: '☕', tags: 'cafe xicara acordar manha pause quente' },
+    { emoji: '🍕', tags: 'pizza lanche jantar delivery festa' },
+    // Estudos e Trabalho
+    { emoji: '📚', tags: 'livro livros estudar estudo leitura aula licao' },
+    { emoji: '✏️', tags: 'lapis escrever desenhar anotar licao' },
+    { emoji: '💻', tags: 'computador notebook trabalho home office programar' },
+    { emoji: '📝', tags: 'caderno anotaçao lista notas tarefas' },
+    { emoji: '🎒', tags: 'mochila escola aula material guardar' },
+    { emoji: '📅', tags: 'calendario agenda data dia marcar' },
+    { emoji: '⏰', tags: 'relogio alarme despertar tempo hora prazo' },
+    // Finanças
+    { emoji: '💰', tags: 'dinheiro saco moeda riqueza pagar' },
+    { emoji: '💵', tags: 'nota cedula real dinheiro pagamento' },
+    { emoji: '💳', tags: 'cartao credito debito pagar banco' },
+    { emoji: '🪙', tags: 'moeda centavos mesada trocado' },
+    { emoji: '🧾', tags: 'recibo cupom fiscal nota comprovante conta' },
+    { emoji: '🐷', tags: 'porquinho cofre cofrinho poupar guardar' },
+    // Lazer, Família e Pets
+    { emoji: '🐶', tags: 'cachorro cao pet passear latir bicho' },
+    { emoji: '🐱', tags: 'gato felino pet miau bicho' },
+    { emoji: '🎮', tags: 'videogame controle jogo play gamer' },
+    { emoji: '⚽', tags: 'bola futebol jogar esporte partida' },
+    { emoji: '🎬', tags: 'filme cinema tela video serie pipoca' },
+    { emoji: '🎧', tags: 'fone musica ouvir som podcast' },
+    { emoji: '🎨', tags: 'paleta pintura arte desenhar pintar quadro' },
+    { emoji: '🚗', tags: 'carro transito viagem dirigir abastecer' },
+    { emoji: '⭐', tags: 'estrela destaque especial favorito nota dez' },
+    { emoji: '🏆', tags: 'trofeu premio campeao vitoria primeiro' },
+    { emoji: '🔥', tags: 'fogo chama ofensiva quente meta foco' }
+];
 
 // =========================================================================
 // 1. UTILITÁRIOS: CPF, FORMATAÇÃO DE MOEDA & DIÁLOGO PERSONALIZADO
@@ -138,7 +256,7 @@ window.formatarMoedaBRL = function(valor) {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-// Modal Nativo Personalizado "Concordo / Cancelar" (Substitui o confirm nativo do navegador)
+// Modal Nativo Personalizado "Concordo / Cancelar"
 window.confirmarAcaoSuiri = function(mensagem, titulo = 'Confirmação') {
     return new Promise((resolve) => {
         let modal = document.getElementById('modal-confirmacao-nativo-suiri');
@@ -230,7 +348,7 @@ window.alternarAbaLoginCadastro = function(aba) {
 };
 
 // =========================================================================
-// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH
+// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH E PERMISSÃO PUSH
 // =========================================================================
 window.gerenciarApresentacaoVideoSplash = function() {
     const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
@@ -275,6 +393,24 @@ window.gerenciarApresentacaoVideoSplash = function() {
 
     videoEl.addEventListener('ended', encerrarSplash);
     setTimeout(encerrarSplash, 5200);
+};
+
+window.solicitarPermissaoPush = async function() {
+    if (!("Notification" in window)) {
+        return window.mostrarToast("Este navegador não suporta notificações Push.", "erro");
+    }
+    
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            window.mostrarToast("Notificações Push ativadas com sucesso!");
+        } else {
+            window.mostrarToast("Permissão de Push negada ou ignorada.", "alerta");
+        }
+    } catch (e) {
+        console.error("Erro ao solicitar Push:", e);
+        window.mostrarToast("Não foi possível solicitar as notificações.", "erro");
+    }
 };
 
 // =========================================================================
@@ -603,7 +739,13 @@ window.guardarFotoPerfil = async function(base64Data) {
         .eq('id', window.perfilAtual.id);
 
     if (error) {
-        return window.mostrarToast("Falha ao guardar foto: " + error.message, "erro");
+        window.adicionarAFilaOffline({
+            tabela: 'membros',
+            tipoOperacao: 'update',
+            dados: { avatar_url: base64Data },
+            condicao: { id: window.perfilAtual.id }
+        });
+        window.mostrarToast("Sem rede. Foto guardada na Fila Offline com sucesso!", "info");
     }
 
     window.perfilAtual.avatar_url = base64Data;
@@ -618,7 +760,7 @@ window.guardarFotoPerfil = async function(base64Data) {
         window.renderizarMembrosFamiliaPainel();
     }
 
-    window.mostrarToast("Foto de perfil cortada e atualizada!");
+    if(!error) window.mostrarToast("Foto de perfil cortada e atualizada!");
 };
 
 // =========================================================================
@@ -710,7 +852,6 @@ window.abrirModalSenhaAdulto = function(membro) {
             }
 
             if (modoDefinirNovoPin) {
-                // Se já tinha um PIN antes e clicou em "Esqueci", valida os 4 primeiros dígitos do CPF da família/membro
                 if (pinSalvo) {
                     const cpfRef = window.limparCPF(membro.cpf || window.dadosFamiliaAtual?.cpf_adm_principal || '');
                     const cpfDigitado = (inputCpf?.value || '').replace(/\D/g, '');
@@ -1164,43 +1305,72 @@ window.solicitarExclusaoPropriaConta = async function() {
 };
 
 // =========================================================================
-// 11. FILA OFFLINE
+// 11. FILA OFFLINE (ROBUSTEZ COM INDEXED-DB)
 // =========================================================================
-const CHAVE_FILA_OFFLINE = 'suiri_fila_offline_acoes';
+const DB_NAME = 'SuiriOfflineDB';
+const STORE_NAME = 'FilaAcoes';
 
-window.adicionarAFilaOffline = function(acao) {
+// Inicializador Lazy do IndexedDB
+const idbPromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+});
+
+window.adicionarAFilaOffline = async function(acao) {
     try {
-        const fila = JSON.parse(localStorage.getItem(CHAVE_FILA_OFFLINE) || '[]');
-        fila.push({ ...acao, timestamp: Date.now() });
-        localStorage.setItem(CHAVE_FILA_OFFLINE, JSON.stringify(fila));
+        const db = await idbPromise;
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.add({ ...acao, timestamp: Date.now() });
         window.mostrarToast("Ação guardada localmente (Modo Offline).", "info");
     } catch (e) {
-        console.error("Erro na fila offline:", e);
+        console.error("Erro na fila offline IndexedDB:", e);
     }
 };
 
 window.processarFilaOffline = async function() {
     if (!navigator.onLine || !cliente || !window.familiaAtualId) return;
-    const fila = JSON.parse(localStorage.getItem(CHAVE_FILA_OFFLINE) || '[]');
-    if (fila.length === 0) return;
+    
+    try {
+        const db = await idbPromise;
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.getAll();
+        
+        request.onsuccess = async () => {
+            const fila = request.result;
+            if (fila.length === 0) return;
 
-    const filaRestante = [];
-    for (const item of fila) {
-        try {
-            if (item.tabela && item.dados) {
-                if (item.tipoOperacao === 'insert') {
-                    await cliente.from(item.tabela).insert(item.dados);
-                } else if (item.tipoOperacao === 'update' && item.condicao) {
-                    await cliente.from(item.tabela).update(item.dados).match(item.condicao);
+            let sucessoCount = 0;
+            for (const item of fila) {
+                try {
+                    if (item.tabela && item.dados) {
+                        if (item.tipoOperacao === 'insert') {
+                            await cliente.from(item.tabela).insert(item.dados);
+                        } else if (item.tipoOperacao === 'update' && item.condicao) {
+                            await cliente.from(item.tabela).update(item.dados).match(item.condicao);
+                        }
+                    }
+                    const delTx = db.transaction(STORE_NAME, 'readwrite');
+                    delTx.objectStore(STORE_NAME).delete(item.id);
+                    sucessoCount++;
+                } catch (err) {
+                    console.error("Falha ao sincronizar item offline", err);
                 }
             }
-        } catch (err) {
-            filaRestante.push(item);
-        }
-    }
-    localStorage.setItem(CHAVE_FILA_OFFLINE, JSON.stringify(filaRestante));
-    if (filaRestante.length === 0 && fila.length > 0) {
-        window.mostrarToast("Ações offline sincronizadas com sucesso!");
+            if (sucessoCount > 0) {
+                window.mostrarToast("Ações offline sincronizadas com sucesso!");
+            }
+        };
+    } catch (err) {
+        console.error("Erro ao processar IndexedDB offline", err);
     }
 };
 

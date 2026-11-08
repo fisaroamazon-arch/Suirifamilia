@@ -1098,6 +1098,21 @@ window.renderizarPlanilhaMercado = function() {
         const tagHistorico = i.ref_preco_medio > 0 
             ? `<div style="font-size:9.5px; color:var(--cor-primaria, #d97706); font-weight:normal;">Médio: R$ ${i.ref_preco_medio.toFixed(2)}</div>`
             : '';
+
+        const unitAtual = Number(i.valor_unitario) || 0;
+        const precoMedio = Number(i.ref_preco_medio) || 0;
+        let estiloBordaPreco = 'width:100%; padding:4px;';
+        let tooltipPreco = '';
+        
+        if (unitAtual > 0 && precoMedio > 0) {
+            if (unitAtual > precoMedio * 1.10) {
+                estiloBordaPreco += ' border: 2px solid #ef4444; border-radius: 4px; background: #fef2f2; color: #b91c1c; font-weight: 700;';
+                tooltipPreco = `title="Inflação! 10% acima da média de R$ ${precoMedio.toFixed(2)}"`;
+            } else if (unitAtual < precoMedio) {
+                estiloBordaPreco += ' border: 2px solid #10b981; border-radius: 4px; background: #f0fdf4; color: #047857; font-weight: 700;';
+                tooltipPreco = `title="Promoção! Abaixo da média de R$ ${precoMedio.toFixed(2)}"`;
+            }
+        }
         
         return `
             <tr style="${estMarcado ? 'background:rgba(16, 185, 129, 0.05);' : ''}">
@@ -1113,7 +1128,7 @@ window.renderizarPlanilhaMercado = function() {
                     <input type="number" step="0.1" value="${i.quantidade || 1}" style="width:100%; padding:4px;" onchange="window.atualizarQtdOuValorMercado('${i.id}', 'quantidade', this.value)">
                 </td>
                 <td>
-                    <input type="number" step="0.01" value="${i.valor_unitario || 0}" style="width:100%; padding:4px;" onchange="window.atualizarQtdOuValorMercado('${i.id}', 'valor_unitario', this.value)">
+                    <input type="number" step="0.01" value="${i.valor_unitario || 0}" style="${estiloBordaPreco}" ${tooltipPreco} onchange="window.atualizarQtdOuValorMercado('${i.id}', 'valor_unitario', this.value)">
                 </td>
                 <td style="text-align:right; font-weight:700; font-size:12px; white-space:nowrap;">
                     R$ ${subtotal.toFixed(2)}

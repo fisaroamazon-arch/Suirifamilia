@@ -1,7 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-GAME.JS (100% COMPLETO & INTEGRAL)
 // Sons Dinâmicos Nativos (Adultos vs Kids), Mascote Animado Kids,
-// Gamificação, Patamares e Super Loja de Recompensas Separada
+// Gamificação, Patamares, Emblemas/Conquistas e Loja de Recompensas
 // =========================================================================
 
 // =========================================================================
@@ -368,6 +368,123 @@ window.MotorGamificacao = {
             <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="12 6 15 11 20 12 16 16 17 21 12 18 7 21 8 16 4 12 9 11 12 6"/></svg>
         `;
     }
+};
+
+// =========================================================================
+// 3B. SISTEMA DE CONQUISTAS E EMBLEMAS (VITRINE)
+// =========================================================================
+window.SistemaEmblemas = {
+    lista: [
+        { id: 'fogo_implacavel', icone: 'fogo', titulo: 'Fogo Implacável', desc: 'Atingir 7 dias seguidos de ofensiva na casa.', meta: 7 },
+        { id: 'mestre_economia', icone: 'carrinho', titulo: 'Mestre da Economia', desc: 'Fechar uma compra de mercado abaixo da média mensal.', meta: 1 },
+        { id: 'guardiao_limpeza', icone: 'vassoura', titulo: 'Guardião da Limpeza', desc: 'Concluir 10 missões domésticas na mesma semana.', meta: 10 },
+        { id: 'primeiro_passo', icone: 'check', titulo: 'Primeiro Passo', desc: 'Concluir a sua primeira missão com sucesso.', meta: 1 },
+        { id: 'acumulador_xp', icone: 'moeda', titulo: 'Riqueza Acumulada', desc: 'Juntar 1000 XP no total histórico.', meta: 1000 }
+    ],
+    progressoLocal: function() {
+        const id = window.perfilAtual?.id || 'default';
+        return JSON.parse(localStorage.getItem(`suiri_emblemas_${id}`) || '{}');
+    },
+    salvarProgresso: function(progresso) {
+        const id = window.perfilAtual?.id || 'default';
+        localStorage.setItem(`suiri_emblemas_${id}`, JSON.stringify(progresso));
+    },
+    avaliarEmblemas: function() {
+        if (!window.perfilAtual) return;
+        let progresso = this.progressoLocal();
+        let novos = 0;
+
+        // Regra Automática: Fogo Implacável
+        if (!progresso['fogo_implacavel'] && window.perfilAtual.ofensiva_atual >= 7) {
+            progresso['fogo_implacavel'] = { desbloqueado: true, data: new Date().toISOString() };
+            novos++;
+        }
+
+        // Regra Automática: Acumulador de XP
+        if (!progresso['acumulador_xp'] && window.perfilAtual.xp_total >= 1000) {
+            progresso['acumulador_xp'] = { desbloqueado: true, data: new Date().toISOString() };
+            novos++;
+        }
+
+        // Regra Automática: Primeiro Passo
+        if (!progresso['primeiro_passo'] && window.perfilAtual.xp_total > 50) { // O usuário começa com 50, se tiver mais, fez missão.
+            progresso['primeiro_passo'] = { desbloqueado: true, data: new Date().toISOString() };
+            novos++;
+        }
+
+        if (novos > 0) {
+            this.salvarProgresso(progresso);
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast(`Você desbloqueou ${novos} novo(s) emblema(s)! Verifique suas Conquistas 🏆`);
+            }
+        }
+    },
+    adicionarProgresso: function(emblemaId, qtd = 1) {
+        let progresso = this.progressoLocal();
+        if (progresso[emblemaId]?.desbloqueado) return; 
+
+        let atual = progresso[emblemaId]?.qtd || 0;
+        atual += qtd;
+        
+        const emblema = this.lista.find(e => e.id === emblemaId);
+        if (emblema && atual >= emblema.meta) {
+            progresso[emblemaId] = { desbloqueado: true, qtd: atual, data: new Date().toISOString() };
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast(`Emblema Desbloqueado: ${emblema.titulo}! 🏆`);
+            }
+            if (window.SonsSuiri) window.SonsSuiri.fanfarraNivel();
+        } else {
+            progresso[emblemaId] = { desbloqueado: false, qtd: atual };
+        }
+        this.salvarProgresso(progresso);
+    }
+};
+
+window.abrirModalEmblemas = function() {
+    const modal = document.getElementById('modal-emblemas-conquistas');
+    const container = document.getElementById('grid-emblemas-container');
+    if (!modal || !container) return;
+
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
+
+    // Reavalia regras automáticas antes de abrir
+    if (window.SistemaEmblemas) window.SistemaEmblemas.avaliarEmblemas();
+
+    const progresso = window.SistemaEmblemas.progressoLocal();
+
+    container.innerHTML = window.SistemaEmblemas.lista.map(emb => {
+        const status = progresso[emb.id];
+        const desbloqueado = status?.desbloqueado === true;
+        
+        const bg = desbloqueado ? '#fef3c7' : '#f8fafc';
+        const borda = desbloqueado ? '#f59e0b' : '#cbd5e1';
+        const corIcone = desbloqueado ? '#d97706' : '#94a3b8';
+        const corTitulo = desbloqueado ? '#92400e' : '#64748b';
+        
+        const iconeSvg = window.IconesSuiri?.[emb.icone] || window.IconesSuiri?.trofeu || `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>`;
+
+        return `
+            <div style="background: ${bg}; border: 1.5px solid ${borda}; border-radius: 14px; padding: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; opacity: ${desbloqueado ? '1' : '0.6'}; filter: ${desbloqueado ? 'none' : 'grayscale(100%)'}; transition: transform 0.2s;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid ${borda}; display: flex; align-items: center; justify-content: center; color: ${corIcone}; margin-bottom: 8px; flex-shrink: 0;">
+                    ${iconeSvg}
+                </div>
+                <strong style="font-size: 12.5px; color: ${corTitulo}; line-height: 1.2; margin-bottom: 4px;">${emb.titulo}</strong>
+                <span style="font-size: 10.5px; color: #64748b; line-height: 1.3;">${emb.desc}</span>
+                <div style="margin-top: auto; padding-top: 8px;">
+                    ${desbloqueado 
+                        ? `<span style="font-size:9.5px; font-weight:800; color:#15803d; background:#dcfce7; padding:3px 8px; border-radius:6px; border: 1px solid #86efac;">Desbloqueado</span>` 
+                        : `<span style="font-size:9.5px; font-weight:800; color:#64748b; background:#e2e8f0; padding:3px 8px; border-radius:6px;">Bloqueado</span>`}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    modal.classList.remove('oculto');
+};
+
+window.fecharModalEmblemas = function() {
+    if (window.SonsSuiri) window.SonsSuiri.popClique();
+    document.getElementById('modal-emblemas-conquistas')?.classList.add('oculto');
 };
 
 // =========================================================================
