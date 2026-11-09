@@ -104,6 +104,97 @@ window.dispararParticulasSucesso = function() {
 };
 
 // =========================================================================
+// INJEÇÃO DINÂMICA DE ALFINETES PARA O MÓDULO "MEU ESPAÇO"
+// =========================================================================
+window.injetarPinosNosModais = function() {
+    // 1. Missões
+    const headerMissoes = document.getElementById('container-botoes-filtro-missoes');
+    if (headerMissoes && !document.getElementById('pin-widget-missoes')) {
+        const btnPin = document.createElement('button');
+        btnPin.id = 'pin-widget-missoes';
+        btnPin.className = 'btn-secundario';
+        btnPin.style.cssText = 'padding:10px; font-size:14px; border-radius:12px; margin-left:6px; flex: 0 0 auto;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar painel de Missões no Meu Espaço";
+        btnPin.onclick = () => { if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-inicio', 'Painel de Missões'); };
+        headerMissoes.appendChild(btnPin);
+    }
+
+    // 2. Mural de Recados e Finanças
+    const headerRecados = document.getElementById('lbl-titulo-mural-recados');
+    if (headerRecados && !document.getElementById('pin-widget-recados')) {
+        const btnPin = document.createElement('span');
+        btnPin.id = 'pin-widget-recados';
+        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Mural de Recados no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('bloco-card-mural-recados', 'Mural de Avisos'); };
+        headerRecados.parentNode.insertBefore(btnPin, headerRecados.nextSibling);
+    }
+
+    // 3. Calendário (Agenda)
+    const headerCalendario = document.getElementById('mes-ano-calendario-titulo');
+    if (headerCalendario && !document.getElementById('pin-widget-calendario')) {
+        const btnPin = document.createElement('span');
+        btnPin.id = 'pin-widget-calendario';
+        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Calendário no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-calendario', 'Calendário da Casa'); };
+        headerCalendario.appendChild(btnPin);
+    }
+
+    // 4. Saldo (Minha Carteira)
+    const lblSaldo = document.getElementById('lbl-saldo-carteira-membro');
+    if (lblSaldo && !document.getElementById('pin-widget-carteira')) {
+        const btnPin = document.createElement('span');
+        btnPin.id = 'pin-widget-carteira';
+        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:12px; display:inline-block; vertical-align: middle;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Saldo no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('box-carteira-topo', 'Minha Carteira (Saldo)'); };
+        lblSaldo.appendChild(btnPin);
+    }
+
+    // 5. Registro Rápido de Finanças
+    const headerRegRapido = document.querySelector('#card-registro-rapido-financas h3');
+    if (headerRegRapido && !document.getElementById('pin-widget-registro-rapido')) {
+        const btnPin = document.createElement('span');
+        btnPin.id = 'pin-widget-registro-rapido';
+        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Lançamento Rápido no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('card-registro-rapido-financas', 'Lançamento de Gastos'); };
+        headerRegRapido.appendChild(btnPin);
+    }
+
+    // 6. Supermercado (botões do topo)
+    const btnAbaLista = document.getElementById('btn-aba-lista-mes');
+    if (btnAbaLista && btnAbaLista.parentNode && !document.getElementById('pin-widget-mercado')) {
+        const btnPin = document.createElement('button');
+        btnPin.id = 'pin-widget-mercado';
+        btnPin.className = 'btn-secundario';
+        btnPin.style.cssText = 'padding: 4px 10px; font-size: 14px; border-radius: 12px; flex: 0 0 auto; margin-left: 4px;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Mercado no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-mercado', 'Supermercado'); };
+        btnAbaLista.parentNode.appendChild(btnPin);
+    }
+    
+    // 7. Metas do Ano
+    const spanMetas = Array.from(document.querySelectorAll('span')).find(s => s.textContent && s.textContent.includes('Planos & Metas do Ano'));
+    if (spanMetas && spanMetas.parentElement && !document.getElementById('pin-widget-metas')) {
+        const btnPin = document.createElement('span');
+        btnPin.id = 'pin-widget-metas';
+        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
+        btnPin.innerHTML = '📌';
+        btnPin.title = "Fixar Metas do Ano no Meu Espaço";
+        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('modal-metas-anuais', 'Planos & Metas do Ano'); };
+        spanMetas.parentElement.appendChild(btnPin);
+    }
+};
+
+// =========================================================================
 // 1. INICIALIZAÇÃO E ESCUTA EM TEMPO REAL
 // =========================================================================
 
@@ -118,6 +209,9 @@ window.iniciarModuloMissoes = async function() {
     window.inicializarMotorVoz();
     window.verificarGatilhoPenseSeteManha();
     window.inicializarNavegacaoSwipe();
+    
+    // Injeta os alfinetes nas abas sem quebrar o HTML nativo
+    setTimeout(window.injetarPinosNosModais, 500);
 };
 
 window.iniciarRealtimeMissoes = function() {
@@ -316,15 +410,14 @@ window.carregarMissoesKidsExclusiva = function() {
                     const criancaFez = concluidosArray.includes(crianca.id);
                     const criancaFalhou = falhadosArray.includes(crianca.id);
 
-                    // Sistema Tricolor: Verde (Fez), Vermelho (Falhou), Laranja (Pendente)
-                    let corBorda = '#f59e0b'; // Laranja pendente
+                    let corBorda = '#f59e0b';
                     let sombra = 'none';
 
                     if (criancaFez) {
-                        corBorda = '#10b981'; // Verde brilhante
+                        corBorda = '#10b981';
                         sombra = '0 0 10px rgba(16, 185, 129, 0.7)';
                     } else if (criancaFalhou) {
-                        corBorda = '#ef4444'; // Vermelho falha
+                        corBorda = '#ef4444';
                         sombra = '0 0 8px rgba(239, 68, 68, 0.6)';
                     }
 
@@ -471,7 +564,7 @@ window.alternarMissoesConcluidas = function(tipo, qtd) {
 
 window.toggleSubitemMissao = async function(missaoId, subitemId) {
     const supabase = obterClienteSupabase();
-    const missao = cacheMissoes.find(m => m.id === missaoId);
+    const missao = cacheMissoes.find(m => m.id === id || m.id === missaoId);
     if (!missao || !Array.isArray(missao.subitens) || !supabase) return;
 
     const sub = missao.subitens.find(s => s.id === subitemId);
@@ -752,7 +845,8 @@ window.inicializarNavegacaoSwipe = function() {
     let touchEndX = 0;
     let touchEndY = 0;
 
-    const telasOrdem = ['inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
+    // Ordem integral incluindo o Meu Espaço na primeira posição da esquerda
+    const telasOrdem = ['meuespaco', 'inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
 
     window.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -1093,8 +1187,9 @@ window.renderizarMissoesTela = function() {
             `;
         }
 
-        const tagEscopo = missao.escopo === 'pessoal'
-            ? `<span style="font-size:10px; font-weight:700; color:#8b5cf6;">Pessoal</span>`
+        const ehIndividual = missao.escopo === 'pessoal' || (missao.atribuido_a && missao.atribuido_a !== 'todos');
+        const tagEscopo = ehIndividual
+            ? `<span style="font-size:10px; font-weight:700; color:#8b5cf6;">Individual</span>`
             : `<span style="font-size:10px; font-weight:700; color:#64748b;">Casa</span>`;
 
         let badgeCumprido = '';
@@ -1106,7 +1201,6 @@ window.renderizarMissoesTela = function() {
             badgeCumprido = `<span style="font-size:10.5px; font-weight:700; color:#ef4444;">• Não cumprida</span>`;
         }
 
-        // Fotinhas cooperativas dos adultos ampliadas (Verde, Laranja, Vermelho)
         let grupoAvataresHtml = '';
         if (ehColetiva && window.listaMembrosFamilia) {
             const adultos = window.listaMembrosFamilia.filter(m => !m.eh_kids && m.papel !== 'dependente');
@@ -1116,14 +1210,14 @@ window.renderizarMissoesTela = function() {
                     const adultoFez = concluidosArray.includes(adulto.id);
                     const adultoFalhou = falhadosArray.includes(adulto.id);
 
-                    let corBorda = '#f59e0b'; // Laranja pendente
+                    let corBorda = '#f59e0b';
                     let sombra = 'none';
 
                     if (adultoFez) {
-                        corBorda = '#10b981'; // Verde brilhante
+                        corBorda = '#10b981';
                         sombra = '0 0 10px rgba(16, 185, 129, 0.7)';
                     } else if (adultoFalhou) {
-                        corBorda = '#ef4444'; // Vermelho falha
+                        corBorda = '#ef4444';
                         sombra = '0 0 8px rgba(239, 68, 68, 0.6)';
                     }
 
@@ -1164,7 +1258,7 @@ window.renderizarMissoesTela = function() {
         const tituloMissaoSeguro = window.esc ? window.esc(missao.titulo) : missao.titulo;
 
         card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                 <div style="flex:1; min-width:0;">
                     <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
                         <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${prioCor};" title="${prioTexto}"></span>
@@ -1187,32 +1281,35 @@ window.renderizarMissoesTela = function() {
                 </div>
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                    ${(!concluida && !falhada) ? `
-                        <button type="button" class="btn-sucesso" style="padding:6px 12px; font-size:11.5px; border-radius:10px; font-weight:800; display:inline-flex; align-items:center; gap:4px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                            ${obterIconeSeguro('check')} Fiz
-                        </button>
-                    ` : (falhada ? `
-                        <button type="button" class="btn-secundario" style="padding:5px 8px; font-size:11px; font-weight:700; color:#b45309;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
-                            Tentar
-                        </button>
-                    ` : `
-                        <button type="button" class="btn-secundario" style="padding:5px 8px; font-size:11px; color:#64748b;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
-                            Refazer
-                        </button>
-                    `)}
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        ${(!concluida && !falhada) ? `
+                            <button type="button" class="btn-sucesso" style="padding:5px 10px; font-size:11px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:4px; line-height:1.2;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                                ${obterIconeSeguro('check')} Fiz
+                            </button>
+                            <button type="button" class="btn-erro" style="padding:5px 10px; font-size:11px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:4px; line-height:1.2;" onclick="window.falharMissaoDomestica('${missao.id}')">
+                                ${obterIconeSeguro('xis')} Não fiz
+                            </button>
+                        ` : (falhada ? `
+                            <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11px; font-weight:700; color:#b45309;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                                Tentar
+                            </button>
+                        ` : `
+                            <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11px; color:#64748b;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
+                                Refazer
+                            </button>
+                        `)}
+                    </div>
 
                     <div style="position:relative;">
-                        <button type="button" class="btn-secundario" style="padding:5px 7px; font-size:13px; line-height:1; font-weight:800; border-radius:8px;" onclick="event.stopPropagation(); window.alternarMenuAcoesMissao('${missao.id}')">
+                        <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:13px; line-height:1; font-weight:800; border-radius:8px;" onclick="event.stopPropagation(); window.alternarMenuAcoesMissao('${missao.id}')">
                             ⋮
                         </button>
-                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:30px; background:#ffffff; border:1px solid rgba(217, 119, 6, 0.22); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:10000; min-width:115px; overflow:hidden;">
-                            ${(!concluida && !falhada) ? `
-                                <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#ef4444; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.falharMissaoDomestica('${missao.id}')">
-                                    ${obterIconeSeguro('xis')} Falhou
-                                </button>
-                            ` : ''}
-                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px; border-top:1px solid #f1f5f9;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
+                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:30px; background:#ffffff; border:1px solid rgba(217, 119, 6, 0.22); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:10000; min-width:145px; overflow:hidden;">
+                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
                                 ${obterIconeSeguro('editar')} Editar
+                            </button>
+                            <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('missao', '${missao.id}')">
+                                📌 Fixar no Espaço
                             </button>
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:var(--cor-erro, #f43f5e); border-top:1px solid #f1f5f9; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.excluirMissao('${missao.id}')">
                                 ${obterIconeSeguro('excluir')} Excluir
@@ -1461,7 +1558,6 @@ window.concluirMissaoDomestica = async function(id) {
             concluidosJaExistentes.push(usuarioId);
         }
         
-        // Remove dos que falharam caso tenha recuperado a tarefa
         const falhadosExistentes = Array.isArray(missao.falhados_por_array) 
             ? missao.falhados_por_array.filter(uid => uid !== usuarioId) 
             : [];
@@ -1582,7 +1678,6 @@ window.falharMissaoDomestica = async function(id) {
             falhadosExistentes.push(usuarioId);
         }
 
-        // Remove dos concluídos caso tenha marcado falha
         const concluidosExistentes = Array.isArray(missao.concluidos_por_array)
             ? missao.concluidos_por_array.filter(uid => uid !== usuarioId)
             : [];
@@ -1624,9 +1719,9 @@ window.falharMissaoDomestica = async function(id) {
     if (window.TamagotchiKids && typeof window.TamagotchiKids.aoFalharMissao === 'function') {
         window.TamagotchiKids.aoFalharMissao();
     } else if (window.modoKidsAtivo && typeof window.dispararMascoteKids === 'function') {
-        window.dispararMascoteKids('triste', `Você perdeu ${penalidadeXP} XP. Toque em 'Tentar Novamente' para refazer!`);
+        window.dispararMascoteKids('triste', `Você perdeu ${penalidadeXP} XP. Toque em 'Tentar' para refazer!`);
     } else {
-        window.mostrarToast(`Missão marcada como falhada. -${penalidadeXP} XP descontados.`, "erro");
+        window.mostrarToast(`Missão marcada como não feita. -${penalidadeXP} XP descontados.`, "erro");
     }
 };
 
@@ -1776,7 +1871,6 @@ window.selecionarEmojiComoSimbolo = function(emojiCaractere) {
     window.fecharSeletorIconesSVG();
 };
 
-// Aliás para compatibilidade
 window.selecionarIconeSVG = window.selecionarEmojiComoSimbolo;
 
 // =========================================================================
@@ -2251,6 +2345,7 @@ window.renderizarCofresNaTela = function() {
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:11px; font-weight:800; color:var(--cor-sucesso, #10b981);">${pct.toFixed(0)}%</span>
+                        <button type="button" class="btn-secundario" style="padding:3px 6px; font-size:10.5px;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('cofre', '${cofre.id}')" title="Fixar no Meu Espaço">📌</button>
                         <button type="button" class="btn-secundario" style="padding:3px 6px; font-size:10.5px;" onclick="window.abrirModalEditarCofre('${cofre.id}')">Ajustar</button>
                     </div>
                 </div>
@@ -2474,6 +2569,9 @@ window.renderizarRecadosLar = function() {
                 </div>
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                    <button type="button" class="btn-secundario" style="padding:4px 6px; font-size:10px; display:inline-flex; align-items:center;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('recado', '${r.id}')" title="Fixar no Meu Espaço">
+                        📌
+                    </button>
                     ${!jaLi ? `
                         <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10px; font-weight:700;" onclick="window.marcarRecadoLido('${r.id}')" title="Marcar como lido">
                             Marcar Lido

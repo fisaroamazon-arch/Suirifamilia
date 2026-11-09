@@ -246,6 +246,11 @@
             fill: none !important;
             stroke-width: 2 !important;
         }
+        
+        .bottom-nav-item.ativo #img-avatar-nav {
+            border-color: #d97706 !important;
+            transform: scale(1.08);
+        }
 
         .bottom-nav-item.ativo {
             color: #d97706 !important;
@@ -323,7 +328,7 @@
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            border: 2px solid #f97316; /* Laranja (Padrão: Não Fez) */
+            border: 2px solid #f97316;
             object-fit: cover;
             margin-left: -14px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.15);
@@ -335,7 +340,7 @@
             margin-left: 0;
         }
         .avatar-kids-mini.concluiu {
-            border-color: #22c55e; /* Verde brilhante (Fez) */
+            border-color: #22c55e;
             border-width: 3px;
             z-index: 10;
             transform: scale(1.1);
@@ -370,6 +375,25 @@
             transform: translate(-50%, -50%);
             border-radius: 20px;
             pointer-events: none;
+        }
+
+        /* Estilização dos Blocos de Apresentação */
+        .bloco-inspiracao-login {
+            border-radius: 22px;
+            padding: 16px 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+            text-align: left;
+        }
+        .bloco-inspiracao-login:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Estilização exclusiva e feminina para o Espaço Mulher (Fundo e Textos) */
+        #secao-espaco-mulher {
+            background: linear-gradient(135deg, #fff5f7 0%, #fdf2f8 50%, #faf5ff 100%) !important;
+            padding: 12px 8px 30px 8px !important;
+            border-radius: 24px;
         }
     </style>
 </head>
@@ -408,41 +432,61 @@
     <main class="container">
 
         <!-- =================================================================== -->
-        <!-- TELA 0: AUTENTICAÇÃO REAL (LOGIN OU CADASTRO DA FAMÍLIA)             -->
+        <!-- TELA 0: AUTENTICAÇÃO REAL (DESIGN ELEGANTE, TEXTOS & LOGIN)         -->
         <!-- =================================================================== -->
-        <section id="tela-login" class="secao-conteudo-app">
-            <div class="cartao-geral" style="text-align: center; margin-top: 15px; padding: 24px 18px;">
+        <section id="tela-login" class="secao-conteudo-app" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 14px 40px 14px;">
+            
+            <!-- Cartão Principal de Login / Cadastro -->
+            <div class="cartao-geral" style="width: 100%; max-width: 410px; text-align: center; margin: 10px auto 16px auto; padding: 26px 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 26px; border: 1.5px solid rgba(253, 230, 138, 0.65); box-shadow: 0 14px 34px rgba(217, 119, 6, 0.08);">
+                
+                <!-- Identidade da Marca -->
                 <div style="margin-bottom: 20px;">
-                    <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--cor-primaria, #d97706); text-transform: uppercase; margin: 0;">
+                    <div style="width: 50px; height: 50px; margin: 0 auto 10px auto; border-radius: 16px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(217, 119, 6, 0.16);">
+                        <svg class="icone-svg" style="width: 26px; height: 26px; color: #d97706;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    <h1 style="font-size: 30px; font-weight: 900; letter-spacing: 1px; color: #d97706; text-transform: uppercase; margin: 0; line-height: 1.1;">
                         Suiri
                     </h1>
-                    <span id="lbl-subtitulo-login" style="font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--texto-suave, #64748b); text-transform: uppercase; display: block; margin-top: 2px;">
+                    <span id="lbl-subtitulo-login" style="font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; display: block; margin-top: 4px;">
                         Gestão Familiar
                     </span>
                 </div>
 
-                <div style="display: flex; gap: 8px; margin-bottom: 18px;">
-                    <button type="button" class="btn-principal" style="flex:1;" onclick="window.alternarAbaLoginCadastro('login')">Entrar</button>
-                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.alternarAbaLoginCadastro('cadastro')">Criar Lar</button>
+                <!-- Seletor em Pílula (Login / Criar Lar) -->
+                <div style="display: flex; gap: 6px; background: #f8fafc; padding: 5px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 18px;">
+                    <button type="button" class="btn-principal" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 800; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);" onclick="window.alternarAbaLoginCadastro('login')">Login</button>
+                    <button type="button" class="btn-secundario" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 700;" onclick="window.alternarAbaLoginCadastro('cadastro')">Criar Lar</button>
                 </div>
 
-                <div id="bloco-form-login" style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="email" id="login-email" placeholder="Seu e-mail cadastrado">
-                    <input type="password" id="login-senha" placeholder="Sua senha de acesso">
-                    <button type="button" class="btn-principal" onclick="window.fazerLoginEmail(document.getElementById('login-email').value, document.getElementById('login-senha').value)">
-                        Acessar o Lar
+                <!-- Formulário de Login -->
+                <div id="bloco-form-login" style="display: flex; flex-direction: column; gap: 11px;">
+                    <div style="position: relative;">
+                        <input type="email" id="login-email" placeholder="Seu e-mail cadastrado" style="width: 100%; box-sizing: border-box; padding: 13px 14px; font-size: 13.5px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #ffffff; outline: none; transition: all 0.2s ease;">
+                    </div>
+                    <div style="position: relative;">
+                        <input type="password" id="login-senha" placeholder="Sua senha de acesso" style="width: 100%; box-sizing: border-box; padding: 13px 14px; font-size: 13.5px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #ffffff; outline: none; transition: all 0.2s ease;" onkeydown="if(event.key === 'Enter') window.fazerLoginEmail(document.getElementById('login-email').value, this.value)">
+                    </div>
+
+                    <button type="button" class="btn-principal" style="width: 100%; padding: 13px; font-size: 14.5px; font-weight: 800; border-radius: 14px; margin-top: 4px; box-shadow: 0 8px 18px rgba(217, 119, 6, 0.32); cursor: pointer;" onclick="window.fazerLoginEmail(document.getElementById('login-email').value, document.getElementById('login-senha').value)">
+                        Entrar no Lar
                     </button>
+
+                    <div style="text-align: center; margin-top: 4px;">
+                        <button type="button" onclick="window.abrirModalRecuperarSenha()" style="background: none; border: none; font-size: 12px; font-weight: 700; color: #b45309; text-decoration: underline; cursor: pointer; padding: 4px 8px;">
+                            Esqueci a senha
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Formulário de Cadastro -->
                 <div id="bloco-form-cadastro" class="oculto" style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="text" id="cad-nome-familia" placeholder="Nome da Família ou Seu Espaço (ex: Meu Lar)">
-                    <input type="text" id="cad-nome-adm" placeholder="Seu Nome Completo">
-                    <input type="email" id="cad-email-adm" placeholder="Seu E-mail principal">
-                    <input type="text" id="cad-cpf-adm" placeholder="Seu CPF (apenas números)" maxlength="14" oninput="this.value = window.formatarCPF(this.value)">
-                    <input type="password" id="cad-senha-adm" placeholder="Crie uma Senha (mín. 6 dígitos)">
+                    <input type="text" id="cad-nome-familia" placeholder="Nome da Família ou Seu Espaço (ex: Meu Lar)" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
+                    <input type="text" id="cad-nome-adm" placeholder="Seu Nome Completo" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
+                    <input type="email" id="cad-email-adm" placeholder="Seu E-mail principal" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
+                    <input type="text" id="cad-cpf-adm" placeholder="Seu CPF (apenas números)" maxlength="14" oninput="this.value = window.formatarCPF(this.value)" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
+                    <input type="password" id="cad-senha-adm" placeholder="Crie uma Senha (mín. 6 dígitos)" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
                     
-                    <!-- Seleção de Nacionalidade ADM -->
-                    <select id="cad-nacionalidade-adm">
+                    <select id="cad-nacionalidade-adm" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
                         <option value="BR">🇧🇷 Brasil (Português)</option>
                         <option value="US">🇺🇸 Estados Unidos (Inglês)</option>
                         <option value="ES">🇪🇸 Espanha (Espanhol)</option>
@@ -457,7 +501,7 @@
                         <option value="OUTRO">🌐 Outro</option>
                     </select>
 
-                    <button type="button" class="btn-sucesso" onclick="window.cadastrarNovaFamiliaADM({
+                    <button type="button" class="btn-sucesso" style="width: 100%; padding: 13px; font-size: 14.5px; font-weight: 800; border-radius: 14px; margin-top: 4px; box-shadow: 0 8px 18px rgba(16, 185, 129, 0.3); cursor: pointer;" onclick="window.cadastrarNovaFamiliaADM({
                         nomeFamilia: document.getElementById('cad-nome-familia').value,
                         nomeAdm: document.getElementById('cad-nome-adm').value,
                         emailAdm: document.getElementById('cad-email-adm').value,
@@ -465,10 +509,52 @@
                         senha: document.getElementById('cad-senha-adm').value,
                         nacionalidade: document.getElementById('cad-nacionalidade-adm')?.value || 'BR'
                     })">
-                        Confirmar
+                        Confirmar Cadastro
                     </button>
                 </div>
             </div>
+
+            <!-- CONTAINER DE INSPIRAÇÃO: GESTÃO PESSOAL & FAMÍLIA -->
+            <div style="width: 100%; max-width: 410px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+
+                <!-- Bloco 1: Gestão Pessoal & Equilíbrio -->
+                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(254,243,199,0.55) 100%); border: 1.5px solid rgba(245, 158, 11, 0.28);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #fef3c7; color: #d97706; font-size: 14px;">✨</span>
+                        <h4 style="font-size: 13.5px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">
+                            Gestão Pessoal & Equilíbrio
+                        </h4>
+                    </div>
+                    <p style="font-size: 13px; line-height: 1.55; color: #475569; margin: 0; font-weight: 500;">
+                        Organizar a rotina não é preencher as horas com tarefas, mas abrir espaço para viver com presença e paz mental. Ao clarear seus objetivos, honrar seus limites e cuidar das finanças com consciência, o tempo se transforma em aliado e a mente encontra tranquilidade para focar no que realmente faz sentido.
+                    </p>
+                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #d97706; text-align: right; letter-spacing: 0.3px;">
+                        • Clareza • Propósito • Autonomia
+                    </div>
+                </div>
+
+                <!-- Bloco 2: Família & Nosso Lar -->
+                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.55) 100%); border: 1.5px solid rgba(14, 165, 233, 0.25);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #e0f2fe; color: #0284c7; font-size: 14px;">🏡</span>
+                        <h4 style="font-size: 13.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">
+                            Nosso Lar, Nosso Refúgio
+                        </h4>
+                    </div>
+                    <p style="font-size: 13px; line-height: 1.55; color: #475569; margin: 0; font-weight: 500;">
+                        O aconchego de uma casa nasce da cumplicidade entre quem compartilha o mesmo teto. Dividir as responsabilidades diárias com leveza, alinhar planos com respeito mútuo e comemorar juntos as pequenas vitórias é o que faz do nosso lar o porto seguro mais precioso da vida.
+                    </p>
+                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #0284c7; text-align: right; letter-spacing: 0.3px;">
+                        • União • Cumplicidade • Harmonia
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="text-align: center; font-size: 11.5px; color: #94a3b8; font-weight: 600;">
+                Suiri Gestão Familiar © 2026 • Cuidando do que é essencial
+            </div>
+
         </section>
 
         <!-- =================================================================== -->
@@ -584,6 +670,48 @@
                     </div>
                 </header>
 
+                <!-- MÓDULO 0: MEU ESPAÇO -->
+                <section id="secao-meuespaco" class="secao-conteudo-app oculto">
+                    <div class="cartao-geral">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="margin: 0; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 18px;">📌</span> Meu Espaço
+                            </h3>
+                            <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="if(typeof window.limparMeuEspaco === 'function') window.limparMeuEspaco()" title="Remover alfinetes">Limpar Tudo</button>
+                        </div>
+                        <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 14px 0;">
+                            Alfinete seus painéis favoritos do Suiri aqui para ter acesso rápido a tudo em uma única tela.
+                        </p>
+                        
+                        <!-- Ponto de Acesso Rápido ao Espaço Mulher / Íntimo (EXCLUSIVO NO MEU ESPAÇO) -->
+                        <div id="card-acesso-espaco-intimo" class="cartao-geral" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border: 1.5px solid #f0abfc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(240, 171, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 12px; background: #f5d0fe; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                    🌸
+                                </div>
+                                <div>
+                                    <strong id="lbl-titulo-espaco-intimo" style="font-size: 13.5px; color: #86198f; display: block;">Espaço Mulher</strong>
+                                    <span id="lbl-desc-espaco-intimo" style="font-size: 11px; color: #a21caf;">Ciclo, fertilidade, dicas e bem-estar</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 14px; color: #c026d3; font-weight: 800;">Entrar →</span>
+                        </div>
+
+                        <!-- Container onde os widgets alfinetados serão injetados -->
+                        <div id="container-widgets-meuespaco" style="display: flex; flex-direction: column; gap: 12px; min-height: 200px;">
+                            <div id="placeholder-meuespaco" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 150px; background: rgba(0,0,0,0.02); border: 2px dashed rgba(217, 119, 6, 0.2); border-radius: 12px;">
+                                <span style="font-size: 24px; color: #cbd5e1; margin-bottom: 8px;">📌</span>
+                                <span style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Nenhum painel fixado</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MÓDULO: ESPAÇO MULHER (BLINDADO E MODULAR) -->
+                <section id="secao-espaco-mulher" class="secao-conteudo-app oculto">
+                    <!-- Conteúdo injetado e governado dinamicamente por app-saude-mulher.js -->
+                </section>
+
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
                     <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
@@ -615,7 +743,7 @@
                         </div>
                         <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 8px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
                         
-                        <!-- Conversão de XP para Mesada (Novidade) -->
+                        <!-- Conversão de XP para Mesada -->
                         <div id="bloco-conversao-xp-mesada" style="margin-top: 12px; margin-bottom: 12px; padding: 12px; background: #f0f9ff; border: 1.5px dashed #38bdf8; border-radius: 12px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                                 <h4 style="margin:0; font-size:13px; color:#0369a1;">Câmbio de XP para Mesada</h4>
@@ -967,7 +1095,7 @@
                     </div>
                 </section>
 
-                <!-- MÓDULO 5: FAMÍLIA (COM O SELETOR DE IDIOMAS INTEGRADO AO LADO DE + NOVO MEMBRO) -->
+                <!-- MÓDULO 5: FAMÍLIA -->
                 <section id="secao-familia" class="secao-conteudo-app oculto">
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -978,7 +1106,6 @@
                                 
                                 <div class="container-seletor-idioma-familia" id="container-idiomas-familia">
                                     <button type="button" class="btn-bandeira-retangular" onclick="window.alternarMenuBandeiras()" title="Alterar Idioma">
-                                        <!-- Renderiza a bandeira ativa com SVG retangular sem borda circular -->
                                         <div id="icone-bandeira-ativa-container" style="width:100%; height:100%; display:flex;">
                                             <svg class="bandeira-svg-retangular" viewBox="0 0 720 480">
                                                 <rect width="720" height="480" fill="#009b3a"/>
@@ -1002,8 +1129,7 @@
                                         <button type="button" class="item-idioma-opcao-retangular" onclick="window.trocarIdiomaApp('en')">
                                             <svg class="icone-bandeirinha-mini" viewBox="0 0 7410 3900">
                                                 <rect width="7410" height="3900" fill="#b22234"/>
-                                                <path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/>
-                                                <rect width="2964" height="2100" fill="#3c3b6e"/>
+                                                <path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/>
                                             </svg>
                                             English
                                         </button>
@@ -1025,7 +1151,7 @@
                         <div id="lista-membros-cadastrados"></div>
                     </div>
 
-                    <!-- NOTIFICAÇÕES PUSH (NOVIDADE) -->
+                    <!-- NOTIFICAÇÕES PUSH -->
                     <div class="cartao-geral" style="margin-top: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #8b5cf6;">
                         <div>
                             <span style="font-size: 13px; font-weight: 800; color: var(--texto-principal, #334155); display: block;">Notificações Push</span>
@@ -1064,6 +1190,10 @@
     <!-- =================================================================== -->
     <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
         <ul class="bottom-nav-list">
+            <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
+                <img id="img-avatar-nav" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid transparent; transition: border-color 0.15s ease, transform 0.15s ease;">
+                <span>Espaço</span>
+            </li>
             <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
                 <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 <span id="nav-item-lbl-missoes">Missões</span>
@@ -1091,6 +1221,26 @@
     <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
     <!-- =================================================================== -->
 
+    <!-- Modal: Recuperar Senha (Esqueci a Senha) -->
+    <div id="modal-recuperar-senha" class="modal-overlay oculto" style="z-index: 1000020;">
+        <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Recuperar Acesso</h3>
+            <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
+                Digite o e-mail cadastrado. Enviaremos um link seguro para você redefinir sua senha.
+            </p>
+
+            <input type="email" id="recuperar-email-input" placeholder="Seu e-mail cadastrado" style="width: 100%; box-sizing: border-box; padding: 11px 12px; font-size: 13px; border-radius: 12px; border: 1.5px solid #cbd5e1; margin-bottom: 14px;">
+
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-secundario" style="flex: 1; padding: 10px; font-size: 12px; border-radius: 10px;" onclick="window.fecharModalRecuperarSenha()">Cancelar</button>
+                <button type="button" class="btn-principal" style="flex: 1.3; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 10px;" onclick="window.enviarLinkRecuperacaoSenha()">Enviar Link</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SELETOR VISUAL 100% EMOJIS COM BUSCA INTELIGENTE -->
     <div id="modal-seletor-icones-svg" class="modal-overlay oculto" style="z-index: 1000010;">
         <div class="modal-conteudo" style="max-width: 420px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 0; border-radius: 20px; overflow: hidden;">
@@ -1099,7 +1249,6 @@
                 <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharSeletorIconesSVG()">✕</button>
             </div>
 
-            <!-- Campo de Busca com Filtro Instantâneo por Palavra-Chave -->
             <div style="padding: 12px 16px 10px 16px; background: #ffffff; border-bottom: 1px solid #f1f5f9;">
                 <div style="position: relative; display: flex; align-items: center;">
                     <input type="text" id="input-busca-simbolos" placeholder="Buscar emoji (ex: vassoura, ioga, compras, cafe...)" 
@@ -1109,11 +1258,8 @@
                 </div>
             </div>
 
-            <!-- Área de Rolagem Exclusiva dos Emojis -->
             <div style="flex: 1; overflow-y: auto; padding: 14px 16px; background: #fafafa;">
-                <div id="grid-emojis-opcoes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px;">
-                    <!-- Preenchido via JS com todo o catálogo de emojis -->
-                </div>
+                <div id="grid-emojis-opcoes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px;"></div>
                 <div id="msg-nenhum-simbolo" class="oculto" style="text-align: center; padding: 24px 10px; color: #94a3b8; font-size: 12.5px; font-weight: 600;">
                     Nenhum emoji encontrado para esta busca.
                 </div>
@@ -1121,7 +1267,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONQUISTAS E EMBLEMAS (NOVIDADE) -->
+    <!-- MODAL DE CONQUISTAS E EMBLEMAS -->
     <div id="modal-emblemas-conquistas" class="modal-overlay oculto" style="z-index: 1000008;">
         <div class="modal-conteudo" style="max-width: 400px; width: 95%; max-height: 85vh; padding: 18px; display: flex; flex-direction: column;">
             <div class="modal-header" style="margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada); padding-bottom: 10px;">
@@ -1132,13 +1278,11 @@
                 <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEmblemas()">✕</button>
             </div>
             <p style="font-size: 11.5px; color: var(--texto-suave); margin: 0 0 12px 0;">Complete metas da casa para desbloquear as medalhas e ganhar respeito (e XP) da família.</p>
-            <div id="grid-emblemas-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; flex: 1;">
-                <!-- Preenchido via JS com emblemas ativos e cinzas -->
-            </div>
+            <div id="grid-emblemas-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; flex: 1;"></div>
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO DE TAXA XP (NOVIDADE) -->
+    <!-- MODAL DE CONFIGURAÇÃO DE TAXA XP -->
     <div id="modal-configurar-taxa-xp" class="modal-overlay oculto" style="z-index: 1000009;">
         <div class="modal-conteudo" style="max-width:320px; padding:16px;">
             <div class="modal-header" style="margin-bottom:10px;">
@@ -1188,8 +1332,6 @@
     <!-- Modal: Sugestões de Missões da Semana -->
     <div id="modal-sugestoes-missoes" class="modal-overlay oculto">
         <div class="modal-conteudo" style="width: 92%; max-width: 420px; height: 75vh; max-height: 600px; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
-            
-            <!-- Cabeçalho -->
             <div class="modal-header" style="padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2));">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <svg class="icone-svg" style="width:24px; height:24px; color: var(--cor-primaria, #d97706);" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -1198,23 +1340,18 @@
                 <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharModalSugestoes()">✕</button>
             </div>
 
-            <!-- Abas -->
             <div style="display: flex; gap: 8px; padding: 12px 16px 0 16px;">
                  <button id="btn-sugestao-tab-kids" class="btn-filtro-missao" style="flex:1;" onclick="window.trocarAbaSugestoes('kids')">Kids</button>
                  <button id="btn-sugestao-tab-adultos" class="btn-filtro-missao" style="flex:1;" onclick="window.trocarAbaSugestoes('adultos')">Adultos</button>
             </div>
 
-            <!-- Área Central (Carrossel) -->
             <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px;">
-                
                 <button type="button" onclick="window.sugestaoAnterior()" style="position: absolute; left: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">
                     <svg class="icone-svg" style="width:20px; height:20px; stroke: #64748b;" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
 
                 <div id="cartao-sugestao-atual" style="width: 82%; height: 100%; max-height: 280px; background: var(--suiri-surface-secondary-light, #fef9ea); border: 2px solid var(--cor-primaria, #d97706); border-radius: 16px; box-shadow: 0 6px 15px rgba(217,119,6,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
-                    <div id="sugestao-icone-svg" style="margin-bottom: 16px; color: var(--cor-primaria, #d97706);">
-                        <!-- Símbolo renderizado via JS -->
-                    </div>
+                    <div id="sugestao-icone-svg" style="margin-bottom: 16px; color: var(--cor-primaria, #d97706);"></div>
                     <h2 id="sugestao-titulo" style="font-size: 17px; margin: 0 0 8px 0; color: var(--texto-principal, #334155);">Título da Missão</h2>
                     <p id="sugestao-descricao" style="font-size: 13px; color: var(--texto-suave, #64748b); margin: 0; line-height: 1.4;">Descrição da missão.</p>
                 </div>
@@ -1224,7 +1361,6 @@
                 </button>
             </div>
 
-            <!-- Rodapé Fixo -->
             <div style="padding: 14px 16px; border-top: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2)); text-align: center; background: #fafafa;">
                 <p style="font-size: 11px; color: var(--texto-suave); margin: 0 0 10px 0;">Deslize para ver mais ou toque para escolher.</p>
                 <button type="button" class="btn-sucesso" style="width: 100%; padding: 12px; font-size: 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.aceitarSugestaoAtual()">
@@ -1369,13 +1505,11 @@
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
                 
                 <div style="display: flex; gap: 8px;">
-                    <!-- Botão que abre o seletor visual de Emojis -->
                     <button type="button" id="btn-icone-nova-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('nova')" title="Toque para mudar o Emoji">
                         <span id="svg-preview-nova-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">
                             ⭐
                         </span>
                     </button>
-                    <!-- Campo de Emojis nativo do auto-match visível em modo texto -->
                     <input type="text" id="input-nova-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
                     
                     <input type="text" id="input-nova-missao-titulo" placeholder="O que precisa ser feito?" style="flex: 1;" oninput="if(typeof window.acionarAutoMatchTituloMissao === 'function') window.acionarAutoMatchTituloMissao(this.value, 'nova')">
@@ -1635,7 +1769,7 @@
                 <input type="text" id="edit-beneficio-descricao" placeholder="Descrição simples">
                 <input type="number" id="edit-beneficio-custo" placeholder="Custo em XP (ex: 200)" value="200">
                 
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1.5px solid #fde68a; border-radius: 8px;">
                     <input type="checkbox" id="edit-beneficio-para-kids">
                     <span style="display:flex; align-items:center; gap:5px;">
                         <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1823,13 +1957,11 @@
                 <input type="hidden" id="edit-missao-id">
                 
                 <div style="display: flex; gap: 8px;">
-                    <!-- Botão que abre o seletor visual de Emojis -->
                     <button type="button" id="btn-icone-edit-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('editar')" title="Toque para mudar o Emoji">
                         <span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">
                             ⭐
                         </span>
                     </button>
-                    <!-- Campo de Emojis nativo do auto-match visível em modo texto -->
                     <input type="text" id="input-edit-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
                     
                     <input type="text" id="edit-missao-titulo" placeholder="Título da Missão" style="flex: 1;" oninput="if(typeof window.acionarAutoMatchTituloMissao === 'function') window.acionarAutoMatchTituloMissao(this.value, 'editar')">
@@ -1876,7 +2008,6 @@
                 <input type="password" id="cad-familiar-senha" placeholder="Senha de Acesso (opcional no Modo Kids)">
                 <input type="text" id="cad-familiar-parentesco" placeholder="Parentesco (ex: Esposa, Filho, Mãe)">
                 
-                <!-- Nacionalidade do Membro -->
                 <label style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Nacionalidade / Bandeira:</label>
                 <select id="cad-familiar-nacionalidade">
                     <option value="BR">🇧🇷 Brasil (Português)</option>
@@ -1984,6 +2115,7 @@
         </div>
     </div>
 
+    <!-- Modal: Celebração de Nível -->
     <div id="overlay-celebracao-subida-nivel" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; padding: 24px 16px;">
             <div id="celebracao-nivel-icone" style="margin-bottom: 10px;"></div>
@@ -1993,6 +2125,7 @@
         </div>
     </div>
 
+    <!-- Modal: Manual / Tour Compacto -->
     <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
         <div class="conteudo-tour-flutuante">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2021,7 +2154,11 @@
     <script src="app-relatorios.js"></script>
     <script src="app-instrucao.js"></script>
     <script src="app-tamagotchi.js"></script>
+    <script src="app-meuespaco.js"></script>
     <script src="app-sugestoes.js"></script>
+    <script src="app-saude-dicas.js"></script>
+    <script src="app-saude-mulher.js"></script>
+    
 
     <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET INVISÍVEL) -->
     <script type="text/javascript">
@@ -2210,6 +2347,51 @@
                 alert("Chave Pix copiada!");
             }
             window.fecharModalApoioPix();
+        };
+
+        // Modal Esqueci a Senha
+        window.abrirModalRecuperarSenha = function() {
+            const inputEmail = document.getElementById('login-email');
+            const recEmailInput = document.getElementById('recuperar-email-input');
+            if (recEmailInput && inputEmail && inputEmail.value.trim()) {
+                recEmailInput.value = inputEmail.value.trim();
+            }
+            document.getElementById('modal-recuperar-senha')?.classList.remove('oculto');
+        };
+
+        window.fecharModalRecuperarSenha = function() {
+            document.getElementById('modal-recuperar-senha')?.classList.add('oculto');
+        };
+
+        window.enviarLinkRecuperacaoSenha = async function() {
+            const emailInput = document.getElementById('recuperar-email-input');
+            const email = emailInput?.value.trim().toLowerCase();
+
+            if (!email || !email.includes('@')) {
+                return window.mostrarToast("Informe um e-mail válido para recuperação.", "erro");
+            }
+
+            const cli = window.clienteSupabase || window.cliente || (typeof cliente !== 'undefined' ? cliente : null);
+            if (!cli) {
+                return window.mostrarToast("Erro de ligação com o servidor.", "erro");
+            }
+
+            window.mostrarToast("Enviando link de recuperação...", "info");
+
+            try {
+                const { error } = await cli.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + window.location.pathname
+                });
+
+                if (error) {
+                    return window.mostrarToast("Falha ao enviar: " + error.message, "erro");
+                }
+
+                window.mostrarToast("Link de recuperação enviado com sucesso para o seu e-mail!");
+                window.fecharModalRecuperarSenha();
+            } catch (err) {
+                window.mostrarToast("Erro ao processar recuperação: " + err.message, "erro");
+            }
         };
 
         let eventoDiferidoPwa = null;
