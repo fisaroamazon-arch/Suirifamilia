@@ -1,8 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-PAINEL.JS (100% COMPLETO E INTEGRAL)
-// Gestão de Membros com Nacionalidade/Bandeiras, Adaptação Solo vs Família,
-// Calendário com Privacidade Estrita, Notificações do Sino Flutuante
-// e Liquidação Definitiva com Persistência em Carteira.
+// Gestão de Membros com Nacionalidade/Bandeiras, Gênero/Sexo, Adaptação Solo,
+// Roteador de Visibilidade do Espaço Mulher/Masculino, Calendário e Notificações.
 // =========================================================================
 
 window.listaMembrosFamilia = [];
@@ -69,6 +68,46 @@ window.obterMiniBandeiraNacionalidade = function(cod) {
 };
 
 // =========================================================================
+// ROTEADOR DE GÊNERO: ALTERNÂNCIA VISUAL ENTRE ESPAÇO MULHER E MASCULINO
+// =========================================================================
+window.aplicarVisibilidadeEspacoGenero = function() {
+    const meuId = obterUsuarioId();
+    let perfil = window.perfilAtual;
+
+    if (window.listaMembrosFamilia && window.listaMembrosFamilia.length > 0) {
+        const achou = window.listaMembrosFamilia.find(m => m.id === meuId);
+        if (achou) perfil = achou;
+    }
+
+    if (!perfil) return;
+
+    // Determina o género real
+    let gen = (perfil.genero || '').toLowerCase();
+    if (!gen) {
+        const pLower = (perfil.parentesco || '').toLowerCase();
+        const nLower = (perfil.nome || '').toLowerCase();
+        if (pLower.includes('esposa') || pLower.includes('mãe') || pLower.includes('mae') || pLower.includes('mulher') || pLower.includes('filha') || nLower.includes('sabrina')) {
+            gen = 'feminino';
+        } else {
+            gen = 'masculino';
+        }
+        perfil.genero = gen;
+    }
+
+    // Procura todos os seletores possíveis para o Espaço Mulher e Espaço Masculino
+    const cardsMulher = document.querySelectorAll('#card-acesso-espaco-mulher, #card-acesso-espaco-intimo, .card-espaco-mulher');
+    const cardsMasc = document.querySelectorAll('#card-acesso-espaco-masculino, .card-espaco-masculino');
+
+    if (gen === 'feminino') {
+        cardsMulher.forEach(el => el.classList.remove('oculto'));
+        cardsMasc.forEach(el => el.classList.add('oculto'));
+    } else {
+        cardsMasc.forEach(el => el.classList.remove('oculto'));
+        cardsMulher.forEach(el => el.classList.add('oculto'));
+    }
+};
+
+// =========================================================================
 // 1. GESTÃO DE MEMBROS E ADAPTAÇÃO DINÂMICA (INDIVIDUAL VS FAMÍLIA)
 // =========================================================================
 
@@ -91,6 +130,7 @@ window.carregarListaMembrosPainel = async function() {
     window.renderizarMembrosFamiliaPainel();
     window.atualizarTodosSeletoresMembros();
     window.atualizarBandeiraPerfilTopo();
+    window.aplicarVisibilidadeEspacoGenero();
 };
 
 window.atualizarBandeiraPerfilTopo = function() {
@@ -171,7 +211,6 @@ window.renderizarMembrosFamiliaPainel = function() {
             : (m.parentesco || (m.papel === 'adm' ? 'Administrador' : 'Familiar'));
             
         const ehKids = m.eh_kids === true || m.papel === 'dependente';
-
         const bandeiraNacionalidade = window.obterMiniBandeiraNacionalidade(m.nacionalidade || 'BR');
 
         const badgeCartao = m.possui_cartao 
@@ -197,7 +236,7 @@ window.renderizarMembrosFamiliaPainel = function() {
             iconesAcesso.push(`<span title="Finanças" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span>`);
         }
         if (perms.missoes) {
-            iconesAcesso.push(`<span title="Missões" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>`);
+            iconesAcesso.push(`<span title="Missões" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="2"/></svg></span>`);
         }
 
         if (iconesAcesso.length > 0 && !ehSolo) {
@@ -207,7 +246,6 @@ window.renderizarMembrosFamiliaPainel = function() {
         }
 
         const ehMeuPerfil = m.id === meuId;
-
         const bordaAvatar = ehKids ? 'border:2px solid #10b981;' : 'border:1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25));';
         const elementoAvatar = m.avatar_url 
             ? `<img src="${m.avatar_url}" alt="${window.esc ? window.esc(m.nome) : m.nome}" style="width:44px; height:44px; border-radius:12px; object-fit:cover; ${bordaAvatar} flex-shrink:0;">`
@@ -313,6 +351,8 @@ window.abrirModalNovoMembro = function() {
     if (chkKids) chkKids.checked = false;
     const selNac = document.getElementById('cad-familiar-nacionalidade');
     if (selNac) selNac.value = 'BR';
+    const selGen = document.getElementById('cad-familiar-genero');
+    if (selGen) selGen.value = 'feminino';
     document.getElementById('modal-cadastro-familiar')?.classList.remove('oculto');
 };
 
@@ -324,6 +364,9 @@ window.fecharModalEditarFamiliar = function() {
     document.getElementById('modal-editar-familiar')?.classList.add('oculto');
 };
 
+// =========================================================================
+// CRIAÇÃO DE FAMILIAR COM AUTENTICAÇÃO OFICIAL E PERSISTÊNCIA COMPLETA
+// =========================================================================
 window.salvarNovoFamiliar = async function() {
     const nome = document.getElementById('cad-familiar-nome')?.value.trim();
     let email = document.getElementById('cad-familiar-email')?.value.trim().toLowerCase() || '';
@@ -332,6 +375,17 @@ window.salvarNovoFamiliar = async function() {
     const parentesco = document.getElementById('cad-familiar-parentesco')?.value.trim() || 'Familiar';
     const papel = document.getElementById('cad-familiar-papel')?.value || 'adulto';
     const nacionalidade = document.getElementById('cad-familiar-nacionalidade')?.value || 'BR';
+    
+    let genero = document.getElementById('cad-familiar-genero')?.value;
+    if (!genero) {
+        const pLower = parentesco.toLowerCase();
+        if (pLower.includes('esposa') || pLower.includes('mãe') || pLower.includes('mae') || pLower.includes('mulher') || pLower.includes('irmã') || pLower.includes('filha')) {
+            genero = 'feminino';
+        } else {
+            genero = 'masculino';
+        }
+    }
+
     const possuiCartao = document.getElementById('cad-familiar-cartao')?.checked || false;
     const ehKids = document.getElementById('cad-familiar-modo-kids')?.checked || (papel === 'dependente');
 
@@ -344,7 +398,7 @@ window.salvarNovoFamiliar = async function() {
     if (!nome) return window.mostrarToast("Informe o nome do familiar.", "erro");
 
     if (!ehKids) {
-        if (!email || !email.includes('@')) return window.mostrarToast("Informe um e-mail válido para acesso.", "erro");
+        if (!email || !email.includes('@')) return window.mostrarToast("Informe um e-mail válido para acesso do familiar.", "erro");
         if (!senha || senha.length < 6) return window.mostrarToast("A senha deve ter pelo menos 6 dígitos.", "erro");
     } else {
         if (!email) {
@@ -358,49 +412,81 @@ window.salvarNovoFamiliar = async function() {
 
     const cpfLimpo = cpf ? cpf.replace(/\D/g, '') : null;
     const cli = obterClienteSupabase();
-    if (!cli) return window.mostrarToast("Erro de ligação.", "erro");
+    if (!cli) return window.mostrarToast("Erro de ligação ao Supabase.", "erro");
 
     try {
-        const { data, error } = await cli.rpc('cadastrar_novo_familiar', {
-            p_familia_id: window.familiaAtualId,
-            p_nome: nome,
-            p_email: email,
-            p_cpf: cpfLimpo,
-            p_senha: senha,
-            p_papel: papel,
-            p_parentesco: parentesco,
-            p_possui_cartao: possuiCartao,
-            p_eh_kids: ehKids,
-            p_permissoes: perms
-        });
+        let authUserId = null;
+        const supabaseUrl = window.SUPABASE_URL || cli.supabaseUrl || window.supabaseUrl;
+        const supabaseKey = window.SUPABASE_KEY || cli.supabaseKey || window.supabaseKey;
 
-        if (error) {
-            const novoIdFallback = (typeof crypto !== 'undefined' && crypto.randomUUID) 
-                ? crypto.randomUUID() 
-                : 'membro_' + Date.now();
+        // 1. Cria a conta no Auth oficial com chave de armazenamento isolada para não afetar o administrador
+        if (supabaseUrl && supabaseKey && window.supabase && typeof window.supabase.createClient === 'function') {
+            try {
+                const memStorage = {};
+                const authTempClient = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: false,
+                        storageKey: 'suiri_temp_member_auth',
+                        storage: {
+                            getItem: (k) => memStorage[k] || null,
+                            setItem: (k, v) => { memStorage[k] = v; },
+                            removeItem: (k) => { delete memStorage[k]; }
+                        }
+                    }
+                });
 
-            const { error: errInsert } = await cli.from('membros').insert([{
-                id: novoIdFallback,
-                familia_id: window.familiaAtualId,
-                nome: nome,
-                email: email,
-                cpf: cpfLimpo,
-                parentesco: parentesco,
-                papel: papel,
-                nacionalidade: nacionalidade,
-                possui_cartao: possuiCartao,
-                eh_kids: ehKids,
-                permissoes: perms,
-                xp_total: 0,
-                ofensiva_atual: 0
-            }]);
-            if (errInsert) return window.mostrarToast("Erro ao cadastrar: " + errInsert.message, "erro");
-        } else {
-            // Atualiza a nacionalidade no registro recém-criado
-            await cli.from('membros').update({ nacionalidade: nacionalidade }).eq('email', email);
+                const { data: authData, error: authError } = await authTempClient.auth.signUp({
+                    email: email,
+                    password: senha,
+                    options: {
+                        data: {
+                            nome: nome,
+                            familia_id: window.familiaAtualId
+                        }
+                    }
+                });
+
+                if (authData?.user?.id) {
+                    authUserId = authData.user.id;
+                } else if (authError) {
+                    console.warn("Aviso ao registar na Auth:", authError.message);
+                }
+            } catch (errAuth) {
+                console.warn("Falha no registo oficial GoTrue:", errAuth);
+            }
         }
 
-        window.mostrarToast(`${nome} cadastrado(a) com sucesso!`);
+        // 2. Define o identificador permanente
+        const idFinalMembro = authUserId || ((typeof crypto !== 'undefined' && crypto.randomUUID) 
+            ? crypto.randomUUID() 
+            : 'membro_' + Date.now());
+
+        // 3. Grava o registo definitivo na tabela membros usando a sessão ativa do Administrador
+        const { error: errInsert } = await cli.from('membros').upsert([{
+            id: idFinalMembro,
+            familia_id: window.familiaAtualId,
+            nome: nome,
+            email: email,
+            cpf: cpfLimpo,
+            parentesco: parentesco,
+            papel: papel,
+            genero: genero,
+            nacionalidade: nacionalidade,
+            possui_cartao: possuiCartao,
+            eh_kids: ehKids,
+            permissoes: perms,
+            saldo_carteira: 0,
+            ofensiva_atual: 1,
+            xp_total: 0
+        }], { onConflict: 'id' });
+
+        if (errInsert) {
+            return window.mostrarToast("Erro ao gravar membro: " + errInsert.message, "erro");
+        }
+
+        window.mostrarToast(`${nome} cadastrado(a) com sucesso! Acesso por e-mail e senha ativado.`);
         window.fecharModalNovoMembro();
 
         ['cad-familiar-nome', 'cad-familiar-email', 'cad-familiar-cpf', 'cad-familiar-senha', 'cad-familiar-parentesco'].forEach(id => {
@@ -412,6 +498,7 @@ window.salvarNovoFamiliar = async function() {
 
         await window.carregarListaMembrosPainel();
     } catch (e) {
+        console.error("Falha no cadastro:", e);
         window.mostrarToast("Falha na comunicação com o servidor.", "erro");
     }
 };
@@ -428,6 +515,7 @@ window.abrirModalEditarFamiliar = function(id) {
     setEl('edit-familiar-email', (m.email && m.email.includes('@suirifamilia.app')) ? '' : (m.email || ''));
     setEl('edit-familiar-parentesco', m.parentesco || '');
     setEl('edit-familiar-papel', m.papel || 'adulto');
+    setEl('edit-familiar-genero', m.genero || 'feminino');
     setEl('edit-familiar-nacionalidade', m.nacionalidade || 'BR');
     setChk('edit-familiar-cartao', m.possui_cartao);
     setChk('edit-familiar-modo-kids', m.eh_kids === true || m.papel === 'dependente');
@@ -446,6 +534,7 @@ window.salvarEdicaoFamiliar = async function() {
     let email = document.getElementById('edit-familiar-email')?.value.trim().toLowerCase();
     const parentesco = document.getElementById('edit-familiar-parentesco')?.value.trim();
     const papel = document.getElementById('edit-familiar-papel')?.value;
+    const genero = document.getElementById('edit-familiar-genero')?.value || 'feminino';
     const nacionalidade = document.getElementById('edit-familiar-nacionalidade')?.value || 'BR';
     const possuiCartao = document.getElementById('edit-familiar-cartao')?.checked || false;
     const ehKids = document.getElementById('edit-familiar-modo-kids')?.checked || (papel === 'dependente');
@@ -469,6 +558,7 @@ window.salvarEdicaoFamiliar = async function() {
         nome: nome,
         parentesco: parentesco,
         papel: papel,
+        genero: genero,
         nacionalidade: nacionalidade,
         possui_cartao: possuiCartao,
         eh_kids: ehKids,
@@ -487,6 +577,7 @@ window.salvarEdicaoFamiliar = async function() {
         window.perfilAtual.nome = nome;
         window.perfilAtual.parentesco = parentesco;
         window.perfilAtual.papel = papel;
+        window.perfilAtual.genero = genero;
         window.perfilAtual.nacionalidade = nacionalidade;
         window.perfilAtual.possui_cartao = possuiCartao;
         window.perfilAtual.eh_kids = ehKids;

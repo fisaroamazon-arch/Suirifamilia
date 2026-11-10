@@ -272,7 +272,7 @@ window.preencherSelectResponsaveisMissoes = async function() {
     if (!membros || membros.length === 0) {
         const { data } = await supabase
             .from('membros')
-            .select('id, nome, papel, eh_kids, possui_cartao, avatar_url')
+            .select('id, nome, papel, eh_kids, possui_cartao, avatar_url, ofensiva_atual')
             .eq('familia_id', window.familiaAtualId)
             .order('nome');
         membros = data || [];
@@ -564,7 +564,7 @@ window.alternarMissoesConcluidas = function(tipo, qtd) {
 
 window.toggleSubitemMissao = async function(missaoId, subitemId) {
     const supabase = obterClienteSupabase();
-    const missao = cacheMissoes.find(m => m.id === id || m.id === missaoId);
+    const missao = cacheMissoes.find(m => m.id === missaoId);
     if (!missao || !Array.isArray(missao.subitens) || !supabase) return;
 
     const sub = missao.subitens.find(s => s.id === subitemId);
@@ -1188,9 +1188,23 @@ window.renderizarMissoesTela = function() {
         }
 
         const ehIndividual = missao.escopo === 'pessoal' || (missao.atribuido_a && missao.atribuido_a !== 'todos');
-        const tagEscopo = ehIndividual
-            ? `<span style="font-size:10px; font-weight:700; color:#8b5cf6;">Individual</span>`
-            : `<span style="font-size:10px; font-weight:700; color:#64748b;">Casa</span>`;
+        
+        let tagEscopo = '';
+        let ofensivaResponsavel = 0;
+
+        if (ehIndividual) {
+            tagEscopo = `<span style="font-size:10px; font-weight:700; color:#8b5cf6;">Individual</span>`;
+            if (missao.atribuido_a === meuId) ofensivaResponsavel = window.perfilAtual?.ofensiva_atual || 0;
+            else {
+                const dono = window.listaMembrosFamilia?.find(x => x.id === missao.atribuido_a);
+                if (dono) ofensivaResponsavel = dono.ofensiva_atual || 0;
+            }
+        } else {
+            tagEscopo = `<span style="font-size:10px; font-weight:700; color:#64748b;">Casa</span>`;
+            ofensivaResponsavel = window.perfilAtual?.ofensiva_atual || 0;
+        }
+
+        const tagOfensiva = `<span style="font-size:10px; font-weight:800; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:4px; margin-left:4px;">🔥 ${ofensivaResponsavel}d</span>`;
 
         let badgeCumprido = '';
         if (concluida && missao.concluido_por && window.listaMembrosFamilia && !ehColetiva) {
@@ -1263,6 +1277,7 @@ window.renderizarMissoesTela = function() {
                     <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
                         <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${prioCor};" title="${prioTexto}"></span>
                         ${tagEscopo}
+                        ${tagOfensiva}
                         <span style="font-size:10.5px; color:#b45309; font-weight:700;">+${missao.xp_recompensa || 20} XP</span>
                         ${badgeHorario}
                         ${badgeCumprido}
@@ -1919,9 +1934,12 @@ window.processarTextoTranscrito = function(frase) {
     const texto = textoOriginal.toLowerCase();
 
     let valorDetectado = 0;
-    const matchNumero = texto.match(/(\d+[\d.,]*)/);
+    // CORREÇÃO: Pega o número somente se estiver perto de um indicador de moeda, protegendo números gerais na frase.
+    const matchNumero = texto.match(/r\$\s*(\d+[\d.,]*)|(\d+[\d.,]*)\s*(reais|real|conto)/i);
+    
     if (matchNumero) {
-        let numStr = matchNumero[0].replace(/\.(?=\d{3})/g, '').replace(',', '.');
+        let numStr = matchNumero[1] || matchNumero[2];
+        numStr = numStr.replace(/\.(?=\d{3})/g, '').replace(',', '.');
         valorDetectado = parseFloat(numStr) || 0;
     }
 

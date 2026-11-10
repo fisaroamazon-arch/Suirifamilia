@@ -395,6 +395,12 @@
             padding: 12px 8px 30px 8px !important;
             border-radius: 24px;
         }
+
+        /* Estilização exclusiva para o Espaço Masculino */
+        #secao-espaco-masculino {
+            padding: 12px 8px 30px 8px !important;
+            border-radius: 24px;
+        }
     </style>
 </head>
 <body>
@@ -683,18 +689,32 @@
                             Alfinete seus painéis favoritos do Suiri aqui para ter acesso rápido a tudo em uma única tela.
                         </p>
                         
-                        <!-- Ponto de Acesso Rápido ao Espaço Mulher / Íntimo (EXCLUSIVO NO MEU ESPAÇO) -->
-                        <div id="card-acesso-espaco-intimo" class="cartao-geral" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border: 1.5px solid #f0abfc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(240, 171, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
+                        <!-- Ponto de Acesso Rápido ao Espaço Mulher -->
+                        <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border: 1.5px solid #f0abfc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(240, 171, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 38px; height: 38px; border-radius: 12px; background: #f5d0fe; display: flex; align-items: center; justify-content: center; font-size: 18px;">
                                     🌸
                                 </div>
                                 <div>
-                                    <strong id="lbl-titulo-espaco-intimo" style="font-size: 13.5px; color: #86198f; display: block;">Espaço Mulher</strong>
-                                    <span id="lbl-desc-espaco-intimo" style="font-size: 11px; color: #a21caf;">Ciclo, fertilidade, dicas e bem-estar</span>
+                                    <strong style="font-size: 13.5px; color: #86198f; display: block;">Espaço Mulher</strong>
+                                    <span style="font-size: 11px; color: #a21caf;">Ciclo, fertilidade, dicas e bem-estar</span>
                                 </div>
                             </div>
                             <span style="font-size: 14px; color: #c026d3; font-weight: 800;">Entrar →</span>
+                        </div>
+
+                        <!-- Ponto de Acesso Rápido ao Espaço Masculino -->
+                        <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1.5px solid #7dd3fc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(125, 211, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 12px; background: #bae6fd; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                    🔥
+                                </div>
+                                <div>
+                                    <strong style="font-size: 13.5px; color: #0369a1; display: block;">Espaço Masculino</strong>
+                                    <span style="font-size: 11px; color: #0284c7;">Descompressão, manutenção & foco</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 14px; color: #0284c7; font-weight: 800;">Entrar →</span>
                         </div>
 
                         <!-- Container onde os widgets alfinetados serão injetados -->
@@ -709,7 +729,12 @@
 
                 <!-- MÓDULO: ESPAÇO MULHER (BLINDADO E MODULAR) -->
                 <section id="secao-espaco-mulher" class="secao-conteudo-app oculto">
-                    <!-- Conteúdo injetado e governado dinamicamente por app-saude-mulher.js -->
+                    <!-- Conteúdo injetado dinamicamente por app-saude-mulher.js -->
+                </section>
+
+                <!-- MÓDULO: ESPAÇO MASCULINO (BLINDADO E MODULAR) -->
+                <section id="secao-espaco-masculino" class="secao-conteudo-app oculto">
+                    <!-- Conteúdo injetado dinamicamente por app-espaco-masculino.js -->
                 </section>
 
                 <!-- MÓDULO 1: MISSÕES -->
@@ -1192,7 +1217,7 @@
         <ul class="bottom-nav-list">
             <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
                 <img id="img-avatar-nav" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid transparent; transition: border-color 0.15s ease, transform 0.15s ease;">
-                <span>Espaço</span>
+                <span style="text-align:center; line-height:1.1; margin-top:2px;">Espaço<br>Pessoal</span>
             </li>
             <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
                 <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -2024,6 +2049,12 @@
                     <option value="OUTRO">🌐 Outro</option>
                 </select>
 
+                <label style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b); margin-top: 4px;">Sexo / Gênero:</label>
+                <select id="cad-familiar-sexo">
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                </select>
+
                 <select id="cad-familiar-papel" onchange="const chk = document.getElementById('cad-familiar-modo-kids'); if(chk && this.value === 'dependente') chk.checked = true;">
                     <option value="adulto">Membro Adulto</option>
                     <option value="dependente">Filho / Dependente</option>
@@ -2082,6 +2113,12 @@
                     <option value="FR">🇫🇷 França (Francês)</option>
                     <option value="DE">🇩🇪 Alemanha (Alemão)</option>
                     <option value="OUTRO">🌐 Outro</option>
+                </select>
+
+                <label style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b); margin-top: 4px;">Sexo / Gênero:</label>
+                <select id="edit-familiar-sexo">
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
                 </select>
 
                 <select id="edit-familiar-papel">
@@ -2158,7 +2195,7 @@
     <script src="app-sugestoes.js"></script>
     <script src="app-saude-dicas.js"></script>
     <script src="app-saude-mulher.js"></script>
-    
+    <script src="app-espaco-masculino.js"></script>
 
     <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET INVISÍVEL) -->
     <script type="text/javascript">

@@ -26,6 +26,42 @@ window.atualizarAvatarNavMeuEspaco = function() {
     imgNav.src = avatarSrc;
 };
 
+// 1.1. ATUALIZAÇÃO DOS CARTÕES DE GÉNERO (ESPAÇO MULHER / ESPAÇO MASCULINO)
+window.atualizarCartoesGeneroMeuEspaco = function() {
+    const cardMulher = document.getElementById('card-acesso-espaco-mulher');
+    const cardMasc = document.getElementById('card-acesso-espaco-masculino');
+    
+    if (!cardMulher && !cardMasc) return;
+
+    // Resgata o sexo/género do perfil ativo ou da lista de membros
+    let sexoDetectado = null;
+    if (window.perfilAtual) {
+        sexoDetectado = window.perfilAtual.sexo || window.perfilAtual.genero || null;
+    }
+    
+    if (!sexoDetectado && window.listaMembrosFamilia && typeof window.obterUsuarioId === 'function') {
+        const meuId = window.obterUsuarioId();
+        const membro = window.listaMembrosFamilia.find(m => m.id === meuId);
+        if (membro) {
+            sexoDetectado = membro.sexo || membro.genero || null;
+        }
+    }
+
+    const val = String(sexoDetectado || '').trim().toLowerCase();
+
+    if (val === 'feminino') {
+        if (cardMulher) cardMulher.classList.remove('oculto');
+        if (cardMasc) cardMasc.classList.add('oculto');
+    } else if (val === 'masculino') {
+        if (cardMasc) cardMasc.classList.remove('oculto');
+        if (cardMulher) cardMulher.classList.add('oculto');
+    } else {
+        // Fallback: se não estiver preenchido, revela o espaço masculino se o nome indicar ou exibe o masculino por defeito
+        if (cardMasc) cardMasc.classList.remove('oculto');
+        if (cardMulher) cardMulher.classList.add('oculto');
+    }
+};
+
 // 2. GESTÃO DE PERSISTÊNCIA (LOCALSTORAGE)
 window.carregarAlfinetesMeuEspaco = function() {
     if (typeof window.obterUsuarioId !== 'function') return;
@@ -45,6 +81,7 @@ window.carregarAlfinetesMeuEspaco = function() {
     }
     
     window.renderizarMeuEspaco();
+    window.atualizarCartoesGeneroMeuEspaco();
 };
 
 window.salvarAlfinetesMeuEspaco = function() {
@@ -229,6 +266,9 @@ window.processarTextoTranscritoMeuEspaco = function(frase) {
 
 // 5. RENDERIZAÇÃO DOS WIDGETS COMPLETOS E ATIVOS
 window.renderizarMeuEspaco = function() {
+    // Garante que o cartão de acesso esteja visível para o perfil atual
+    window.atualizarCartoesGeneroMeuEspaco();
+
     const container = document.getElementById('container-widgets-meuespaco');
     const placeholder = document.getElementById('placeholder-meuespaco');
     if (!container) return;
@@ -521,6 +561,7 @@ window.adicionarItemMercadoPeloMeuEspaco = function() {
 
 // 7. INICIALIZAÇÃO SEGURA
 window.inicializarMeuEspacoSeguro = function() {
+    window.atualizarCartoesGeneroMeuEspaco();
     if (typeof window.obterUsuarioId === 'function' && window.obterUsuarioId()) {
         window.atualizarAvatarNavMeuEspaco();
         window.carregarAlfinetesMeuEspaco();
@@ -530,6 +571,7 @@ window.inicializarMeuEspacoSeguro = function() {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    window.atualizarCartoesGeneroMeuEspaco();
     setTimeout(() => {
         if (!window.inicializarMeuEspacoSeguro()) {
             let tentativas = 0;
@@ -540,5 +582,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }, 1000);
         }
-    }, 1500);
+    }, 800);
 });

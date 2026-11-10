@@ -160,7 +160,6 @@ window.TagsIconesSuiri = {
 // CATÁLOGO DE EMOJIS CATEGORIZADOS PARA A ABA "EMOJIS" COM PALAVRAS-CHAVE
 // =========================================================================
 window.CatalogoEmojisSuiri = [
-    // Tarefas, Casa e Organização
     { emoji: '🧹', tags: 'vassoura varrer limpeza faxina po' },
     { emoji: '🛏️', tags: 'cama quarto dormir sono descansar arrumar' },
     { emoji: '🧺', tags: 'roupa lavanderia cesto lavar' },
@@ -173,7 +172,6 @@ window.CatalogoEmojisSuiri = [
     { emoji: '🪟', tags: 'janela vidro limpar abrir' },
     { emoji: '📦', tags: 'caixa guardar organizar mudanca pacote' },
     { emoji: '🔑', tags: 'chave trancar porta casa fechar' },
-    // Saúde, Exercício e Autocuidado
     { emoji: '🧘', tags: 'ioga yoga meditar zen relaxar respirar' },
     { emoji: '🏃', tags: 'correr corrida exercicio cardio esteira treino' },
     { emoji: '🏋️', tags: 'musculacao peso academia treino forca' },
@@ -185,7 +183,6 @@ window.CatalogoEmojisSuiri = [
     { emoji: '🥗', tags: 'salada dieta saudavel comida vegetais' },
     { emoji: '🍎', tags: 'maca fruta lanche comida saudavel' },
     { emoji: '😴', tags: 'dormir sono descanso soneca cama' },
-    // Mercado e Cozinha
     { emoji: '🛒', tags: 'carrinho mercado compras supermercado feira' },
     { emoji: '🍳', tags: 'cozinhar fritar ovo cafe comida cafe' },
     { emoji: '🍲', tags: 'sopa panela almoço jantar comida refeicao' },
@@ -194,7 +191,6 @@ window.CatalogoEmojisSuiri = [
     { emoji: '🥛', tags: 'leite copo laticinios beber' },
     { emoji: '☕', tags: 'cafe xicara acordar manha pause quente' },
     { emoji: '🍕', tags: 'pizza lanche jantar delivery festa' },
-    // Estudos e Trabalho
     { emoji: '📚', tags: 'livro livros estudar estudo leitura aula licao' },
     { emoji: '✏️', tags: 'lapis escrever desenhar anotar licao' },
     { emoji: '💻', tags: 'computador notebook trabalho home office programar' },
@@ -202,14 +198,12 @@ window.CatalogoEmojisSuiri = [
     { emoji: '🎒', tags: 'mochila escola aula material guardar' },
     { emoji: '📅', tags: 'calendario agenda data dia marcar' },
     { emoji: '⏰', tags: 'relogio alarme despertar tempo hora prazo' },
-    // Finanças
     { emoji: '💰', tags: 'dinheiro saco moeda riqueza pagar' },
     { emoji: '💵', tags: 'nota cedula real dinheiro pagamento' },
     { emoji: '💳', tags: 'cartao credito debito pagar banco' },
     { emoji: '🪙', tags: 'moeda centavos mesada trocado' },
     { emoji: '🧾', tags: 'recibo cupom fiscal nota comprovante conta' },
     { emoji: '🐷', tags: 'porquinho cofre cofrinho poupar guardar' },
-    // Lazer, Família e Pets
     { emoji: '🐶', tags: 'cachorro cao pet passear latir bicho' },
     { emoji: '🐱', tags: 'gato felino pet miau bicho' },
     { emoji: '🎮', tags: 'videogame controle jogo play gamer' },
@@ -256,7 +250,6 @@ window.formatarMoedaBRL = function(valor) {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-// Modal Nativo Personalizado "Concordo / Cancelar"
 window.confirmarAcaoSuiri = function(mensagem, titulo = 'Confirmação') {
     return new Promise((resolve) => {
         let modal = document.getElementById('modal-confirmacao-nativo-suiri');
@@ -323,7 +316,7 @@ window.mostrarToast = function(msg, tipo = 'sucesso') {
     t.className = `toast-msg toast-${tipo}`;
     t.innerHTML = `
         <span style="display:flex;align-items:center;gap:6px;">
-            ${tipo === 'sucesso' ? window.IconesSuiri.check : ''}
+            ${tipo === 'sucesso' ? (window.IconesSuiri?.check || '✓') : ''}
             ${esc(msg)}
         </span>
         <span style="cursor:pointer;opacity:0.8;padding:2px 6px;" onclick="this.parentElement.remove()">✕</span>
@@ -414,7 +407,7 @@ window.solicitarPermissaoPush = async function() {
 };
 
 // =========================================================================
-// 4. AUTENTICAÇÃO REAL E CADASTRO DA FAMÍLIA COM NACIONALIDADE
+// 4. AUTENTICAÇÃO REAL E CADASTRO DA FAMÍLIA COM NACIONALIDADE & GÊNERO
 // =========================================================================
 window.fazerLoginEmail = async function(email, senha) {
     if (!cliente) return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
@@ -441,7 +434,7 @@ window.fazerLoginEmail = async function(email, senha) {
     return true;
 };
 
-window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm, cpfAdm, senha, nacionalidade }) {
+window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm, cpfAdm, senha, nacionalidade, genero }) {
     if (!cliente) {
         return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
     }
@@ -449,6 +442,7 @@ window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm
     const emailLimpo = String(emailAdm || '').trim().toLowerCase();
     const cpfLimpo = window.limparCPF(cpfAdm);
     const nac = nacionalidade || 'BR';
+    const gen = genero || 'Masculino';
 
     if (!nomeFamilia || nomeFamilia.trim().length < 2) {
         return window.mostrarToast("Indique o nome da Família / Lar.", "erro");
@@ -531,6 +525,7 @@ window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm
         papel: 'adm',
         parentesco: 'Chefe do Lar',
         nacionalidade: nac,
+        genero: gen,
         possui_cartao: true,
         eh_kids: false,
         permissoes: { mercado: true, gastos: true, missoes: true, financeiro_adm: true },
@@ -778,7 +773,7 @@ window.abrirModalSenhaAdulto = function(membro) {
         modal.innerHTML = `
             <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #ffffff;">
                 <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                    ${window.IconesSuiri?.cadeado || ''}
+                    ${window.IconesSuiri?.escudo || ''}
                 </div>
                 <h3 id="titulo-pin-adulto" style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal); font-weight: 800;">Acesso Restrito</h3>
                 <p id="subtitulo-pin-adulto" style="font-size: 12.5px; color: var(--texto-suave); line-height: 1.4; margin: 0 0 14px 0;"></p>
@@ -926,7 +921,7 @@ window.criarModalQuiosqueDinamico = function() {
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="display:inline-flex; width:26px; height:26px; color:var(--cor-primaria);">${window.IconesSuiri?.trocarMembro || ''}</span>
+                        <span style="display:inline-flex; width:26px; height:26px; color:var(--cor-primaria);">${window.IconesSuiri?.familia || ''}</span>
                         <h2 style="font-size:22px; color:var(--texto-principal); margin:0; font-weight:800;">Quem é você?</h2>
                     </div>
                     <button type="button" class="btn-secundario" style="padding:6px 12px; font-size:14px; border-radius:12px;" onclick="window.fecharJanelaPrincipalQuiosque()">✕</button>
@@ -1008,6 +1003,62 @@ window.selecionarUsuarioQuiosque = function(membroId) {
             window.aplicarRegrasPerfilKidsOuAdulto();
             window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
         }
+    }
+};
+
+window.atualizarCartaoEspacoPessoal = function() {
+    const cardIntimo = document.getElementById('card-acesso-espaco-intimo');
+    if (!cardIntimo) return;
+
+    const genero = String(window.perfilAtual?.genero || '').toLowerCase();
+    const titulo = document.getElementById('lbl-titulo-espaco-intimo');
+    const desc = document.getElementById('lbl-desc-espaco-intimo');
+    const iconeContainer = cardIntimo.querySelector('div > div');
+
+    if (genero === 'masculino') {
+        cardIntimo.style.background = 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)';
+        cardIntimo.style.border = '1.5px solid #7dd3fc';
+        cardIntimo.style.boxShadow = '0 4px 12px rgba(125, 211, 252, 0.25)';
+        if (iconeContainer) {
+            iconeContainer.style.background = '#bae6fd';
+            iconeContainer.textContent = '🔥';
+        }
+        if (titulo) {
+            titulo.style.color = '#0369a1';
+            titulo.textContent = 'Espaço Masculino';
+        }
+        if (desc) {
+            desc.style.color = '#0284c7';
+            desc.textContent = 'Performance, estoicismo, treino e garagem';
+        }
+        cardIntimo.onclick = function() {
+            if (typeof window.abrirEspacoMasculino === 'function') {
+                window.abrirEspacoMasculino();
+            } else {
+                window.mostrarToast("Espaço Masculino a carregar...", "info");
+            }
+        };
+    } else {
+        cardIntimo.style.background = 'linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%)';
+        cardIntimo.style.border = '1.5px solid #f0abfc';
+        cardIntimo.style.boxShadow = '0 4px 12px rgba(240, 171, 252, 0.2)';
+        if (iconeContainer) {
+            iconeContainer.style.background = '#f5d0fe';
+            iconeContainer.textContent = '🌸';
+        }
+        if (titulo) {
+            titulo.style.color = '#86198f';
+            titulo.textContent = 'Espaço Mulher';
+        }
+        if (desc) {
+            desc.style.color = '#a21caf';
+            desc.textContent = 'Ciclo, fertilidade, dicas e bem-estar';
+        }
+        cardIntimo.onclick = function() {
+            if (typeof window.abrirEspacoMulher === 'function') {
+                window.abrirEspacoMulher();
+            }
+        };
     }
 };
 
@@ -1093,6 +1144,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
             window.carregarMetasAnuais();
         }
 
+        window.atualizarCartaoEspacoPessoal();
         window.navegarParaTela(window.telaAtualVisivel || 'inicio');
     }
 };
@@ -1111,6 +1163,10 @@ window.iniciarAppFamilia = async function() {
     if (errMembro || !membro) {
         window.mostrarToast("Perfil de membro não encontrado.", "erro");
         return;
+    }
+
+    if (!membro.genero) {
+        membro.genero = 'Masculino';
     }
 
     window.perfilAtual = membro;
@@ -1201,7 +1257,7 @@ window.navegarParaTela = function(nomeTela) {
 
     if (window.modoKidsAtivo) return;
 
-    const ordemTelas = ['inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
+    const ordemTelas = ['meuespaco', 'inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
     const indexAtual = ordemTelas.indexOf(window.telaAtualVisivel || 'inicio');
     const indexDestino = ordemTelas.indexOf(nomeTela);
     let direcaoClasse = '';
@@ -1236,7 +1292,9 @@ window.navegarParaTela = function(nomeTela) {
         }
     });
 
-    if (nomeTela === 'mercado') {
+    if (nomeTela === 'meuespaco') {
+        window.atualizarCartaoEspacoPessoal();
+    } else if (nomeTela === 'mercado') {
         if (typeof window.carregarItensMercado === 'function') window.carregarItensMercado();
     } else if (nomeTela === 'financeiro') {
         if (typeof window.carregarCarteiraIndividual === 'function') window.carregarCarteiraIndividual();
@@ -1310,7 +1368,6 @@ window.solicitarExclusaoPropriaConta = async function() {
 const DB_NAME = 'SuiriOfflineDB';
 const STORE_NAME = 'FilaAcoes';
 
-// Inicializador Lazy do IndexedDB
 const idbPromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
     request.onupgradeneeded = (e) => {
