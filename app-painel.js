@@ -81,20 +81,32 @@ window.aplicarVisibilidadeEspacoGenero = function() {
 
     if (!perfil) return;
 
-    // Determina o género real
-    let gen = (perfil.genero || '').toLowerCase();
-    if (!gen) {
-        const pLower = (perfil.parentesco || '').toLowerCase();
-        const nLower = (perfil.nome || '').toLowerCase();
+    // Tolera tanto "genero" quanto "sexo", aceitando maiúsculas e minúsculas
+    let genBruto = String(perfil.genero || perfil.sexo || '').trim().toLowerCase();
+    let gen = '';
+
+    if (genBruto.includes('masc') || genBruto === 'homem' || genBruto === 'm') {
+        gen = 'masculino';
+    } else if (genBruto.includes('fem') || genBruto === 'mulher' || genBruto === 'f') {
+        gen = 'feminino';
+    } else {
+        const pLower = String(perfil.parentesco || '').toLowerCase();
+        const nLower = String(perfil.nome || '').toLowerCase();
         if (pLower.includes('esposa') || pLower.includes('mãe') || pLower.includes('mae') || pLower.includes('mulher') || pLower.includes('filha') || nLower.includes('sabrina')) {
             gen = 'feminino';
         } else {
             gen = 'masculino';
         }
-        perfil.genero = gen;
     }
 
-    // Procura todos os seletores possíveis para o Espaço Mulher e Espaço Masculino
+    perfil.genero = gen;
+    perfil.sexo = gen;
+    if (window.perfilAtual) {
+        window.perfilAtual.genero = gen;
+        window.perfilAtual.sexo = gen;
+    }
+
+    // Seletores visuais do Espaço Mulher e do Espaço Masculino
     const cardsMulher = document.querySelectorAll('#card-acesso-espaco-mulher, #card-acesso-espaco-intimo, .card-espaco-mulher');
     const cardsMasc = document.querySelectorAll('#card-acesso-espaco-masculino, .card-espaco-masculino');
 
@@ -104,6 +116,11 @@ window.aplicarVisibilidadeEspacoGenero = function() {
     } else {
         cardsMasc.forEach(el => el.classList.remove('oculto'));
         cardsMulher.forEach(el => el.classList.add('oculto'));
+    }
+
+    // Dispara a sincronização da aba Meu Espaço caso esteja carregada
+    if (typeof window.atualizarCartoesGeneroMeuEspaco === 'function') {
+        window.atualizarCartoesGeneroMeuEspaco();
     }
 };
 
@@ -126,6 +143,16 @@ window.carregarListaMembrosPainel = async function() {
     }
 
     window.listaMembrosFamilia = data || [];
+
+    // Atualiza a referência em memória do perfil ativo
+    const meuId = obterUsuarioId();
+    if (meuId && window.perfilAtual) {
+        const meuPerfilAtualizado = window.listaMembrosFamilia.find(m => m.id === meuId);
+        if (meuPerfilAtualizado) {
+            Object.assign(window.perfilAtual, meuPerfilAtualizado);
+        }
+    }
+
     window.aplicarAdaptacaoSoloOuFamilia();
     window.renderizarMembrosFamiliaPainel();
     window.atualizarTodosSeletoresMembros();
@@ -226,7 +253,6 @@ window.renderizarMembrosFamiliaPainel = function() {
             : '';
 
         const perms = m.permissoes || {};
-        let tagAcessos = '';
         const iconesAcesso = [];
 
         if (perms.mercado) {
@@ -239,6 +265,7 @@ window.renderizarMembrosFamiliaPainel = function() {
             iconesAcesso.push(`<span title="Missões" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="2"/></svg></span>`);
         }
 
+        let tagAcessos = '';
         if (iconesAcesso.length > 0 && !ehSolo) {
             tagAcessos = `<div style="font-size:11px; color:var(--cor-primaria, #d97706); margin-top:3px; display:flex; align-items:center; gap:6px;">
                 <span style="font-size:10px; color:var(--texto-suave);">Acessos:</span> ${iconesAcesso.join('')}
@@ -351,8 +378,11 @@ window.abrirModalNovoMembro = function() {
     if (chkKids) chkKids.checked = false;
     const selNac = document.getElementById('cad-familiar-nacionalidade');
     if (selNac) selNac.value = 'BR';
-    const selGen = document.getElementById('cad-familiar-genero');
+    
+    // Suporta ambos os identificadores possíveis do formulário
+    const selGen = document.getElementById('cad-familiar-genero') || document.getElementById('cad-familiar-sexo');
     if (selGen) selGen.value = 'feminino';
+    
     document.getElementById('modal-cadastro-familiar')?.classList.remove('oculto');
 };
 
@@ -376,8 +406,16 @@ window.salvarNovoFamiliar = async function() {
     const papel = document.getElementById('cad-familiar-papel')?.value || 'adulto';
     const nacionalidade = document.getElementById('cad-familiar-nacionalidade')?.value || 'BR';
     
-    let genero = document.getElementById('cad-familiar-genero')?.value;
-    if (!genero) {
+    // Suporta ambos os seletores do HTML
+    const selGeneroEl = document.getElementById('cad-familiar-genero') || document.getElementById('cad-familiar-sexo');
+    let generoBruto = selGeneroEl ? selGeneroEl.value : '';
+    let genero = '';
+
+    if (generoBruto.toLowerCase().includes('masc')) {
+        genero = 'masculino';
+    } else if (generoBruto.toLowerCase().includes('fem')) {
+        genero = 'feminino';
+    } else {
         const pLower = parentesco.toLowerCase();
         if (pLower.includes('esposa') || pLower.includes('mãe') || pLower.includes('mae') || pLower.includes('mulher') || pLower.includes('irmã') || pLower.includes('filha')) {
             genero = 'feminino';
@@ -419,7 +457,7 @@ window.salvarNovoFamiliar = async function() {
         const supabaseUrl = window.SUPABASE_URL || cli.supabaseUrl || window.supabaseUrl;
         const supabaseKey = window.SUPABASE_KEY || cli.supabaseKey || window.supabaseKey;
 
-        // 1. Cria a conta no Auth oficial com chave de armazenamento isolada para não afetar o administrador
+        // 1. Cria a conta no Auth oficial com chave de armazenamento isolada
         if (supabaseUrl && supabaseKey && window.supabase && typeof window.supabase.createClient === 'function') {
             try {
                 const memStorage = {};
@@ -463,7 +501,7 @@ window.salvarNovoFamiliar = async function() {
             ? crypto.randomUUID() 
             : 'membro_' + Date.now());
 
-        // 3. Grava o registo definitivo na tabela membros usando a sessão ativa do Administrador
+        // 3. Grava o registo definitivo na tabela membros garantindo tanto genero quanto sexo
         const { error: errInsert } = await cli.from('membros').upsert([{
             id: idFinalMembro,
             familia_id: window.familiaAtualId,
@@ -473,6 +511,7 @@ window.salvarNovoFamiliar = async function() {
             parentesco: parentesco,
             papel: papel,
             genero: genero,
+            sexo: genero,
             nacionalidade: nacionalidade,
             possui_cartao: possuiCartao,
             eh_kids: ehKids,
@@ -515,7 +554,16 @@ window.abrirModalEditarFamiliar = function(id) {
     setEl('edit-familiar-email', (m.email && m.email.includes('@suirifamilia.app')) ? '' : (m.email || ''));
     setEl('edit-familiar-parentesco', m.parentesco || '');
     setEl('edit-familiar-papel', m.papel || 'adulto');
-    setEl('edit-familiar-genero', m.genero || 'feminino');
+
+    // Normaliza o género registado
+    let genMembro = String(m.genero || m.sexo || '').toLowerCase();
+    if (genMembro.includes('masc')) genMembro = 'masculino';
+    else if (genMembro.includes('fem')) genMembro = 'feminino';
+    else genMembro = 'feminino';
+
+    setEl('edit-familiar-genero', genMembro);
+    setEl('edit-familiar-sexo', genMembro);
+
     setEl('edit-familiar-nacionalidade', m.nacionalidade || 'BR');
     setChk('edit-familiar-cartao', m.possui_cartao);
     setChk('edit-familiar-modo-kids', m.eh_kids === true || m.papel === 'dependente');
@@ -534,7 +582,18 @@ window.salvarEdicaoFamiliar = async function() {
     let email = document.getElementById('edit-familiar-email')?.value.trim().toLowerCase();
     const parentesco = document.getElementById('edit-familiar-parentesco')?.value.trim();
     const papel = document.getElementById('edit-familiar-papel')?.value;
-    const genero = document.getElementById('edit-familiar-genero')?.value || 'feminino';
+
+    // Procura ambos os IDs possíveis para o select de gênero
+    const selGenEl = document.getElementById('edit-familiar-genero') || document.getElementById('edit-familiar-sexo');
+    let generoBruto = selGenEl ? selGenEl.value : '';
+    let genero = 'feminino';
+
+    if (generoBruto.toLowerCase().includes('masc')) {
+        genero = 'masculino';
+    } else if (generoBruto.toLowerCase().includes('fem')) {
+        genero = 'feminino';
+    }
+
     const nacionalidade = document.getElementById('edit-familiar-nacionalidade')?.value || 'BR';
     const possuiCartao = document.getElementById('edit-familiar-cartao')?.checked || false;
     const ehKids = document.getElementById('edit-familiar-modo-kids')?.checked || (papel === 'dependente');
@@ -554,11 +613,13 @@ window.salvarEdicaoFamiliar = async function() {
     const cli = obterClienteSupabase();
     if (!cli) return;
 
+    // Atualiza com suporte a ambas as colunas (genero e sexo)
     const dadosAtualizar = {
         nome: nome,
         parentesco: parentesco,
         papel: papel,
         genero: genero,
+        sexo: genero,
         nacionalidade: nacionalidade,
         possui_cartao: possuiCartao,
         eh_kids: ehKids,
@@ -569,23 +630,36 @@ window.salvarEdicaoFamiliar = async function() {
         dadosAtualizar.email = email;
     }
 
-    const { error } = await cli.from('membros').update(dadosAtualizar).eq('id', id);
+    let { error } = await cli.from('membros').update(dadosAtualizar).eq('id', id);
+
+    // Fallback: caso a coluna sexo não exista no schema, atualiza apenas com genero
+    if (error && error.message && error.message.includes('sexo')) {
+        delete dadosAtualizar.sexo;
+        const resSec = await cli.from('membros').update(dadosAtualizar).eq('id', id);
+        error = resSec.error;
+    }
 
     if (error) return window.mostrarToast("Erro ao atualizar familiar: " + error.message, "erro");
 
-    if (window.perfilAtual && window.perfilAtual.id === id) {
+    // Sincroniza em tempo real as variáveis de sessão
+    if (window.perfilAtual && (window.perfilAtual.id === id || obterUsuarioId() === id)) {
         window.perfilAtual.nome = nome;
         window.perfilAtual.parentesco = parentesco;
         window.perfilAtual.papel = papel;
         window.perfilAtual.genero = genero;
+        window.perfilAtual.sexo = genero;
         window.perfilAtual.nacionalidade = nacionalidade;
         window.perfilAtual.possui_cartao = possuiCartao;
         window.perfilAtual.eh_kids = ehKids;
         window.perfilAtual.permissoes = perms;
+
         if (typeof window.aplicarRegrasPerfilKidsOuAdulto === 'function') {
             window.aplicarRegrasPerfilKidsOuAdulto();
         }
     }
+
+    // Aplica de imediato a visibilidade dos cartões
+    window.aplicarVisibilidadeEspacoGenero();
 
     window.mostrarToast("Alterações confirmadas com sucesso!");
     window.fecharModalEditarFamiliar();
