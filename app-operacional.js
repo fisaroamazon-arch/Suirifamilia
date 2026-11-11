@@ -3,6 +3,7 @@
 // Missões com Ordenação Inteligente, Subitens Despoluídos, Realtime,
 // Fotinhas Cooperativas Ampliadas (Verde, Laranja, Vermelho), Emojis Puros,
 // Mesada Gamificada, Mural de Recados, Cofres Compartilhados e Voz.
+// Integrado com o Catálogo de Ícones PNG Transparentes (./icone/)
 // =========================================================================
 
 let cacheMissoes = [];
@@ -15,45 +16,28 @@ window.cofresCompartilhadosLista = [];
 window.recadosLarLista = [];
 window.metasAnuaisLista = [];
 
-// Extensão e Fallback de Segurança para o Catálogo de Ícones SVG
-const ICONES_OPERACIONAIS_EXTRAS = {
-    joinha: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
-    joinhaInvertido: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`,
-    xis: `<svg class="icone-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-    relogio: `<svg class="icone-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-    estrela: `<svg class="icone-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    urso: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="13" r="8"/><circle cx="9.5" cy="11.5" r="1"/><circle cx="14.5" cy="11.5" r="1"/><path d="M10 15.5a3.5 3.5 0 0 0 4 0"/></svg>`,
-    escovaDente: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M3 21L21 3"/><path d="M15 3l6 6"/><path d="M12 6l4 4"/></svg>`,
-    cama: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>`,
-    banheira: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1Z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2"/></svg>`,
-    gota: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
-    livro: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
-    patinha: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>`,
-    flor: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/></svg>`,
-    bicicleta: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"/></svg>`,
-    sol: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
-    bola: `<svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M11.9 6.7l-3.9 2.8 1.5 4.6h4.8l1.5-4.6-3.9-2.8z"/></svg>`,
-    lua: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
-    musica: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
-    cenoura: `<svg class="icone-svg" viewBox="0 0 24 24"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7z"/><path d="M15.39 9.61L19 6"/><path d="M16 14l4-1"/><path d="M10 8L9 4"/></svg>`
-};
-
-if (typeof window.IconesSuiri === 'object' && window.IconesSuiri !== null) {
-    Object.assign(window.IconesSuiri, ICONES_OPERACIONAIS_EXTRAS);
-} else {
-    window.IconesSuiri = { ...ICONES_OPERACIONAIS_EXTRAS };
-}
-
 const ICONE_FALLBACK = `⭐`;
 
+// Resgate de ícones seguros apontando para os novos arquivos PNG locais
 function obterIconeSeguro(chave) {
     if (!chave) return ICONE_FALLBACK;
-    if (typeof window.obterIconeSeguroFormatador === 'function') {
-        return window.obterIconeSeguroFormatador(chave);
+    
+    const mapaIconesPng = {
+        'check': `<img src="./icone/icone-check.png" alt="Check" style="width:14px; height:14px; object-fit:contain; vertical-align:middle;">`,
+        'xis': `<img src="./icone/icone-xis.png" alt="Xis" style="width:14px; height:14px; object-fit:contain; vertical-align:middle;">`,
+        'joinha': `<img src="./icone/icone-joinha.png" alt="Fiz" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;">`,
+        'joinhaInvertido': `<img src="./icone/icone-joinha-baixo.png" alt="Não Fiz" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;">`,
+        'relogio': `<img src="./icone/icone-relogio.png" alt="Horário" style="width:12px; height:12px; object-fit:contain; vertical-align:middle;">`,
+        'editar': `<img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain; vertical-align:middle;">`,
+        'excluir': `<img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain; vertical-align:middle;">`,
+        'moeda': `<img src="./icone/icone-carteira.png" alt="XP" style="width:14px; height:14px; object-fit:contain; vertical-align:middle;">`,
+        'trofeu': `<img src="./icone/icone-loja.png" alt="Troféu" style="width:20px; height:20px; object-fit:contain; vertical-align:middle;">`
+    };
+
+    if (mapaIconesPng[chave]) {
+        return mapaIconesPng[chave];
     }
-    if (window.IconesSuiri && window.IconesSuiri[chave]) {
-        return window.IconesSuiri[chave];
-    }
+    
     if (String(chave).length <= 5) {
         return `<div style="font-size: inherit; line-height: 1; display:flex; align-items:center; justify-content:center;">${chave}</div>`;
     }
@@ -104,17 +88,19 @@ window.dispararParticulasSucesso = function() {
 };
 
 // =========================================================================
-// INJEÇÃO DINÂMICA DE ALFINETES PARA O MÓDULO "MEU ESPAÇO"
+// INJEÇÃO DINÂMICA DE ALFINETES PARA O MÓDULO "MEU ESPAÇO" (COM ÍCONE PNG)
 // =========================================================================
 window.injetarPinosNosModais = function() {
+    const imgPinHtml = `<img src="./icone/icone-alfinete.png" alt="Fixar" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;">`;
+
     // 1. Missões
     const headerMissoes = document.getElementById('container-botoes-filtro-missoes');
     if (headerMissoes && !document.getElementById('pin-widget-missoes')) {
         const btnPin = document.createElement('button');
         btnPin.id = 'pin-widget-missoes';
         btnPin.className = 'btn-secundario';
-        btnPin.style.cssText = 'padding:10px; font-size:14px; border-radius:12px; margin-left:6px; flex: 0 0 auto;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'padding:10px; border-radius:12px; margin-left:6px; flex: 0 0 auto; display:flex; align-items:center; justify-content:center;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar painel de Missões no Meu Espaço";
         btnPin.onclick = () => { if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-inicio', 'Painel de Missões'); };
         headerMissoes.appendChild(btnPin);
@@ -125,8 +111,8 @@ window.injetarPinosNosModais = function() {
     if (headerRecados && !document.getElementById('pin-widget-recados')) {
         const btnPin = document.createElement('span');
         btnPin.id = 'pin-widget-recados';
-        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'cursor:pointer; margin-left:8px; display:inline-flex; align-items:center; vertical-align: middle;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Mural de Recados no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('bloco-card-mural-recados', 'Mural de Avisos'); };
         headerRecados.parentNode.insertBefore(btnPin, headerRecados.nextSibling);
@@ -137,8 +123,8 @@ window.injetarPinosNosModais = function() {
     if (headerCalendario && !document.getElementById('pin-widget-calendario')) {
         const btnPin = document.createElement('span');
         btnPin.id = 'pin-widget-calendario';
-        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'cursor:pointer; margin-left:8px; display:inline-flex; align-items:center; vertical-align: middle;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Calendário no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-calendario', 'Calendário da Casa'); };
         headerCalendario.appendChild(btnPin);
@@ -149,8 +135,8 @@ window.injetarPinosNosModais = function() {
     if (lblSaldo && !document.getElementById('pin-widget-carteira')) {
         const btnPin = document.createElement('span');
         btnPin.id = 'pin-widget-carteira';
-        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:12px; display:inline-block; vertical-align: middle;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; vertical-align: middle;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Saldo no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('box-carteira-topo', 'Minha Carteira (Saldo)'); };
         lblSaldo.appendChild(btnPin);
@@ -161,21 +147,21 @@ window.injetarPinosNosModais = function() {
     if (headerRegRapido && !document.getElementById('pin-widget-registro-rapido')) {
         const btnPin = document.createElement('span');
         btnPin.id = 'pin-widget-registro-rapido';
-        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'cursor:pointer; margin-left:8px; display:inline-flex; align-items:center; vertical-align: middle;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Lançamento Rápido no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('card-registro-rapido-financas', 'Lançamento de Gastos'); };
         headerRegRapido.appendChild(btnPin);
     }
 
-    // 6. Supermercado (botões do topo)
+    // 6. Supermercado
     const btnAbaLista = document.getElementById('btn-aba-lista-mes');
     if (btnAbaLista && btnAbaLista.parentNode && !document.getElementById('pin-widget-mercado')) {
         const btnPin = document.createElement('button');
         btnPin.id = 'pin-widget-mercado';
         btnPin.className = 'btn-secundario';
-        btnPin.style.cssText = 'padding: 4px 10px; font-size: 14px; border-radius: 12px; flex: 0 0 auto; margin-left: 4px;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'padding: 4px 10px; border-radius: 12px; flex: 0 0 auto; margin-left: 4px; display:flex; align-items:center; justify-content:center;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Mercado no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('secao-mercado', 'Supermercado'); };
         btnAbaLista.parentNode.appendChild(btnPin);
@@ -186,8 +172,8 @@ window.injetarPinosNosModais = function() {
     if (spanMetas && spanMetas.parentElement && !document.getElementById('pin-widget-metas')) {
         const btnPin = document.createElement('span');
         btnPin.id = 'pin-widget-metas';
-        btnPin.style.cssText = 'cursor:pointer; font-size:14px; margin-left:8px; display:inline-block; vertical-align: middle;';
-        btnPin.innerHTML = '📌';
+        btnPin.style.cssText = 'cursor:pointer; margin-left:8px; display:inline-flex; align-items:center; vertical-align: middle;';
+        btnPin.innerHTML = imgPinHtml;
         btnPin.title = "Fixar Metas do Ano no Meu Espaço";
         btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('modal-metas-anuais', 'Planos & Metas do Ano'); };
         spanMetas.parentElement.appendChild(btnPin);
@@ -210,7 +196,6 @@ window.iniciarModuloMissoes = async function() {
     window.verificarGatilhoPenseSeteManha();
     window.inicializarNavegacaoSwipe();
     
-    // Injeta os alfinetes nas abas sem quebrar o HTML nativo
     setTimeout(window.injetarPinosNosModais, 500);
 };
 
@@ -479,8 +464,8 @@ window.carregarMissoesKidsExclusiva = function() {
                             </span>
                         ` : ''}
                         ${missao.horario_limite ? `
-                            <span style="font-size:10px; font-weight:700; color:#0369a1; background:#e0f2fe; padding:2px 6px; border-radius:999px;">
-                                até ${missao.horario_limite.slice(0, 5)}
+                            <span style="font-size:10px; font-weight:700; color:#0369a1; background:#e0f2fe; padding:2px 6px; border-radius:999px; display:inline-flex; align-items:center; gap:3px;">
+                                ${obterIconeSeguro('relogio')} até ${missao.horario_limite.slice(0, 5)}
                             </span>
                         ` : ''}
                     </div>
@@ -600,7 +585,9 @@ window.adicionarLinhaSubitemCriacao = function() {
     div.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
     div.innerHTML = `
         <input type="text" class="input-subitem-item" placeholder="Sub-etapa (ex: Guardar sapatos)" style="flex:1; padding:7px 10px; font-size:12px;">
-        <button type="button" class="btn-erro" style="padding:4px 8px; font-size:12px; border-radius:8px;" onclick="this.parentElement.remove()">remover</button>
+        <button type="button" class="btn-erro" style="padding:4px 8px; font-size:12px; border-radius:8px; display:inline-flex; align-items:center; gap:3px;" onclick="this.parentElement.remove()">
+            ${obterIconeSeguro('excluir')}
+        </button>
     `;
     container.appendChild(div);
 };
@@ -699,11 +686,11 @@ window.renderizarHistoricoMissoesKidsADM = function() {
             </div>
 
             <div style="display:flex; gap:6px; flex-shrink:0;">
-                <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px;" onclick="window.iniciarEdicaoMissao('${m.id}')" title="Editar">
-                    Editar
+                <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" onclick="window.iniciarEdicaoMissao('${m.id}')" title="Editar">
+                    ${obterIconeSeguro('editar')} Editar
                 </button>
-                <button type="button" class="btn-erro" style="padding:4px 8px; font-size:11px;" onclick="window.excluirMissao('${m.id}')" title="Excluir do Histórico">
-                    Excluir
+                <button type="button" class="btn-erro" style="padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" onclick="window.excluirMissao('${m.id}')" title="Excluir do Histórico">
+                    ${obterIconeSeguro('excluir')} Excluir
                 </button>
             </div>
         `;
@@ -845,7 +832,6 @@ window.inicializarNavegacaoSwipe = function() {
     let touchEndX = 0;
     let touchEndY = 0;
 
-    // Ordem integral incluindo o Meu Espaço na primeira posição da esquerda
     const telasOrdem = ['meuespaco', 'inicio', 'mercado', 'financeiro', 'calendario', 'familia'];
 
     window.addEventListener('touchstart', (e) => {
@@ -1167,12 +1153,7 @@ window.renderizarMissoesTela = function() {
         const prioTexto = missao.prioridade === 1 ? 'Urgente' : (missao.prioridade === 2 ? 'Importante' : 'Tranquilo');
 
         const iconeChave = missao.icone || '⭐';
-        let svgIcone = '';
-        if (String(iconeChave).length <= 5 && !window.IconesSuiri[iconeChave]) {
-            svgIcone = `<div style="font-size: 22px; line-height: 1;">${iconeChave}</div>`;
-        } else {
-            svgIcone = obterIconeSeguro(iconeChave);
-        }
+        let svgIcone = `<div style="font-size: 22px; line-height: 1;">${iconeChave}</div>`;
 
         let badgeHorario = '';
         if (missao.horario_limite) {
@@ -1204,7 +1185,7 @@ window.renderizarMissoesTela = function() {
             ofensivaResponsavel = window.perfilAtual?.ofensiva_atual || 0;
         }
 
-        const tagOfensiva = `<span style="font-size:10px; font-weight:800; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:4px; margin-left:4px;">🔥 ${ofensivaResponsavel}d</span>`;
+        const tagOfensiva = `<span style="font-size:10px; font-weight:800; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:4px; margin-left:4px; display:inline-flex; align-items:center; gap:2px;"><img src="./icone/icone-fogo.png" alt="Fogo" style="width:11px; height:11px; object-fit:contain;"> ${ofensivaResponsavel}d</span>`;
 
         let badgeCumprido = '';
         if (concluida && missao.concluido_por && window.listaMembrosFamilia && !ehColetiva) {
@@ -1284,7 +1265,7 @@ window.renderizarMissoesTela = function() {
                     </div>
                     
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="color:${concluida ? '#10b981' : (falhada ? '#ef4444' : '#d97706')}; display:flex; align-items:center;">
+                        <span style="display:flex; align-items:center;">
                             ${svgIcone}
                         </span>
                         <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
@@ -1324,7 +1305,7 @@ window.renderizarMissoesTela = function() {
                                 ${obterIconeSeguro('editar')} Editar
                             </button>
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('missao', '${missao.id}')">
-                                📌 Fixar no Espaço
+                                <img src="./icone/icone-alfinete.png" alt="Fixar" style="width:13px; height:13px; object-fit:contain;"> Fixar no Espaço
                             </button>
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:var(--cor-erro, #f43f5e); border-top:1px solid #f1f5f9; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.excluirMissao('${missao.id}')">
                                 ${obterIconeSeguro('excluir')} Excluir
@@ -1934,7 +1915,6 @@ window.processarTextoTranscrito = function(frase) {
     const texto = textoOriginal.toLowerCase();
 
     let valorDetectado = 0;
-    // CORREÇÃO: Pega o número somente se estiver perto de um indicador de moeda, protegendo números gerais na frase.
     const matchNumero = texto.match(/r\$\s*(\d+[\d.,]*)|(\d+[\d.,]*)\s*(reais|real|conto)/i);
     
     if (matchNumero) {
@@ -2363,7 +2343,9 @@ window.renderizarCofresNaTela = function() {
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:11px; font-weight:800; color:var(--cor-sucesso, #10b981);">${pct.toFixed(0)}%</span>
-                        <button type="button" class="btn-secundario" style="padding:3px 6px; font-size:10.5px;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('cofre', '${cofre.id}')" title="Fixar no Meu Espaço">📌</button>
+                        <button type="button" class="btn-secundario" style="padding:3px 6px; font-size:10.5px; display:inline-flex; align-items:center;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('cofre', '${cofre.id}')" title="Fixar no Meu Espaço">
+                            <img src="./icone/icone-alfinete.png" alt="Fixar" style="width:12px; height:12px; object-fit:contain;">
+                        </button>
                         <button type="button" class="btn-secundario" style="padding:3px 6px; font-size:10.5px;" onclick="window.abrirModalEditarCofre('${cofre.id}')">Ajustar</button>
                     </div>
                 </div>
@@ -2588,7 +2570,7 @@ window.renderizarRecadosLar = function() {
 
                 <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                     <button type="button" class="btn-secundario" style="padding:4px 6px; font-size:10px; display:inline-flex; align-items:center;" onclick="if(window.alfinetarItemEspecifico) window.alfinetarItemEspecifico('recado', '${r.id}')" title="Fixar no Meu Espaço">
-                        📌
+                        <img src="./icone/icone-alfinete.png" alt="Fixar" style="width:12px; height:12px; object-fit:contain;">
                     </button>
                     ${!jaLi ? `
                         <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10px; font-weight:700;" onclick="window.marcarRecadoLido('${r.id}')" title="Marcar como lido">
@@ -2903,11 +2885,11 @@ window.renderizarMetasAnuaisModal = function() {
             </div>
 
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                <button type="button" class="${concluida ? 'btn-secundario' : 'btn-sucesso'}" style="padding:6px 10px; font-size:11px; border-radius:8px;" onclick="window.alternarStatusMetaAnual('${meta.id}', ${concluida})">
-                    ${concluida ? 'Feito' : 'Concluir'}
+                <button type="button" class="${concluida ? 'btn-secundario' : 'btn-sucesso'}" style="padding:6px 10px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarStatusMetaAnual('${meta.id}', ${concluida})">
+                    ${concluida ? `${obterIconeSeguro('check')} Feito` : 'Concluir'}
                 </button>
-                <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; border-radius:8px;" onclick="window.excluirMetaAnual('${meta.id}')" title="Excluir">
-                    Excluir
+                <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;" onclick="window.excluirMetaAnual('${meta.id}')" title="Excluir">
+                    ${obterIconeSeguro('excluir')} Excluir
                 </button>
             </div>
         `;

@@ -5,7 +5,7 @@
 // Sugestões de Cardápio Mensal no Quadro de Avisos,
 // Histórico de Preço Médio/Último, Extrato com Pesquisa Instantânea,
 // Transferência de Saldo entre Carteiras e Agendamentos Recorrentes.
-// Padrão de Diálogos: Concordo / Cancelar (Zero Emojis - 100% SVG)
+// Integrado com o Catálogo de Ícones PNG Transparentes (./icone/)
 // =========================================================================
 
 window.itensMercadoAtual = [];
@@ -225,8 +225,8 @@ window.filtrarListaExtratoMemoria = function() {
         const marcadorDot = `<span style="width:8px; height:8px; border-radius:50%; background:${cor}; display:inline-block; margin-right:6px; flex-shrink:0;"></span>`;
 
         const tagEscopoSvg = ehPrivativo
-            ? `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Pessoal</span>`
-            : `<span style="display:inline-flex; align-items:center; gap:3px; font-size:10px; color:var(--texto-suave);"><svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Casa</span>`;
+            ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; color:var(--texto-suave);"><img src="./icone/icone-pessoa-escopo.png" alt="Pessoal" style="width:12px; height:12px; object-fit:contain;"> Pessoal</span>`
+            : `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; color:var(--texto-suave);"><img src="./icone/icone-casa-escopo.png" alt="Casa" style="width:12px; height:12px; object-fit:contain;"> Casa</span>`;
 
         const descSegura = window.esc ? window.esc(descricaoVisivel) : descricaoVisivel;
 
@@ -247,11 +247,11 @@ window.filtrarListaExtratoMemoria = function() {
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <strong style="color:${cor}; font-size:13px; white-space:nowrap;">${sinal} R$ ${Number(t.valor || 0).toFixed(2)}</strong>
                 ${(ehMeuLancamento || window.perfilAtual?.papel === 'adm') ? `
-                    <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.abrirModalEditarTransacao('${tCodificado}')" title="Editar">
-                        <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarTransacao('${tCodificado}')" title="Editar">
+                        <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
                     </button>
-                    <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.excluirTransacaoCarteira('${t.id}')" title="Excluir">
-                        <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.excluirTransacaoCarteira('${t.id}')" title="Excluir">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
                     </button>
                 ` : ''}
             </div>
@@ -1058,11 +1058,11 @@ window.renderizarListaMercado = function() {
                     ${badgePreco}
                 </div>
                 <div style="display:flex; gap:6px;">
-                    <button class="btn-secundario" style="padding:6px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.abrirModalEditarMercado('${i.id}')" title="Editar">
-                        <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <button class="btn-secundario" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarMercado('${i.id}')" title="Editar">
+                        <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
                     </button>
-                    <button class="btn-erro" style="padding:6px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')" title="Excluir">
-                        <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <button class="btn-erro" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')" title="Excluir">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
                     </button>
                 </div>
             </div>
@@ -1135,7 +1135,7 @@ window.renderizarPlanilhaMercado = function() {
                 </td>
                 <td style="text-align:center;">
                     <button class="btn-erro" style="padding:4px 6px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')">
-                        <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:12px; height:12px; object-fit:contain;">
                     </button>
                 </td>
             </tr>

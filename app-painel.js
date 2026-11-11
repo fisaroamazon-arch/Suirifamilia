@@ -2,6 +2,7 @@
 // SUIRI GESTÃO FAMILIAR - APP-PAINEL.JS (100% COMPLETO E INTEGRAL)
 // Gestão de Membros com Nacionalidade/Bandeiras, Gênero/Sexo, Adaptação Solo,
 // Roteador de Visibilidade do Espaço Mulher/Masculino, Calendário e Notificações.
+// Integrado com o Catálogo Oficial de Ícones PNG Transparentes (./icone/)
 // =========================================================================
 
 window.listaMembrosFamilia = [];
@@ -81,7 +82,6 @@ window.aplicarVisibilidadeEspacoGenero = function() {
 
     if (!perfil) return;
 
-    // Tolera tanto "genero" quanto "sexo", aceitando maiúsculas e minúsculas
     let genBruto = String(perfil.genero || perfil.sexo || '').trim().toLowerCase();
     let gen = '';
 
@@ -106,7 +106,6 @@ window.aplicarVisibilidadeEspacoGenero = function() {
         window.perfilAtual.sexo = gen;
     }
 
-    // Seletores visuais do Espaço Mulher e do Espaço Masculino
     const cardsMulher = document.querySelectorAll('#card-acesso-espaco-mulher, #card-acesso-espaco-intimo, .card-espaco-mulher');
     const cardsMasc = document.querySelectorAll('#card-acesso-espaco-masculino, .card-espaco-masculino');
 
@@ -118,7 +117,6 @@ window.aplicarVisibilidadeEspacoGenero = function() {
         cardsMulher.forEach(el => el.classList.add('oculto'));
     }
 
-    // Dispara a sincronização da aba Meu Espaço caso esteja carregada
     if (typeof window.atualizarCartoesGeneroMeuEspaco === 'function') {
         window.atualizarCartoesGeneroMeuEspaco();
     }
@@ -144,7 +142,6 @@ window.carregarListaMembrosPainel = async function() {
 
     window.listaMembrosFamilia = data || [];
 
-    // Atualiza a referência em memória do perfil ativo
     const meuId = obterUsuarioId();
     if (meuId && window.perfilAtual) {
         const meuPerfilAtualizado = window.listaMembrosFamilia.find(m => m.id === meuId);
@@ -242,13 +239,13 @@ window.renderizarMembrosFamiliaPainel = function() {
 
         const badgeCartao = m.possui_cartao 
             ? `<span style="font-size:10px; background:rgba(16,185,129,0.15); color:var(--cor-sucesso, #10b981); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:700; display:inline-flex; align-items:center; gap:3px;">
-                <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Cartão
+                <img src="./icone/icone-carteira.png" alt="Cartão" style="width:11px; height:11px; object-fit:contain;"> Cartão
                </span>` 
             : '';
 
         const badgeKids = ehKids
             ? `<span style="font-size:10px; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.3); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:800; display:inline-flex; align-items:center; gap:3px;">
-                <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Kids
+                <img src="./icone/icones-missao.png" alt="Kids" style="width:11px; height:11px; object-fit:contain;"> Kids
                </span>`
             : '';
 
@@ -256,13 +253,13 @@ window.renderizarMembrosFamiliaPainel = function() {
         const iconesAcesso = [];
 
         if (perms.mercado) {
-            iconesAcesso.push(`<span title="Mercado" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></span>`);
+            iconesAcesso.push(`<img src="./icone/icone-mercado.png" title="Mercado" style="width:13px; height:13px; object-fit:contain;">`);
         }
         if (perms.gastos) {
-            iconesAcesso.push(`<span title="Finanças" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span>`);
+            iconesAcesso.push(`<img src="./icone/icone-financas.png" title="Finanças" style="width:13px; height:13px; object-fit:contain;">`);
         }
         if (perms.missoes) {
-            iconesAcesso.push(`<span title="Missões" style="display:inline-flex; width:13px; height:13px;"><svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="2"/></svg></span>`);
+            iconesAcesso.push(`<img src="./icone/icones-missao.png" title="Missões" style="width:13px; height:13px; object-fit:contain;">`);
         }
 
         let tagAcessos = '';
@@ -294,7 +291,7 @@ window.renderizarMembrosFamiliaPainel = function() {
                         <span>${parentesco}</span>
                         <span>•</span>
                         <span style="display:inline-flex; align-items:center; gap:3px;">
-                            <svg class="icone-svg icone-fogo" style="width:12px; height:12px;" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                            <img src="./icone/icone-fogo.png" alt="Fogo" style="width:12px; height:12px; object-fit:contain;">
                             ${m.ofensiva_atual || 0}d
                         </span>
                     </div>
@@ -307,11 +304,11 @@ window.renderizarMembrosFamiliaPainel = function() {
                     <strong style="color:var(--cor-sucesso, #10b981); font-size:13px;">${m.xp_total || 0}</strong>
                 </div>
                 <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center; justify-content:center;" onclick="window.abrirModalEditarFamiliar('${m.id}')" title="Editar">
-                    <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
                 </button>
                 ${!ehMeuPerfil ? `
                     <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center; justify-content:center;" onclick="window.excluirFamiliar('${m.id}')" title="Excluir">
-                        <svg class="icone-svg" style="width:13px; height:13px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
                     </button>
                 ` : ''}
             </div>
@@ -324,7 +321,7 @@ window.renderizarMembrosFamiliaPainel = function() {
         dicaSolo.style.cssText = 'padding:10px 12px; background:var(--suiri-surface-secondary-light, #fef9ea); border:1px dashed var(--borda-delicada, rgba(217, 119, 6, 0.2)); border-radius:12px; font-size:11.5px; color:var(--texto-suave, #64748b); text-align:center; margin-top:8px;';
         dicaSolo.innerHTML = `
             <span style="display:flex; align-items:center; justify-content:center; gap:6px;">
-                <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <img src="./icone/icone-lampada-pense.png" alt="Dica" style="width:14px; height:14px; object-fit:contain;">
                 Este espaço está otimizado para a sua organização pessoal. Para partilhar rotinas ou compras, adicione outro membro a qualquer momento.
             </span>
         `;
@@ -379,7 +376,6 @@ window.abrirModalNovoMembro = function() {
     const selNac = document.getElementById('cad-familiar-nacionalidade');
     if (selNac) selNac.value = 'BR';
     
-    // Suporta ambos os identificadores possíveis do formulário
     const selGen = document.getElementById('cad-familiar-genero') || document.getElementById('cad-familiar-sexo');
     if (selGen) selGen.value = 'feminino';
     
@@ -406,7 +402,6 @@ window.salvarNovoFamiliar = async function() {
     const papel = document.getElementById('cad-familiar-papel')?.value || 'adulto';
     const nacionalidade = document.getElementById('cad-familiar-nacionalidade')?.value || 'BR';
     
-    // Suporta ambos os seletores do HTML
     const selGeneroEl = document.getElementById('cad-familiar-genero') || document.getElementById('cad-familiar-sexo');
     let generoBruto = selGeneroEl ? selGeneroEl.value : '';
     let genero = '';
@@ -457,7 +452,6 @@ window.salvarNovoFamiliar = async function() {
         const supabaseUrl = window.SUPABASE_URL || cli.supabaseUrl || window.supabaseUrl;
         const supabaseKey = window.SUPABASE_KEY || cli.supabaseKey || window.supabaseKey;
 
-        // 1. Cria a conta no Auth oficial com chave de armazenamento isolada
         if (supabaseUrl && supabaseKey && window.supabase && typeof window.supabase.createClient === 'function') {
             try {
                 const memStorage = {};
@@ -496,12 +490,10 @@ window.salvarNovoFamiliar = async function() {
             }
         }
 
-        // 2. Define o identificador permanente
         const idFinalMembro = authUserId || ((typeof crypto !== 'undefined' && crypto.randomUUID) 
             ? crypto.randomUUID() 
             : 'membro_' + Date.now());
 
-        // 3. Grava o registo definitivo na tabela membros garantindo tanto genero quanto sexo
         const { error: errInsert } = await cli.from('membros').upsert([{
             id: idFinalMembro,
             familia_id: window.familiaAtualId,
@@ -555,7 +547,6 @@ window.abrirModalEditarFamiliar = function(id) {
     setEl('edit-familiar-parentesco', m.parentesco || '');
     setEl('edit-familiar-papel', m.papel || 'adulto');
 
-    // Normaliza o género registado
     let genMembro = String(m.genero || m.sexo || '').toLowerCase();
     if (genMembro.includes('masc')) genMembro = 'masculino';
     else if (genMembro.includes('fem')) genMembro = 'feminino';
@@ -583,7 +574,6 @@ window.salvarEdicaoFamiliar = async function() {
     const parentesco = document.getElementById('edit-familiar-parentesco')?.value.trim();
     const papel = document.getElementById('edit-familiar-papel')?.value;
 
-    // Procura ambos os IDs possíveis para o select de gênero
     const selGenEl = document.getElementById('edit-familiar-genero') || document.getElementById('edit-familiar-sexo');
     let generoBruto = selGenEl ? selGenEl.value : '';
     let genero = 'feminino';
@@ -613,7 +603,6 @@ window.salvarEdicaoFamiliar = async function() {
     const cli = obterClienteSupabase();
     if (!cli) return;
 
-    // Atualiza com suporte a ambas as colunas (genero e sexo)
     const dadosAtualizar = {
         nome: nome,
         parentesco: parentesco,
@@ -632,7 +621,6 @@ window.salvarEdicaoFamiliar = async function() {
 
     let { error } = await cli.from('membros').update(dadosAtualizar).eq('id', id);
 
-    // Fallback: caso a coluna sexo não exista no schema, atualiza apenas com genero
     if (error && error.message && error.message.includes('sexo')) {
         delete dadosAtualizar.sexo;
         const resSec = await cli.from('membros').update(dadosAtualizar).eq('id', id);
@@ -641,7 +629,6 @@ window.salvarEdicaoFamiliar = async function() {
 
     if (error) return window.mostrarToast("Erro ao atualizar familiar: " + error.message, "erro");
 
-    // Sincroniza em tempo real as variáveis de sessão
     if (window.perfilAtual && (window.perfilAtual.id === id || obterUsuarioId() === id)) {
         window.perfilAtual.nome = nome;
         window.perfilAtual.parentesco = parentesco;
@@ -658,7 +645,6 @@ window.salvarEdicaoFamiliar = async function() {
         }
     }
 
-    // Aplica de imediato a visibilidade dos cartões
     window.aplicarVisibilidadeEspacoGenero();
 
     window.mostrarToast("Alterações confirmadas com sucesso!");
@@ -854,8 +840,8 @@ window.abrirDetalhesDiaCalendario = function(dataIso) {
                         </div>
                     </div>
                     ${(ehMeuEvento || window.perfilAtual?.papel === 'adm') ? `
-                        <button class="btn-erro" style="padding:4px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.excluirEventoCalendario('${e.id}')">
-                            <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <button class="btn-erro" style="padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; justify-content:center;" onclick="window.excluirEventoCalendario('${e.id}')" title="Excluir">
+                            <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
                         </button>
                     ` : ''}
                 </div>
@@ -881,12 +867,12 @@ window.abrirDetalhesDiaCalendario = function(dataIso) {
                 <button type="button" id="btn-baixa-cal-${c.id}" class="${ehPagamento ? 'btn-secundario' : 'btn-sucesso'}" 
                         style="padding:5px 8px; font-size:11px; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:4px; ${ehPagamento ? 'border:1px solid #ef4444; color:#ef4444;' : ''}" 
                         onclick="window.marcarItemAgendaComoLiquidado('${c.id}', '${c.tipo_evento}', ${c.valor}, '${encodeURIComponent(c.descricao || '')}', '${c.escopo || 'casa'}')">
-                    <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <img src="./icone/icone-check.png" alt="Check" style="width:12px; height:12px; object-fit:contain;">
                     ${ehPagamento ? 'Já Pago' : 'Já Recebido'}
                 </button>
             ` : `
                 <span style="font-size:10.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                    <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Baixado
+                    <img src="./icone/icone-check.png" alt="Baixado" style="width:11px; height:11px; object-fit:contain;"> Baixado
                 </span>
             `;
 
@@ -903,8 +889,8 @@ window.abrirDetalhesDiaCalendario = function(dataIso) {
                     <div style="display:flex; align-items:center; gap:6px;">
                         ${btnBaixa}
                         ${(ehMinhaConta || window.perfilAtual?.papel === 'adm') ? `
-                            <button class="btn-erro" style="padding:5px 8px; font-size:11px; display:flex; align-items:center;" onclick="window.excluirContaRecorrenteAgenda('${c.id}', ${c.eh_perpetua})">
-                                <svg class="icone-svg" style="width:12px; height:12px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <button class="btn-erro" style="padding:5px 8px; font-size:11px; display:inline-flex; align-items:center; justify-content:center;" onclick="window.excluirContaRecorrenteAgenda('${c.id}', ${c.eh_perpetua})" title="Excluir">
+                                <img src="./icone/icone-lixo.png" alt="Excluir" style="width:12px; height:12px; object-fit:contain;">
                             </button>
                         ` : ''}
                     </div>
@@ -1020,12 +1006,15 @@ window.atualizarNotificacoesGeraisPainel = async function() {
 
                 const btnAcao = !jaPago ? `
                     <button type="button" id="btn-baixa-notif-${c.id}" class="${ehPagar ? 'btn-secundario' : 'btn-sucesso'}" 
-                            style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:8px; ${ehPagar ? 'border:1px solid #ef4444; color:#ef4444;' : ''}" 
+                            style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:4px; ${ehPagar ? 'border:1px solid #ef4444; color:#ef4444;' : ''}" 
                             onclick="window.marcarItemAgendaComoLiquidado('${c.id}', '${c.tipo_evento}', ${c.valor}, '${encodeURIComponent(c.descricao || '')}', '${c.escopo || 'casa'}')">
+                        <img src="./icone/icone-check.png" alt="Check" style="width:11px; height:11px; object-fit:contain;">
                         ${ehPagar ? 'Já Pago' : 'Já Recebido'}
                     </button>
                 ` : `
-                    <span style="font-size:10.5px; font-weight:800; color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px;">Baixado</span>
+                    <span style="font-size:10.5px; font-weight:800; color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px; display:inline-flex; align-items:center; gap:3px;">
+                        <img src="./icone/icone-check.png" alt="Baixado" style="width:10px; height:10px; object-fit:contain;"> Baixado
+                    </span>
                 `;
 
                 containerHoje.innerHTML += `
@@ -1123,7 +1112,7 @@ window.marcarItemAgendaComoLiquidado = async function(id, tipoEvento, valor, des
         const btn = document.getElementById(prefixo + id);
         if (btn) {
             btn.outerHTML = `<span style="font-size:10.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                <svg class="icone-svg" style="width:11px; height:11px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Baixado
+                <img src="./icone/icone-check.png" alt="Baixado" style="width:11px; height:11px; object-fit:contain;"> Baixado
             </span>`;
         }
     });

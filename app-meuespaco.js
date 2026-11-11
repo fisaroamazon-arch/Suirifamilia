@@ -1,6 +1,7 @@
 // =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-MEUESPACO.JS
-// Módulo exclusivo da aba "Meu Espaço" (Widgets Completos, Vivos e com Microfone)
+// SUIRI GESTÃO FAMILIAR - APP-MEUESPACO.JS (100% INTEGRAL E COMPLETO)
+// Módulo exclusivo da aba "Meu Espaço" (Widgets Vivos, Microfone & Ícones PNG)
+// Integrado com o Catálogo Oficial de Ícones PNG Transparentes (./icone/)
 // =========================================================================
 
 window.meusAlfinetes = [];
@@ -56,7 +57,7 @@ window.atualizarCartoesGeneroMeuEspaco = function() {
         if (cardMasc) cardMasc.classList.remove('oculto');
         if (cardMulher) cardMulher.classList.add('oculto');
     } else {
-        // Fallback: se não estiver preenchido, revela o espaço masculino se o nome indicar ou exibe o masculino por defeito
+        // Fallback: se não estiver preenchido, revela o espaço masculino por defeito
         if (cardMasc) cardMasc.classList.remove('oculto');
         if (cardMulher) cardMulher.classList.add('oculto');
     }
@@ -301,10 +302,12 @@ window.renderizarMeuEspaco = function() {
         header.innerHTML = `
             <div>
                 <strong style="font-size:13.5px; color:var(--cor-primaria, #d97706); display:flex; align-items:center; gap:6px;">
-                    <span style="font-size:16px;">📌</span> ${tituloRender}
+                    <img src="./icone/icone-alfinete.png" alt="Fixado" style="width:16px; height:16px; object-fit:contain;"> ${tituloRender}
                 </strong>
             </div>
-            <button type="button" style="background:#fee2e2; border:none; color:#ef4444; width:26px; height:26px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;" onclick="window.removerAlfineteUnico('${pin.id}')" title="Desafixar">✕</button>
+            <button type="button" style="background:#fee2e2; border:none; width:26px; height:26px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;" onclick="window.removerAlfineteUnico('${pin.id}')" title="Desafixar">
+                <img src="./icone/icone-lixo.png" alt="Remover" style="width:14px; height:14px; object-fit:contain;">
+            </button>
         `;
         wrapper.appendChild(header);
 
@@ -329,14 +332,14 @@ window.renderizarMeuEspaco = function() {
                     <button type="button" class="btn-principal" style="width:100%; margin-top:10px; font-size:12px; padding:9px;" onclick="window.abrirModalTransferirSaldo()">💸 Fazer Transferência</button>
                 `;
             }
-            // Widget: Registo Rápido de Movimentação (COM MICROFONE INTELIGENTE)
+            // Widget: Registo Rápido de Movimentação (COM MICROFONE INTELIGENTE PNG)
             else if (pin.origem === 'card-registro-rapido-financas') {
                 content.innerHTML = `
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <div class="campo-com-voz">
                             <input type="text" id="meuespaco-fin-desc" placeholder="Descrição ou toque no microfone..." style="width:100%; box-sizing:border-box; font-size:13px; padding:10px 42px 10px 10px;">
                             <button type="button" id="btn-mic-meuespaco" class="btn-microfone" onclick="window.ouvirComandoVozMeuEspaco()" title="Falar">
-                                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                <img src="./icone/icone-microfone.png" alt="Microfone" style="width:16px; height:16px; object-fit:contain;">
                             </button>
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
@@ -381,7 +384,9 @@ window.renderizarMeuEspaco = function() {
                                     <strong style="font-size:12.5px; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.titulo}</strong>
                                 </div>
                                 <div style="display:flex; gap:4px; flex-shrink:0;">
-                                    <button type="button" class="btn-sucesso" style="padding:4px 8px; font-size:11px;" onclick="window.concluirMissaoDomestica('${m.id}')">✓ Fiz</button>
+                                    <button type="button" class="btn-sucesso" style="padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" onclick="window.concluirMissaoDomestica('${m.id}')">
+                                        <img src="./icone/icone-check.png" alt="Fiz" style="width:12px; height:12px; object-fit:contain;"> Fiz
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -418,7 +423,9 @@ window.renderizarMeuEspaco = function() {
             else if (pin.origem === 'secao-calendario') {
                 content.innerHTML = `
                     <div style="text-align:center; padding:12px 8px; background:#f0f9ff; border-radius:12px; border:1.5px dashed #0284c7;">
-                        <div style="font-size:24px; margin-bottom:4px;">📅</div>
+                        <div style="margin-bottom:4px;">
+                            <img src="./icone/icone-calendario.png" alt="Calendário" style="width:28px; height:28px; object-fit:contain;">
+                        </div>
                         <strong style="font-size:13px; color:#0369a1; display:block;">Calendário Operacional</strong>
                         <button type="button" class="btn-principal" style="margin-top:8px; font-size:12px; padding:8px 14px; width:auto;" onclick="window.navegarParaTela('calendario')">Ver Calendário Completo</button>
                     </div>
@@ -464,7 +471,9 @@ window.renderizarMeuEspaco = function() {
                                 <strong style="font-size:13.5px; color:#334155; ${concluida ? 'text-decoration:line-through; opacity:0.6;' : ''}">${missao.titulo}</strong>
                             </div>
                             ${!concluida ? `
-                                <button type="button" class="btn-sucesso" style="padding:6px 10px; font-size:11px;" onclick="window.concluirMissaoDomestica('${missao.id}')">✓ Concluir</button>
+                                <button type="button" class="btn-sucesso" style="padding:6px 10px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                                    <img src="./icone/icone-check.png" alt="Concluir" style="width:12px; height:12px; object-fit:contain;"> Concluir
+                                </button>
                             ` : `<span style="font-size:11px; font-weight:800; color:#15803d;">Concluída</span>`}
                         </div>
                     `;
@@ -526,7 +535,7 @@ window.salvarGastoPeloMeuEspaco = function() {
     if (inOrigDesc) inOrigDesc.value = desc;
     if (inOrigVal) inOrigVal.value = val;
     if (selOrigCat) selOrigCat.value = cat;
-    if (selOrigTipo) selOrigTipo.value = tipo;
+    if (selTipo) selOrigTipo.value = tipo;
     if (selOrigEscopo) selOrigEscopo.value = escopo;
 
     if (typeof window.salvarTransacaoManual === 'function') {

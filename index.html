@@ -85,12 +85,10 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Oculta as molduras padrão de tradução */
         body { top: 0 !important; }
         .skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
         #google_translate_element { display: none !important; }
 
-        /* Estilização da Bandeira Retangular no Cabeçalho de Família */
         .container-seletor-idioma-familia {
             position: relative;
             display: inline-flex;
@@ -176,7 +174,6 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Banner Flutuante de Instalação PWA */
         #banner-instalacao-pwa {
             position: fixed;
             bottom: 74px;
@@ -200,7 +197,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Barra de Navegação Inferior Fixa */
         .bottom-nav-fixa-inferior {
             position: fixed !important;
             bottom: 0 !important;
@@ -237,14 +233,6 @@
             font-weight: 700 !important;
             transition: color 0.15s ease, transform 0.15s ease !important;
             user-select: none !important;
-        }
-
-        .bottom-nav-item .icone-svg {
-            width: 22px !important;
-            height: 22px !important;
-            stroke: currentColor !important;
-            fill: none !important;
-            stroke-width: 2 !important;
         }
         
         .bottom-nav-item.ativo #img-avatar-nav {
@@ -317,7 +305,6 @@
             80% { transform: rotate(-8deg); }
         }
 
-        /* FOTINHAS SOBREPOSTAS - MISSÕES TODOS_KIDS */
         .grupo-avatares-kids {
             display: flex;
             align-items: center;
@@ -347,7 +334,6 @@
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
-        /* FERRAMENTA CROP DE IMAGEM */
         .crop-container {
             position: relative;
             width: 100%;
@@ -377,7 +363,6 @@
             pointer-events: none;
         }
 
-        /* Estilização dos Blocos de Apresentação */
         .bloco-inspiracao-login {
             border-radius: 22px;
             padding: 16px 18px;
@@ -389,14 +374,12 @@
             transform: translateY(-2px);
         }
 
-        /* Estilização exclusiva e feminina para o Espaço Mulher (Fundo e Textos) */
         #secao-espaco-mulher {
             background: linear-gradient(135deg, #fff5f7 0%, #fdf2f8 50%, #faf5ff 100%) !important;
             padding: 12px 8px 30px 8px !important;
             border-radius: 24px;
         }
 
-        /* Estilização exclusiva para o Espaço Masculino */
         #secao-espaco-masculino {
             padding: 12px 8px 30px 8px !important;
             border-radius: 24px;
@@ -405,24 +388,20 @@
 </head>
 <body>
 
-    <!-- Widget Invisível do Google Translate -->
     <div id="google_translate_element" style="display:none;"></div>
 
-    <!-- TELA DE SPLASH COM VÍDEO -->
     <div id="splash-screen-apresentacao" class="oculto">
         <video id="video-intro-splash" playsinline webkit-playsinline preload="auto">
             <source src="intro.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- Container Centralizado de Notificações -->
     <div id="toast-container"></div>
 
-    <!-- Banner Flutuante PWA -->
     <div id="banner-instalacao-pwa" class="oculto">
         <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff;">
-                <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <img src="./icone/icone-check.png" alt="Instalar" style="width: 22px; height: 22px; object-fit: contain;">
             </div>
             <div style="min-width: 0;">
                 <strong style="font-size: 13px; color: var(--texto-principal, #334155); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Instalar o Suiri</strong>
@@ -437,34 +416,22 @@
 
     <main class="container">
 
-        <!-- =================================================================== -->
-        <!-- TELA 0: AUTENTICAÇÃO REAL (DESIGN ELEGANTE, TEXTOS & LOGIN)         -->
-        <!-- =================================================================== -->
+        <!-- TELA 0: AUTENTICAÇÃO REAL -->
         <section id="tela-login" class="secao-conteudo-app" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 14px 40px 14px;">
-            
-            <!-- Cartão Principal de Login / Cadastro -->
             <div class="cartao-geral" style="width: 100%; max-width: 410px; text-align: center; margin: 10px auto 16px auto; padding: 26px 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 26px; border: 1.5px solid rgba(253, 230, 138, 0.65); box-shadow: 0 14px 34px rgba(217, 119, 6, 0.08);">
-                
-                <!-- Identidade da Marca -->
                 <div style="margin-bottom: 20px;">
                     <div style="width: 50px; height: 50px; margin: 0 auto 10px auto; border-radius: 16px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(217, 119, 6, 0.16);">
-                        <svg class="icone-svg" style="width: 26px; height: 26px; color: #d97706;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <img src="./icone/icone-casa-escopo.png" alt="Suiri" style="width: 28px; height: 28px; object-fit: contain;">
                     </div>
-                    <h1 style="font-size: 30px; font-weight: 900; letter-spacing: 1px; color: #d97706; text-transform: uppercase; margin: 0; line-height: 1.1;">
-                        Suiri
-                    </h1>
-                    <span id="lbl-subtitulo-login" style="font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; display: block; margin-top: 4px;">
-                        Gestão Familiar
-                    </span>
+                    <h1 style="font-size: 30px; font-weight: 900; letter-spacing: 1px; color: #d97706; text-transform: uppercase; margin: 0; line-height: 1.1;">Suiri</h1>
+                    <span id="lbl-subtitulo-login" style="font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; display: block; margin-top: 4px;">Gestão Familiar</span>
                 </div>
 
-                <!-- Seletor em Pílula (Login / Criar Lar) -->
                 <div style="display: flex; gap: 6px; background: #f8fafc; padding: 5px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 18px;">
                     <button type="button" class="btn-principal" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 800; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);" onclick="window.alternarAbaLoginCadastro('login')">Login</button>
                     <button type="button" class="btn-secundario" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 700;" onclick="window.alternarAbaLoginCadastro('cadastro')">Criar Lar</button>
                 </div>
 
-                <!-- Formulário de Login -->
                 <div id="bloco-form-login" style="display: flex; flex-direction: column; gap: 11px;">
                     <div style="position: relative;">
                         <input type="email" id="login-email" placeholder="Seu e-mail cadastrado" style="width: 100%; box-sizing: border-box; padding: 13px 14px; font-size: 13.5px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #ffffff; outline: none; transition: all 0.2s ease;">
@@ -484,7 +451,6 @@
                     </div>
                 </div>
 
-                <!-- Formulário de Cadastro -->
                 <div id="bloco-form-cadastro" class="oculto" style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="cad-nome-familia" placeholder="Nome da Família ou Seu Espaço (ex: Meu Lar)" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
                     <input type="text" id="cad-nome-adm" placeholder="Seu Nome Completo" style="width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 13px; border-radius: 14px; border: 1.5px solid #e2e8f0;">
@@ -520,63 +486,45 @@
                 </div>
             </div>
 
-            <!-- CONTAINER DE INSPIRAÇÃO: GESTÃO PESSOAL & FAMÍLIA -->
             <div style="width: 100%; max-width: 410px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
-
-                <!-- Bloco 1: Gestão Pessoal & Equilíbrio -->
                 <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(254,243,199,0.55) 100%); border: 1.5px solid rgba(245, 158, 11, 0.28);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #fef3c7; color: #d97706; font-size: 14px;">✨</span>
-                        <h4 style="font-size: 13.5px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">
-                            Gestão Pessoal & Equilíbrio
-                        </h4>
+                        <h4 style="font-size: 13.5px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">Gestão Pessoal & Equilíbrio</h4>
                     </div>
                     <p style="font-size: 13px; line-height: 1.55; color: #475569; margin: 0; font-weight: 500;">
                         Organizar a rotina não é preencher as horas com tarefas, mas abrir espaço para viver com presença e paz mental. Ao clarear seus objetivos, honrar seus limites e cuidar das finanças com consciência, o tempo se transforma em aliado e a mente encontra tranquilidade para focar no que realmente faz sentido.
                     </p>
-                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #d97706; text-align: right; letter-spacing: 0.3px;">
-                        • Clareza • Propósito • Autonomia
-                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #d97706; text-align: right; letter-spacing: 0.3px;">• Clareza • Propósito • Autonomia</div>
                 </div>
 
-                <!-- Bloco 2: Família & Nosso Lar -->
                 <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.55) 100%); border: 1.5px solid rgba(14, 165, 233, 0.25);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #e0f2fe; color: #0284c7; font-size: 14px;">🏡</span>
-                        <h4 style="font-size: 13.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">
-                            Nosso Lar, Nosso Refúgio
-                        </h4>
+                        <h4 style="font-size: 13.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">Nosso Lar, Nosso Refúgio</h4>
                     </div>
                     <p style="font-size: 13px; line-height: 1.55; color: #475569; margin: 0; font-weight: 500;">
                         O aconchego de uma casa nasce da cumplicidade entre quem compartilha o mesmo teto. Dividir as responsabilidades diárias com leveza, alinhar planos com respeito mútuo e comemorar juntos as pequenas vitórias é o que faz do nosso lar o porto seguro mais precioso da vida.
                     </p>
-                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #0284c7; text-align: right; letter-spacing: 0.3px;">
-                        • União • Cumplicidade • Harmonia
-                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #0284c7; text-align: right; letter-spacing: 0.3px;">• União • Cumplicidade • Harmonia</div>
                 </div>
-
             </div>
 
             <div style="text-align: center; font-size: 11.5px; color: #94a3b8; font-weight: 600;">
                 Suiri Gestão Familiar © 2026 • Cuidando do que é essencial
             </div>
-
         </section>
 
-        <!-- =================================================================== -->
-        <!-- APLICAÇÃO PRINCIPAL LOGADA                                          -->
-        <!-- =================================================================== -->
+        <!-- APLICAÇÃO PRINCIPAL LOGADA -->
         <div id="tela-app" class="oculto">
 
-            <!-- 1º ITEM FIXO DO TOPO UNIVERSAL: BOTÃO DE APOIO AO PROJETO -->
+            <!-- 1º ITEM FIXO: APOIAR O PROJETO -->
             <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 12px; margin-top: 4px; margin-bottom: 10px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 14px; color: #b45309; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15); transition: transform 0.15s ease, background 0.2s ease;">
-                <svg class="icone-svg" style="width: 16px; height: 16px; color: #d97706;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                <img src="./icone/icone-financas.png" alt="Apoiar" style="width: 18px; height: 18px; object-fit: contain;">
                 <span>Apoiar o Projeto</span>
             </button>
 
-            <!-- =============================================================== -->
-            <!-- MODO KIDS EXCLUSIVO                                             -->
-            <!-- =============================================================== -->
+            <!-- MODO KIDS EXCLUSIVO -->
             <section id="tela-kids-exclusiva" class="oculto">
                 <div class="cabecalho-kids-container">
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -589,19 +537,19 @@
 
                     <div style="display:flex; align-items:center; gap:8px;">
                         <div class="badge-xp-kids-topo">
-                            <svg class="icone-svg" style="width:18px; height:18px; color:#f59e0b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+                            <img src="./icone/icone-carteira.png" alt="XP" style="width: 18px; height: 18px; object-fit: contain;">
                             <span id="contador-xp-kids">0 XP</span>
                         </div>
 
                         <button type="button" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
-                            <svg class="icone-svg" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <img src="./icone/icone-porta-sair.png" alt="Trocar" style="width: 18px; height: 18px; object-fit: contain;">
                         </button>
                     </div>
                 </div>
 
                 <button type="button" class="btn-lojinha-kids-gigante" onclick="window.abrirModalRankingEquipe()">
                     <div class="icone-box-presente">
-                        <svg class="icone-svg" style="width:32px; height:32px; color:#ffffff;" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+                        <img src="./icone/icone-loja.png" alt="Lojinha" style="width: 32px; height: 32px; object-fit: contain;">
                     </div>
                     <div style="text-align:left;">
                         <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.9; display:block;">Recompensas</span>
@@ -611,7 +559,7 @@
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin:14px 4px 10px 4px;">
                     <h3 style="font-size:16px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:6px;">
-                        <svg class="icone-svg" style="color:#10b981; width:20px; height:20px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        <img src="./icone/icone-check.png" alt="Check" style="width: 20px; height: 20px; object-fit: contain;">
                         Tarefas para Fazer Hoje
                     </h3>
                     <span id="contador-missoes-kids-pendentes" class="badge-contador-kids">0 missões</span>
@@ -620,9 +568,7 @@
                 <div id="lista-missoes-kids-container"></div>
             </section>
 
-            <!-- =============================================================== -->
-            <!-- AMBIENTE DE ADULTOS                                             -->
-            <!-- =============================================================== -->
+            <!-- AMBIENTE DE ADULTOS -->
             <div id="painel-adulto-container">
                 
                 <!-- CABEÇALHO DO USUÁRIO -->
@@ -634,7 +580,7 @@
                             <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()" title="Alterar Foto de Perfil">
                             
                             <button type="button" id="btn-sino-notificacoes-topo" class="btn-sino-flutuante-avatar" onclick="event.stopPropagation(); window.abrirModalNotificacoesGerais();" title="Quadro de Notificações">
-                                <svg class="icone-svg" style="width: 13px; height: 13px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                <img src="./icone/icone-relogio.png" alt="Avisos" style="width: 14px; height: 14px; object-fit: contain;">
                             </button>
                         </div>
 
@@ -645,115 +591,122 @@
                                 <span id="bandeira-topo-usuario" style="display: inline-flex; align-items: center;"></span>
                             </div>
                             <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
-                                <svg class="icone-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <img src="./icone/icone-porta-sair.png" alt="Trocar" style="width: 14px; height: 14px; object-fit: contain;">
                                 <span style="font-size: 11px; font-weight: 700;">Trocar</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Botões de Ação Simplificados Apenas com SVG -->
+                    <!-- Botões de Ação Topo com Ícones Maiores e Botão Sair Sofisticado -->
                     <div style="display: grid; grid-template-columns: auto auto; gap: 6px; flex-shrink: 0;">
-                        <!-- Lâmpada (Pense) -->
-                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center;" onclick="window.abrirModalPilulaDia()" title="Pense">
-                            <svg class="icone-svg" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                        <!-- Lâmpada (Pense) - Ícone Aumentado -->
+                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);" onclick="window.abrirModalPilulaDia()" title="Pense">
+                            <img src="./icone/icone-lampada-pense.png" alt="Pense" style="width: 26px; height: 26px; object-fit: contain;">
                         </button>
                         
-                        <!-- Loja / Ofensiva (com contador ao lado do SVG) -->
-                        <a href="javascript:void(0)" class="btn-secundario btn-loja-topo" style="padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 10px; display: flex; align-items: center; gap: 4px; text-decoration: none; color: inherit; justify-content: center;" onclick="window.abrirModalRankingEquipe()" title="Loja e Ofensiva">
-                            <svg class="icone-svg" style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.1L21 9"/><path d="M3 9v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="M3 9h18"/><path d="M9 22V12h6v10"/></svg>
-                            <span style="display: flex; align-items: center; line-height: 1;"><span id="contador-ofensiva-topo">0</span>d</span>
+                        <!-- Loja / Ofensiva -->
+                        <a href="javascript:void(0)" class="btn-secundario btn-loja-topo" style="padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 12px; display: flex; align-items: center; gap: 5px; text-decoration: none; color: inherit; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1;" onclick="window.abrirModalRankingEquipe()" title="Loja e Ofensiva">
+                            <img src="./icone/icone-loja.png" alt="Loja" style="width: 22px; height: 22px; object-fit: contain;">
+                            <span style="display: flex; align-items: center; line-height: 1; font-weight: 800;"><span id="contador-ofensiva-topo">0</span>d</span>
                         </a>
 
-                        <!-- Livrinho (Manual) -->
-                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center;" onclick="window.iniciarTourInstrucoes()" title="Manual">
-                            <svg class="icone-svg" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <!-- Livrinho (Manual) - Ícone Aumentado -->
+                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);" onclick="window.iniciarTourInstrucoes()" title="Manual">
+                            <img src="./icone/icone-manual.png" alt="Manual" style="width: 26px; height: 26px; object-fit: contain;">
                         </button>
                         
-                        <!-- Porta (Sair) -->
-                        <button type="button" id="btn-sair-topo-app" class="btn-erro" style="padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center;" onclick="window.fazerLogoff()" title="Sair">
-                            <svg class="icone-svg" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h-4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        <!-- Porta (Sair) - Fundo Sofisticado Rosa/Coral Translúcido em vez de vermelho duro -->
+                        <button type="button" id="btn-sair-topo-app" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff1f2; border: 1.5px solid #fecdd3; cursor: pointer; box-shadow: 0 2px 6px rgba(225, 29, 72, 0.08); transition: transform 0.15s ease;" onclick="window.fazerLogoff()" title="Sair do Lar">
+                            <img src="./icone/icone-porta-sair.png" alt="Sair" style="width: 22px; height: 22px; object-fit: contain;">
                         </button>
                     </div>
                 </header>
 
                 <!-- MÓDULO 0: MEU ESPAÇO -->
                 <section id="secao-meuespaco" class="secao-conteudo-app oculto">
-                    <div class="cartao-geral">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <h3 style="margin: 0; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 18px;">📌</span> Meu Espaço
-                            </h3>
-                            <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="if(typeof window.limparMeuEspaco === 'function') window.limparMeuEspaco()" title="Remover alfinetes">Limpar Tudo</button>
-                        </div>
-                        <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 14px 0;">
-                            Alfinete seus painéis favoritos do Suiri aqui para ter acesso rápido a tudo em uma única tela.
-                        </p>
-                        
-                        <!-- Ponto de Acesso Rápido ao Espaço Mulher -->
-                        <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border: 1.5px solid #f0abfc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(240, 171, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 38px; height: 38px; border-radius: 12px; background: #f5d0fe; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                                    🌸
-                                </div>
-                                <div>
-                                    <strong style="font-size: 13.5px; color: #86198f; display: block;">Espaço Mulher</strong>
-                                    <span style="font-size: 11px; color: #a21caf;">Ciclo, fertilidade, dicas e bem-estar</span>
-                                </div>
+                    
+                    <!-- CARTÃO VIP: ESPAÇO MULHER (ISOLADO E COM ÍCONE BEM MAIOR) -->
+                    <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #fff5f8 0%, #fdf2f8 100%); border: 2px solid #f472b6; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.22); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
+                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
+                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #fce7f3; border: 1.5px solid #fbcfe8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.15);">
+                                <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width: 44px; height: 44px; object-fit: contain;">
                             </div>
-                            <span style="font-size: 14px; color: #c026d3; font-weight: 800;">Entrar →</span>
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                                    <strong style="font-size: 16px; color: #9d174d; font-weight: 900; letter-spacing: -0.3px;">Espaço Mulher</strong>
+                                    <span style="font-size: 9.5px; font-weight: 800; background: #fbcfe8; color: #831843; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Exclusivo</span>
+                                </div>
+                                <span style="font-size: 11.5px; color: #be185d; font-weight: 600; display: block; line-height: 1.35; font-style: italic;">
+                                    "Honra os teus ciclos e a tua essência; a tua calma é fortaleza e guia do lar."
+                                </span>
+                            </div>
                         </div>
+                        <span style="font-size: 15px; color: #db2777; font-weight: 900; margin-left: 8px;">Entrar →</span>
+                    </div>
 
-                        <!-- Ponto de Acesso Rápido ao Espaço Masculino -->
-                        <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1.5px solid #7dd3fc; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(125, 211, 252, 0.2); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 38px; height: 38px; border-radius: 12px; background: #bae6fd; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                                    🔥
-                                </div>
-                                <div>
-                                    <strong style="font-size: 13.5px; color: #0369a1; display: block;">Espaço Masculino</strong>
-                                    <span style="font-size: 11px; color: #0284c7;">Descompressão, manutenção & foco</span>
-                                </div>
+                    <!-- CARTÃO VIP: ESPAÇO MASCULINO (ISOLADO E COM ÍCONE BEM MAIOR) -->
+                    <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #38bdf8; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
+                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
+                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #e0f2fe; border: 1.5px solid #bae6fd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);">
+                                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width: 44px; height: 44px; object-fit: contain;">
                             </div>
-                            <span style="font-size: 14px; color: #0284c7; font-weight: 800;">Entrar →</span>
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                                    <strong style="font-size: 16px; color: #075985; font-weight: 900; letter-spacing: -0.3px;">Espaço Masculino</strong>
+                                    <span style="font-size: 9.5px; font-weight: 800; background: #bae6fd; color: #0369a1; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Blindagem</span>
+                                </div>
+                                <span style="font-size: 11.5px; color: #0284c7; font-weight: 600; display: block; line-height: 1.35; font-style: italic;">
+                                    "Forja o caráter no dever diário; a honra do homem é proteger e liderar com retidão."
+                                </span>
+                            </div>
                         </div>
+                        <span style="font-size: 15px; color: #0284c7; font-weight: 900; margin-left: 8px;">Entrar →</span>
+                    </div>
+
+                    <!-- QUADRO INDEPENDENTE: PAINÉIS FIXADOS -->
+                    <div class="cartao-geral" style="border-radius: 20px; padding: 18px 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="margin: 0; font-size: 15px; font-weight: 900; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                <img src="./icone/icone-alfinete.png" alt="Alfinete" style="width: 20px; height: 20px; object-fit: contain;"> Meus Painéis Fixados
+                            </h3>
+                            <button type="button" class="btn-secundario" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 8px;" onclick="if(typeof window.limparMeuEspaco === 'function') window.limparMeuEspaco()" title="Remover alfinetes">Limpar Tudo</button>
+                        </div>
+                        <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 14px 0; line-height: 1.4;">
+                            Alfinete seus painéis favoritos do Suiri aqui para ter acesso rápido aos resumos da casa.
+                        </p>
 
                         <!-- Container onde os widgets alfinetados serão injetados -->
-                        <div id="container-widgets-meuespaco" style="display: flex; flex-direction: column; gap: 12px; min-height: 200px;">
-                            <div id="placeholder-meuespaco" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 150px; background: rgba(0,0,0,0.02); border: 2px dashed rgba(217, 119, 6, 0.2); border-radius: 12px;">
-                                <span style="font-size: 24px; color: #cbd5e1; margin-bottom: 8px;">📌</span>
-                                <span style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Nenhum painel fixado</span>
+                        <div id="container-widgets-meuespaco" style="display: flex; flex-direction: column; gap: 12px; min-height: 180px;">
+                            <div id="placeholder-meuespaco" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; background: rgba(0,0,0,0.02); border: 2px dashed rgba(217, 119, 6, 0.25); border-radius: 16px;">
+                                <img src="./icone/icone-alfinete.png" alt="Alfinete" style="width: 32px; height: 32px; object-fit: contain; opacity: 0.35; margin-bottom: 8px;">
+                                <span style="font-size: 11.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Nenhum painel fixado</span>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- MÓDULO: ESPAÇO MULHER (BLINDADO E MODULAR) -->
-                <section id="secao-espaco-mulher" class="secao-conteudo-app oculto">
-                    <!-- Conteúdo injetado dinamicamente por app-saude-mulher.js -->
-                </section>
+                <!-- MÓDULO: ESPAÇO MULHER -->
+                <section id="secao-espaco-mulher" class="secao-conteudo-app oculto"></section>
 
-                <!-- MÓDULO: ESPAÇO MASCULINO (BLINDADO E MODULAR) -->
-                <section id="secao-espaco-masculino" class="secao-conteudo-app oculto">
-                    <!-- Conteúdo injetado dinamicamente por app-espaco-masculino.js -->
-                </section>
+                <!-- MÓDULO: ESPAÇO MASCULINO -->
+                <section id="secao-espaco-masculino" class="secao-conteudo-app oculto"></section>
 
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
+                    <!-- BOTÕES SEM BORDAS, VISUAL LIMPO FOCADO NOS ÍCONES, 'TODOS' E ÍCONE DE MISSÃO -->
                     <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
-                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('todas')">
-                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            <span id="lbl-texto-filtro-casa-toda">Casa</span>
+                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('todas')">
+                            <img src="./icone/icone-casa-escopo.png" alt="Todos" style="width: 16px; height: 16px; object-fit: contain;">
+                            <span id="lbl-texto-filtro-cas-toda">Todos</span>
                         </button>
-                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="window.filtrarMissoesPorAba('minhas')">
-                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('minhas')">
+                            <img src="./icone/icone-pessoa-escopo.png" alt="Minhas" style="width: 16px; height: 16px; object-fit: contain;">
                             Minhas
                         </button>
-                        <!-- BOTÃO DE ESTRELA PARA AS SUGESTÕES DA SEMANA -->
-                        <button type="button" class="btn-sucesso" style="padding:10px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;" onclick="window.abrirModalSugestoes()" title="Sugestões da Semana">
-                            <svg class="icone-svg" style="width:16px; height:16px; fill:#fff; stroke:#fff;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <button type="button" class="btn-sucesso" style="padding:10px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;" onclick="window.abrirModalSugestoes()" title="Sugestões da Semana">
+                            <img src="./icone/icones-missao.png" alt="Sugestões" style="width: 18px; height: 18px; object-fit: contain;">
                         </button>
-                        <button type="button" class="btn-sucesso" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="document.getElementById('modal-nova-missao').classList.remove('oculto')">
-                            <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <button type="button" class="btn-sucesso" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="document.getElementById('modal-nova-missao').classList.remove('oculto')">
                             + Incluir
                         </button>
                     </div>
@@ -768,7 +721,6 @@
                         </div>
                         <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 8px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
                         
-                        <!-- Conversão de XP para Mesada -->
                         <div id="bloco-conversao-xp-mesada" style="margin-top: 12px; margin-bottom: 12px; padding: 12px; background: #f0f9ff; border: 1.5px dashed #38bdf8; border-radius: 12px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                                 <h4 style="margin:0; font-size:13px; color:#0369a1;">Câmbio de XP para Mesada</h4>
@@ -784,10 +736,9 @@
                         <div id="lista-historico-kids-adm"></div>
                     </div>
 
-                    <!-- ACESSO AOS EMBLEMAS & CONQUISTAS (ADULTO) -->
                     <div class="cartao-geral" style="padding: 12px 14px; margin-top: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #eab308; cursor: pointer; transition: transform 0.15s ease;" onclick="window.abrirModalEmblemas()">
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="font-size: 18px;">🏆</span>
+                            <img src="./icone/icone-loja.png" alt="Conquistas" style="width: 22px; height: 22px; object-fit: contain;">
                             <div>
                                 <strong style="font-size: 13px; color: var(--texto-principal);">Conquistas & Emblemas</strong>
                                 <span style="display:block; font-size: 11px; color: var(--texto-suave);">Desbloqueie medalhas exclusivas da casa</span>
@@ -796,18 +747,15 @@
                         <span style="font-size:12px; color:#ca8a04; font-weight:bold;">Abrir Vitrine</span>
                     </div>
 
-                    <!-- METAS DO ANO -->
                     <div class="cartao-geral" style="padding: 12px 14px; margin-top: 12px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 16px; height: 16px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                <img src="./icone/icones-missao.png" alt="Metas" style="width: 18px; height: 18px; object-fit: contain;">
                                 <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-sucesso, #10b981);">
                                     Planos & Metas do Ano
                                 </span>
                             </div>
-                            <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalMetasAnuais()">
-                                Ver Todos
-                            </button>
+                            <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalMetasAnuais()">Ver Todos</button>
                         </div>
 
                         <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -834,7 +782,7 @@
                             <div class="campo-com-voz">
                                 <input type="text" id="input-novo-item-mercado" placeholder="Produto ou fale no microfone..." oninput="window.filtrarAutocompleteMercado(this.value)">
                                 <button type="button" id="btn-mic-mercado" class="btn-microfone" onclick="window.ouvirComandoVozMercado()" title="Falar Produto">
-                                    <svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                    <img src="./icone/icone-microfone.png" alt="Microfone" style="width: 16px; height: 16px; object-fit: contain;">
                                 </button>
                             </div>
                             <div id="dropdown-autocomplete-mercado" class="autocomplete-dropdown oculto"></div>
@@ -884,9 +832,7 @@
                             <strong id="valor-total-carrinho-mercado" style="color: var(--cor-sucesso, #10b981); font-size: 15px;">R$ 0,00</strong>
                         </div>
 
-                        <button type="button" class="btn-sucesso" style="width: 100%; margin-top: 10px;" onclick="window.finalizarCompraMercado()">
-                            Confirmar Compra
-                        </button>
+                        <button type="button" class="btn-sucesso" style="width: 100%; margin-top: 10px;" onclick="window.finalizarCompraMercado()">Confirmar Compra</button>
                     </div>
                 </section>
 
@@ -908,7 +854,7 @@
 
                     <div style="display: flex; gap: 8px; margin-bottom: 12px;">
                         <button type="button" class="btn-secundario" style="flex: 1; padding: 11px 12px; font-size: 13px; font-weight: 800; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706); background: #ffffff; color: var(--cor-primaria, #d97706);" onclick="window.abrirModalOpcoesCupomIA()">
-                            <svg class="icone-svg" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <img src="./icone/icones-camera.png" alt="Câmera" style="width: 18px; height: 18px; object-fit: contain;">
                             <span>Ler Cupom Fiscal (IA)</span>
                         </button>
                         <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
@@ -920,7 +866,7 @@
                         <div class="campo-com-voz" style="margin-bottom: 8px;">
                             <input type="text" id="input-fin-descricao" placeholder="Descrição ou fale tocando no microfone...">
                             <button type="button" id="btn-mic-gastos" class="btn-microfone" onclick="window.ouvirComandoVoz()" title="Falar">
-                                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                <img src="./icone/icone-microfone.png" alt="Microfone" style="width: 16px; height: 16px; object-fit: contain;">
                             </button>
                         </div>
 
@@ -967,7 +913,6 @@
 
                     <div id="relatorio-pdf-container" class="oculto" style="margin-bottom: 12px;">
                         <div id="area-resultados-relatorio"></div>
-                        
                         <div class="cartao-geral" style="margin-top: 10px;">
                             <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #334155);">Comparativo: Renda vs Gastos Próprios</h4>
                             <div style="position: relative; height: 220px; width: 100%;">
@@ -984,9 +929,7 @@
                     <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
                         <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">
-                                    Mural de Finanças e Avisos
-                                </span>
+                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">Mural de Finanças e Avisos</span>
                                 <span id="contador-recados-pendentes" style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">0 avisos</span>
                             </div>
                             <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #d97706); transition: transform 0.2s ease;">▼</span>
@@ -1090,7 +1033,6 @@
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Agendar Conta ou Salário Fixo</h3>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <input type="text" id="input-agenda-descricao" placeholder="Descrição (ex: Aluguel, Internet, Salário)">
-                            
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                                 <input type="number" step="0.01" id="input-agenda-valor" placeholder="R$ Valor">
                                 <input type="date" id="input-agenda-vencimento">
@@ -1126,9 +1068,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <h3 id="lbl-titulo-lista-membros" style="margin: 0; font-size: 15px;">Membros da Família</h3>
                             
-                            <!-- AGRUPAMENTO: BANDEIRA FORMATO RETANGULAR + BOTÃO + NOVO MEMBRO -->
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                
                                 <div class="container-seletor-idioma-familia" id="container-idiomas-familia">
                                     <button type="button" class="btn-bandeira-retangular" onclick="window.alternarMenuBandeiras()" title="Alterar Idioma">
                                         <div id="icone-bandeira-ativa-container" style="width:100%; height:100%; display:flex;">
@@ -1141,7 +1081,6 @@
                                         </div>
                                     </button>
 
-                                    <!-- Dropdown de Idiomas com Bandeiras Retangulares -->
                                     <div id="dropdown-lista-idiomas" class="dropdown-idiomas-retangular oculto">
                                         <button type="button" class="item-idioma-opcao-retangular" onclick="window.trocarIdiomaApp('pt')">
                                             <svg class="icone-bandeirinha-mini" viewBox="0 0 720 480">
@@ -1168,15 +1107,12 @@
                                     </div>
                                 </div>
 
-                                <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 6px 12px; font-size: 11.5px;" onclick="window.abrirModalNovoMembro()">
-                                    + Novo Membro
-                                </button>
+                                <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 6px 12px; font-size: 11.5px;" onclick="window.abrirModalNovoMembro()">+ Novo Membro</button>
                             </div>
                         </div>
                         <div id="lista-membros-cadastrados"></div>
                     </div>
 
-                    <!-- NOTIFICAÇÕES PUSH -->
                     <div class="cartao-geral" style="margin-top: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #8b5cf6;">
                         <div>
                             <span style="font-size: 13px; font-weight: 800; color: var(--texto-principal, #334155); display: block;">Notificações Push</span>
@@ -1185,22 +1121,20 @@
                         <button type="button" id="btn-ativar-push" class="btn-secundario" style="font-size: 11px; padding: 6px 12px; border-radius: 10px;" onclick="window.solicitarPermissaoPush()">Ativar Alertas</button>
                     </div>
 
-                    <!-- CARTÃO APOIE O PROJETO -->
                     <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); background: #fef9ea; margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
-                        <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #d97706);" onclick="window.abrirModalApoioPix()">
-                            <svg class="icone-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                        <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #d97706); display: inline-flex; align-items: center; gap: 8px;" onclick="window.abrirModalApoioPix()">
+                            <img src="./icone/icone-financas.png" alt="Doação" style="width: 16px; height: 16px; object-fit: contain;">
                             Fazer uma Contribuição (Pix)
                         </button>
                     </div>
 
-                    <!-- ZONA DE SEGURANÇA E AUTOEXCLUSÃO TOTAL DE CONTA -->
                     <div class="cartao-geral" style="text-align: center; border: 1.5px dashed var(--cor-erro, #ef4444); background: rgba(239, 68, 68, 0.04); margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Zona de Segurança da Conta</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">Ao remover a sua conta, todos os seus dados e registos serão eliminados de forma definitiva e irreversível.</p>
-                        <button type="button" class="btn-erro" style="font-size: 11.5px; padding: 8px 14px; border-radius: 10px; width: auto;" onclick="window.solicitarExclusaoPropriaConta()">
-                            <svg class="icone-svg" style="width: 13px; height: 13px;" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <button type="button" class="btn-erro" style="font-size: 11.5px; padding: 8px 14px; border-radius: 10px; width: auto; display: inline-flex; align-items: center; gap: 6px;" onclick="window.solicitarExclusaoPropriaConta()">
+                            <img src="./icone/icone-lixo.png" alt="Excluir" style="width: 14px; height: 14px; object-fit: contain;">
                             Eliminar a Minha Conta
                         </button>
                     </div>
@@ -1210,9 +1144,7 @@
         </div>
     </main>
 
-    <!-- =================================================================== -->
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA                                   -->
-    <!-- =================================================================== -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
     <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
         <ul class="bottom-nav-list">
             <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
@@ -1220,37 +1152,33 @@
                 <span style="text-align:center; line-height:1.1; margin-top:2px;">Espaço<br>Pessoal</span>
             </li>
             <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <img src="./icone/icones-missao.png" alt="Missões" style="width: 22px; height: 22px; object-fit: contain;">
                 <span id="nav-item-lbl-missoes">Missões</span>
             </li>
             <li class="bottom-nav-item" data-tela="mercado" onclick="window.navegarParaTela('mercado')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                <img src="./icone/icone-mercado.png" alt="Mercado" style="width: 22px; height: 22px; object-fit: contain;">
                 <span>Mercado</span>
             </li>
             <li class="bottom-nav-item" data-tela="financeiro" onclick="window.navegarParaTela('financeiro')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <img src="./icone/icone-financas.png" alt="Finanças" style="width: 22px; height: 22px; object-fit: contain;">
                 <span>Finanças</span>
             </li>
             <li class="bottom-nav-item" data-tela="calendario" onclick="window.navegarParaTela('calendario')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <img src="./icone/icone-calendario.png" alt="Agenda" style="width: 22px; height: 22px; object-fit: contain;">
                 <span>Agenda</span>
             </li>
             <li class="bottom-nav-item" data-tela="familia" onclick="window.navegarParaTela('familia')">
-                <svg class="icone-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <img src="./icone/icone-familia.png" alt="Família" style="width: 22px; height: 22px; object-fit: contain;">
                 <span id="nav-item-lbl-familia">Família</span>
             </li>
         </ul>
     </nav>
 
-    <!-- =================================================================== -->
-    <!-- MODAIS E COMPONENTES AUXILIARES                                     -->
-    <!-- =================================================================== -->
-
-    <!-- Modal: Recuperar Senha (Esqueci a Senha) -->
+    <!-- MODAIS E COMPONENTES AUXILIARES -->
     <div id="modal-recuperar-senha" class="modal-overlay oculto" style="z-index: 1000020;">
         <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
             <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <img src="./icone/icone-escudo.png" alt="Segurança" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
             <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Recuperar Acesso</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
@@ -1266,7 +1194,6 @@
         </div>
     </div>
 
-    <!-- SELETOR VISUAL 100% EMOJIS COM BUSCA INTELIGENTE -->
     <div id="modal-seletor-icones-svg" class="modal-overlay oculto" style="z-index: 1000010;">
         <div class="modal-conteudo" style="max-width: 420px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 0; border-radius: 20px; overflow: hidden;">
             <div class="modal-header" style="padding: 14px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(217,119,6,0.2)); margin: 0; background: #ffffff;">
@@ -1279,7 +1206,7 @@
                     <input type="text" id="input-busca-simbolos" placeholder="Buscar emoji (ex: vassoura, ioga, compras, cafe...)" 
                            style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 34px; font-size: 13px; border-radius: 12px; border: 1.5px solid var(--borda-delicada, #cbd5e1); background: #f8fafc;" 
                            oninput="window.filtrarCatalogoSimbolos(this.value)">
-                    <svg class="icone-svg" style="position: absolute; left: 10px; width: 16px; height: 16px; color: #94a3b8; pointer-events: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <img src="./icone/icone-lupa.png" onerror="this.style.display='none'" alt="Busca" style="position: absolute; left: 10px; width: 16px; height: 16px; object-fit: contain; pointer-events: none;">
                 </div>
             </div>
 
@@ -1292,12 +1219,11 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONQUISTAS E EMBLEMAS -->
     <div id="modal-emblemas-conquistas" class="modal-overlay oculto" style="z-index: 1000008;">
         <div class="modal-conteudo" style="max-width: 400px; width: 95%; max-height: 85vh; padding: 18px; display: flex; flex-direction: column;">
             <div class="modal-header" style="margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada); padding-bottom: 10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <svg class="icone-svg" style="width:24px; height:24px; color:#eab308;" viewBox="0 0 24 24"><path d="M12 15l-3 4-3-4V4h12v11l-3 4-3-4z"/><circle cx="12" cy="8" r="2"/></svg>
+                    <img src="./icone/icone-loja.png" alt="Emblemas" style="width:24px; height:24px; object-fit:contain;">
                     <h3 style="margin:0; font-size:16px;">Conquistas e Emblemas</h3>
                 </div>
                 <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="window.fecharModalEmblemas()">✕</button>
@@ -1307,7 +1233,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO DE TAXA XP -->
     <div id="modal-configurar-taxa-xp" class="modal-overlay oculto" style="z-index: 1000009;">
         <div class="modal-conteudo" style="max-width:320px; padding:16px;">
             <div class="modal-header" style="margin-bottom:10px;">
@@ -1327,7 +1252,6 @@
         </div>
     </div>
 
-    <!-- Modal: Crop de Imagem (Ferramenta de Corte de Avatar) -->
     <div id="modal-crop-imagem" class="modal-overlay oculto" style="z-index: 1000005;">
         <div class="modal-conteudo" style="max-width: 420px; width: 95%;">
             <div class="modal-header">
@@ -1336,12 +1260,10 @@
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; padding: 16px 0;">
                 <p style="font-size: 13px; color: #64748b; margin-bottom: 12px; text-align: center;">Arraste a foto para enquadrar. Use os botões para dar zoom.</p>
-                
                 <div class="crop-container">
                     <canvas id="canvas-crop"></canvas>
                     <div class="crop-mask"></div>
                 </div>
-                
                 <div class="crop-controles" style="margin-top: 16px; display: flex; gap: 12px; width: 100%; justify-content: center;">
                     <button type="button" class="btn-secundario" onclick="ajustarZoomCrop(-0.1)" style="flex: 1; padding: 10px; border-radius: 8px;">➖ Zoom</button>
                     <button type="button" class="btn-secundario" onclick="ajustarZoomCrop(0.1)" style="flex: 1; padding: 10px; border-radius: 8px;">➕ Zoom</button>
@@ -1354,12 +1276,11 @@
         </div>
     </div>
 
-    <!-- Modal: Sugestões de Missões da Semana -->
     <div id="modal-sugestoes-missoes" class="modal-overlay oculto">
         <div class="modal-conteudo" style="width: 92%; max-width: 420px; height: 75vh; max-height: 600px; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
             <div class="modal-header" style="padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2));">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <svg class="icone-svg" style="width:24px; height:24px; color: var(--cor-primaria, #d97706);" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <img src="./icone/icones-missao.png" alt="Sugestões" style="width:24px; height:24px; object-fit:contain;">
                     <h3 style="margin:0; font-size:16px; color:var(--cor-primaria, #d97706);">Sugestões da Semana</h3>
                 </div>
                 <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharModalSugestoes()">✕</button>
@@ -1371,25 +1292,19 @@
             </div>
 
             <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px;">
-                <button type="button" onclick="window.sugestaoAnterior()" style="position: absolute; left: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">
-                    <svg class="icone-svg" style="width:20px; height:20px; stroke: #64748b;" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-                </button>
-
+                <button type="button" onclick="window.sugestaoAnterior()" style="position: absolute; left: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">◄</button>
                 <div id="cartao-sugestao-atual" style="width: 82%; height: 100%; max-height: 280px; background: var(--suiri-surface-secondary-light, #fef9ea); border: 2px solid var(--cor-primaria, #d97706); border-radius: 16px; box-shadow: 0 6px 15px rgba(217,119,6,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
-                    <div id="sugestao-icone-svg" style="margin-bottom: 16px; color: var(--cor-primaria, #d97706);"></div>
+                    <div id="sugestao-icone-svg" style="margin-bottom: 16px;"></div>
                     <h2 id="sugestao-titulo" style="font-size: 17px; margin: 0 0 8px 0; color: var(--texto-principal, #334155);">Título da Missão</h2>
                     <p id="sugestao-descricao" style="font-size: 13px; color: var(--texto-suave, #64748b); margin: 0; line-height: 1.4;">Descrição da missão.</p>
                 </div>
-
-                <button type="button" onclick="window.sugestaoProxima()" style="position: absolute; right: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">
-                    <svg class="icone-svg" style="width:20px; height:20px; stroke: #64748b;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-                </button>
+                <button type="button" onclick="window.sugestaoProxima()" style="position: absolute; right: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">►</button>
             </div>
 
             <div style="padding: 14px 16px; border-top: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2)); text-align: center; background: #fafafa;">
                 <p style="font-size: 11px; color: var(--texto-suave); margin: 0 0 10px 0;">Deslize para ver mais ou toque para escolher.</p>
                 <button type="button" class="btn-sucesso" style="width: 100%; padding: 12px; font-size: 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.aceitarSugestaoAtual()">
-                    <svg class="icone-svg" style="width:18px; height:18px; stroke: #fff;" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                    <img src="./icone/icone-check.png" alt="Aceitar" style="width:18px; height:18px; object-fit:contain;">
                     Quero Fazer Esta Missão
                 </button>
             </div>
@@ -1400,8 +1315,8 @@
         <div class="modal-conteudo" style="max-width: 330px; padding: 20px 18px; border-radius: 22px; background: #ffffff;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                        <svg class="icone-svg" style="width:18px; height:18px;" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; display: flex; align-items: center; justify-content: center;">
+                        <img src="./icone/icone-financas.png" alt="Transferir" style="width:20px; height:20px; object-fit:contain;">
                     </div>
                     <div>
                         <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Transferir Saldo</h3>
@@ -1438,19 +1353,19 @@
 
     <div id="modal-escolha-origem-cupom" class="modal-overlay oculto" style="z-index: 1000002;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <img src="./icone/icones-camera.png" alt="Câmera" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
             <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Ler Cupom com IA</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 16px 0;">Como deseja capturar o cupom fiscal?</p>
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <button type="button" class="btn-principal" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.acionarOrigemCupom('camera')">
-                    <svg class="icone-svg" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <img src="./icone/icones-camera.png" alt="Câmera" style="width: 18px; height: 18px; object-fit: contain;">
                     Tirar Foto Agora (Câmera)
                 </button>
                 <button type="button" class="btn-secundario" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.acionarOrigemCupom('galeria')">
-                    <svg class="icone-svg" style="width: 17px; height: 17px;" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <img src="./icone/icone-filme.png" alt="Galeria" style="width: 18px; height: 18px; object-fit: contain;">
                     Carregar Imagem da Galeria
                 </button>
                 <button type="button" class="btn-secundario" style="width: 100%; padding: 10px; font-size: 12px; border-radius: 10px; margin-top: 4px;" onclick="window.fecharModalOpcoesCupomIA()">Cancelar</button>
@@ -1462,8 +1377,8 @@
         <div class="modal-conteudo" style="max-width: 440px; padding: 18px 16px; border-radius: 22px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center;">
-                        <svg class="icone-svg" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; display: flex; align-items: center; justify-content: center;">
+                        <img src="./icone/icone-relogio.png" alt="Relógio" style="width: 18px; height: 18px; object-fit: contain;">
                     </div>
                     <div>
                         <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Quadro de Avisos</h3>
@@ -1505,9 +1420,7 @@
                         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
                         Sugestões de Cardápio do Mês
                     </span>
-                    <button type="button" id="btn-gerar-sugestoes-cardapio" class="btn-secundario" style="padding: 2px 6px; font-size: 10px; border-radius: 6px;" onclick="window.gerarSugestoesCardapioMesIA()">
-                        Atualizar IA
-                    </button>
+                    <button type="button" id="btn-gerar-sugestoes-cardapio" class="btn-secundario" style="padding: 2px 6px; font-size: 10px; border-radius: 6px;" onclick="window.gerarSugestoesCardapioMesIA()">Atualizar IA</button>
                 </div>
                 <div id="lista-sugestoes-cardapio-mes" style="max-height: 22vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
                     <span style="font-size: 11px; color: var(--texto-suave); text-align: center; display: block; padding: 8px;">Conclua compras no mercado para receber ideias de cardápio com os itens da despensa.</span>
@@ -1528,15 +1441,11 @@
                 <button type="button" class="btn-secundario" style="padding: 4px 8px;" onclick="document.getElementById('modal-nova-missao').classList.add('oculto')">✕</button>
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
-                
                 <div style="display: flex; gap: 8px;">
                     <button type="button" id="btn-icone-nova-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('nova')" title="Toque para mudar o Emoji">
-                        <span id="svg-preview-nova-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">
-                            ⭐
-                        </span>
+                        <span id="svg-preview-nova-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">⭐</span>
                     </button>
                     <input type="text" id="input-nova-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
-                    
                     <input type="text" id="input-nova-missao-titulo" placeholder="O que precisa ser feito?" style="flex: 1;" oninput="if(typeof window.acionarAutoMatchTituloMissao === 'function') window.acionarAutoMatchTituloMissao(this.value, 'nova')">
                 </div>
                 
@@ -1583,8 +1492,8 @@
 
     <div id="modal-apoie-projeto" class="modal-overlay oculto" style="z-index: 1000001;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
-            <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                <svg class="icone-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                <img src="./icone/icone-financas.png" alt="Apoiar" style="width: 26px; height: 26px; object-fit: contain;">
             </div>
             <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Apoie o Projeto Suiri</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
@@ -1598,9 +1507,7 @@
 
             <div style="display: flex; gap: 8px;">
                 <button type="button" class="btn-secundario" style="flex: 1; padding: 10px; font-size: 12px; border-radius: 10px;" onclick="window.fecharModalApoioPix()">Cancelar</button>
-                <button type="button" id="btn-copiar-chave-pix" class="btn-principal" style="flex: 1.4; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 10px;" onclick="window.copiarChavePixApoio()">
-                    Copiar Chave
-                </button>
+                <button type="button" id="btn-copiar-chave-pix" class="btn-principal" style="flex: 1.4; padding: 10px; font-size: 12px; font-weight: 700; border-radius: 10px;" onclick="window.copiarChavePixApoio()">Copiar Chave</button>
             </div>
         </div>
     </div>
@@ -1609,7 +1516,7 @@
         <div class="modal-conteudo" style="max-width: 440px; padding: 20px 18px; border-radius: 24px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <svg class="icone-svg" style="color: var(--cor-sucesso, #10b981); width: 22px; height: 22px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    <img src="./icone/icones-missao.png" alt="Metas" style="width: 22px; height: 22px; object-fit: contain;">
                     <h3 style="margin: 0; font-size: 17px; color: var(--texto-principal);">Planos & Metas do Ano</h3>
                 </div>
                 <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius: 10px;" onclick="window.fecharModalMetasAnuais()">✕</button>
@@ -1621,9 +1528,7 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-                <button type="button" class="btn-sucesso" style="width: 100%; font-size: 12.5px; padding: 9px;" onclick="window.abrirFormularioNovaMetaAnual()">
-                    + Cadastrar Novo Objetivo
-                </button>
+                <button type="button" class="btn-sucesso" style="width: 100%; font-size: 12.5px; padding: 9px;" onclick="window.abrirFormularioNovaMetaAnual()">+ Cadastrar Novo Objetivo</button>
             </div>
 
             <div id="bloco-form-nova-meta-anual" class="oculto" style="background: var(--suiri-surface-secondary-light, #fef9ea); border: 1px solid var(--borda-delicada); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
@@ -1657,16 +1562,14 @@
             <div id="box-animacao-mascote-kids" class="box-mascote-animacao"></div>
             <h3 id="titulo-mascote-kids" class="titulo-mascote-kids">Muito Bem!</h3>
             <p id="subtexto-mascote-kids" class="subtexto-mascote-kids">Missão cumprida!</p>
-            <button type="button" id="btn-fechar-mascote-kids" class="btn-sucesso" style="width:100%; border-radius:18px; padding:12px; font-size:15px; font-weight:800;" onclick="window.fecharModalMascoteKids()">
-                Continuar
-            </button>
+            <button type="button" id="btn-fechar-mascote-kids" class="btn-sucesso" style="width:100%; border-radius:18px; padding:12px; font-size:15px; font-weight:800;" onclick="window.fecharModalMascoteKids()">Continuar</button>
         </div>
     </div>
 
     <div id="modal-confirmacao-suiri" class="modal-overlay oculto" style="z-index: 1000000;">
         <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px;">
             <div style="width: 44px; height: 44px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                <svg class="icone-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <img src="./icone/icone-xis.png" alt="Aviso" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
             <h3 id="titulo-confirmacao-suiri" style="margin: 0 0 8px 0; font-size: 16px; color: var(--texto-principal);">Confirmação</h3>
             <p id="mensagem-confirmacao-suiri" style="font-size: 13px; color: var(--texto-suave); line-height: 1.45; margin: 0 0 18px 0;"></p>
@@ -1797,13 +1700,16 @@
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1.5px solid #fde68a; border-radius: 8px;">
                     <input type="checkbox" id="edit-beneficio-para-kids">
                     <span style="display:flex; align-items:center; gap:5px;">
-                        <svg class="icone-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <img src="./icone/icones-missao.png" alt="Kids" style="width:14px; height:14px; object-fit:contain;">
                         <strong>Disponível na Lojinha Kids</strong> (Aparece para as crianças)
                     </span>
                 </label>
 
                 <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button type="button" id="btn-excluir-beneficio-loja" class="btn-erro oculto" style="flex:1;" onclick="window.excluirBeneficioLojaConfirmado()">Excluir</button>
+                    <button type="button" id="btn-excluir-beneficio-loja" class="btn-erro oculto" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.excluirBeneficioLojaConfirmado()">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
+                        Excluir
+                    </button>
                     <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalCriarBeneficio()">Cancelar</button>
                     <button type="button" class="btn-sucesso" style="flex:1;" onclick="window.salvarBeneficioLoja()">Confirmar</button>
                 </div>
@@ -1980,15 +1886,11 @@
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <input type="hidden" id="edit-missao-id">
-                
                 <div style="display: flex; gap: 8px;">
                     <button type="button" id="btn-icone-edit-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('editar')" title="Toque para mudar o Emoji">
-                        <span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">
-                            ⭐
-                        </span>
+                        <span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">⭐</span>
                     </button>
                     <input type="text" id="input-edit-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
-                    
                     <input type="text" id="edit-missao-titulo" placeholder="Título da Missão" style="flex: 1;" oninput="if(typeof window.acionarAutoMatchTituloMissao === 'function') window.acionarAutoMatchTituloMissao(this.value, 'editar')">
                 </div>
                 
@@ -2155,7 +2057,9 @@
     <!-- Modal: Celebração de Nível -->
     <div id="overlay-celebracao-subida-nivel" class="modal-overlay oculto">
         <div class="modal-conteudo" style="text-align: center; padding: 24px 16px;">
-            <div id="celebracao-nivel-icone" style="margin-bottom: 10px;"></div>
+            <div id="celebracao-nivel-icone" style="margin-bottom: 10px;">
+                <img src="./icone/icone-loja.png" alt="Troféu" style="width: 48px; height: 48px; object-fit: contain;">
+            </div>
             <h2 id="celebracao-nivel-titulo" style="font-size: 18px; color: var(--cor-primaria, #d97706); margin: 0 0 6px 0;">Parabéns!</h2>
             <p id="celebracao-nivel-subtexto" style="font-size: 13px; color: var(--texto-principal, #334155); margin-bottom: 14px; line-height: 1.4;"></p>
             <button type="button" class="btn-principal" style="width: 100%;" onclick="window.fecharCelebracaoNivel()">Confirmar</button>
@@ -2197,7 +2101,6 @@
     <script src="app-saude-mulher.js"></script>
     <script src="app-espaco-masculino.js"></script>
 
-    <!-- INICIALIZAÇÃO DO GOOGLE TRANSLATE (WIDGET INVISÍVEL) -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
@@ -2211,20 +2114,17 @@
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-        // Catálogo de Bandeiras Retangulares SVG
         window.SVGS_BANDEIRAS = {
             'pt': `<svg class="bandeira-svg-retangular" viewBox="0 0 720 480"><rect width="720" height="480" fill="#009b3a"/><polygon points="360,36 676,240 360,444 44,240" fill="#fedf00"/><circle cx="360" cy="240" r="120" fill="#002776"/><path d="M243 240 A120 120 0 0 1 477 240" stroke="#ffffff" stroke-width="15" fill="none"/></svg>`,
             'en': `<svg class="bandeira-svg-retangular" viewBox="0 0 7410 3900"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/></svg>`,
             'es': `<svg class="bandeira-svg-retangular" viewBox="0 0 750 500"><rect width="750" height="500" fill="#c60b1e"/><rect y="125" width="750" height="250" fill="#ffc400"/></svg>`
         };
 
-        // Alternância do menu de bandeiras
         window.alternarMenuBandeiras = function() {
             const dropdown = document.getElementById('dropdown-lista-idiomas');
             if (dropdown) dropdown.classList.toggle('oculto');
         };
 
-        // Troca do idioma ativo e atualização da bandeira exibida no botão
         window.trocarIdiomaApp = function(siglaIdioma) {
             const dropdown = document.getElementById('dropdown-lista-idiomas');
             if (dropdown) dropdown.classList.add('oculto');
@@ -2246,7 +2146,6 @@
             }
         };
 
-        // Restaura a bandeira salva ao recarregar a tela
         function restaurarBandeiraAtivaInicial() {
             const idiomaSalvo = localStorage.getItem('suiri_idioma_ativo') || 'pt';
             const containerBtn = document.getElementById('icone-bandeira-ativa-container');
@@ -2262,9 +2161,6 @@
             }
         });
 
-        // =========================================================================
-        // MOTOR DO SPLASH SCREEN COM ÁUDIO INTELIGENTE
-        // =========================================================================
         window.gerenciarApresentacaoVideoSplash = function() {
             const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
             const splashEl = document.getElementById('splash-screen-apresentacao');
@@ -2303,7 +2199,7 @@
                         btnSom.id = 'btn-ativar-som-splash';
                         btnSom.type = 'button';
                         btnSom.innerHTML = `
-                            <svg class="icone-svg" style="width:16px; height:16px; color:#f59e0b;" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            <img src="./icone/icone-energia.png" alt="Som" style="width:16px; height:16px; object-fit:contain;">
                             <span>Ativar Som</span>
                         `;
                         
@@ -2386,7 +2282,6 @@
             window.fecharModalApoioPix();
         };
 
-        // Modal Esqueci a Senha
         window.abrirModalRecuperarSenha = function() {
             const inputEmail = document.getElementById('login-email');
             const recEmailInput = document.getElementById('recuperar-email-input');

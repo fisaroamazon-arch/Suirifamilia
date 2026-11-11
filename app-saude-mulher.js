@@ -1,6 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-SAUDE-MULHER.JS (100% COMPLETO E INTEGRAL)
 // Ciclo, Diário da Alma, Rituais (6 Metas), Curadoria de Mídia e Modais Boutique
+// Integrado com o Catálogo de Ícones PNG Transparentes (./icone/)
 // =========================================================================
 
 window.dadosCicloMulher = [];
@@ -48,13 +49,12 @@ const DICAS_BIOLOGICAS_FALLBACK = {
 };
 
 const INSPIRACOES_FALLBACK = [
-    "📖 Dica de Leitura: 'Quarto de Despejo' (Carolina Maria de Jesus). A força crua e real de uma mulher que não se curvou à vida.",
-    "✨ Citação: 'Não sou alegre, nem sou triste: sou poeta.' — Cecília Meireles",
-    "🌿 Bem-Estar: Prepare uma chávena do seu chá preferido. Sente-se num lugar confortável e beba sem olhar para o ecrã.",
-    "✒️ Poesia: 'Renda-se, como eu me rendi. Mergulhe no que você não conhece como eu mergulhei.' — Clarice Lispector"
+    "Dica de Leitura: 'Quarto de Despejo' (Carolina Maria de Jesus). A força crua e real de uma mulher que não se curvou à vida.",
+    "Citação: 'Não sou alegre, nem sou triste: sou poeta.' — Cecília Meireles",
+    "Bem-Estar: Prepare uma chávena do seu chá preferido. Sente-se num lugar confortável e beba sem olhar para o ecrã.",
+    "Poesia: 'Renda-se, como eu me rendi. Mergulhe no que você não conhece como eu mergulhei.' — Clarice Lispector"
 ];
 
-// Funções utilitárias de Data
 function criarDataAbsoluta(ano, mes, dia) {
     const d = new Date();
     d.setFullYear(ano, mes - 1, dia);
@@ -128,21 +128,24 @@ window.renderizarEsqueletoEspacoMulher = function() {
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; padding: 4px 2px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1px solid #fbcfe8; color:#be185d; box-shadow:0 2px 6px rgba(244,114,182,0.1);" onclick="window.fecharEspacoMulher()">← Voltar</button>
-                    <div>
-                        <h2 style="margin:0; font-size:19px; font-weight:900; color:#831843; letter-spacing:-0.3px;">Espaço Mulher</h2>
-                        <span style="font-size:11px; color:#9d174d; font-weight:600;">Seu refúgio de ritmo e autocuidado</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width:28px; height:28px; object-fit:contain;">
+                        <div>
+                            <h2 style="margin:0; font-size:19px; font-weight:900; color:#831843; letter-spacing:-0.3px;">Espaço Mulher</h2>
+                            <span style="font-size:11px; color:#9d174d; font-weight:600;">Seu refúgio de ritmo e autocuidado</span>
+                        </div>
                     </div>
                 </div>
                 <div style="display:flex; gap:6px;">
-                    <button type="button" class="btn-secundario" style="padding:8px 12px; border-radius:14px; font-size:11.5px; font-weight:800; border:1px solid #f472b6; background:#fff1f2; color:#9d174d;" onclick="window.abrirPaginaDiario()">📖 Diário</button>
+                    <button type="button" class="btn-secundario" style="padding:8px 12px; border-radius:14px; font-size:11.5px; font-weight:800; border:1px solid #f472b6; background:#fff1f2; color:#9d174d;" onclick="window.abrirPaginaDiario()">Diário</button>
                     <button type="button" class="btn-secundario" style="padding:8px 12px; border-radius:14px; font-size:11.5px; font-weight:800; border:1px solid #f472b6; background:#fff1f2; color:#9d174d;" onclick="window.abrirModalRegistroCiclo()">+ Ciclo</button>
                 </div>
             </div>
 
             <!-- BOTÕES DE BEM-ESTAR -->
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
-                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #f472b6; background:#fff1f2; color:#9d174d; box-shadow:0 2px 6px rgba(244,114,182,0.1);" onclick="window.abrirModalRespiracaoGuiada()">🌿 1 Minuto Zen</button>
-                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #ec4899; background:#fdf2f8; color:#be185d; box-shadow:0 2px 6px rgba(236,72,153,0.1);" onclick="window.abrirModoAcolhimentoEmergencia()">🍵 Modo Alívio (TPM)</button>
+                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #f472b6; background:#fff1f2; color:#9d174d; box-shadow:0 2px 6px rgba(244,114,182,0.1);" onclick="window.abrirModalRespiracaoGuiada()">1 Minuto Zen</button>
+                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #ec4899; background:#fdf2f8; color:#be185d; box-shadow:0 2px 6px rgba(236,72,153,0.1);" onclick="window.abrirModoAcolhimentoEmergencia()">Modo Alívio (TPM)</button>
             </div>
 
             <!-- CARTÃO DO CICLO & DICA DA FASE -->
@@ -162,7 +165,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
 
                 <!-- QUADRO DE SAÚDE BIOLÓGICA DA FASE -->
                 <div style="background:rgba(255,255,255,0.85); border:1px dashed #f472b6; border-radius:14px; padding:12px; margin-top:14px; text-align:left; display:flex; align-items:flex-start; gap:10px;">
-                    <span id="icone-dica-diaria" style="font-size:20px;">🌸</span>
+                    <img id="icone-dica-diaria-img" src="./icone/icone-mulher.png" alt="Fase" style="width:24px; height:24px; object-fit:contain; flex-shrink:0; margin-top:2px;">
                     <div>
                         <strong style="font-size:11.5px; color:#831843; text-transform:uppercase; display:block; margin-bottom:2px;">Conselho Biológico da Fase:</strong>
                         <p id="txt-dica-diaria-ciclo" style="font-size:12px; color:#9d174d; margin:0; line-height:1.45; font-weight:500;">A carregar orientação...</p>
@@ -173,22 +176,26 @@ window.renderizarEsqueletoEspacoMulher = function() {
             <!-- QUADRO DE INSPIRAÇÃO LITERÁRIA & ALMA -->
             <div class="cartao-geral" style="background: linear-gradient(135deg, #fff7ed 0%, #fdf4ff 100%); border: 1.5px dashed #f472b6; margin-top:14px; padding:14px 16px; border-radius:18px;">
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                    <span style="font-size:16px;">📖</span>
+                    <img src="./icone/icone-lampada-pense.png" alt="Inspiração" style="width:18px; height:18px; object-fit:contain;">
                     <strong style="font-size:12.5px; color:#9d174d; font-weight:800;">Inspiração Literária & Alma</strong>
                 </div>
-                <p id="txt-inspiracao-diaria" style="font-size:12px; color:#701a75; margin:0; line-height:1.5; font-style:italic;">A procurar poesia...</p>
+                <p id="txt-inspiracao-diaria" style="font-size:12px; color:#701a75; margin:0; line-height:1.5; font-style:italic;">A procurar reflexão...</p>
             </div>
 
-            <!-- QUADRO: O SANTUÁRIO (6 METAS DIÁRIAS FEMININAS EDITÁVEIS COM AVALIAÇÃO) -->
+            <!-- QUADRO: O SANTUÁRIO (6 METAS DIÁRIAS FEMININAS) -->
             <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-left:4px solid #db2777; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(244,114,182,0.1);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:18px;">🌸</span>
+                        <img src="./icone/icone-mulher.png" alt="Rituais" style="width:20px; height:20px; object-fit:contain;">
                         <strong style="font-size:13.5px; color:#831843; font-weight:800;">O Santuário (Rituais Diários)</strong>
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#db2777; background:#fdf2f8; padding:3px 8px; border-radius:8px; border:1px solid #fbcfe8;">🔥 0 dias</span>
-                        <button type="button" style="background:#fff1f2; border:1px solid #fbcfe8; color:#be185d; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">⚙️</button>
+                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#db2777; background:#fdf2f8; padding:3px 8px; border-radius:8px; border:1px solid #fbcfe8; display:inline-flex; align-items:center; gap:4px;">
+                            <img src="./icone/icone-fogo.png" alt="Fogo" style="width:12px; height:12px; object-fit:contain;"> 0 dias
+                        </span>
+                        <button type="button" style="background:#fff1f2; border:1px solid #fbcfe8; color:#be185d; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">
+                            <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:13px; height:13px; object-fit:contain;">
+                        </button>
                     </div>
                 </div>
 
@@ -209,18 +216,18 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 <!-- Histórico Retrátil dos Rituais -->
                 <div style="margin-top:14px; border-top:1px dashed #fce7f3; padding-top:10px;">
                     <div onclick="window.alternarRetratilGenerico('bloco-historico-rituais', 'seta-hist-rituais')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#fffafb; padding:8px 12px; border-radius:10px; border:1px solid #fbcfe8;">
-                        <span style="font-size:11.5px; font-weight:800; color:#831843;">📜 Histórico dos Rituais (<span id="contador-historico-rituais">0</span>)</span>
+                        <span style="font-size:11.5px; font-weight:800; color:#831843;">Histórico dos Rituais (<span id="contador-historico-rituais">0</span>)</span>
                         <span id="seta-hist-rituais" style="font-size:11px; color:#9d174d; transition:transform 0.2s ease;">▼</span>
                     </div>
                     <div id="bloco-historico-rituais" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
             </div>
 
-            <!-- QUADRO: CURADORIA DE FILMES & SÉRIES (CARROSSEL COM ESTRELAS) -->
+            <!-- QUADRO: CURADORIA DE FILMES & SÉRIES -->
             <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-left:4px solid #a855f7; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(168,85,247,0.08);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:18px;">🎬</span>
+                        <img src="./icone/icone-filme.png" alt="Filmes" style="width:20px; height:20px; object-fit:contain;">
                         <strong style="font-size:13.5px; color:#581c87; font-weight:800;">Curadoria: Filmes & Séries</strong>
                     </div>
                     <div style="display:flex; gap:4px; background:#f5f3ff; padding:3px; border-radius:10px; border:1px solid #ede9fe;">
@@ -245,7 +252,9 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #f3e8ff; color:#7e22ce;" onclick="window.navegarCarrosselMidiaMulher(-1)">◄</button>
                             <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #f3e8ff; color:#7e22ce;" onclick="window.navegarCarrosselMidiaMulher(1)">►</button>
                         </div>
-                        <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#9333ea; color:#fff; border:none; cursor:pointer;" onclick="window.abrirModalAvaliacaoMidiaMulher()">✓ Já Assisti</button>
+                        <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#9333ea; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalAvaliacaoMidiaMulher()">
+                            <img src="./icone/icone-check.png" alt="Assistido" style="width:13px; height:13px; object-fit:contain;"> Já Assisti
+                        </button>
                     </div>
                 </div>
 
@@ -272,17 +281,17 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </div>
             </div>
 
-            <!-- COMO SE SENTE HOJE (MÚLTIPLA ESCOLHA) -->
+            <!-- COMO SE SENTE HOJE -->
             <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-radius:20px; margin-top:14px; padding:14px 16px;">
                 <h4 style="font-size:13.5px; font-weight:800; color:#831843; margin:0 0 10px 0;">Como se sente hoje? (Pode marcar vários)</h4>
                 
                 <label style="font-size:11px; font-weight:800; color:#9d174d; display:block; margin-bottom:6px;">Humor / Ânimo</label>
                 <div id="grupo-tags-humor" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-                    <button type="button" class="tag-opcao-humor" data-valor="calma" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Calma / Leve 🧘‍♀️</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="energica" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Com Energia ⚡</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="sensivel" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Sensível / Doce 💧</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="irritada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Irritada / Intensa 🌪️</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="cansada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Cansada / Fadigada 😴</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="calma" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Calma / Leve</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="energica" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Com Energia</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="sensivel" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Sensível / Doce</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="irritada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Irritada / Intensa</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="cansada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Cansada / Fadigada</button>
                 </div>
 
                 <label style="font-size:11px; font-weight:800; color:#9d174d; display:block; margin-bottom:6px;">Sensação Física / Sintomas</label>
@@ -297,7 +306,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #fce7f3; padding-top:10px;">
                     <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#be123c; font-weight:800; cursor:pointer;">
                         <input type="checkbox" id="check-menstruando-hoje" style="width:18px; height:18px; accent-color:#be123c; border-radius:6px;">
-                        Menstruando hoje 🩸
+                        Menstruando hoje
                     </label>
                     <button type="button" class="btn-principal" style="width:auto; padding:8px 16px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
                 </div>
@@ -310,7 +319,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
         <div id="vista-pagina-diario-mulher" class="oculto">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding: 4px 2px;">
                 <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1px solid #fbcfe8; color:#be185d;" onclick="window.fecharPaginaDiario()">← Voltar ao Espaço</button>
-                <h3 style="margin:0; font-size:18px; font-weight:900; color:#831843;">📖 Meu Diário da Alma</h3>
+                <h3 style="margin:0; font-size:18px; font-weight:900; color:#831843;">Meu Diário da Alma</h3>
                 <button type="button" class="btn-principal" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); border:none; color:#fff;" onclick="window.salvarPaginaDiarioCompleta()">Guardar</button>
             </div>
 
@@ -349,10 +358,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- MODAIS BOUTIQUE DE SOBREPOSIÇÃO INTEGRAL (FIXOS, 100% BLUR, BORDAS MACIAS) -->
-        <!-- ========================================================================= -->
-
+        <!-- MODAIS BOUTIQUE -->
         <!-- MODAL 1: LEITURA IMERSIVA DO DIÁRIO -->
         <div id="vista-leitura-diario-inteira" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000080; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
             <div style="background:#fffdfa; width:100%; max-width:480px; max-height:86vh; padding:22px; border-radius:28px; border:1.5px solid #fbcfe8; box-shadow:0 25px 60px rgba(112,26,117,0.22); display:flex; flex-direction:column; position:relative; overflow:hidden;">
@@ -368,7 +374,9 @@ window.renderizarEsqueletoEspacoMulher = function() {
                     <div id="leitura-conteudo-pagina" style="font-size:15.5px; line-height:32px; color:#4a044e; white-space: pre-wrap; position:relative; z-index:2;"></div>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:14px; justify-content:flex-end;">
-                    <button type="button" class="btn-secundario" style="border-radius:12px; padding:10px 14px; font-size:12px; color:#be185d; border:1px solid #fbcfe8; font-weight:700;" onclick="window.editarPaginaAtualLeitura()">Editar Página</button>
+                    <button type="button" class="btn-secundario" style="border-radius:12px; padding:10px 14px; font-size:12px; color:#be185d; border:1px solid #fbcfe8; font-weight:700; display:inline-flex; align-items:center; gap:4px;" onclick="window.editarPaginaAtualLeitura()">
+                        <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;"> Editar Página
+                    </button>
                     <button type="button" class="btn-principal" style="border-radius:12px; padding:10px 16px; font-size:12px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none;" onclick="window.fecharLeituraDiarioInteira()">Voltar ao Diário</button>
                 </div>
             </div>
@@ -432,10 +440,10 @@ window.alternarRetratilGenerico = function(conteudoId, setaId) {
 
 window.obterTituloRituaisMulher = function(qtd) {
     if (qtd === 0) return "Desperte a Alma";
-    if (qtd <= 2) return "Semente Plantada 🌱";
-    if (qtd <= 4) return "Em Florescimento 🌸";
-    if (qtd === 5) return "Equilíbrio Radiante ✨";
-    return "Plenitude & Luz 💖";
+    if (qtd <= 2) return "Semente Plantada";
+    if (qtd <= 4) return "Em Florescimento";
+    if (qtd === 5) return "Equilíbrio Radiante";
+    return "Plenitude & Luz";
 };
 
 window.sincronizarCheckboxesRituaisHoje = function() {
@@ -520,7 +528,9 @@ window.calcularOfensivaERendimentoRituais = function() {
     }
 
     const elStreak = document.getElementById('streak-rituais-mulher');
-    if (elStreak) elStreak.textContent = `🔥 ${ofensiva} dias`;
+    if (elStreak) {
+        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:12px; height:12px; object-fit:contain;"> ${ofensiva} dias`;
+    }
 };
 
 window.renderizarHistoricoRituaisRetratil = function() {
@@ -660,7 +670,7 @@ window.atualizarVisualizacaoMidiaMulher = function() {
             btnAcao.textContent = `★ ${jaVisto.estrelas} Estrelas`;
             btnAcao.style.background = '#f59e0b';
         } else {
-            btnAcao.textContent = "✓ Já Assisti";
+            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Assistido" style="width:13px; height:13px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
             btnAcao.style.background = '#9333ea';
         }
     }
@@ -717,7 +727,9 @@ window.renderizarHistoricoAssistidosMulher = function() {
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <span style="font-size:12px; font-weight:800; color:#f59e0b;">${'★'.repeat(item.estrelas)}</span>
-                <button type="button" onclick="window.removerMidiaMulherAssistida('${item.id}')" style="background:none; border:none; color:#e11d48; font-size:12px; font-weight:bold; cursor:pointer; padding:2px 6px;">✕</button>
+                <button type="button" onclick="window.removerMidiaMulherAssistida('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
+                </button>
             </div>
         </div>
     `).join('');
@@ -912,9 +924,11 @@ window.carregarDiarioMulher = async function() {
                         </div>
                         <p style="font-size:12.5px; color:#4a044e; margin:0 0 10px 0; line-height:1.5; ${estiloFonte} white-space: pre-wrap;">${conteudoResumo}</p>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <button type="button" style="background:#fce7f3; border:none; color:#831843; padding:6px 14px; border-radius:10px; font-size:11.5px; font-weight:800; cursor:pointer;" onclick="window.lerPaginaDiarioInteira('${item.id}', '${item.titulo || ''}', \`${item.conteudo.replace(/`/g, '\\`')}\`, '${dataFormatada}', '${item.tipo_fonte || 'cursiva'}')">📖 Ler Página</button>
+                            <button type="button" style="background:#fce7f3; border:none; color:#831843; padding:6px 14px; border-radius:10px; font-size:11.5px; font-weight:800; cursor:pointer;" onclick="window.lerPaginaDiarioInteira('${item.id}', '${item.titulo || ''}', \`${item.conteudo.replace(/`/g, '\\`')}\`, '${dataFormatada}', '${item.tipo_fonte || 'cursiva'}')">Ler Página</button>
                             <div style="display:flex; gap:6px;">
-                                <button type="button" style="background:#ffe4e6; border:none; color:#e11d48; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px;" onclick="window.excluirPaginaDiario('${item.id}')" title="Excluir">🗑️</button>
+                                <button type="button" style="background:#ffe4e6; border:none; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirPaginaDiario('${item.id}')" title="Excluir">
+                                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1052,7 +1066,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
             <div style="background:#ffffff; width:100%; max-width:420px; max-height:86vh; padding:24px; border-radius:30px; border:1.5px solid #fbcfe8; overflow-y:auto; box-shadow:0 25px 60px rgba(112,26,117,0.22); text-align:left;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #fce7f3; padding-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:24px;">🍵</span>
+                        <img src="./icone/icone-mulher.png" alt="Acolhimento" style="width:24px; height:24px; object-fit:contain;">
                         <h3 style="margin:0; font-size:18px; font-weight:900; color:#831843;">Modo Acolhimento</h3>
                     </div>
                     <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; font-weight:800; color:#be185d; background:#fff1f2; border:1px solid #fbcfe8;" onclick="window.fecharModoAcolhimento()">✕</button>
@@ -1064,7 +1078,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
 
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <div style="background:#fff1f2; border:1px solid #fbcfe8; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#831843; display:block; margin-bottom:5px;">🧘‍♀️ Posições de Alívio (Cólica)</strong>
+                        <strong style="font-size:13px; color:#831843; display:block; margin-bottom:5px;">Posições de Alívio (Cólica)</strong>
                         <p style="font-size:12px; color:#475569; margin:0; line-height:1.45;">
                             • <strong>Postura da Criança:</strong> Ajoelhe-se, encoste os glúteos nos calcanhares e estique os braços à frente no chão.<br>
                             • <strong>Pernas na Parede:</strong> Deite de costas e apoie as pernas esticadas na parede para aliviar a tensão pélvica.
@@ -1072,7 +1086,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                     </div>
 
                     <div style="background:#fdf4ff; border:1px solid #f5d0fe; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#86198f; display:block; margin-bottom:5px;">🎬 Filmes & Séries Reconfortantes</strong>
+                        <strong style="font-size:13px; color:#86198f; display:block; margin-bottom:5px;">Filmes & Séries Reconfortantes</strong>
                         <p style="font-size:12px; color:#475569; margin:0; line-height:1.45;">
                             • O Fabuloso Destino de Amélie Poulain<br>
                             • Comer, Rezar, Amar<br>
@@ -1081,7 +1095,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                     </div>
 
                     <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#b45309; display:block; margin-bottom:5px;">✒️ Poesia de Acolhimento</strong>
+                        <strong style="font-size:13px; color:#b45309; display:block; margin-bottom:5px;">Poesia de Acolhimento</strong>
                         <blockquote style="font-size:12px; color:#78350f; font-style:italic; margin:0; line-height:1.45;">
                             “Não há mal que dure sempre, nem cansaço que o descanso não cure. Permita-se recolher, aquecer a alma e esperar a nova primavera.”
                         </blockquote>
@@ -1089,7 +1103,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                 </div>
 
                 <div style="margin-top:18px;">
-                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalRespiracaoGuiada();">Iniciar 1 Minuto de Respiração Guiada 🌿</button>
+                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalRespiracaoGuiada();">Iniciar 1 Minuto de Respiração Guiada</button>
                 </div>
             </div>
         `;
@@ -1146,7 +1160,7 @@ window.processarEExibirPrevisao = function() {
     const elPrevisao = document.getElementById('txt-previsao-proxima-menstruacao');
     const elDataBase = document.getElementById('txt-data-base-calculo');
     const elDica = document.getElementById('txt-dica-diaria-ciclo');
-    const elIconeDica = document.getElementById('icone-dica-diaria');
+    const elIconeDicaImg = document.getElementById('icone-dica-diaria-img');
     const elBarra = document.getElementById('barra-progresso-ciclo');
     const elTxtDia = document.getElementById('txt-dia-ciclo-atual');
     const elTxtFinal = document.getElementById('txt-dia-ciclo-final');
@@ -1171,7 +1185,6 @@ window.processarEExibirPrevisao = function() {
         if (elPrevisao) elPrevisao.textContent = "Adicione o seu último ciclo para iniciar as previsões.";
         if (elDataBase) elDataBase.textContent = "Base: Nenhum histórico encontrado";
         if (elDica) elDica.textContent = "Acompanhar o seu ciclo ajuda a entender as suas oscilações de energia.";
-        if (elIconeDica) elIconeDica.textContent = "🌸";
         return;
     }
 
@@ -1208,33 +1221,27 @@ window.processarEExibirPrevisao = function() {
 
     let faseTexto = "";
     let chaveFase = "";
-    let icone = "🌸";
     let corGradiente = ""; 
 
     if (diaAtualDoCiclo > mediaCiclo) {
-        faseTexto = "Atraso Menstrual ⏳";
+        faseTexto = "Atraso Menstrual";
         chaveFase = "lutea";
-        icone = "📅";
         corGradiente = "linear-gradient(90deg, #94a3b8, #64748b)";
     } else if (diaAtualDoCiclo >= 1 && diaAtualDoCiclo <= duracaoSangramento) {
-        faseTexto = "Fase Menstrual 🩸";
+        faseTexto = "Fase Menstrual";
         chaveFase = "menstrual";
-        icone = "☕";
         corGradiente = "linear-gradient(90deg, #fb7185, #e11d48)";
     } else if (diaAtualDoCiclo > duracaoSangramento && diaAtualDoCiclo < inicioJanelaFertil) {
-        faseTexto = "Fase Folicular 🌿";
+        faseTexto = "Fase Folicular";
         chaveFase = "folicular";
-        icone = "🌱";
         corGradiente = "linear-gradient(90deg, #34d399, #059669)";
     } else if (diaAtualDoCiclo >= inicioJanelaFertil && diaAtualDoCiclo <= fimJanelaFertil) {
-        faseTexto = "Fase Ovulatória ✨";
+        faseTexto = "Fase Ovulatória";
         chaveFase = "ovulatoria";
-        icone = "🔥";
         corGradiente = "linear-gradient(90deg, #fbbf24, #d97706)";
     } else {
-        faseTexto = "Fase Lútea 🍂";
+        faseTexto = "Fase Lútea";
         chaveFase = "lutea";
-        icone = "🧘‍♀️";
         corGradiente = "linear-gradient(90deg, #a78bfa, #7c3aed)";
     }
 
@@ -1262,8 +1269,6 @@ window.processarEExibirPrevisao = function() {
         }
         elDica.textContent = dicaParaMostrar;
     }
-
-    if (elIconeDica) elIconeDica.textContent = icone;
 
     if (elBarra && elTxtDia && elTxtFinal) {
         let pctProgresso = (diaAtualDoCiclo / mediaCiclo) * 100;
@@ -1342,15 +1347,17 @@ window.renderizarHistoricoSintomas = function() {
         const dataFormatada = `${partesData[2]}/${partesData[1]}`;
         const humorTxt = reg.humor || '-';
         const fisicoTxt = reg.sintoma_fisico || '-';
-        const gota = reg.sangramento_ativo ? '<span style="color:#be123c;">🩸</span>' : '';
+        const gota = reg.sangramento_ativo ? ' • Sangramento Ativo' : '';
 
         return `
             <div style="background:#ffffff; border:1px solid #fce7f3; border-radius:14px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; flex-direction:column; gap:2px;">
-                    <strong style="font-size:12.5px; color:#831843;">${dataFormatada} ${gota}</strong>
+                    <strong style="font-size:12.5px; color:#831843;">${dataFormatada}${gota}</strong>
                     <span style="font-size:11px; color:#64748b; font-weight:500;">Humor: ${humorTxt} • Física: ${fisicoTxt}</span>
                 </div>
-                <button type="button" style="background:#ffe4e6; border:none; color:#e11d48; width:28px; height:28px; border-radius:8px; cursor:pointer;" onclick="window.excluirRegistroSintoma('${reg.id}')">🗑️</button>
+                <button type="button" style="background:#ffe4e6; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirRegistroSintoma('${reg.id}')" title="Excluir">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
+                </button>
             </div>
         `;
     }).join('');
