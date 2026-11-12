@@ -33,35 +33,43 @@
         }
 
         /* =========================================================================
-           CAMADA 0: VÍDEO DE FUNDO EM TELA TOTAL (LOOP INFINITO)
+           CAMADA 0: VÍDEO DE FUNDO 1080p ADAPTATIVO TELA CHEIA (SEM ESTOURAR)
            ========================================================================= */
         #container-video-fundo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            z-index: 0 !important;
+            pointer-events: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
 
         #video-cenario-fundo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            pointer-events: none;
-            /* CORES DAS CHAMAS VIVAS E REALÇADAS (SEM EFEITO OPACO) */
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            object-fit: cover !important;
+            object-position: center center !important;
+            pointer-events: none !important;
             filter: contrast(120%) saturate(150%) brightness(108%);
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
 
-        /* VÉU TRANSPARENTE: NÃO DEIXA O FOGO LAVADO/ACINZENTADO */
         #container-video-fundo::after {
             content: "";
             position: absolute;
@@ -98,9 +106,7 @@
             display: none !important;
         }
 
-        /* =========================================================================
-           EFEITO VIDRO FOSCO ESCURO (DARK GLASSMORPHISM) NOS CARTÕES DA FORJA
-           ========================================================================= */
+        /* Dark Glassmorphism */
         .cartao-geral {
             background: rgba(15, 20, 30, 0.68) !important;
             border: 1px solid rgba(148, 163, 184, 0.28) !important;
@@ -112,7 +118,6 @@
             border-radius: 18px !important;
         }
 
-        /* Efeito de vidro fumê para inputs, selects e áreas de inserção */
         select, input[type="text"], input[type="date"], input[type="number"], textarea {
             background: rgba(17, 24, 39, 0.58) !important;
             color: #f8fafc !important;
@@ -121,9 +126,7 @@
             -webkit-backdrop-filter: blur(8px) !important;
         }
 
-        /* =========================================================================
-           AMPLIAÇÃO UNIVERSAL DOS ÍCONES (+20%)
-           ========================================================================= */
+        /* Ampliação de ícones (+20%) */
         img[src*="./icone/"],
         img[src*="icone/"],
         .icone-svg,
@@ -141,9 +144,7 @@
             margin-right: 2px;
         }
 
-        /* =========================================================================
-           CAMADA 1: ANIMAÇÃO DE BRASAS E FAGULHAS DE FOGO SUBINDO (60 FPS)
-           ========================================================================= */
+        /* Camada de fagulhas flutuantes */
         #container-fogo-fundo {
             position: fixed;
             top: 0;
@@ -166,24 +167,11 @@
         }
 
         @keyframes subirBrasa {
-            0% {
-                transform: translateY(0) scale(0.6) translateX(0);
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.85;
-            }
-            50% {
-                transform: translateY(-50vh) scale(1.1) translateX(14px);
-                opacity: 0.7;
-            }
-            85% {
-                opacity: 0.4;
-            }
-            100% {
-                transform: translateY(-110vh) scale(0.4) translateX(-18px);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) scale(0.6) translateX(0); opacity: 0; }
+            15% { opacity: 0.85; }
+            50% { transform: translateY(-50vh) scale(1.1) translateX(14px); opacity: 0.7; }
+            85% { opacity: 0.4; }
+            100% { transform: translateY(-110vh) scale(0.4) translateX(-18px); opacity: 0; }
         }
 
         .brasa-1 { left: 10%; width: 6px; height: 10px; animation-duration: 9s; animation-delay: 0s; }
@@ -197,14 +185,14 @@
 </head>
 <body>
 
-    <!-- CAMADA 0: VÍDEO MP4 EM TELA CHEIA E CICLO CONTÍNUO -->
+    <!-- CAMADA 0: VÍDEO 1080P EM TELA CHEIA RETIDA (LOOP CONTÍNUO) -->
     <div id="container-video-fundo">
         <video id="video-cenario-fundo" autoplay loop muted playsinline webkit-playsinline preload="auto">
             <source src="fogo.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- CAMADA 1: CAMADA DE FAGULHAS / BRASAS DE FOGO NO FUNDO -->
+    <!-- CAMADA 1: FAGULHAS DE BRASA NO FUNDO -->
     <div id="container-fogo-fundo">
         <div class="brasa-suiri brasa-1"></div>
         <div class="brasa-suiri brasa-2"></div>
@@ -216,26 +204,43 @@
     </div>
 
     <main class="container-homem">
-        <!-- ÁREA ONDE O APP-ESPACO-MASCULINO.JS INJETA OS BLOCOS -->
         <section id="secao-espaco-masculino"></section>
     </main>
 
     <div id="toast-container"></div>
 
-    <!-- SCRIPTS MODULARES -->
     <script src="app-core.js"></script>
     <script src="app-dicas-masculinas.js"></script>
     <script src="app-espaco-masculino.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
-            // Assegura a reprodução contínua do vídeo caso o browser pause
             const vidFundo = document.getElementById('video-cenario-fundo');
             if (vidFundo) {
-                vidFundo.play().catch(() => {});
+                // Compatibilidade estrita para WebKit iOS (iPhone)
+                vidFundo.muted = true;
+                vidFundo.setAttribute('muted', '');
+                vidFundo.setAttribute('playsinline', '');
+                vidFundo.setAttribute('webkit-playsinline', '');
+
+                const tentarReproduzir = () => {
+                    const promessa = vidFundo.play();
+                    if (promessa !== undefined) {
+                        promessa.catch(() => {
+                            vidFundo.load();
+                            vidFundo.play().catch(() => {});
+                        });
+                    }
+                };
+
+                tentarReproduzir();
+                document.body.addEventListener('touchstart', () => {
+                    if (vidFundo.paused) {
+                        tentarReproduzir();
+                    }
+                }, { once: true });
             }
 
-            // 1. TRAVA DE PRIVACIDADE E SESSÃO
             const perfilRaw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
             let perfil = {};
             try {
@@ -244,7 +249,6 @@
                 perfil = {};
             }
 
-            // Se for do sexo feminino, redireciona de volta imediatamente
             if (perfil.sexo && perfil.sexo.toLowerCase() === 'feminino') {
                 if (typeof window.mostrarToast === 'function') {
                     window.mostrarToast("Acesso restrito ao Espaço Masculino.", "erro");
@@ -255,12 +259,10 @@
                 return;
             }
 
-            // Sobrescrita do fechar para garantir o retorno perfeito ao index.html
             window.fecharEspacoMasculino = function() {
                 window.location.href = 'index.html';
             };
 
-            // 2. INICIALIZAÇÃO DA INTERFACE
             if (typeof window.renderizarEsqueletoEspacoMasculino === 'function') {
                 window.renderizarEsqueletoEspacoMasculino();
                 if (typeof window.renderizarReflexaoEstoica === 'function') window.renderizarReflexaoEstoica(false);
