@@ -174,14 +174,14 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </button>
             </div>
 
-            <!-- LINHA 2: CABEÇALHO COM ÍCONE +20% (50px) E TIPOGRAFIA NOBRE (23px) -->
-            <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px; padding:2px 4px;">
-                <div style="width:58px; height:58px; border-radius:18px; background:linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border:1.5px solid #d8b4fe; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 6px 16px rgba(124,58,237,0.12);">
-                    <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width:50px; height:50px; object-fit:contain;">
+            <!-- LINHA 2: CABEÇALHO COM QUADRO +20% (70px), ÍCONE +20% (60px) E TIPOGRAFIA NOBRE (26px) -->
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:2px 4px;">
+                <div style="width:70px; height:70px; border-radius:22px; background:linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border:1.8px solid #d8b4fe; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 8px 20px rgba(124,58,237,0.16);">
+                    <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width:60px; height:60px; object-fit:contain;">
                 </div>
                 <div style="flex:1; min-width:0;">
-                    <h1 style="margin:0; font-size:23px; font-weight:900; color:#3b0764; letter-spacing:-0.5px; line-height:1.15;">Espaço Mulher</h1>
-                    <span style="font-size:12px; color:#6b21a8; font-weight:600; display:block; margin-top:2px;">Seu refúgio de ritmo, equilíbrio e autocuidado</span>
+                    <h1 style="margin:0; font-size:26px; font-weight:900; color:#3b0764; letter-spacing:-0.5px; line-height:1.15;">Espaço Mulher</h1>
+                    <span style="font-size:12.5px; color:#6b21a8; font-weight:600; display:block; margin-top:3px;">Seu refúgio de ritmo, equilíbrio e autocuidado</span>
                 </div>
             </div>
 
@@ -218,7 +218,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
             <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #e9d5ff; border-left:4px solid #7c3aed; text-align:center; padding:22px 18px; border-radius:24px; box-shadow:0 10px 25px rgba(88,28,135,0.06); position:relative; overflow:hidden;">
                 <span style="font-size:11px; font-weight:800; color:#6b21a8; text-transform:uppercase; letter-spacing:1.5px; display:inline-block; margin-bottom:6px; background:#f3e8ff; padding:3px 12px; border-radius:20px; border:1px solid #e9d5ff;">Fase do Ciclo</span>
                 <div id="display-fase-ciclo-atual" style="font-size:22px; font-weight:900; color:#3b0764; margin-bottom:4px;">Ciclo Natural</div>
-                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#581c87; margin:0 0 4px 0; font-weight:600;">Toque em "+ Ciclo" para registar a sua data.</p>
+                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#581c87; margin:0 0 4px 0; font-weight:600;">Toque em '+ Ciclo' para registar a sua data.</p>
                 <span id="txt-data-base-calculo" style="font-size:10.5px; color:#7e22ce; display:block; margin-bottom:10px; font-weight:600;"></span>
                 
                 <div style="background:#f3e8ff; border-radius:12px; height:8px; width:100%; overflow:hidden;">
