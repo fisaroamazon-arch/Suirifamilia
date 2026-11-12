@@ -889,8 +889,39 @@ window.abrirModalSenhaAdulto = function(membro) {
 };
 
 // =========================================================================
-// 7. MOTOR "TROCAR MEMBRO" (TELA CHEIA & AVATARES GRANDES COM BANDEIRA)
+// 7. MOTOR "TROCAR MEMBRO & LOGOUT" COM SEPARAÇÃO ADULTOS / KIDS
 // =========================================================================
+window.atualizarIconeBotaoSessao = function() {
+    const btnSair = document.getElementById('btn-sair-topo-app');
+    const imgIcone = document.getElementById('img-icone-sessao-topo');
+    if (!btnSair) return;
+
+    const totalMembros = (window.listaMembrosFamilia || []).length;
+
+    if (totalMembros > 1) {
+        if (imgIcone) {
+            imgIcone.src = './icone/trocar.png';
+            imgIcone.alt = 'Trocar Perfil';
+        }
+        btnSair.title = 'Trocar Perfil';
+    } else {
+        if (imgIcone) {
+            imgIcone.src = './icone/icone-porta-sair.png';
+            imgIcone.alt = 'Sair do Lar';
+        }
+        btnSair.title = 'Sair do Lar';
+    }
+};
+
+window.acionarBotaoSessaoTopo = function() {
+    const totalMembros = (window.listaMembrosFamilia || []).length;
+    if (totalMembros > 1) {
+        window.abrirJanelaPrincipalQuiosque();
+    } else {
+        window.fazerLogoff();
+    }
+};
+
 window.abrirJanelaPrincipalQuiosque = function() {
     if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
         window.SonsSuiri.popClique();
@@ -917,23 +948,39 @@ window.criarModalQuiosqueDinamico = function() {
     modal.className = 'modal-overlay';
     modal.style.zIndex = '99999';
     modal.innerHTML = `
-        <div class="modal-conteudo modal-quiosque-tela-cheia">
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="display:inline-flex; width:26px; height:26px; color:var(--cor-primaria);">${window.IconesSuiri?.familia || ''}</span>
-                        <h2 style="font-size:22px; color:var(--texto-principal); margin:0; font-weight:800;">Quem é você?</h2>
-                    </div>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; font-size:14px; border-radius:12px;" onclick="window.fecharJanelaPrincipalQuiosque()">✕</button>
+        <div class="modal-conteudo modal-quiosque-tela-cheia" style="display:flex; flex-direction:column; max-height:90vh; overflow-y:auto; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--borda-delicada, #f1f5f9); padding-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="display:inline-flex; width:26px; height:26px; color:var(--cor-primaria);">${window.IconesSuiri?.familia || '👥'}</span>
+                    <h2 style="font-size:20px; color:var(--texto-principal, #1e293b); margin:0; font-weight:800;">Trocar Perfil</h2>
                 </div>
-                <p class="status-texto" style="font-size:13px; margin:0 0 10px 0; text-align:left;">Toque na sua foto para abrir a sua rotina:</p>
+                <button type="button" class="btn-secundario" style="padding:6px 12px; font-size:14px; border-radius:12px;" onclick="window.fecharJanelaPrincipalQuiosque()">✕</button>
             </div>
             
-            <div id="grade-avatares-quiosque" class="grade-avatares-expandida"></div>
+            <!-- BLOCO 1: PERFIS ADULTOS -->
+            <div id="secao-quiosque-adultos" style="margin-bottom:16px;">
+                <span style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:var(--texto-suave, #64748b); display:block; margin-bottom:8px;">
+                    👑 Perfis Adultos
+                </span>
+                <div id="grade-avatares-adultos" class="grade-avatares-expandida" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:12px;"></div>
+            </div>
 
-            <div style="border-top:1px solid var(--borda-delicada); padding-top:12px;">
-                <button type="button" class="btn-secundario" style="width:100%; font-size:13px; font-weight:700; border-radius:14px; padding:12px;" onclick="window.fecharJanelaPrincipalQuiosque()">
-                    Voltar
+            <!-- BLOCO 2: PERFIS KIDS -->
+            <div id="secao-quiosque-kids" style="margin-bottom:18px;">
+                <span style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:#10b981; display:block; margin-bottom:8px;">
+                    ⭐ Perfis Kids
+                </span>
+                <div id="grade-avatares-kids" class="grade-avatares-expandida" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:12px;"></div>
+            </div>
+
+            <!-- RODAPÉ: BOTÃO SAIR DA CONTA -->
+            <div style="border-top:1.5px solid var(--borda-delicada, #f1f5f9); padding-top:14px; margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+                <button type="button" class="btn-erro" style="width:100%; font-size:13.5px; font-weight:800; border-radius:14px; padding:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#fff1f2; color:#e11d48; border:1.5px solid #fecdd3;" onclick="window.fecharJanelaPrincipalQuiosque(); window.fazerLogoff();">
+                    <img src="./icone/icone-porta-sair.png" alt="Sair" style="width:16px; height:16px; object-fit:contain;">
+                    Sair da Conta
+                </button>
+                <button type="button" class="btn-secundario" style="width:100%; font-size:13px; font-weight:700; border-radius:14px; padding:10px;" onclick="window.fecharJanelaPrincipalQuiosque()">
+                    Cancelar
                 </button>
             </div>
         </div>
@@ -942,20 +989,36 @@ window.criarModalQuiosqueDinamico = function() {
 };
 
 window.renderizarAvataresQuiosque = function() {
-    const container = document.getElementById('grade-avatares-quiosque');
-    if (!container) return;
+    const containerAdultos = document.getElementById('grade-avatares-adultos');
+    const containerKids = document.getElementById('grade-avatares-kids');
+    const secaoKids = document.getElementById('secao-quiosque-kids');
+    const secaoAdultos = document.getElementById('secao-quiosque-adultos');
 
-    container.innerHTML = '';
+    if (!containerAdultos || !containerKids) return;
+
+    containerAdultos.innerHTML = '';
+    containerKids.innerHTML = '';
+
     const membros = window.listaMembrosFamilia || [];
+    const adultos = membros.filter(m => !(m.eh_kids === true || m.papel === 'dependente'));
+    const kids = membros.filter(m => (m.eh_kids === true || m.papel === 'dependente'));
 
-    membros.forEach(m => {
-        const ehKids = m.eh_kids === true || m.papel === 'dependente';
+    if (adultos.length === 0 && secaoAdultos) secaoAdultos.classList.add('oculto');
+    else if (secaoAdultos) secaoAdultos.classList.remove('oculto');
+
+    if (kids.length === 0 && secaoKids) secaoKids.classList.add('oculto');
+    else if (secaoKids) secaoKids.classList.remove('oculto');
+
+    const montarCardMembro = (m, ehKids) => {
         const card = document.createElement('div');
         card.className = `card-usuario-quiosque ${ehKids ? 'card-usuario-kids-destaque' : ''}`;
-        
+        card.style.cursor = 'pointer';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'center';
         card.onclick = () => window.selecionarUsuarioQuiosque(m.id);
 
-        const avatarSrc = m.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
+        const avatarSrc = m.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
         const nomeCurto = String(m.nome || 'Membro').split(' ')[0];
         const bandeirinha = (typeof window.obterMiniBandeiraNacionalidade === 'function')
             ? window.obterMiniBandeiraNacionalidade(m.nacionalidade || 'BR')
@@ -963,20 +1026,23 @@ window.renderizarAvataresQuiosque = function() {
 
         card.innerHTML = `
             <div style="position: relative; display: inline-block;">
-                <img src="${avatarSrc}" class="avatar-quiosque-grande" style="border: 3px solid ${ehKids ? '#10b981' : 'var(--cor-primaria)'};">
+                <img src="${avatarSrc}" class="avatar-quiosque-grande" style="width:68px; height:68px; border-radius:18px; object-fit:cover; border: 3px solid ${ehKids ? '#10b981' : 'var(--cor-primaria, #f97316)'};">
                 <span style="position: absolute; bottom: 4px; right: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
                     ${bandeirinha}
                 </span>
             </div>
-            <strong style="font-size:14px; color:var(--texto-principal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center; margin-top:2px;">
+            <strong style="font-size:13px; color:var(--texto-principal, #1e293b); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center; margin-top:4px;">
                 ${esc(nomeCurto)}
             </strong>
-            <span style="font-size:11px; color:${ehKids ? '#15803d' : 'var(--texto-suave)'}; font-weight:800; margin-top:3px; background:${ehKids ? '#dcfce7' : '#f1f5f9'}; padding:2px 8px; border-radius:999px;">
+            <span style="font-size:10.5px; color:${ehKids ? '#15803d' : 'var(--texto-suave, #64748b)'}; font-weight:800; margin-top:2px; background:${ehKids ? '#dcfce7' : '#f1f5f9'}; padding:2px 8px; border-radius:999px;">
                 ${ehKids ? 'Kids' : (m.parentesco || 'Adulto')}
             </span>
         `;
-        container.appendChild(card);
-    });
+        return card;
+    };
+
+    adultos.forEach(m => containerAdultos.appendChild(montarCardMembro(m, false)));
+    kids.forEach(m => containerKids.appendChild(montarCardMembro(m, true)));
 };
 
 window.selecionarUsuarioQuiosque = function(membroId) {
@@ -1147,6 +1213,9 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         window.atualizarCartaoEspacoPessoal();
         window.navegarParaTela(window.telaAtualVisivel || 'inicio');
     }
+    
+    // Atualiza imediatamente o ícone de sessão
+    window.atualizarIconeBotaoSessao();
 };
 
 // =========================================================================
@@ -1201,6 +1270,7 @@ window.iniciarAppFamilia = async function() {
     document.getElementById('tela-app')?.classList.remove('oculto');
 
     window.aplicarRegrasPerfilKidsOuAdulto();
+    window.atualizarIconeBotaoSessao();
 
     if (typeof window.carregarListaMembrosPainel === 'function') {
         await window.carregarListaMembrosPainel();

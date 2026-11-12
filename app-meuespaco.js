@@ -1,7 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-MEUESPACO.JS (100% INTEGRAL E COMPLETO)
 // Módulo exclusivo da aba "Meu Espaço" (Widgets Vivos, Microfone & Ícones PNG)
-// Integrado com o Catálogo Oficial de Ícones PNG Transparentes (./icone/)
+// Detecção Robusta de Gênero (Sem Contorno Laranja no Ícone da Barra Inferior)
+// Feminino: ./icone/medita.png | Masculino: ./icone/icone-escudo.png
 // Redirecionamento Dedicado: mulher.html & homem.html
 // =========================================================================
 
@@ -17,37 +18,89 @@ window.abrirEspacoMasculino = function() {
     window.location.href = 'homem.html';
 };
 
-// 1. ATUALIZAÇÃO DO AVATAR NO MENU INFERIOR
+// 0.1. HELPER DE DETECÇÃO ROBUSTA DE GÊNERO/SEXO
+window.detectarGeneroUsuarioAtual = function() {
+    let genero = null;
+
+    // 1. Tenta pelo objeto window.perfilAtual
+    if (window.perfilAtual) {
+        genero = window.perfilAtual.genero || window.perfilAtual.sexo || null;
+    }
+
+    // 2. Tenta pelo objeto window.usuarioAtual
+    if (!genero && window.usuarioAtual) {
+        genero = window.usuarioAtual.genero || window.usuarioAtual.sexo || null;
+    }
+
+    // 3. Tenta pela lista de membros da família na memória
+    if (!genero && window.listaMembrosFamilia && typeof window.obterUsuarioId === 'function') {
+        const meuId = window.obterUsuarioId();
+        const membro = window.listaMembrosFamilia.find(m => m.id === meuId);
+        if (membro) {
+            genero = membro.genero || membro.sexo || null;
+        }
+    }
+
+    // 4. Tenta resgatar direto do localStorage
+    if (!genero) {
+        try {
+            const raw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                genero = parsed.genero || parsed.sexo || null;
+            }
+        } catch (e) {}
+    }
+
+    const valorNormalizado = String(genero || '').trim().toLowerCase();
+    if (valorNormalizado === 'feminino' || valorNormalizado === 'mulher' || valorNormalizado === 'f') {
+        return 'feminino';
+    }
+    return 'masculino';
+};
+
+// 1. ATUALIZAÇÃO DO ÍCONE DA BARRA DE NAVEGAÇÃO INFERIOR POR GÊNERO (SEM CONTORNOS)
 window.atualizarAvatarNavMeuEspaco = function() {
     const imgNav = document.getElementById('img-avatar-nav');
     if (!imgNav) return;
-    
-    let avatarSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' r='4'/%3E%3C/svg%3E";
-    
-    if (window.perfilAtual && window.perfilAtual.avatar_url) {
-        avatarSrc = window.perfilAtual.avatar_url;
-    } else if (window.listaMembrosFamilia && typeof window.obterUsuarioId === 'function') {
-        const meuId = window.obterUsuarioId();
-        const eu = window.listaMembrosFamilia.find(m => m.id === meuId);
-        if (eu && eu.avatar_url) {
-            avatarSrc = eu.avatar_url;
-        }
+
+    const genero = window.detectarGeneroUsuarioAtual();
+
+    if (genero === 'feminino') {
+        imgNav.src = './icone/medita.png';
+        imgNav.alt = 'Espaço Mulher';
+    } else {
+        imgNav.src = './icone/icone-escudo.png';
+        imgNav.alt = 'Espaço Masculino';
     }
-    
-    imgNav.src = avatarSrc;
+
+    // Elimina qualquer contorno, borda laranja ou formato circular de foto
+    imgNav.style.border = 'none';
+    imgNav.style.outline = 'none';
+    imgNav.style.boxShadow = 'none';
+    imgNav.style.background = 'transparent';
+    imgNav.style.borderRadius = '0';
+    imgNav.style.width = '24px';
+    imgNav.style.height = '24px';
+    imgNav.style.objectFit = 'contain';
 };
 
-// 1.1. ATUALIZAÇÃO DOS CARTÕES DE GÉNERO E REDIRECIONAMENTO
+// 1.1. ATUALIZAÇÃO DOS CARTÕES DE GÊNERO E REDIRECIONAMENTO NO PAINEL
 window.atualizarCartoesGeneroMeuEspaco = function() {
     const cardMulher = document.getElementById('card-acesso-espaco-mulher') || document.getElementById('card-acesso-espaco-intimo');
     const cardMasc = document.getElementById('card-acesso-espaco-masculino');
-    
-    // Configura o redirecionamento ao clicar nos cartões
+
     if (cardMulher) {
         cardMulher.style.cursor = 'pointer';
         cardMulher.onclick = function() {
             window.location.href = 'mulher.html';
         };
+
+        const imgIconeMulher = cardMulher.querySelector('img.icone-img, img.icone-card, .icone-genero-img');
+        if (imgIconeMulher) {
+            imgIconeMulher.src = './icone/medita.png';
+            imgIconeMulher.alt = 'Espaço Mulher';
+        }
     }
 
     if (cardMasc) {
@@ -55,34 +108,22 @@ window.atualizarCartoesGeneroMeuEspaco = function() {
         cardMasc.onclick = function() {
             window.location.href = 'homem.html';
         };
+
+        const imgIconeMasc = cardMasc.querySelector('img.icone-img, img.icone-card, .icone-genero-img');
+        if (imgIconeMasc) {
+            imgIconeMasc.src = './icone/icone-escudo.png';
+            imgIconeMasc.alt = 'Espaço Masculino';
+        }
     }
 
     if (!cardMulher && !cardMasc) return;
 
-    // Resgata o sexo/género do perfil ativo ou da lista de membros
-    let sexoDetectado = null;
-    if (window.perfilAtual) {
-        sexoDetectado = window.perfilAtual.sexo || window.perfilAtual.genero || null;
-    }
-    
-    if (!sexoDetectado && window.listaMembrosFamilia && typeof window.obterUsuarioId === 'function') {
-        const meuId = window.obterUsuarioId();
-        const membro = window.listaMembrosFamilia.find(m => m.id === meuId);
-        if (membro) {
-            sexoDetectado = membro.sexo || membro.genero || null;
-        }
-    }
+    const genero = window.detectarGeneroUsuarioAtual();
 
-    const val = String(sexoDetectado || '').trim().toLowerCase();
-
-    if (val === 'feminino') {
+    if (genero === 'feminino') {
         if (cardMulher) cardMulher.classList.remove('oculto');
         if (cardMasc) cardMasc.classList.add('oculto');
-    } else if (val === 'masculino') {
-        if (cardMasc) cardMasc.classList.remove('oculto');
-        if (cardMulher) cardMulher.classList.add('oculto');
     } else {
-        // Fallback: se não estiver preenchido, revela o espaço masculino por defeito
         if (cardMasc) cardMasc.classList.remove('oculto');
         if (cardMulher) cardMulher.classList.add('oculto');
     }
@@ -108,6 +149,7 @@ window.carregarAlfinetesMeuEspaco = function() {
     
     window.renderizarMeuEspaco();
     window.atualizarCartoesGeneroMeuEspaco();
+    window.atualizarAvatarNavMeuEspaco();
 };
 
 window.salvarAlfinetesMeuEspaco = function() {
@@ -292,8 +334,8 @@ window.processarTextoTranscritoMeuEspaco = function(frase) {
 
 // 5. RENDERIZAÇÃO DOS WIDGETS COMPLETOS E ATIVOS
 window.renderizarMeuEspaco = function() {
-    // Garante a visibilidade e eventos do cartão de acesso correspondente
     window.atualizarCartoesGeneroMeuEspaco();
+    window.atualizarAvatarNavMeuEspaco();
 
     const container = document.getElementById('container-widgets-meuespaco');
     const placeholder = document.getElementById('placeholder-meuespaco');
@@ -339,7 +381,6 @@ window.renderizarMeuEspaco = function() {
         const content = document.createElement('div');
 
         if (pin.tipo === 'area') {
-            // Widget: Carteira / Saldos
             if (pin.origem === 'box-carteira-topo') {
                 const saldoMembro = document.getElementById('lbl-saldo-carteira-membro')?.textContent || 'R$ 0,00';
                 const saldoFamilia = document.getElementById('lbl-saldo-total-familia-montante')?.textContent || 'R$ 0,00';
@@ -357,7 +398,6 @@ window.renderizarMeuEspaco = function() {
                     <button type="button" class="btn-principal" style="width:100%; margin-top:10px; font-size:12px; padding:9px;" onclick="window.abrirModalTransferirSaldo()">💸 Fazer Transferência</button>
                 `;
             }
-            // Widget: Registo Rápido de Movimentação (COM MICROFONE INTELIGENTE PNG)
             else if (pin.origem === 'card-registro-rapido-financas') {
                 content.innerHTML = `
                     <div style="display:flex; flex-direction:column; gap:8px;">
@@ -394,7 +434,6 @@ window.renderizarMeuEspaco = function() {
                     </div>
                 `;
             }
-            // Widget: Lista de Missões
             else if (pin.origem === 'secao-inicio') {
                 const pendentes = (typeof cacheMissoes !== 'undefined') ? cacheMissoes.filter(m => m.status === 'pendente') : [];
                 if (pendentes.length === 0) {
@@ -420,7 +459,6 @@ window.renderizarMeuEspaco = function() {
                     content.innerHTML = htmlMissoes;
                 }
             }
-            // Widget: Mural de Recados
             else if (pin.origem === 'bloco-card-mural-recados') {
                 const recados = window.recadosLarLista || [];
                 let htmlRecados = `
@@ -444,7 +482,6 @@ window.renderizarMeuEspaco = function() {
                 }
                 content.innerHTML = htmlRecados;
             }
-            // Widget: Calendário / Agenda
             else if (pin.origem === 'secao-calendario') {
                 content.innerHTML = `
                     <div style="text-align:center; padding:12px 8px; background:#f0f9ff; border-radius:12px; border:1.5px dashed #0284c7;">
@@ -456,7 +493,6 @@ window.renderizarMeuEspaco = function() {
                     </div>
                 `;
             }
-            // Widget: Supermercado
             else if (pin.origem === 'secao-mercado') {
                 content.innerHTML = `
                     <div style="display:flex; flex-direction:column; gap:8px;">
@@ -467,7 +503,6 @@ window.renderizarMeuEspaco = function() {
                     </div>
                 `;
             }
-            // Widget: Metas do Ano
             else if (pin.origem === 'modal-metas-anuais') {
                 const totalMetas = window.metasAnuaisLista?.length || 0;
                 const concluidas = window.metasAnuaisLista?.filter(m => m.concluida)?.length || 0;
@@ -596,8 +631,8 @@ window.adicionarItemMercadoPeloMeuEspaco = function() {
 // 7. INICIALIZAÇÃO SEGURA
 window.inicializarMeuEspacoSeguro = function() {
     window.atualizarCartoesGeneroMeuEspaco();
+    window.atualizarAvatarNavMeuEspaco();
     if (typeof window.obterUsuarioId === 'function' && window.obterUsuarioId()) {
-        window.atualizarAvatarNavMeuEspaco();
         window.carregarAlfinetesMeuEspaco();
         return true;
     }
@@ -606,6 +641,7 @@ window.inicializarMeuEspacoSeguro = function() {
 
 document.addEventListener("DOMContentLoaded", () => {
     window.atualizarCartoesGeneroMeuEspaco();
+    window.atualizarAvatarNavMeuEspaco();
     setTimeout(() => {
         if (!window.inicializarMeuEspacoSeguro()) {
             let tentativas = 0;

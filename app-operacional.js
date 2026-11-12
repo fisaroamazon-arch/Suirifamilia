@@ -1,10 +1,10 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-OPERACIONAL.JS (100% COMPLETO E INTEGRAL)
-// Missões com Ordenação Inteligente, Subitens Despoluídos, Realtime,
-// Fotinhas Cooperativas Ampliadas (Verde, Laranja, Vermelho), Emojis Puros,
+// Missões com Linhas Sutis e Sem Janelas Duplas,
+// Ícones Puros Empilhados (icone-check.png em cima e icone-xis.png em baixo),
+// Subitens Despoluídos, Realtime, Fotinhas Cooperativas, Emojis Puros,
 // Mesada Gamificada, Mural de Recados, Cofres Compartilhados e Voz.
 // Integrado com o Catálogo de Ícones PNG Transparentes (./icone/)
-// Estética Refinada: Cores Solares, Badges Frescos e Sem Marrom Queimado
 // =========================================================================
 
 let cacheMissoes = [];
@@ -24,10 +24,10 @@ function obterIconeSeguro(chave) {
     if (!chave) return ICONE_FALLBACK;
     
     const mapaIconesPng = {
-        'check': `<img src="./icone/icone-check.png" alt="Check" style="width:14px; height:14px; object-fit:contain; vertical-align:middle;">`,
-        'xis': `<img src="./icone/icone-xis.png" alt="Xis" style="width:14px; height:14px; object-fit:contain; vertical-align:middle;">`,
-        'joinha': `<img src="./icone/icone-joinha.png" alt="Fiz" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;">`,
-        'joinhaInvertido': `<img src="./icone/icone-joinha-baixo.png" alt="Não Fiz" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;">`,
+        'check': `<img src="./icone/icone-check.png" alt="Check" style="width:20px; height:20px; object-fit:contain; vertical-align:middle; display:block;">`,
+        'xis': `<img src="./icone/icone-xis.png" alt="Xis" style="width:20px; height:20px; object-fit:contain; vertical-align:middle; display:block;">`,
+        'joinha': `<img src="./icone/icone-joinha.png" alt="Fiz" style="width:18px; height:18px; object-fit:contain; vertical-align:middle;">`,
+        'joinhaInvertido': `<img src="./icone/icone-joinha-baixo.png" alt="Não Fiz" style="width:18px; height:18px; object-fit:contain; vertical-align:middle;">`,
         'relogio': `<img src="./icone/icone-relogio.png" alt="Horário" style="width:12px; height:12px; object-fit:contain; vertical-align:middle;">`,
         'editar': `<img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain; vertical-align:middle;">`,
         'excluir': `<img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain; vertical-align:middle;">`,
@@ -794,7 +794,7 @@ window.converterXPParaMesada = async function() {
 };
 
 // =========================================================================
-// 5. FILTRAGEM DE MISSÕES (TELA TRADICIONAL DE ADULTOS - SEM O MARROM PESADO)
+// 5. FILTRAGEM DE MISSÕES (TELA TRADICIONAL DE ADULTOS)
 // =========================================================================
 
 window.filtrarMissoesPorAba = function(tipo) {
@@ -808,7 +808,6 @@ window.filtrarMissoesExibicao = function(tipo) {
     const btnMinhas = document.getElementById('btn-filtro-missao-minhas') || document.getElementById('btn-filtro-minhas-pessoais');
 
     if (btnTodas && btnMinhas) {
-        // Uso de classes dinâmicas harmoniosas em vez de forçar o preenchimento sólido marrom
         if (tipo === 'todas' || tipo === 'casa') {
             btnTodas.className = 'btn-filtro-missao ativo';
             btnMinhas.className = 'btn-filtro-missao';
@@ -1063,7 +1062,7 @@ window.adicionarNovaMissao = async function() {
 };
 
 // =========================================================================
-// 8. RENDERIZAÇÃO ADULTOS E FOTINHAS COOPERATIVAS AMPLIADAS (TRICOLOR)
+// 8. RENDERIZAÇÃO ADULTOS: LISTA DIRETA (SEM JANELAS DUPLAS) E ÍCONES EMPILHADOS
 // =========================================================================
 
 window.renderizarMissoesTela = function() {
@@ -1115,13 +1114,18 @@ window.renderizarMissoesTela = function() {
     const agora = new Date();
     const horaAtualMinutos = agora.getHours() * 60 + agora.getMinutes();
 
+    // Contêineres diretos (sem painel duplicado com borda e sombra)
     const wrapperPendentes = document.createElement('div');
+    wrapperPendentes.className = 'container-missoes-pendentes-fluxo';
+
     const wrapperConcluidas = document.createElement('div');
     wrapperConcluidas.id = 'container-concluidas-adulto';
     wrapperConcluidas.className = 'oculto';
 
+    let totalPendentes = 0;
+    let totalConcluidas = 0;
+
     listaExibicao.forEach(missao => {
-        const card = document.createElement('div');
         const ehColetiva = (missao.escopo === 'casa' || !missao.escopo) && !missao.atribuido_a;
         
         let concluidosArray = Array.isArray(missao.concluidos_por_array) ? missao.concluidos_por_array : [];
@@ -1135,21 +1139,6 @@ window.renderizarMissoesTela = function() {
         const euFalhei = falhadosArray.includes(meuId) || (missao.status === 'falhou' && !ehColetiva);
         const concluida = euJaFiz || (missao.status === 'concluida' && !ehColetiva);
         const falhada = euFalhei;
-
-        card.id = `card-missao-bloco-${missao.id}`;
-        card.className = `cartao-geral ${concluida ? 'missao-concluida' : ''}`;
-        card.style.cssText = `
-            margin-bottom: 8px;
-            padding: 12px 14px;
-            position: relative;
-            background: ${concluida ? 'rgba(240, 253, 244, 0.7)' : (falhada ? '#fff1f2' : '#ffffff')};
-            border: 1px solid ${concluida ? '#bbf7d0' : (falhada ? '#fecdd3' : 'rgba(226, 232, 240, 0.9)')};
-            border-left: 3.5px solid ${missao.prioridade === 1 ? '#f43f5e' : (missao.prioridade === 2 ? '#f97316' : '#10b981')};
-            border-radius: 14px;
-            z-index: 1;
-            transition: all 0.25s ease;
-            ${concluida ? 'opacity: 0.75;' : ''}
-        `;
 
         const prioCor = missao.prioridade === 1 ? '#f43f5e' : (missao.prioridade === 2 ? '#f97316' : '#10b981');
         const prioTexto = missao.prioridade === 1 ? 'Urgente' : (missao.prioridade === 2 ? 'Importante' : 'Tranquilo');
@@ -1202,7 +1191,7 @@ window.renderizarMissoesTela = function() {
         if (ehColetiva && window.listaMembrosFamilia) {
             const adultos = window.listaMembrosFamilia.filter(m => !m.eh_kids && m.papel !== 'dependente');
             if (adultos.length > 0) {
-                grupoAvataresHtml = `<div class="grupo-avatares-adultos" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">`;
+                grupoAvataresHtml = `<div class="grupo-avatares-adultos" style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">`;
                 adultos.forEach(adulto => {
                     const adultoFez = concluidosArray.includes(adulto.id);
                     const adultoFalhou = falhadosArray.includes(adulto.id);
@@ -1221,7 +1210,7 @@ window.renderizarMissoesTela = function() {
                     const fotoSrc = adulto.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
                     const nomeCurto = window.esc ? window.esc(adulto.nome) : adulto.nome;
                     
-                    grupoAvataresHtml += `<img src="${fotoSrc}" style="width: 38px; height: 38px; border-radius: 50%; border: 3px solid ${corBorda}; box-shadow: ${sombra}; object-fit: cover; background: #fff; transition: transform 0.2s ease;" title="${nomeCurto}">`;
+                    grupoAvataresHtml += `<img src="${fotoSrc}" style="width: 36px; height: 36px; border-radius: 50%; border: 2.5px solid ${corBorda}; box-shadow: ${sombra}; object-fit: cover; background: #fff; transition: transform 0.2s ease;" title="${nomeCurto}">`;
                 });
                 grupoAvataresHtml += `</div>`;
             }
@@ -1254,8 +1243,13 @@ window.renderizarMissoesTela = function() {
 
         const tituloMissaoSeguro = window.esc ? window.esc(missao.titulo) : missao.titulo;
 
-        card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        // Elemento da linha de missão desobstruída (Sem card externo, sem bordas pesadas)
+        const itemLinha = document.createElement('div');
+        itemLinha.id = `card-missao-bloco-${missao.id}`;
+        itemLinha.className = `item-missao-linha-sutil ${concluida ? 'concluida' : ''}`;
+
+        itemLinha.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%;">
                 <div style="flex:1; min-width:0;">
                     <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap;">
                         <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${prioCor};" title="${prioTexto}"></span>
@@ -1270,7 +1264,7 @@ window.renderizarMissoesTela = function() {
                         <span style="display:flex; align-items:center;">
                             ${svgIcone}
                         </span>
-                        <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#64748b;' : ''}">
+                        <strong style="font-size:13.5px; line-height:1.35; color:#1e293b; display:block; ${concluida || falhada ? 'text-decoration:line-through; color:#94a3b8;' : ''}">
                             ${tituloMissaoSeguro}
                         </strong>
                     </div>
@@ -1278,31 +1272,33 @@ window.renderizarMissoesTela = function() {
                     ${subitensHtml}
                 </div>
 
-                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                    <div style="display:flex; flex-direction:column; gap:4px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                    <!-- Apenas os Ícones Transparentes Empilhados: Check em Cima e Xis em Baixo -->
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
                         ${(!concluida && !falhada) ? `
-                            <button type="button" class="btn-sucesso" style="padding:6px 12px; font-size:11px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:4px; line-height:1.2;" onclick="window.concluirMissaoDomestica('${missao.id}')">
-                                ${obterIconeSeguro('check')} Fiz
+                            <button type="button" onclick="window.concluirMissaoDomestica('${missao.id}')" title="Aprovar / Fiz" style="background:none; border:none; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
+                                ${obterIconeSeguro('check')}
                             </button>
-                            <button type="button" class="btn-erro" style="padding:6px 12px; font-size:11px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:4px; line-height:1.2;" onclick="window.falharMissaoDomestica('${missao.id}')">
-                                ${obterIconeSeguro('xis')} Não fiz
+                            <button type="button" onclick="window.falharMissaoDomestica('${missao.id}')" title="Desaprovar / Não fiz" style="background:none; border:none; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
+                                ${obterIconeSeguro('xis')}
                             </button>
                         ` : (falhada ? `
-                            <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11px; font-weight:700; color:#ea580c;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; font-weight:700; color:#ea580c; border-radius:8px;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
                                 Tentar
                             </button>
                         ` : `
-                            <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11px; color:#64748b;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
+                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; color:#64748b; border-radius:8px;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
                                 Refazer
                             </button>
                         `)}
                     </div>
 
+                    <!-- Menu de Opções Retrátil -->
                     <div style="position:relative;">
-                        <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:13px; line-height:1; font-weight:800; border-radius:8px;" onclick="event.stopPropagation(); window.alternarMenuAcoesMissao('${missao.id}')">
+                        <button type="button" class="btn-secundario" style="width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center; font-size:13px; line-height:1; font-weight:800; border-radius:8px;" onclick="event.stopPropagation(); window.alternarMenuAcoesMissao('${missao.id}')">
                             ⋮
                         </button>
-                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:30px; background:#ffffff; border:1.5px solid rgba(226, 232, 240, 0.9); border-radius:12px; box-shadow:0 8px 24px rgba(15, 23, 42, 0.12); z-index:10000; min-width:145px; overflow:hidden;">
+                        <div id="menu-drop-missao-${missao.id}" class="oculto" style="position:absolute; right:0; top:32px; background:#ffffff; border:1.5px solid rgba(226, 232, 240, 0.9); border-radius:12px; box-shadow:0 8px 24px rgba(15, 23, 42, 0.12); z-index:10000; min-width:145px; overflow:hidden;">
                             <button type="button" style="width:100%; border:none; background:none; padding:8px 10px; font-size:11.5px; text-align:left; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.iniciarEdicaoMissao('${missao.id}')">
                                 ${obterIconeSeguro('editar')} Editar
                             </button>
@@ -1317,22 +1313,28 @@ window.renderizarMissoesTela = function() {
                 </div>
             </div>
         `;
-        
+
         if (concluida) {
-            wrapperConcluidas.appendChild(card);
+            wrapperConcluidas.appendChild(itemLinha);
+            totalConcluidas++;
         } else {
-            wrapperPendentes.appendChild(card);
+            wrapperPendentes.appendChild(itemLinha);
+            totalPendentes++;
         }
     });
 
-    container.appendChild(wrapperPendentes);
+    if (totalPendentes > 0) {
+        container.appendChild(wrapperPendentes);
+    } else {
+        container.innerHTML = '<p class="status-texto" style="text-align:center; padding:18px 0;">Todas as tarefas do dia foram concluídas! 🌟</p>';
+    }
 
-    if (wrapperConcluidas.children.length > 0) {
+    if (totalConcluidas > 0) {
         const divToggle = document.createElement('div');
         divToggle.style.cssText = 'text-align: center; margin: 16px 0 8px 0;';
         divToggle.innerHTML = `
-            <button type="button" class="btn-secundario" style="padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px dashed rgba(226, 232, 240, 0.9); color: var(--texto-suave); cursor: pointer;" onclick="window.alternarMissoesConcluidas('adulto', ${wrapperConcluidas.children.length})">
-                <span id="txt-btn-concluidas-adulto">Ver ${wrapperConcluidas.children.length} tarefas concluídas ▼</span>
+            <button type="button" class="btn-secundario" style="padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px dashed rgba(226, 232, 240, 0.9); color: var(--texto-suave); cursor: pointer;" onclick="window.alternarMissoesConcluidas('adulto', ${totalConcluidas})">
+                <span id="txt-btn-concluidas-adulto">Ver ${totalConcluidas} tarefas concluídas ▼</span>
             </button>
         `;
         container.appendChild(divToggle);

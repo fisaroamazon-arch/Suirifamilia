@@ -2,7 +2,8 @@
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
 // Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
 // Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
-// Integrado Rigorosamente ao Catálogo Real de Ícones PNG da Pasta ./icone/
+// Integrado ao Catálogo de Ícones PNG da Pasta ./icone/ (com love.png no Radar)
+// Curadoria Dinâmica: Sorteio Diário, "Quero Assistir" e 2 Gavetas Retráteis
 // =========================================================================
 
 // 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO ANTES DO CATÁLOGO GERAL)
@@ -35,7 +36,11 @@ window.CatalogoFilmesMasculinos = window.CatalogoFilmesMasculinos || [
     { id: "f3", titulo: "À Procura da Felicidade", ano: "2006", categoria: "Família e Superação", desc: "A luta inegociável de um pai que se recusa a ser derrotado pela miséria." },
     { id: "f4", titulo: "Ford vs Ferrari", ano: "2019", categoria: "Foco e Engenharia", desc: "Obsessão por perfeição técnica e a coragem de romper barreiras na pista." },
     { id: "f5", titulo: "Até o Último Homem", ano: "2016", categoria: "Convicção e Bravura", desc: "A integridade moral de servir e salvar vidas na linha de tiro sem tocar numa arma." },
-    { id: "f6", titulo: "Coach Carter", ano: "2005", categoria: "Disciplina e Caráter", desc: "A disciplina dentro da quadra só tem valor se construir homens íntegros fora dela." }
+    { id: "f6", titulo: "Coach Carter", ano: "2005", categoria: "Disciplina e Caráter", desc: "A disciplina dentro da quadra só tem valor se construir homens íntegros fora dela." },
+    { id: "f7", titulo: "O Resgate do Soldado Ryan", ano: "1998", categoria: "Dever & Sacrifício", desc: "A irmandade incondicional sob a brutalidade do combate e o cumprimento do dever militar." },
+    { id: "f8", titulo: "Clube da Luta", ano: "1999", categoria: "Mentalidade & Caos", desc: "Uma provocação crua sobre o vazio moderno, desapego material e reconstrução pessoal." },
+    { id: "f9", titulo: "Invictus", ano: "2009", categoria: "Perdão & Liderança", desc: "O poder do esporte e da liderança magnânima para unir uma nação dividida." },
+    { id: "f10", titulo: "Cinderella Man", ano: "2005", categoria: "Superação Familiar", desc: "O pugilista que luta cada round pela sobrevivência e dignidade da sua esposa e filhos." }
 ];
 
 window.CatalogoSeriesMasculinas = window.CatalogoSeriesMasculinas || [
@@ -43,7 +48,9 @@ window.CatalogoSeriesMasculinas = window.CatalogoSeriesMasculinas || [
     { id: "s2", titulo: "Peaky Blinders", temporadas: "6 Temporadas", categoria: "Estratégia e Frieza", desc: "Visão estratégica, postura calma em momentos críticos e fidelidade à família." },
     { id: "s3", titulo: "Suits", temporadas: "9 Temporadas", categoria: "Oratória e Negociação", desc: "Postura executiva, domínio sob pressão e resolução inteligente de crises." },
     { id: "s4", titulo: "The Bear (O Urso)", temporadas: "3 Temporadas", categoria: "Maestria e Foco", desc: "A busca implacável por elevar padrões em meio ao caos e superação pessoal." },
-    { id: "s5", titulo: "Yellowstone", temporadas: "5 Temporadas", categoria: "Lealdade e Defesa", desc: "A proteção intransigente da terra e dos valores da família contra invasões externas." }
+    { id: "s5", titulo: "Yellowstone", temporadas: "5 Temporadas", categoria: "Lealdade e Defesa", desc: "A proteção intransigente da terra e dos valores da família contra invasões externas." },
+    { id: "s6", titulo: "Vikings", temporadas: "6 Temporadas", categoria: "Ambição & Exploração", desc: "A sede por desbravar novos horizontes, liderar guerreiros e desafiar o destino." },
+    { id: "s7", titulo: "Mad Men", temporadas: "7 Temporadas", categoria: "Negócios & Identidade", desc: "Os bastidores do mundo corporativo, oratória persuasiva e os dilemas da alma masculina." }
 ];
 
 // 2. PERSISTÊNCIA E CHAVES DINÂMICAS POR UTILIZADOR
@@ -71,6 +78,7 @@ window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStora
 window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
 window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
 window.dadosMidiaAssistida = JSON.parse(localStorage.getItem('suiri_midia_assistida')) || [];
+window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
 window.dadosManutencaoGaragem = JSON.parse(localStorage.getItem('suiri_manutencao_masc')) || [];
 window.dadosAcervoLazer = JSON.parse(localStorage.getItem('suiri_lazer_masc')) || [];
 
@@ -98,6 +106,7 @@ window.abrirEspacoMasculino = async function() {
         window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('forja_diaria'))) || {};
         window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
         window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
+        window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
     } catch (e) {}
 
     window.renderizarEsqueletoEspacoMasculino();
@@ -107,6 +116,7 @@ window.abrirEspacoMasculino = async function() {
     window.renderizarHistoricoForja();
     window.renderizarHistoricoRadarIntimo();
     window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
     window.renderizarHistoricoAssistidos();
     window.renderizarListasMasculinas();
 
@@ -151,8 +161,8 @@ window.renderizarEsqueletoEspacoMasculino = function() {
 
         <!-- LINHA 2: CABEÇALHO NOBRE COM ÍCONE 50px E CONTRASTE MÁXIMO -->
         <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
-            <div style="width:58px; height:58px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
-                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:48px; height:48px; object-fit:contain;">
+            <div style="width:85px; height:85px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
+                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:70px; height:70px; object-fit:contain;">
             </div>
             <div style="flex:1; min-width:0;">
                 <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff; letter-spacing:-0.4px; line-height:1.15; text-shadow:0 2px 8px rgba(0,0,0,0.8);">Espaço Masculino</h1>
@@ -160,7 +170,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA (TEXTOS BRANCOS E VISÍVEIS) -->
+        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #38bdf8; border-radius:20px; padding:18px 16px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <span id="label-titulo-reflexao-estoica" style="font-size:11.5px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
@@ -229,7 +239,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
             </div>
 
-            <!-- Grade das 6 Missões Diárias (Botões em Metal) -->
+            <!-- Grade das 6 Missões Diárias -->
             <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;"></div>
 
             <!-- Histórico Retrátil da Forja -->
@@ -242,11 +252,11 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 3: RADAR ÍNTIMO (COM ENERGIA, ESTRESSE E LIBIDO) -->
+        <!-- QUADRO 3: RADAR ÍNTIMO (COM LOVE.PNG NO CABEÇALHO E NA DISPOSIÇÃO/LIBIDO) -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #f43f5e; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:18px;">❤️</span>
+                    <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar Íntimo" style="width:35px; height:35px; object-fit:contain;">
                     <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Íntimo & Vitalidade</strong>
                 </div>
                 <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:#e11d48; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
@@ -286,11 +296,11 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <input type="range" id="range-estresse" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloSlider('estresse')">
             </div>
 
-            <!-- Barra: Disposição / Libido -->
+            <!-- Barra: Disposição / Libido (com love.png) -->
             <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-fogo.png" alt="Libido" style="width:18px; height:18px; object-fit:contain;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Libido" style="width:18px; height:18px; object-fit:contain;">
                         Disposição / Libido:
                     </span>
                     <strong id="badge-libido-valor" style="font-size:11.5px; color:#f43f5e; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #be123c;">Nota 5 (Normal)</strong>
@@ -301,7 +311,10 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             <!-- Histórico Retrátil do Radar -->
             <div style="border-top:1px dashed #334155; padding-top:10px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📅 Histórico Confidencial (<span id="contador-historico-radar">0</span>)</span>
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:inline-flex; align-items:center; gap:6px;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Love" style="width:15px; height:15px; object-fit:contain;">
+                        Histórico Confidencial (<span id="contador-historico-radar">0</span>)
+                    </span>
                     <span id="seta-historico-radar" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-historico-radar-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
@@ -310,7 +323,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 4: RECOMENDAÇÕES DE FILMES & SÉRIES -->
+        <!-- QUADRO 4: CURADORIA DE FILMES & SÉRIES DINÂMICA (ROTAÇÃO DIÁRIA + DUAS GAVETAS) -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -333,13 +346,22 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                     <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0; line-height:1.45;">Descrição da obra e lição de conduta.</p>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #334155; padding-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #334155; padding-top:10px; flex-wrap:wrap; gap:8px;">
                     <div style="display:flex; gap:6px;">
                         <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)">◄</button>
                         <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)">►</button>
                     </div>
 
-                    <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer;" onclick="window.abrirModalAvaliacaoMidia()">✓ Já Assisti</button>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <!-- Botão Quero Assistir Masculino -->
+                        <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
+                            📌 Quero Assistir
+                        </button>
+                        <!-- Botão Já Assisti Masculino -->
+                        <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
+                            <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -355,12 +377,22 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#0f172a; color:#cbd5e1; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
             </div>
 
+            <!-- GAVETA 1: QUERO ASSISTIR (RETRÁTIL) -->
             <div style="margin-top:14px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-quero-ver-masc-conteudo', 'seta-quero-ver-masc')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">📌 Quero Assistir (<span id="contador-quero-ver-masc">0</span>)</span>
+                    <span id="seta-quero-ver-masc" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-quero-ver-masc-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- GAVETA 2: OBRAS ASSISTIDAS E AVALIADAS (RETRÁTIL) -->
+            <div style="margin-top:8px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">Obras Assistidas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">⭐ Obras Avaliadas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
                     <span id="seta-assistidos" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
                 </div>
-                <div id="bloco-assistidos-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
+                <div id="bloco-assistidos-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
@@ -697,7 +729,7 @@ window.renderizarHistoricoForja = function() {
 };
 
 // =========================================================================
-// 6. RADAR ÍNTIMO: SLIDERS (1 A 10) E HISTÓRICO EXPANSÍVEL
+// 6. RADAR ÍNTIMO: SLIDERS (1 A 10) E HISTÓRICO EXPANSÍVEL COM LOVE.PNG
 // =========================================================================
 
 window.obterDescricaoNotaSlider = function(tipo, valor) {
@@ -810,7 +842,7 @@ window.renderizarHistoricoRadarIntimo = function() {
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
                 <span style="font-size:10.5px; font-weight:800; color:#fb7185; background:#2a101b; border:1px solid #9f1239; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                    <img src="./icone/icone-fogo.png" alt="Libido" style="width:14px; height:14px; object-fit:contain;"> ${reg.textoLibido}
+                    <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Libido" style="width:14px; height:14px; object-fit:contain;"> ${reg.textoLibido}
                 </span>
                 <button type="button" onclick="window.removerItemHistoricoRadar('${reg.id}')" style="background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center;" title="Remover registro">
                     <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
@@ -828,8 +860,41 @@ window.removerItemHistoricoRadar = function(id) {
 };
 
 // =========================================================================
-// 7. MOTOR DO CARROSSEL DE MÍDIA (FILMES & SÉRIES)
+// 7. CURADORIA DE FILMES & SÉRIES (SORTEIO DIÁRIO, QUERO ASSISTIR & AVALIADOS)
 // =========================================================================
+
+// Gerador de semente baseado na data do dia para rotação diária
+function obterSementeDataHojeMasc() {
+    const hoje = new Date();
+    const str = `${hoje.getFullYear()}-${hoje.getMonth() + 1}-${hoje.getDate()}`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+// Embaralhamento determinístico diário
+window.obterCatalogoDiarioMasc = function(tipo) {
+    const base = tipo === 'filmes'
+        ? (window.CatalogoFilmesMasculinos || [])
+        : (window.CatalogoSeriesMasculinas || []);
+    
+    if (base.length === 0) return [];
+
+    let seed = obterSementeDataHojeMasc();
+    const copia = [...base];
+    
+    for (let i = copia.length - 1; i > 0; i--) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const rnd = seed / 233280;
+        const j = Math.floor(rnd * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+
+    return copia;
+};
 
 window.alternarAbaMidia = function(aba) {
     window.abaMidiaAtiva = aba;
@@ -844,14 +909,19 @@ window.alternarAbaMidia = function(aba) {
         if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#94a3b8'; }
     }
 
+    window.indiceMidiaAtual[aba] = 0;
     window.atualizarVisualizacaoMidia();
 };
 
+window.obterListaMidiaMascAtual = function() {
+    return window.obterCatalogoDiarioMasc(window.abaMidiaAtiva);
+};
+
 window.navegarCarrosselMidia = function(direcao) {
-    const lista = window.abaMidiaAtiva === 'filmes' ? window.CatalogoFilmesMasculinos : window.CatalogoSeriesMasculinas;
+    const lista = window.obterListaMidiaMascAtual();
     if (!lista || lista.length === 0) return;
 
-    let idx = window.indiceMidiaAtual[window.abaMidiaAtiva] + direcao;
+    let idx = (window.indiceMidiaAtual[window.abaMidiaAtiva] || 0) + direcao;
     if (idx < 0) idx = lista.length - 1;
     if (idx >= lista.length) idx = 0;
 
@@ -860,7 +930,7 @@ window.navegarCarrosselMidia = function(direcao) {
 };
 
 window.atualizarVisualizacaoMidia = function() {
-    const lista = window.abaMidiaAtiva === 'filmes' ? window.CatalogoFilmesMasculinos : window.CatalogoSeriesMasculinas;
+    const lista = window.obterListaMidiaMascAtual();
     const idx = window.indiceMidiaAtual[window.abaMidiaAtiva] || 0;
     const item = lista[idx];
 
@@ -871,22 +941,73 @@ window.atualizarVisualizacaoMidia = function() {
     const elTitulo = document.getElementById('midia-titulo-destaque');
     const elDesc = document.getElementById('midia-descricao-destaque');
     const btnAcao = document.getElementById('btn-marcar-assistido-acao');
+    const btnQueroVer = document.getElementById('btn-quero-ver-masc');
 
     if (elBadgeCat) elBadgeCat.textContent = item.categoria || window.abaMidiaAtiva.toUpperCase();
     if (elAno) elAno.textContent = item.ano || item.temporadas || '';
     if (elTitulo) elTitulo.textContent = item.titulo || '';
     if (elDesc) elDesc.textContent = item.desc || '';
 
+    // Verifica se já está na lista "Quero Assistir"
+    const naListaQueroVer = window.dadosMidiaQueroVerMasc.some(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    if (btnQueroVer) {
+        if (naListaQueroVer) {
+            btnQueroVer.textContent = '📌 Na Minha Lista';
+            btnQueroVer.style.background = '#0369a1';
+            btnQueroVer.style.borderColor = '#38bdf8';
+            btnQueroVer.style.color = '#ffffff';
+        } else {
+            btnQueroVer.textContent = '📌 Quero Assistir';
+            btnQueroVer.style.background = '#1e293b';
+            btnQueroVer.style.borderColor = '#0284c7';
+            btnQueroVer.style.color = '#38bdf8';
+        }
+    }
+
+    // Verifica se já foi avaliado pelo utilizador
     const jaAvaliado = window.dadosMidiaAssistida.find(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnAcao) {
         if (jaAvaliado) {
             btnAcao.textContent = `★ ${jaAvaliado.estrelas} Estrelas`;
             btnAcao.style.background = '#f59e0b';
         } else {
-            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Check" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
+            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
             btnAcao.style.background = '#10b981';
         }
     }
+};
+
+// Alternar status "Quero Assistir" Masculino
+window.alternarQueroAssistirMasc = function(itemDireto = null) {
+    const lista = window.obterListaMidiaMascAtual();
+    const item = itemDireto || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
+    if (!item) return;
+
+    const idx = window.dadosMidiaQueroVerMasc.findIndex(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+
+    if (idx >= 0) {
+        window.dadosMidiaQueroVerMasc.splice(idx, 1);
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast(`"${item.titulo}" removido de 'Quero Assistir'.`, "info");
+        }
+    } else {
+        window.dadosMidiaQueroVerMasc.unshift({
+            id: item.id || ('quero_m_' + Date.now()),
+            titulo: item.titulo,
+            tipo: window.abaMidiaAtiva,
+            categoria: item.categoria || 'Geral',
+            ano: item.ano || item.temporadas || '',
+            desc: item.desc || '',
+            salvo_em: new Date().toISOString()
+        });
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast(`"${item.titulo}" adicionado à lista 'Quero Assistir'! 📌`, "sucesso");
+        }
+    }
+
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+    window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
 };
 
 window.abrirModalAvaliacaoMidia = function() {
@@ -894,11 +1015,16 @@ window.abrirModalAvaliacaoMidia = function() {
     if (caixa) caixa.classList.toggle('oculto');
 };
 
-window.confirmarAvaliacaoMidia = function(estrelas) {
-    const lista = window.abaMidiaAtiva === 'filmes' ? window.CatalogoFilmesMasculinos : window.CatalogoSeriesMasculinas;
-    const item = lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
+window.confirmarAvaliacaoMidia = function(estrelas, itemParam = null) {
+    const lista = window.obterListaMidiaMascAtual();
+    const item = itemParam || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
     if (!item) return;
 
+    // Se estiver em "Quero Assistir", remove automaticamente
+    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+
+    // Grava nos assistidos
     window.dadosMidiaAssistida = window.dadosMidiaAssistida.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     window.dadosMidiaAssistida.push({
         id: item.id || ('mid_' + Date.now()),
@@ -913,19 +1039,60 @@ window.confirmarAvaliacaoMidia = function(estrelas) {
     document.getElementById('caixa-avaliacao-midia')?.classList.add('oculto');
     
     window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
     window.renderizarHistoricoAssistidos();
+
     if (typeof window.mostrarToast === 'function') {
         window.mostrarToast(`Avaliação de ${estrelas} estrelas registrada!`, "sucesso");
     }
 };
 
+// Renderização da Gaveta 1: Quero Assistir Masculino
+window.renderizarHistoricoQueroVerMasc = function() {
+    const cont = document.getElementById('bloco-quero-ver-masc-conteudo');
+    const elContador = document.getElementById('contador-quero-ver-masc');
+    if (!cont) return;
+
+    const lista = window.dadosMidiaQueroVerMasc || [];
+    if (elContador) elContador.textContent = lista.length;
+
+    if (lista.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhum título na sua lista para assistir.</span>';
+        return;
+    }
+
+    cont.innerHTML = lista.map(item => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
+            <div style="min-width:0; flex:1;">
+                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10.5px; color:#38bdf8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                <button type="button" onclick="window.confirmarAvaliacaoMidia(5, { id: '${item.id}', titulo: '${item.titulo}', categoria: '${item.categoria}' })" style="background:#10b981; color:#fff; border:none; padding:4px 8px; font-size:10.5px; border-radius:8px; font-weight:800; cursor:pointer;" title="Marcar como visto">
+                    ✓ Já Vi
+                </button>
+                <button type="button" onclick="window.removerMidiaQueroVerMasc('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.removerMidiaQueroVerMasc = function(id) {
+    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.id !== id);
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+    window.renderizarHistoricoQueroVerMasc();
+    window.atualizarVisualizacaoMidia();
+};
+
+// Renderização da Gaveta 2: Obras Assistidas e Avaliadas
 window.renderizarHistoricoAssistidos = function() {
     const cont = document.getElementById('bloco-assistidos-conteudo');
     const elContador = document.getElementById('contador-assistidos');
     if (!cont) return;
 
     const assistidosOrdenados = [...window.dadosMidiaAssistida].sort((a, b) => b.estrelas - a.estrelas);
-
     if (elContador) elContador.textContent = assistidosOrdenados.length;
 
     if (assistidosOrdenados.length === 0) {

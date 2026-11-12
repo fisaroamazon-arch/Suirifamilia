@@ -63,9 +63,18 @@
             object-fit: cover !important;
             object-position: center center !important;
             pointer-events: none !important;
-            filter: contrast(115%) saturate(145%) brightness(105%);
             -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
+            /* Transição suave do desfoque do vídeo */
+            filter: blur(0px);
+            -webkit-filter: blur(0px);
+            transition: filter 2.5s ease, -webkit-filter 2.5s ease;
+        }
+
+        /* Desfoque leve no vídeo após 4 segundos sincronizado com o modo vidro */
+        body.modo-vidro #video-cenario-fundo {
+            filter: blur(4px);
+            -webkit-filter: blur(4px);
         }
 
         #container-video-fundo::after {
@@ -266,7 +275,7 @@
 
     <!-- CAMADA 0: VÍDEO 1080P EM TELA CHEIA (SEM LOOP - CONGELA NO ÚLTIMO FRAME) -->
     <div id="container-video-fundo">
-        <video id="video-cenario-fundo" autoplay muted playsinline webkit-playsinline preload="auto">
+        <video id="video-cenario-fundo" muted autoplay playsinline webkit-playsinline preload="auto">
             <source src="flores.mp4" type="video/mp4">
         </video>
     </div>
@@ -307,8 +316,9 @@
         document.addEventListener("DOMContentLoaded", async () => {
             const vidFundo = document.getElementById('video-cenario-fundo');
             if (vidFundo) {
-                // Compatibilidade estrita para WebKit iOS (iPhone) e navegadores móveis
+                // Blindagem de baixo nível para WebKit/Safari iOS (iPhone)
                 vidFundo.muted = true;
+                vidFundo.defaultMuted = true;
                 vidFundo.setAttribute('muted', '');
                 vidFundo.setAttribute('playsinline', '');
                 vidFundo.setAttribute('webkit-playsinline', '');
@@ -318,7 +328,9 @@
                     vidFundo.pause();
                 });
 
-                const tentarReproduzir = () => {
+                const dispararVideoIos = () => {
+                    vidFundo.muted = true;
+                    vidFundo.defaultMuted = true;
                     const promessa = vidFundo.play();
                     if (promessa !== undefined) {
                         promessa.catch(() => {
@@ -328,15 +340,19 @@
                     }
                 };
 
-                tentarReproduzir();
+                // Execução imediata com carregamento no motor WebKit
+                vidFundo.load();
+                dispararVideoIos();
+
+                // Destravamento por primeiro toque (caso o iOS esteja em modo de economia de energia)
                 document.body.addEventListener('touchstart', () => {
                     if (vidFundo.paused && !vidFundo.ended) {
-                        tentarReproduzir();
+                        dispararVideoIos();
                     }
                 }, { once: true });
             }
 
-            // Temporizador: 4 segundos de transparência total, depois ativa o vidro lentamente
+            // Temporizador: 4 segundos de transparência total, depois ativa o vidro e o desfoque suave
             setTimeout(() => {
                 document.body.classList.add('modo-vidro');
             }, 4000);

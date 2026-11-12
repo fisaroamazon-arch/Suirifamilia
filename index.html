@@ -7,7 +7,7 @@
     
     <!-- Configurações PWA e Metadados Mobile -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#d97706">
+    <meta name="theme-color" content="#f97316">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -46,6 +46,8 @@
             padding: 0 !important;
             box-sizing: border-box !important;
             transition: opacity 0.5s ease, visibility 0.5s ease;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
 
         #splash-screen-apresentacao.fade-out {
@@ -62,6 +64,8 @@
             height: 100% !important;
             object-fit: cover !important;
             display: block !important;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
 
         #btn-ativar-som-splash {
@@ -71,7 +75,7 @@
             transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.85);
             color: #ffffff;
-            border: 1.5px solid #f59e0b;
+            border: 1.5px solid #f97316;
             padding: 10px 20px;
             border-radius: 24px;
             font-size: 13px;
@@ -83,6 +87,7 @@
             gap: 8px;
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         body { top: 0 !important; }
@@ -100,14 +105,14 @@
             height: 25px;
             border-radius: 4px;
             background: #ffffff;
-            border: 1.5px solid rgba(217, 119, 6, 0.35);
+            border: 1.5px solid rgba(249, 115, 22, 0.35);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             padding: 0;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
             transition: transform 0.15s ease, border-color 0.2s ease;
         }
 
@@ -127,13 +132,13 @@
             top: 32px;
             right: 0;
             background: #ffffff;
-            border: 1.5px solid rgba(217, 119, 6, 0.25);
+            border: 1.5px solid rgba(226, 232, 240, 0.9);
             border-radius: 12px;
             padding: 5px;
             display: flex;
             flex-direction: column;
             gap: 4px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
             z-index: 1000;
             animation: surgimentoDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             min-width: 125px;
@@ -157,7 +162,7 @@
         }
 
         .item-idioma-opcao-retangular:hover {
-            background: #fef3c7;
+            background: #fff7ed;
         }
 
         .icone-bandeirinha-mini {
@@ -180,10 +185,10 @@
             left: 12px;
             right: 12px;
             background: var(--pastel-card, #ffffff);
-            border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25));
+            border: 1.5px solid rgba(249, 115, 22, 0.25);
             border-radius: 16px;
             padding: 12px 14px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
             z-index: 999999;
             display: flex;
             align-items: center;
@@ -203,9 +208,11 @@
             left: 0 !important;
             right: 0 !important;
             width: 100% !important;
-            background: #ffffff !important;
-            border-top: 1.5px solid rgba(217, 119, 6, 0.18) !important;
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06) !important;
+            background: rgba(255, 255, 255, 0.96) !important;
+            border-top: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+            box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.04) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
             z-index: 99990 !important;
             padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)) 4px !important;
         }
@@ -234,16 +241,6 @@
             transition: color 0.15s ease, transform 0.15s ease !important;
             user-select: none !important;
         }
-        
-        .bottom-nav-item.ativo #img-avatar-nav {
-            border-color: #d97706 !important;
-            transform: scale(1.08);
-        }
-
-        .bottom-nav-item.ativo {
-            color: #d97706 !important;
-            transform: translateY(-1px) !important;
-        }
 
         main.container {
             padding-bottom: 84px !important;
@@ -254,12 +251,12 @@
             height: 68px !important;
             border-radius: 16px !important;
             object-fit: cover !important;
-            border: 2px solid var(--cor-primaria, #d97706) !important;
-            background: var(--suiri-surface-secondary-light, #fef9ea) !important;
+            border: 2px solid var(--cor-primaria, #f97316) !important;
+            background: var(--suiri-surface-secondary-light, #fffbeb) !important;
             flex-shrink: 0 !important;
             cursor: pointer !important;
             display: block !important;
-            box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2) !important;
+            box-shadow: 0 3px 10px rgba(249, 115, 22, 0.18) !important;
         }
 
         .avatar-kids-circulo {
@@ -278,20 +275,20 @@
             height: 24px !important;
             border-radius: 50% !important;
             background: #ffffff;
-            border: 1.5px solid rgba(217, 119, 6, 0.3);
-            color: #d97706;
+            border: 1.5px solid rgba(249, 115, 22, 0.3);
+            color: #f97316;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             padding: 0 !important;
             cursor: pointer;
             z-index: 20;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
             transition: all 0.2s ease;
         }
 
         .btn-sino-flutuante-avatar.tem-pendencias {
-            background: #ef4444 !important;
+            background: #f43f5e !important;
             border-color: #ffffff !important;
             color: #ffffff !important;
             animation: balancoSino 1.8s infinite ease-in-out;
@@ -303,35 +300,6 @@
             40% { transform: rotate(-15deg); }
             60% { transform: rotate(8deg); }
             80% { transform: rotate(-8deg); }
-        }
-
-        .grupo-avatares-kids {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-            padding-left: 12px;
-        }
-        .avatar-kids-mini {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 2px solid #f97316;
-            object-fit: cover;
-            margin-left: -14px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            position: relative;
-            background: #ffffff;
-            transition: all 0.3s ease;
-        }
-        .avatar-kids-mini:first-child {
-            margin-left: 0;
-        }
-        .avatar-kids-mini.concluiu {
-            border-color: #22c55e;
-            border-width: 3px;
-            z-index: 10;
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
         .crop-container {
@@ -353,7 +321,7 @@
             position: absolute;
             inset: 0;
             box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
-            border: 3px solid #22c55e;
+            border: 3px solid #10b981;
             width: 200px;
             height: 200px;
             left: 50%;
@@ -384,6 +352,73 @@
             padding: 12px 8px 30px 8px !important;
             border-radius: 24px;
         }
+
+        /* GRELHA EM CRUZ CENTRALIZADA DO TOPO */
+        .grade-cruz-topo-perfil {
+            display: grid !important;
+            grid-template-columns: 58px 58px !important;
+            grid-template-rows: 50px 50px !important;
+            flex-shrink: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            gap: 0 !important;
+        }
+
+        .item-cruz-topo {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 2px !important;
+            gap: 2px !important;
+            cursor: pointer !important;
+            text-decoration: none !important;
+            color: inherit !important;
+            width: 100% !important;
+            height: 100% !important;
+            transition: transform 0.15s ease !important;
+        }
+
+        .item-cruz-topo:active {
+            transform: scale(0.92) !important;
+        }
+
+        .item-cruz-topo img {
+            width: 22px !important;
+            height: 22px !important;
+            object-fit: contain !important;
+        }
+
+        .item-cruz-topo span {
+            font-size: 9.5px !important;
+            font-weight: 700 !important;
+            color: var(--texto-suave, #64748b) !important;
+            line-height: 1 !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+
+        .item-cruz-topo.cruz-top-left {
+            border-right: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+            border-bottom: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+        }
+
+        .item-cruz-topo.cruz-top-right {
+            border-bottom: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+        }
+
+        .item-cruz-topo.cruz-bottom-left {
+            border-right: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+        }
+
+        .item-cruz-topo.cruz-bottom-right {
+            border: none !important;
+        }
     </style>
 </head>
 <body>
@@ -391,7 +426,7 @@
     <div id="google_translate_element" style="display:none;"></div>
 
     <div id="splash-screen-apresentacao" class="oculto">
-        <video id="video-intro-splash" playsinline webkit-playsinline preload="auto">
+        <video id="video-intro-splash" muted autoplay playsinline webkit-playsinline preload="auto">
             <source src="intro.mp4" type="video/mp4">
         </video>
     </div>
@@ -400,11 +435,11 @@
 
     <div id="banner-instalacao-pwa" class="oculto">
         <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-            <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--cor-primaria, #f97316); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff;">
                 <img src="./icone/icone-check.png" alt="Instalar" style="width: 22px; height: 22px; object-fit: contain;">
             </div>
             <div style="min-width: 0;">
-                <strong style="font-size: 13px; color: var(--texto-principal, #334155); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Instalar o Suiri</strong>
+                <strong style="font-size: 13px; color: var(--texto-principal, #1e293b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Instalar o Suiri</strong>
                 <span id="txt-instrucao-pwa" style="font-size: 11px; color: var(--texto-suave, #64748b); display: block;">Acesso rápido na tela inicial</span>
             </div>
         </div>
@@ -418,17 +453,17 @@
 
         <!-- TELA 0: AUTENTICAÇÃO REAL -->
         <section id="tela-login" class="secao-conteudo-app" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 14px 40px 14px;">
-            <div class="cartao-geral" style="width: 100%; max-width: 410px; text-align: center; margin: 10px auto 16px auto; padding: 26px 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 26px; border: 1.5px solid rgba(253, 230, 138, 0.65); box-shadow: 0 14px 34px rgba(217, 119, 6, 0.08);">
+            <div class="cartao-geral" style="width: 100%; max-width: 410px; text-align: center; margin: 10px auto 16px auto; padding: 26px 20px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 26px; border: 1.5px solid rgba(226, 232, 240, 0.9); box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);">
                 <div style="margin-bottom: 20px;">
-                    <div style="width: 50px; height: 50px; margin: 0 auto 10px auto; border-radius: 16px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(217, 119, 6, 0.16);">
+                    <div style="width: 50px; height: 50px; margin: 0 auto 10px auto; border-radius: 16px; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(249, 115, 22, 0.16);">
                         <img src="./icone/icone-casa-escopo.png" alt="Suiri" style="width: 28px; height: 28px; object-fit: contain;">
                     </div>
-                    <h1 style="font-size: 30px; font-weight: 900; letter-spacing: 1px; color: #d97706; text-transform: uppercase; margin: 0; line-height: 1.1;">Suiri</h1>
+                    <h1 style="font-size: 30px; font-weight: 900; letter-spacing: 1px; color: #f97316; text-transform: uppercase; margin: 0; line-height: 1.1;">Suiri</h1>
                     <span id="lbl-subtitulo-login" style="font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; display: block; margin-top: 4px;">Gestão Familiar</span>
                 </div>
 
                 <div style="display: flex; gap: 6px; background: #f8fafc; padding: 5px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 18px;">
-                    <button type="button" class="btn-principal" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 800; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);" onclick="window.alternarAbaLoginCadastro('login')">Login</button>
+                    <button type="button" class="btn-principal" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 800; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);" onclick="window.alternarAbaLoginCadastro('login')">Login</button>
                     <button type="button" class="btn-secundario" style="flex:1; border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 700;" onclick="window.alternarAbaLoginCadastro('cadastro')">Criar Lar</button>
                 </div>
 
@@ -440,12 +475,12 @@
                         <input type="password" id="login-senha" placeholder="Sua senha de acesso" style="width: 100%; box-sizing: border-box; padding: 13px 14px; font-size: 13.5px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #ffffff; outline: none; transition: all 0.2s ease;" onkeydown="if(event.key === 'Enter') window.fazerLoginEmail(document.getElementById('login-email').value, this.value)">
                     </div>
 
-                    <button type="button" class="btn-principal" style="width: 100%; padding: 13px; font-size: 14.5px; font-weight: 800; border-radius: 14px; margin-top: 4px; box-shadow: 0 8px 18px rgba(217, 119, 6, 0.32); cursor: pointer;" onclick="window.fazerLoginEmail(document.getElementById('login-email').value, document.getElementById('login-senha').value)">
+                    <button type="button" class="btn-principal" style="width: 100%; padding: 13px; font-size: 14.5px; font-weight: 800; border-radius: 14px; margin-top: 4px; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.28); cursor: pointer;" onclick="window.fazerLoginEmail(document.getElementById('login-email').value, document.getElementById('login-senha').value)">
                         Entrar no Lar
                     </button>
 
                     <div style="text-align: center; margin-top: 4px;">
-                        <button type="button" onclick="window.abrirModalRecuperarSenha()" style="background: none; border: none; font-size: 12px; font-weight: 700; color: #b45309; text-decoration: underline; cursor: pointer; padding: 4px 8px;">
+                        <button type="button" onclick="window.abrirModalRecuperarSenha()" style="background: none; border: none; font-size: 12px; font-weight: 700; color: #ea580c; text-decoration: underline; cursor: pointer; padding: 4px 8px;">
                             Esqueci a senha
                         </button>
                     </div>
@@ -487,18 +522,18 @@
             </div>
 
             <div style="width: 100%; max-width: 410px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
-                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(254,243,199,0.55) 100%); border: 1.5px solid rgba(245, 158, 11, 0.28);">
+                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,247,237,0.65) 100%); border: 1.5px solid rgba(249, 115, 22, 0.22);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #fef3c7; color: #d97706; font-size: 14px;">✨</span>
-                        <h4 style="font-size: 13.5px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">Gestão Pessoal & Equilíbrio</h4>
+                        <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #fff7ed; color: #ea580c; font-size: 14px;">✨</span>
+                        <h4 style="font-size: 13.5px; font-weight: 800; color: #ea580c; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">Gestão Pessoal & Equilíbrio</h4>
                     </div>
                     <p style="font-size: 13px; line-height: 1.55; color: #475569; margin: 0; font-weight: 500;">
                         Organizar a rotina não é preencher as horas com tarefas, mas abrir espaço para viver com presença e paz mental. Ao clarear seus objetivos, honrar seus limites e cuidar das finanças com consciência, o tempo se transforma em aliado e a mente encontra tranquilidade para focar no que realmente faz sentido.
                     </p>
-                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #d97706; text-align: right; letter-spacing: 0.3px;">• Clareza • Propósito • Autonomia</div>
+                    <div style="margin-top: 10px; font-size: 11px; font-weight: 700; color: #ea580c; text-align: right; letter-spacing: 0.3px;">• Clareza • Propósito • Autonomia</div>
                 </div>
 
-                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.55) 100%); border: 1.5px solid rgba(14, 165, 233, 0.25);">
+                <div class="bloco-inspiracao-login" style="background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(224,242,254,0.55) 100%); border: 1.5px solid rgba(14, 165, 233, 0.25);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: #e0f2fe; color: #0284c7; font-size: 14px;">🏡</span>
                         <h4 style="font-size: 13.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">Nosso Lar, Nosso Refúgio</h4>
@@ -519,7 +554,7 @@
         <div id="tela-app" class="oculto">
 
             <!-- 1º ITEM FIXO: APOIAR O PROJETO -->
-            <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 12px; margin-top: 4px; margin-bottom: 10px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 14px; color: #b45309; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15); transition: transform 0.15s ease, background 0.2s ease;">
+            <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; margin-top: 4px; margin-bottom: 12px; background: rgba(255, 247, 237, 0.95); border: 1.5px solid rgba(249, 115, 22, 0.25); border-radius: 14px; color: #ea580c; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08); backdrop-filter: blur(8px); transition: transform 0.15s ease, background 0.2s ease;">
                 <img src="./icone/icone-financas.png" alt="Apoiar" style="width: 18px; height: 18px; object-fit: contain;">
                 <span>Apoiar o Projeto</span>
             </button>
@@ -528,7 +563,7 @@
             <section id="tela-kids-exclusiva" class="oculto">
                 <div class="cabecalho-kids-container">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <img id="img-avatar-kids" class="avatar-kids-circulo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar Kids" onclick="window.abrirSeletorFotoPerfil()" title="Mudar Foto">
+                        <img id="img-avatar-kids" class="avatar-kids-circulo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' r='4'/%3E%3C/svg%3E" alt="Avatar Kids" onclick="window.abrirSeletorFotoPerfil()" title="Mudar Foto">
                         <div>
                             <span class="subtitulo-kids-tag" style="cursor:pointer;" onclick="window.abrirModalEmblemas()">Minhas Conquistas</span>
                             <h2 id="nome-membro-kids" class="titulo-kids-nome">Criança</h2>
@@ -571,13 +606,13 @@
             <!-- AMBIENTE DE ADULTOS -->
             <div id="painel-adulto-container">
                 
-                <!-- CABEÇALHO DO USUÁRIO -->
-                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; gap:10px; margin-bottom: 12px; border-radius: 18px;">
+                <!-- CABEÇALHO DO UTILIZADOR -->
+                <header class="cabecalho-app" id="cabecalho-topo-usuario" style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; gap:12px; margin-bottom: 12px; border-radius: 18px;">
                     <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
                         <input type="file" id="input-upload-avatar-membro" accept="image/*" class="oculto" onchange="window.processarUploadAvatar(event)">
                         
                         <div id="container-avatar-perfil-topo" style="position: relative; cursor: pointer; flex-shrink: 0;">
-                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()" title="Alterar Foto de Perfil">
+                            <img id="img-avatar-topo" class="avatar-topo-usuario" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' r='4'/%3E%3C/svg%3E" alt="Avatar" onclick="window.abrirSeletorFotoPerfil()" title="Alterar Foto de Perfil">
                             
                             <button type="button" id="btn-sino-notificacoes-topo" class="btn-sino-flutuante-avatar" onclick="event.stopPropagation(); window.abrirModalNotificacoesGerais();" title="Quadro de Notificações">
                                 <img src="./icone/icone-relogio.png" alt="Avisos" style="width: 14px; height: 14px; object-fit: contain;">
@@ -587,49 +622,48 @@
                         <div style="min-width: 0; flex: 1;">
                             <span id="nome-familia-topo" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave, #64748b); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Suiri Gestão Familiar</span>
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #334155); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
+                                <h3 id="nome-membro-topo" style="font-size: 16px; font-weight: 800; margin: 2px 0 0 0; color: var(--texto-principal, #1e293b); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Familiar</h3>
                                 <span id="bandeira-topo-usuario" style="display: inline-flex; align-items: center;"></span>
                             </div>
-                            <button type="button" id="btn-trocar-membro-topo" class="btn-circular-trocar-membro" onclick="window.abrirJanelaPrincipalQuiosque()" title="Trocar Membro">
-                                <img src="./icone/icone-porta-sair.png" alt="Trocar" style="width: 14px; height: 14px; object-fit: contain;">
-                                <span style="font-size: 11px; font-weight: 700;">Trocar</span>
-                            </button>
                         </div>
                     </div>
 
-                    <!-- Botões de Ação Topo com Ícones Maiores e Botão Sair Sofisticado -->
-                    <div style="display: grid; grid-template-columns: auto auto; gap: 6px; flex-shrink: 0;">
-                        <!-- Lâmpada (Pense) - Ícone Aumentado -->
-                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);" onclick="window.abrirModalPilulaDia()" title="Pense">
-                            <img src="./icone/icone-lampada-pense.png" alt="Pense" style="width: 26px; height: 26px; object-fit: contain;">
-                        </button>
+                    <!-- Botões de Ação Topo com Grade em Cruz (+) Pura e Centralizada -->
+                    <div class="grade-cruz-topo-perfil">
+                        <!-- Superior Esquerdo: Pense -->
+                        <div class="item-cruz-topo cruz-top-left bloco-apenas-adulto" onclick="window.abrirModalPilulaDia()" title="Pense: Sabedoria do Dia">
+                            <img src="./icone/icone-lampada-pense.png" alt="Pense">
+                            <span>Pense</span>
+                        </div>
                         
-                        <!-- Loja / Ofensiva -->
-                        <a href="javascript:void(0)" class="btn-secundario btn-loja-topo" style="padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 12px; display: flex; align-items: center; gap: 5px; text-decoration: none; color: inherit; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1;" onclick="window.abrirModalRankingEquipe()" title="Loja e Ofensiva">
-                            <img src="./icone/icone-loja.png" alt="Loja" style="width: 22px; height: 22px; object-fit: contain;">
-                            <span style="display: flex; align-items: center; line-height: 1; font-weight: 800;"><span id="contador-ofensiva-topo">0</span>d</span>
-                        </a>
+                        <!-- Superior Direito: Loja fixa -->
+                        <div class="item-cruz-topo cruz-top-right" onclick="window.abrirModalRankingEquipe()" title="Loja e Ofensiva">
+                            <img src="./icone/icone-loja.png" alt="Loja">
+                            <span>Loja</span>
+                        </div>
 
-                        <!-- Livrinho (Manual) - Ícone Aumentado -->
-                        <button type="button" class="btn-secundario bloco-apenas-adulto" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);" onclick="window.iniciarTourInstrucoes()" title="Manual">
-                            <img src="./icone/icone-manual.png" alt="Manual" style="width: 26px; height: 26px; object-fit: contain;">
-                        </button>
+                        <!-- Inferior Esquerdo: Manual -->
+                        <div class="item-cruz-topo cruz-bottom-left bloco-apenas-adulto" onclick="window.iniciarTourInstrucoes()" title="Manual do Suiri">
+                            <img src="./icone/icone-manual.png" alt="Manual">
+                            <span>Manual</span>
+                        </div>
                         
-                        <!-- Porta (Sair) - Fundo Sofisticado Rosa/Coral Translúcido em vez de vermelho duro -->
-                        <button type="button" id="btn-sair-topo-app" style="padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff1f2; border: 1.5px solid #fecdd3; cursor: pointer; box-shadow: 0 2px 6px rgba(225, 29, 72, 0.08); transition: transform 0.15s ease;" onclick="window.fazerLogoff()" title="Sair do Lar">
-                            <img src="./icone/icone-porta-sair.png" alt="Sair" style="width: 22px; height: 22px; object-fit: contain;">
-                        </button>
+                        <!-- Inferior Direito: Usuários -->
+                        <div class="item-cruz-topo cruz-bottom-right" id="btn-sair-topo-app" onclick="window.acionarBotaoSessaoTopo()" title="Usuários / Trocar Perfil">
+                            <img id="img-icone-sessao-topo" src="./icone/icone-porta-sair.png" alt="Usuários">
+                            <span id="lbl-btn-trocar-sessao">Usuários</span>
+                        </div>
                     </div>
                 </header>
 
                 <!-- MÓDULO 0: MEU ESPAÇO -->
                 <section id="secao-meuespaco" class="secao-conteudo-app oculto">
                     
-                    <!-- CARTÃO VIP: ESPAÇO MULHER (ISOLADO E COM ÍCONE BEM MAIOR) -->
-                    <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #fff5f8 0%, #fdf2f8 100%); border: 2px solid #f472b6; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.22); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
+                    <!-- CARTÃO VIP: ESPAÇO MULHER COM NOVO ÍCONE MEDITA.PNG -->
+                    <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #fff5f8 0%, #fdf2f8 100%); border: 2px solid #f472b6; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.18); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
                         <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
-                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #fce7f3; border: 1.5px solid #fbcfe8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.15);">
-                                <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width: 44px; height: 44px; object-fit: contain;">
+                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #fce7f3; border: 1.5px solid #fbcfe8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.12);">
+                                <img src="./icone/medita.png" alt="Espaço Mulher" style="width: 44px; height: 44px; object-fit: contain;">
                             </div>
                             <div style="min-width: 0; flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
@@ -644,10 +678,10 @@
                         <span style="font-size: 15px; color: #db2777; font-weight: 900; margin-left: 8px;">Entrar →</span>
                     </div>
 
-                    <!-- CARTÃO VIP: ESPAÇO MASCULINO (ISOLADO E COM ÍCONE BEM MAIOR) -->
-                    <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #38bdf8; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
+                    <!-- CARTÃO VIP: ESPAÇO MASCULINO COM ÍCONE-ESCUDO.PNG -->
+                    <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #38bdf8; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.18); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
                         <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
-                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #e0f2fe; border: 1.5px solid #bae6fd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);">
+                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #e0f2fe; border: 1.5px solid #bae6fd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);">
                                 <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width: 44px; height: 44px; object-fit: contain;">
                             </div>
                             <div style="min-width: 0; flex: 1;">
@@ -664,7 +698,7 @@
                     </div>
 
                     <!-- QUADRO INDEPENDENTE: PAINÉIS FIXADOS -->
-                    <div class="cartao-geral" style="border-radius: 20px; padding: 18px 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+                    <div class="cartao-geral" style="border-radius: 20px; padding: 18px 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.02);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <h3 style="margin: 0; font-size: 15px; font-weight: 900; color: #1e293b; display: flex; align-items: center; gap: 8px;">
                                 <img src="./icone/icone-alfinete.png" alt="Alfinete" style="width: 20px; height: 20px; object-fit: contain;"> Meus Painéis Fixados
@@ -675,9 +709,8 @@
                             Alfinete seus painéis favoritos do Suiri aqui para ter acesso rápido aos resumos da casa.
                         </p>
 
-                        <!-- Container onde os widgets alfinetados serão injetados -->
                         <div id="container-widgets-meuespaco" style="display: flex; flex-direction: column; gap: 12px; min-height: 180px;">
-                            <div id="placeholder-meuespaco" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; background: rgba(0,0,0,0.02); border: 2px dashed rgba(217, 119, 6, 0.25); border-radius: 16px;">
+                            <div id="placeholder-meuespaco" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; background: rgba(0,0,0,0.02); border: 2px dashed rgba(249, 115, 22, 0.25); border-radius: 16px;">
                                 <img src="./icone/icone-alfinete.png" alt="Alfinete" style="width: 32px; height: 32px; object-fit: contain; opacity: 0.35; margin-bottom: 8px;">
                                 <span style="font-size: 11.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Nenhum painel fixado</span>
                             </div>
@@ -693,50 +726,58 @@
 
                 <!-- MÓDULO 1: MISSÕES -->
                 <section id="secao-inicio" class="secao-conteudo-app">
-                    <!-- BOTÕES SEM BORDAS, VISUAL LIMPO FOCADO NOS ÍCONES, 'TODOS' E ÍCONE DE MISSÃO -->
                     <div id="container-botoes-filtro-missoes" style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
-                        <button type="button" id="btn-filtro-missao-todas" class="btn-principal" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('todas')">
+                        <button type="button" id="btn-filtro-missao-todas" class="btn-filtro-missao ativo" style="flex:1; padding:10px 4px; font-size:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('todas')">
                             <img src="./icone/icone-casa-escopo.png" alt="Todos" style="width: 16px; height: 16px; object-fit: contain;">
                             <span id="lbl-texto-filtro-cas-toda">Todos</span>
                         </button>
-                        <button type="button" id="btn-filtro-missao-minhas" class="btn-secundario" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('minhas')">
+                        <button type="button" id="btn-filtro-missao-minhas" class="btn-filtro-missao" style="flex:1; padding:10px 4px; font-size:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="window.filtrarMissoesPorAba('minhas')">
                             <img src="./icone/icone-pessoa-escopo.png" alt="Minhas" style="width: 16px; height: 16px; object-fit: contain;">
                             Minhas
                         </button>
-                        <button type="button" class="btn-sucesso" style="padding:10px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;" onclick="window.abrirModalSugestoes()" title="Sugestões da Semana">
+                        <button type="button" class="btn-sucesso" style="padding:10px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;" onclick="window.abrirModalSugestoes()" title="Sugestões da Semana">
                             <img src="./icone/icones-missao.png" alt="Sugestões" style="width: 18px; height: 18px; object-fit: contain;">
                         </button>
-                        <button type="button" class="btn-sucesso" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; border:none; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="document.getElementById('modal-nova-missao').classList.remove('oculto')">
+                        <button type="button" class="btn-sucesso" style="flex:1; padding:10px 4px; font-size:12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="document.getElementById('modal-nova-missao').classList.remove('oculto')">
                             + Incluir
                         </button>
                     </div>
 
-                    <div id="lista-missoes-dia"></div>
+                    <!-- Contentor Limpo de Missões (Unificado com separadores suaves) -->
+                    <div id="lista-missoes-dia" class="painel-missoes-unificado"></div>
 
+                    <!-- HISTÓRICO KIDS ADM RETRÁTIL (COM SANFONA) -->
                     <div id="painel-historico-missoes-kids-adm" class="cartao-geral oculto" style="padding: 12px 14px; margin-top: 16px; border-left: 4px solid #38bdf8;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <h3 style="font-size: 14px; margin: 0; color: var(--texto-principal, #334155); display: flex; align-items: center; gap: 6px;">
-                                <span>Histórico de Missões Kids (Painel ADM)</span>
-                            </h3>
+                        <div onclick="window.alternarSecaoRetratil('corpo-historico-kids-adm', 'seta-historico-kids-adm')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <img src="./icone/icone-loja.png" alt="Kids ADM" style="width: 20px; height: 20px; object-fit: contain;">
+                                <h3 style="font-size: 14px; margin: 0; color: var(--texto-principal, #1e293b); font-weight: 800;">
+                                    Histórico de Missões Kids (Painel ADM)
+                                </h3>
+                            </div>
+                            <span id="seta-historico-kids-adm" style="font-size: 13px; color: #0284c7; transition: transform 0.25s ease;">▼</span>
                         </div>
-                        <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 8px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
                         
-                        <div id="bloco-conversao-xp-mesada" style="margin-top: 12px; margin-bottom: 12px; padding: 12px; background: #f0f9ff; border: 1.5px dashed #38bdf8; border-radius: 12px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                                <h4 style="margin:0; font-size:13px; color:#0369a1;">Câmbio de XP para Mesada</h4>
-                                <button type="button" class="btn-secundario" style="padding:3px 8px; font-size:10.5px;" onclick="window.abrirModalConfigurarTaxaXP()">Ajustar Taxa</button>
+                        <div id="corpo-historico-kids-adm" class="oculto" style="margin-top: 12px;">
+                            <p style="font-size: 11.5px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">Controle, edite ou remova tarefas realizadas ou fracassadas pelas crianças.</p>
+                            
+                            <div id="bloco-conversao-xp-mesada" style="margin-top: 10px; margin-bottom: 12px; padding: 12px; background: #f0f9ff; border: 1.5px dashed #38bdf8; border-radius: 12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                                    <h4 style="margin:0; font-size:13px; color:#0369a1; font-weight: 800;">Câmbio de XP para Mesada</h4>
+                                    <button type="button" class="btn-secundario" style="padding:3px 8px; font-size:10.5px; border-radius:6px;" onclick="window.abrirModalConfigurarTaxaXP()">Ajustar Taxa</button>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom: 10px;">
+                                    <span>Taxa: <strong id="lbl-taxa-conversao-xp">100 XP = R$ 5,00</strong></span>
+                                    <span>XP Criança: <strong id="lbl-xp-disponivel-conversao" style="color:#f97316;">0 XP</strong></span>
+                                </div>
+                                <button type="button" class="btn-sucesso" style="width:100%; font-size:12px; border-radius: 10px;" onclick="window.converterXPParaMesada()">Converter XP em Dinheiro</button>
                             </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom: 10px;">
-                                <span>Taxa: <strong id="lbl-taxa-conversao-xp">100 XP = R$ 5,00</strong></span>
-                                <span>XP Criança: <strong id="lbl-xp-disponivel-conversao" style="color:#f59e0b;">0 XP</strong></span>
-                            </div>
-                            <button type="button" class="btn-sucesso" style="width:100%; font-size:12px;" onclick="window.converterXPParaMesada()">Converter XP em Dinheiro</button>
-                        </div>
 
-                        <div id="lista-historico-kids-adm"></div>
+                            <div id="lista-historico-kids-adm"></div>
+                        </div>
                     </div>
 
-                    <div class="cartao-geral" style="padding: 12px 14px; margin-top: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #eab308; cursor: pointer; transition: transform 0.15s ease;" onclick="window.abrirModalEmblemas()">
+                    <div class="cartao-geral" style="padding: 12px 14px; margin-top: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #f59e0b; cursor: pointer; transition: transform 0.15s ease;" onclick="window.abrirModalEmblemas()">
                         <div style="display:flex; align-items:center; gap:8px;">
                             <img src="./icone/icone-loja.png" alt="Conquistas" style="width: 22px; height: 22px; object-fit: contain;">
                             <div>
@@ -744,7 +785,7 @@
                                 <span style="display:block; font-size: 11px; color: var(--texto-suave);">Desbloqueie medalhas exclusivas da casa</span>
                             </div>
                         </div>
-                        <span style="font-size:12px; color:#ca8a04; font-weight:bold;">Abrir Vitrine</span>
+                        <span style="font-size:12px; color:#ea580c; font-weight:bold;">Abrir Vitrine</span>
                     </div>
 
                     <div class="cartao-geral" style="padding: 12px 14px; margin-top: 12px; margin-bottom: 12px; border-left: 4px solid var(--cor-sucesso, #10b981);">
@@ -841,32 +882,34 @@
                     <div class="box-carteira-topo" style="margin-bottom: 12px;">
                         <div class="card-saldo-carteira card-carteira-destaque-usuario">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #d97706);">Minha Carteira</span>
+                                <span style="font-size: 11px; font-weight: 700; color: var(--cor-primaria, #f97316);">Minha Carteira</span>
                                 <button type="button" class="btn-principal" style="padding: 3px 8px; font-size: 10.5px; border-radius: 8px;" onclick="window.abrirModalTransferirSaldo()" title="Transferir saldo para familiar">💸 Transferir</button>
                             </div>
-                            <h2 id="lbl-saldo-carteira-membro" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                            <h2 id="lbl-saldo-carteira-membro" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #1e293b);">R$ 0,00</h2>
                         </div>
                         <div id="bloco-card-montante-familia" class="card-saldo-carteira">
                             <span id="lbl-titulo-montante-coletivo" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">Montante da Família</span>
-                            <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #334155);">R$ 0,00</h2>
+                            <h2 id="lbl-saldo-total-familia-montante" style="margin: 4px 0 0 0; font-size: 18px; color: var(--texto-principal, #1e293b);">R$ 0,00</h2>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <button type="button" class="btn-secundario" style="flex: 1; padding: 11px 12px; font-size: 13px; font-weight: 800; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--cor-primaria, #d97706); background: #ffffff; color: var(--cor-primaria, #d97706);" onclick="window.abrirModalOpcoesCupomIA()">
-                            <img src="./icone/icones-camera.png" alt="Câmera" style="width: 18px; height: 18px; object-fit: contain;">
-                            <span>Ler Cupom Fiscal (IA)</span>
-                        </button>
-                        <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
-                        <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
-                    </div>
+                    <!-- Inputs ocultos para leitura de Cupom Fiscal IA -->
+                    <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
+                    <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
 
-                    <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                    <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #f97316);">
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
-                        <div class="campo-com-voz" style="margin-bottom: 8px;">
-                            <input type="text" id="input-fin-descricao" placeholder="Descrição ou fale tocando no microfone...">
-                            <button type="button" id="btn-mic-gastos" class="btn-microfone" onclick="window.ouvirComandoVoz()" title="Falar">
-                                <img src="./icone/icone-microfone.png" alt="Microfone" style="width: 16px; height: 16px; object-fit: contain;">
+                        
+                        <!-- Barra de Texto Integrada com Microfone e Botão de Câmara ao lado -->
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <div class="campo-com-voz" style="flex: 1; position: relative; margin-bottom: 0;">
+                                <input type="text" id="input-fin-descricao" placeholder="Descrição ou fale tocando no microfone..." style="padding-right: 38px;">
+                                <button type="button" id="btn-mic-gastos" class="btn-microfone" onclick="window.ouvirComandoVoz()" title="Falar">
+                                    <img src="./icone/icone-microfone.png" alt="Microfone" style="width: 16px; height: 16px; object-fit: contain;">
+                                </button>
+                            </div>
+                            <button type="button" id="btn-camera-cupom-rapido" onclick="window.abrirModalOpcoesCupomIA()" title="Ler Cupom com IA" style="width: 42px; height: 42px; border-radius: 12px; background: #fff7ed; border: 1.5px solid rgba(249, 115, 22, 0.35); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.1); transition: transform 0.15s ease;">
+                                <img src="./icone/icones-camera.png" alt="Câmera" style="width: 20px; height: 20px; object-fit: contain;">
                             </button>
                         </div>
 
@@ -898,7 +941,7 @@
                         <button type="button" class="btn-principal" onclick="window.salvarTransacaoManual()">Confirmar Lançamento</button>
                     </div>
 
-                    <div id="bloco-card-balanco-familiar" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                    <div id="bloco-card-balanco-familiar" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #f97316);">
                         <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; margin-bottom: 8px;">Balanço Financeiro Familiar</h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
                             <input type="date" id="data-inicio">
@@ -914,7 +957,7 @@
                     <div id="relatorio-pdf-container" class="oculto" style="margin-bottom: 12px;">
                         <div id="area-resultados-relatorio"></div>
                         <div class="cartao-geral" style="margin-top: 10px;">
-                            <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #334155);">Comparativo: Renda vs Gastos Próprios</h4>
+                            <h4 style="font-size: 13px; margin-bottom: 8px; text-align: center; color: var(--texto-principal, #1e293b);">Comparativo: Renda vs Gastos Próprios</h4>
                             <div style="position: relative; height: 220px; width: 100%;">
                                 <canvas id="grafico-barras-renda-gastos"></canvas>
                             </div>
@@ -926,13 +969,13 @@
                         <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
                     </div>
 
-                    <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #d97706);">
+                    <div id="bloco-card-mural-recados" class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #f97316);">
                         <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706);">Mural de Finanças e Avisos</span>
+                                <span id="lbl-titulo-mural-recados" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #f97316);">Mural de Finanças e Avisos</span>
                                 <span id="contador-recados-pendentes" style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">0 avisos</span>
                             </div>
-                            <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #d97706); transition: transform 0.2s ease;">▼</span>
+                            <span id="seta-mural-recados" style="font-size: 12px; color: var(--cor-primaria, #f97316); transition: transform 0.2s ease;">▼</span>
                         </div>
 
                         <div id="mural-recados-conteudo" class="oculto" style="margin-top: 10px;">
@@ -951,7 +994,7 @@
 
                     <div class="cartao-geral" style="padding: 12px 14px; margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-size: 12px; font-weight: 700; color: var(--texto-principal, #334155);">Gastos do Mês Anterior por Setor</span>
+                            <span style="font-size: 12px; font-weight: 700; color: var(--texto-principal, #1e293b);">Gastos do Mês Anterior por Setor</span>
                             <span id="lbl-nome-mes-anterior" style="font-size: 11px; color: var(--texto-suave, #64748b); font-weight: 600;">--/----</span>
                         </div>
                         <div style="position: relative; height: 180px; width: 100%;">
@@ -978,13 +1021,13 @@
                         <div class="cartao-geral" style="padding: 12px 14px; margin: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--cor-primaria, #d97706); letter-spacing: 0.5px;">Meta Pessoal do Mês</span>
-                                    <h4 style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #334155);">Economia Mensal</h4>
+                                    <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--cor-primaria, #f97316); letter-spacing: 0.5px;">Meta Pessoal do Mês</span>
+                                    <h4 style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #1e293b);">Economia Mensal</h4>
                                 </div>
                                 <button type="button" class="btn-secundario" style="padding: 3px 8px; font-size: 11px;" onclick="window.abrirModalDefinirMetaEconomia()">Ajustar</button>
                             </div>
                             <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; position: relative; margin: 8px 0;">
-                                <div id="barra-progresso-economia-fill" class="barra-progresso-preenchimento" style="background: var(--cor-primaria, #d97706); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                                <div id="barra-progresso-economia-fill" class="barra-progresso-preenchimento" style="background: var(--cor-primaria, #f97316); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--texto-suave, #64748b);">
                                 <span id="lbl-status-acumulado-economia">R$ 0,00 guardados</span>
@@ -996,7 +1039,7 @@
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div>
                                     <span id="lbl-subtitulo-cofres" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--cor-sucesso, #10b981); letter-spacing: 0.5px;">Reserva da Família</span>
-                                    <h4 id="lbl-titulo-cofres" style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #334155);">Cofres do Lar</h4>
+                                    <h4 id="lbl-titulo-cofres" style="margin: 2px 0 0 0; font-size: 14px; color: var(--texto-principal, #1e293b);">Cofres do Lar</h4>
                                 </div>
                                 <div style="display: flex; gap: 6px;">
                                     <button type="button" class="btn-secundario" style="padding: 4px 8px; font-size: 11px;" onclick="window.abrirModalDefinirMeta()">+ Novo Cofre</button>
@@ -1013,7 +1056,7 @@
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <button type="button" class="btn-secundario" style="padding: 5px 10px;" onclick="window.navegarMesCalendario(-1)">◄</button>
-                            <h3 id="mes-ano-calendario-titulo" style="margin: 0; font-size: 15px; color: var(--texto-principal, #334155);">Mês Atual</h3>
+                            <h3 id="mes-ano-calendario-titulo" style="margin: 0; font-size: 15px; color: var(--texto-principal, #1e293b);">Mês Atual</h3>
                             <button type="button" class="btn-secundario" style="padding: 5px 10px;" onclick="window.navegarMesCalendario(1)">►</button>
                         </div>
 
@@ -1027,37 +1070,12 @@
                         </div>
 
                         <div id="grid-calendario-container"></div>
-                    </div>
 
-                    <div class="cartao-geral">
-                        <h3 style="font-size: 14px; margin-bottom: 8px;">Agendar Conta ou Salário Fixo</h3>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <input type="text" id="input-agenda-descricao" placeholder="Descrição (ex: Aluguel, Internet, Salário)">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                                <input type="number" step="0.01" id="input-agenda-valor" placeholder="R$ Valor">
-                                <input type="date" id="input-agenda-vencimento">
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                                <select id="select-agenda-tipo">
-                                    <option value="conta_pagar">Conta a Pagar</option>
-                                    <option value="recebimento">Salário / Recebimento</option>
-                                </select>
-                                <select id="select-agenda-recorrencia">
-                                    <option value="unica">Única (Este Mês)</option>
-                                    <option value="mensal_12x">Mensal (12 Parcelas)</option>
-                                    <option value="perpetua">Fixa / Perpétua (Até Cancelar)</option>
-                                </select>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr; gap: 6px;">
-                                <select id="select-agenda-escopo">
-                                    <option value="casa">Família (Compartilhado)</option>
-                                    <option value="pessoal">Privativo (Pessoal)</option>
-                                </select>
-                            </div>
-
-                            <button type="button" class="btn-principal" onclick="window.adicionarItemAgendaFinanceira()">Confirmar Agendamento</button>
+                        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(226, 232, 240, 0.9);">
+                            <button type="button" class="btn-secundario" style="width: 100%; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1.5px solid rgba(249, 115, 22, 0.35); color: var(--cor-primaria, #f97316); background: #fff7ed; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="window.abrirModalAgendarContaSalario()">
+                                <img src="./icone/icone-calendario.png" alt="Agendar" style="width: 16px; height: 16px; object-fit: contain;">
+                                <span>+ Agendar Conta ou Salário Fixo</span>
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -1115,22 +1133,22 @@
 
                     <div class="cartao-geral" style="margin-top: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #8b5cf6;">
                         <div>
-                            <span style="font-size: 13px; font-weight: 800; color: var(--texto-principal, #334155); display: block;">Notificações Push</span>
+                            <span style="font-size: 13px; font-weight: 800; color: var(--texto-principal, #1e293b); display: block;">Notificações Push</span>
                             <span style="font-size: 11px; color: var(--texto-suave, #64748b);">Receber alertas da família na tela de bloqueio</span>
                         </div>
                         <button type="button" id="btn-ativar-push" class="btn-secundario" style="font-size: 11px; padding: 6px 12px; border-radius: 10px;" onclick="window.solicitarPermissaoPush()">Ativar Alertas</button>
                     </div>
 
-                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); background: #fef9ea; margin-top: 14px; padding: 14px;">
-                        <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
+                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid var(--borda-delicada, rgba(249, 115, 22, 0.18)); background: #fffbeb; margin-top: 14px; padding: 14px;">
+                        <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #f97316); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
-                        <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #d97706); display: inline-flex; align-items: center; gap: 8px;" onclick="window.abrirModalApoioPix()">
+                        <button type="button" class="btn-principal" style="font-size: 12px; padding: 8px 16px; border-radius: 10px; width: auto; background: var(--cor-primaria, #f97316); display: inline-flex; align-items: center; gap: 8px;" onclick="window.abrirModalApoioPix()">
                             <img src="./icone/icone-financas.png" alt="Doação" style="width: 16px; height: 16px; object-fit: contain;">
                             Fazer uma Contribuição (Pix)
                         </button>
                     </div>
 
-                    <div class="cartao-geral" style="text-align: center; border: 1.5px dashed var(--cor-erro, #ef4444); background: rgba(239, 68, 68, 0.04); margin-top: 14px; padding: 14px;">
+                    <div class="cartao-geral" style="text-align: center; border: 1.5px dashed var(--cor-erro, #f43f5e); background: rgba(244, 63, 94, 0.04); margin-top: 14px; padding: 14px;">
                         <span style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Zona de Segurança da Conta</span>
                         <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 10px 0;">Ao remover a sua conta, todos os seus dados e registos serão eliminados de forma definitiva e irreversível.</p>
                         <button type="button" class="btn-erro" style="font-size: 11.5px; padding: 8px 14px; border-radius: 10px; width: auto; display: inline-flex; align-items: center; gap: 6px;" onclick="window.solicitarExclusaoPropriaConta()">
@@ -1144,12 +1162,12 @@
         </div>
     </main>
 
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (CONFIGURADA COM SUPORTE DINÂMICO ESCUDO / MEDITA) -->
     <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
         <ul class="bottom-nav-list">
             <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
-                <img id="img-avatar-nav" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid transparent; transition: border-color 0.15s ease, transform 0.15s ease;">
-                <span style="text-align:center; line-height:1.1; margin-top:2px;">Espaço<br>Pessoal</span>
+                <img id="img-avatar-nav" src="./icone/icone-escudo.png" alt="Meu Espaço" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; border: 1.5px solid transparent; transition: border-color 0.15s ease, transform 0.15s ease;">
+                <span style="text-align:center; line-height:1.1; margin-top:2px;">Meu<br>Espaço</span>
             </li>
             <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
                 <img src="./icone/icones-missao.png" alt="Missões" style="width: 22px; height: 22px; object-fit: contain;">
@@ -1174,13 +1192,55 @@
         </ul>
     </nav>
 
+    <!-- MODAL DE AGENDAR CONTA OU SALÁRIO FIXO -->
+    <div id="modal-agendar-conta-salario" class="modal-overlay oculto">
+        <div class="modal-conteudo" style="max-width: 360px; padding: 18px 16px; border-radius: 20px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; font-size:15px; color:var(--texto-principal, #1e293b); font-weight:800;">Agendar Conta ou Salário Fixo</h3>
+                <button type="button" class="btn-secundario" style="padding:4px 8px; border-radius:8px;" onclick="window.fecharModalAgendarContaSalario()">✕</button>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" id="input-agenda-descricao" placeholder="Descrição (ex: Aluguel, Internet, Salário)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <input type="number" step="0.01" id="input-agenda-valor" placeholder="R$ Valor">
+                    <input type="date" id="input-agenda-vencimento">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <select id="select-agenda-tipo">
+                        <option value="conta_pagar">Conta a Pagar</option>
+                        <option value="recebimento">Salário / Recebimento</option>
+                    </select>
+                    <select id="select-agenda-recorrencia">
+                        <option value="unica">Única (Este Mês)</option>
+                        <option value="mensal_12x">Mensal (12 Parcelas)</option>
+                        <option value="perpetua">Fixa / Perpétua (Até Cancelar)</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 6px;">
+                    <select id="select-agenda-escopo">
+                        <option value="casa">Família (Compartilhado)</option>
+                        <option value="pessoal">Privativo (Pessoal)</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalAgendarContaSalario()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex:1.2;" onclick="window.adicionarItemAgendaFinanceira(); window.fecharModalAgendarContaSalario();">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAIS E COMPONENTES AUXILIARES -->
     <div id="modal-recuperar-senha" class="modal-overlay oculto" style="z-index: 1000020;">
         <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fff7ed; color: #f97316; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
                 <img src="./icone/icone-escudo.png" alt="Segurança" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
-            <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Recuperar Acesso</h3>
+            <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Recuperar Acesso</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
                 Digite o e-mail cadastrado. Enviaremos um link seguro para você redefinir sua senha.
             </p>
@@ -1196,7 +1256,7 @@
 
     <div id="modal-seletor-icones-svg" class="modal-overlay oculto" style="z-index: 1000010;">
         <div class="modal-conteudo" style="max-width: 420px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 0; border-radius: 20px; overflow: hidden;">
-            <div class="modal-header" style="padding: 14px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(217,119,6,0.2)); margin: 0; background: #ffffff;">
+            <div class="modal-header" style="padding: 14px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(249,115,22,0.18)); margin: 0; background: #ffffff;">
                 <h3 style="margin:0; font-size:16px; color:var(--texto-principal);">Escolha o Emoji</h3>
                 <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharSeletorIconesSVG()">✕</button>
             </div>
@@ -1278,10 +1338,10 @@
 
     <div id="modal-sugestoes-missoes" class="modal-overlay oculto">
         <div class="modal-conteudo" style="width: 92%; max-width: 420px; height: 75vh; max-height: 600px; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
-            <div class="modal-header" style="padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2));">
+            <div class="modal-header" style="padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--borda-delicada, rgba(249, 115, 22, 0.2));">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <img src="./icone/icones-missao.png" alt="Sugestões" style="width:24px; height:24px; object-fit:contain;">
-                    <h3 style="margin:0; font-size:16px; color:var(--cor-primaria, #d97706);">Sugestões da Semana</h3>
+                    <h3 style="margin:0; font-size:16px; color:var(--cor-primaria, #f97316);">Sugestões da Semana</h3>
                 </div>
                 <button type="button" class="btn-secundario" style="padding:4px 8px;" onclick="window.fecharModalSugestoes()">✕</button>
             </div>
@@ -1293,15 +1353,15 @@
 
             <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px;">
                 <button type="button" onclick="window.sugestaoAnterior()" style="position: absolute; left: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">◄</button>
-                <div id="cartao-sugestao-atual" style="width: 82%; height: 100%; max-height: 280px; background: var(--suiri-surface-secondary-light, #fef9ea); border: 2px solid var(--cor-primaria, #d97706); border-radius: 16px; box-shadow: 0 6px 15px rgba(217,119,6,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div id="cartao-sugestao-atual" style="width: 82%; height: 100%; max-height: 280px; background: var(--suiri-surface-secondary-light, #fffbeb); border: 2px solid var(--cor-primaria, #f97316); border-radius: 16px; box-shadow: 0 6px 15px rgba(249,115,22,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
                     <div id="sugestao-icone-svg" style="margin-bottom: 16px;"></div>
-                    <h2 id="sugestao-titulo" style="font-size: 17px; margin: 0 0 8px 0; color: var(--texto-principal, #334155);">Título da Missão</h2>
+                    <h2 id="sugestao-titulo" style="font-size: 17px; margin: 0 0 8px 0; color: var(--texto-principal, #1e293b);">Título da Missão</h2>
                     <p id="sugestao-descricao" style="font-size: 13px; color: var(--texto-suave, #64748b); margin: 0; line-height: 1.4;">Descrição da missão.</p>
                 </div>
                 <button type="button" onclick="window.sugestaoProxima()" style="position: absolute; right: 8px; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">►</button>
             </div>
 
-            <div style="padding: 14px 16px; border-top: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.2)); text-align: center; background: #fafafa;">
+            <div style="padding: 14px 16px; border-top: 1px solid var(--borda-delicada, rgba(249, 115, 22, 0.2)); text-align: center; background: #fafafa;">
                 <p style="font-size: 11px; color: var(--texto-suave); margin: 0 0 10px 0;">Deslize para ver mais ou toque para escolher.</p>
                 <button type="button" class="btn-sucesso" style="width: 100%; padding: 12px; font-size: 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.aceitarSugestaoAtual()">
                     <img src="./icone/icone-check.png" alt="Aceitar" style="width:18px; height:18px; object-fit:contain;">
@@ -1315,11 +1375,11 @@
         <div class="modal-conteudo" style="max-width: 330px; padding: 20px 18px; border-radius: 22px; background: #ffffff;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fff7ed; display: flex; align-items: center; justify-content: center;">
                         <img src="./icone/icone-financas.png" alt="Transferir" style="width:20px; height:20px; object-fit:contain;">
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Transferir Saldo</h3>
+                        <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Transferir Saldo</h3>
                         <span style="font-size: 11px; color: var(--texto-suave, #64748b);">Envio direto entre carteiras</span>
                     </div>
                 </div>
@@ -1353,10 +1413,10 @@
 
     <div id="modal-escolha-origem-cupom" class="modal-overlay oculto" style="z-index: 1000002;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fff7ed; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
                 <img src="./icone/icones-camera.png" alt="Câmera" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
-            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Ler Cupom com IA</h3>
+            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Ler Cupom com IA</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); margin: 0 0 16px 0;">Como deseja capturar o cupom fiscal?</p>
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -1377,11 +1437,11 @@
         <div class="modal-conteudo" style="max-width: 440px; padding: 18px 16px; border-radius: 22px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--borda-delicada, #f1f5f9); padding-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fff7ed; display: flex; align-items: center; justify-content: center;">
                         <img src="./icone/icone-relogio.png" alt="Relógio" style="width: 18px; height: 18px; object-fit: contain;">
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Quadro de Avisos</h3>
+                        <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Quadro de Avisos</h3>
                         <span style="font-size: 11px; color: var(--texto-suave, #64748b);">Contas, receitas, agenda e cardápios</span>
                     </div>
                 </div>
@@ -1390,8 +1450,8 @@
 
             <div style="margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #d97706); display: flex; align-items: center; gap: 4px;">
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d97706;"></span>
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cor-primaria, #f97316); display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #f97316;"></span>
                         Para Hoje
                     </span>
                     <span id="contador-notif-hoje" style="font-size: 11px; font-weight: 700; color: var(--texto-suave, #64748b);">0 pendência(s)</span>
@@ -1433,7 +1493,7 @@
         </div>
     </div>
 
-    <!-- Modal: NOVA MISSÃO COM VISUALIZADOR DE EMOJI -->
+    <!-- MODAL: NOVA MISSÃO -->
     <div id="modal-nova-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1442,7 +1502,7 @@
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
                 <div style="display: flex; gap: 8px;">
-                    <button type="button" id="btn-icone-nova-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('nova')" title="Toque para mudar o Emoji">
+                    <button type="button" id="btn-icone-nova-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fff7ed; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('nova')" title="Toque para mudar o Emoji">
                         <span id="svg-preview-nova-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">⭐</span>
                     </button>
                     <input type="text" id="input-nova-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
@@ -1492,17 +1552,17 @@
 
     <div id="modal-apoie-projeto" class="modal-overlay oculto" style="z-index: 1000001;">
         <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 22px; background: #ffffff;">
-            <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #fff7ed; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
                 <img src="./icone/icone-financas.png" alt="Apoiar" style="width: 26px; height: 26px; object-fit: contain;">
             </div>
-            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #334155); font-weight: 800;">Apoie o Projeto Suiri</h3>
+            <h3 style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Apoie o Projeto Suiri</h3>
             <p style="font-size: 12px; color: var(--texto-suave, #64748b); line-height: 1.45; margin: 0 0 14px 0;">
                 O Suiri é desenvolvido de forma independente. Qualquer valor ajuda a manter os servidores e a criar novas melhorias para as famílias!
             </p>
 
-            <div style="background: #f8fafc; border: 1.5px dashed var(--borda-delicada, rgba(217, 119, 6, 0.3)); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; text-align: center;">
+            <div style="background: #f8fafc; border: 1.5px dashed var(--borda-delicada, rgba(249, 115, 22, 0.3)); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; text-align: center;">
                 <span style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b); text-transform: uppercase; display: block; margin-bottom: 3px;">Chave Pix:</span>
-                <strong id="texto-chave-pix-exibida" style="font-size: 11px; color: var(--cor-primaria, #d97706); word-break: break-all; user-select: all; display: block; font-family: monospace;">8f10257e-11a3-48e2-8672-58a6204b629d</strong>
+                <strong id="texto-chave-pix-exibida" style="font-size: 11px; color: var(--cor-primaria, #f97316); word-break: break-all; user-select: all; display: block; font-family: monospace;">8f10257e-11a3-48e2-8672-58a6204b629d</strong>
             </div>
 
             <div style="display: flex; gap: 8px;">
@@ -1523,15 +1583,15 @@
             </div>
 
             <div style="display: flex; gap: 6px; margin-bottom: 12px;">
-                <button type="button" id="btn-tab-metas-casa" class="btn-principal" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('casa')">Família (Casa)</button>
-                <button type="button" id="btn-tab-metas-pessoal" class="btn-secundario" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('pessoal')">Minhas (Pessoais)</button>
+                <button type="button" id="btn-tab-metas-casa" class="btn-filtro-missao ativo" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('casa')">Família (Casa)</button>
+                <button type="button" id="btn-tab-metas-pessoal" class="btn-filtro-missao" style="flex: 1; padding: 7px 10px; font-size: 12px;" onclick="window.alternarAbaMetasAnuais('pessoal')">Minhas (Pessoais)</button>
             </div>
 
             <div style="margin-bottom: 12px;">
                 <button type="button" class="btn-sucesso" style="width: 100%; font-size: 12.5px; padding: 9px;" onclick="window.abrirFormularioNovaMetaAnual()">+ Cadastrar Novo Objetivo</button>
             </div>
 
-            <div id="bloco-form-nova-meta-anual" class="oculto" style="background: var(--suiri-surface-secondary-light, #fef9ea); border: 1px solid var(--borda-delicada); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
+            <div id="bloco-form-nova-meta-anual" class="oculto" style="background: var(--suiri-surface-secondary-light, #fffbeb); border: 1px solid var(--borda-delicada); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
                 <input type="text" id="input-meta-anual-titulo" placeholder="Qual é o grande objetivo? (ex: Viagem, Curso, Reforma)" style="margin-bottom: 8px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
                     <select id="select-meta-anual-ano">
@@ -1568,7 +1628,7 @@
 
     <div id="modal-confirmacao-suiri" class="modal-overlay oculto" style="z-index: 1000000;">
         <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #ffe4e6; color: #f43f5e; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
                 <img src="./icone/icone-xis.png" alt="Aviso" style="width: 24px; height: 24px; object-fit: contain;">
             </div>
             <h3 id="titulo-confirmacao-suiri" style="margin: 0 0 8px 0; font-size: 16px; color: var(--texto-principal);">Confirmação</h3>
@@ -1650,25 +1710,25 @@
     <div id="modal-ranking-equipe" class="modal-overlay oculto">
         <div class="modal-conteudo" style="border-radius:24px; padding:18px;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 id="lbl-titulo-modal-loja" style="font-size:17px; font-weight:800; color:#d97706; margin:0;">Lojinha de Recompensas</h3>
+                <h3 id="lbl-titulo-modal-loja" style="font-size:17px; font-weight:800; color:#ea580c; margin:0;">Lojinha de Recompensas</h3>
                 <button type="button" class="btn-secundario" style="padding: 4px 8px; border-radius:10px;" onclick="window.fecharModalRankingEquipe()">✕</button>
             </div>
             
             <div id="bloco-podio-loja" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; margin-bottom: 14px;">
-                <div style="background: var(--suiri-surface-secondary-light, #fef9ea); padding: 8px; border-radius: 10px; border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));">
+                <div style="background: var(--suiri-surface-secondary-light, #fffbeb); padding: 8px; border-radius: 10px; border: 1px solid rgba(226, 232, 240, 0.9);">
                     <span style="font-size: 11px; font-weight: 700; color: #64748b; display: block;">2º Lugar</span>
                     <strong id="podio-colab-2-nome" style="font-size: 12.5px; display: block;">-</strong>
-                    <span id="podio-colab-2-pts" style="font-size: 10.5px; color: var(--cor-primaria, #d97706);">0 XP</span>
+                    <span id="podio-colab-2-pts" style="font-size: 10.5px; color: var(--cor-primaria, #f97316);">0 XP</span>
                 </div>
-                <div style="background: var(--pastel-ouro, #fef3c7); padding: 10px 8px; border-radius: 10px; border: 1.5px solid var(--cor-primaria, #d97706); transform: translateY(-4px);">
-                    <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706); display: block;">1º Lugar</span>
+                <div style="background: #fff7ed; padding: 10px 8px; border-radius: 10px; border: 1.5px solid var(--cor-primaria, #f97316); transform: translateY(-4px);">
+                    <span style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #f97316); display: block;">1º Lugar</span>
                     <strong id="podio-colab-1-nome" style="font-size: 13px; display: block;">-</strong>
-                    <span id="podio-colab-1-pts" style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #d97706);">0 XP</span>
+                    <span id="podio-colab-1-pts" style="font-size: 11px; font-weight: 800; color: var(--cor-primaria, #f97316);">0 XP</span>
                 </div>
-                <div style="background: var(--suiri-surface-secondary-light, #fef9ea); padding: 8px; border-radius: 10px; border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16));">
-                    <span style="font-size: 11px; font-weight: 700; color: #b45309; display: block;">3º Lugar</span>
+                <div style="background: var(--suiri-surface-secondary-light, #fffbeb); padding: 8px; border-radius: 10px; border: 1px solid rgba(226, 232, 240, 0.9);">
+                    <span style="font-size: 11px; font-weight: 700; color: #ea580c; display: block;">3º Lugar</span>
                     <strong id="podio-colab-3-nome" style="font-size: 12.5px; display: block;">-</strong>
-                    <span id="podio-colab-3-pts" style="font-size: 10.5px; color: var(--cor-primaria, #d97706);">0 XP</span>
+                    <span id="podio-colab-3-pts" style="font-size: 10.5px; color: var(--cor-primaria, #f97316);">0 XP</span>
                 </div>
             </div>
 
@@ -1697,7 +1757,7 @@
                 <input type="text" id="edit-beneficio-descricao" placeholder="Descrição simples">
                 <input type="number" id="edit-beneficio-custo" placeholder="Custo em XP (ex: 200)" value="200">
                 
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fef3c7; border: 1.5px solid #fde68a; border-radius: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; padding: 6px 8px; background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 8px;">
                     <input type="checkbox" id="edit-beneficio-para-kids">
                     <span style="display:flex; align-items:center; gap:5px;">
                         <img src="./icone/icones-missao.png" alt="Kids" style="width:14px; height:14px; object-fit:contain;">
@@ -1755,9 +1815,9 @@
 
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
                     <span style="font-size: 11px; font-weight: 700;">Cor da Etiqueta:</span>
-                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#0ea5e9" checked> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#0ea5e9;"></span> Azul</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#0284c7" checked> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#0284c7;"></span> Azul</label>
                     <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#10b981"> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#10b981;"></span> Verde</label>
-                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#f59e0b"> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#f59e0b;"></span> Âmbar</label>
+                    <label style="display:inline-flex; align-items:center; gap:4px;"><input type="radio" name="evento-cor" value="#f97316"> <span style="display:inline-block; width:10px; height:10px; border-radius:4px; background:#f97316;"></span> Solar</label>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:6px;">
                     <button type="button" class="btn-secundario" style="flex:1;" onclick="window.fecharModalNovoEventoCalendario()">Cancelar</button>
@@ -1877,7 +1937,7 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR MISSÃO COM VISUALIZADOR DE EMOJI -->
+    <!-- MODAL EDITAR MISSÃO -->
     <div id="modal-editar-missao" class="modal-overlay oculto">
         <div class="modal-conteudo">
             <div class="modal-header">
@@ -1887,7 +1947,7 @@
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <input type="hidden" id="edit-missao-id">
                 <div style="display: flex; gap: 8px;">
-                    <button type="button" id="btn-icone-edit-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fef9ea; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('editar')" title="Toque para mudar o Emoji">
+                    <button type="button" id="btn-icone-edit-missao" style="width: 64px; height: 64px; text-align: center; padding: 0; border-radius: 14px; flex-shrink: 0; border: 2px solid var(--borda-delicada, #cbd5e1); background: #fff7ed; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: transform 0.1s ease;" onclick="window.abrirSeletorIconesSVG('editar')" title="Toque para mudar o Emoji">
                         <span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">⭐</span>
                     </button>
                     <input type="text" id="input-edit-missao-icone" value="⭐" class="oculto" style="width: 1px; height: 1px; position: absolute; opacity: 0;">
@@ -1971,7 +2031,7 @@
                     <input type="checkbox" id="cad-familiar-modo-kids"> Perfil Kids (Ativar no Trocar Membro sem senha)
                 </label>
 
-                <fieldset style="border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                <fieldset style="border: 1px solid var(--borda-delicada, rgba(249, 115, 22, 0.18)); border-radius: 8px; padding: 8px; margin-top: 4px;">
                     <legend style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">Permissões de Acesso</legend>
                     <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11.5px;">
                         <label><input type="checkbox" id="perm-acesso-mercado" checked> Gestão do Supermercado</label>
@@ -2037,7 +2097,7 @@
                     <input type="checkbox" id="edit-familiar-modo-kids"> Perfil Kids (Ativar no Trocar Membro sem senha)
                 </label>
 
-                <fieldset style="border: 1px solid var(--borda-delicada, rgba(217, 119, 6, 0.16)); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                <fieldset style="border: 1px solid var(--borda-delicada, rgba(249, 115, 22, 0.18)); border-radius: 8px; padding: 8px; margin-top: 4px;">
                     <legend style="font-size: 10.5px; font-weight: 700; color: var(--texto-suave, #64748b);">Permissões de Acesso</legend>
                     <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11.5px;">
                         <label><input type="checkbox" id="edit-perm-mercado"> Gestão do Supermercado</label>
@@ -2060,8 +2120,8 @@
             <div id="celebracao-nivel-icone" style="margin-bottom: 10px;">
                 <img src="./icone/icone-loja.png" alt="Troféu" style="width: 48px; height: 48px; object-fit: contain;">
             </div>
-            <h2 id="celebracao-nivel-titulo" style="font-size: 18px; color: var(--cor-primaria, #d97706); margin: 0 0 6px 0;">Parabéns!</h2>
-            <p id="celebracao-nivel-subtexto" style="font-size: 13px; color: var(--texto-principal, #334155); margin-bottom: 14px; line-height: 1.4;"></p>
+            <h2 id="celebracao-nivel-titulo" style="font-size: 18px; color: var(--cor-primaria, #f97316); margin: 0 0 6px 0;">Parabéns!</h2>
+            <p id="celebracao-nivel-subtexto" style="font-size: 13px; color: var(--texto-principal, #1e293b); margin-bottom: 14px; line-height: 1.4;"></p>
             <button type="button" class="btn-principal" style="width: 100%;" onclick="window.fecharCelebracaoNivel()">Confirmar</button>
         </div>
     </div>
@@ -2070,10 +2130,10 @@
     <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
         <div class="conteudo-tour-flutuante">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="tour-passo-numero" style="font-size: 10.5px; font-weight: 800; color: var(--cor-primaria, #d97706); text-transform: uppercase;">Manual</span>
+                <span id="tour-passo-numero" style="font-size: 10.5px; font-weight: 800; color: var(--cor-primaria, #f97316); text-transform: uppercase;">Manual</span>
                 <button type="button" style="background: none; border: none; font-size: 14px; color: var(--texto-suave, #64748b); cursor: pointer;" onclick="window.encerrarTourInstrucoes()">✕</button>
             </div>
-            <h4 id="tour-passo-titulo" style="font-size: 13px; color: var(--texto-principal, #334155); margin: 4px 0 2px 0;"></h4>
+            <h4 id="tour-passo-titulo" style="font-size: 13px; color: var(--texto-principal, #1e293b); margin: 4px 0 2px 0;"></h4>
             <p id="tour-passo-descricao" style="font-size: 11.5px; color: var(--texto-suave, #64748b); line-height: 1.35; margin: 0;"></p>
             
             <div id="tour-indicadores-bolinhas"></div>
@@ -2181,16 +2241,22 @@
                 setTimeout(() => splashEl.remove(), 500);
             };
 
+            // Requisitos estritos para iOS / Safari (iPhone)
+            videoEl.muted = true;
+            videoEl.defaultMuted = true;
+            videoEl.setAttribute('muted', '');
+            videoEl.setAttribute('playsinline', '');
+            videoEl.setAttribute('webkit-playsinline', '');
+
             videoEl.playbackRate = 2.0;
-            videoEl.muted = false;
+
+            // Carrega o elemento no motor WebKit antes do disparo
+            videoEl.load();
+
             const promessaPlay = videoEl.play();
 
             if (promessaPlay !== undefined) {
                 promessaPlay.then(() => {
-                    videoEl.playbackRate = 2.0;
-                }).catch(() => {
-                    videoEl.muted = true;
-                    videoEl.play();
                     videoEl.playbackRate = 2.0;
 
                     let btnSom = document.getElementById('btn-ativar-som-splash');
@@ -2212,6 +2278,11 @@
                         };
                         splashEl.appendChild(btnSom);
                     }
+                }).catch(() => {
+                    videoEl.muted = true;
+                    videoEl.load();
+                    videoEl.play().catch(() => {});
+                    videoEl.playbackRate = 2.0;
                 });
             }
 
@@ -2236,6 +2307,14 @@
                 const elGal = document.getElementById('input-galeria-cupom-ia');
                 if (elGal) elGal.click();
             }
+        };
+
+        window.abrirModalAgendarContaSalario = function() {
+            document.getElementById('modal-agendar-conta-salario')?.classList.remove('oculto');
+        };
+
+        window.fecharModalAgendarContaSalario = function() {
+            document.getElementById('modal-agendar-conta-salario')?.classList.add('oculto');
         };
 
         const CHAVE_PIX_APOIO_VALOR = "8f10257e-11a3-48e2-8672-58a6204b629d";
@@ -2501,7 +2580,7 @@
 
             if (elFrase) {
                 elFrase.innerHTML = `
-                    <blockquote style="font-size:14px; font-weight:700; color:var(--cor-primaria, #d97706); margin:0 0 6px 0; line-height:1.45; text-align:center;">
+                    <blockquote style="font-size:14px; font-weight:700; color:var(--cor-primaria, #f97316); margin:0 0 6px 0; line-height:1.45; text-align:center;">
                         “${textoFinal}”
                     </blockquote>
                     <span style="font-size:11px; font-weight:800; color:var(--texto-suave, #64748b); text-transform:uppercase; letter-spacing:0.5px; display:block; text-align:center;">
