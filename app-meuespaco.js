@@ -2,17 +2,27 @@
 // SUIRI GESTÃO FAMILIAR - APP-MEUESPACO.JS (100% INTEGRAL E COMPLETO)
 // Módulo exclusivo da aba "Meu Espaço" (Widgets Vivos, Microfone & Ícones PNG)
 // Integrado com o Catálogo Oficial de Ícones PNG Transparentes (./icone/)
+// Redirecionamento Dedicado: mulher.html & homem.html
 // =========================================================================
 
 window.meusAlfinetes = [];
 let reconhecimentoVozMeuEspaco = null;
+
+// 0. FUNÇÕES GLOBAIS DE REDIRECIONAMENTO DE PÁGINAS DEDICADAS
+window.abrirEspacoMulher = function() {
+    window.location.href = 'mulher.html';
+};
+
+window.abrirEspacoMasculino = function() {
+    window.location.href = 'homem.html';
+};
 
 // 1. ATUALIZAÇÃO DO AVATAR NO MENU INFERIOR
 window.atualizarAvatarNavMeuEspaco = function() {
     const imgNav = document.getElementById('img-avatar-nav');
     if (!imgNav) return;
     
-    let avatarSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E";
+    let avatarSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' r='4'/%3E%3C/svg%3E";
     
     if (window.perfilAtual && window.perfilAtual.avatar_url) {
         avatarSrc = window.perfilAtual.avatar_url;
@@ -27,11 +37,26 @@ window.atualizarAvatarNavMeuEspaco = function() {
     imgNav.src = avatarSrc;
 };
 
-// 1.1. ATUALIZAÇÃO DOS CARTÕES DE GÉNERO (ESPAÇO MULHER / ESPAÇO MASCULINO)
+// 1.1. ATUALIZAÇÃO DOS CARTÕES DE GÉNERO E REDIRECIONAMENTO
 window.atualizarCartoesGeneroMeuEspaco = function() {
-    const cardMulher = document.getElementById('card-acesso-espaco-mulher');
+    const cardMulher = document.getElementById('card-acesso-espaco-mulher') || document.getElementById('card-acesso-espaco-intimo');
     const cardMasc = document.getElementById('card-acesso-espaco-masculino');
     
+    // Configura o redirecionamento ao clicar nos cartões
+    if (cardMulher) {
+        cardMulher.style.cursor = 'pointer';
+        cardMulher.onclick = function() {
+            window.location.href = 'mulher.html';
+        };
+    }
+
+    if (cardMasc) {
+        cardMasc.style.cursor = 'pointer';
+        cardMasc.onclick = function() {
+            window.location.href = 'homem.html';
+        };
+    }
+
     if (!cardMulher && !cardMasc) return;
 
     // Resgata o sexo/género do perfil ativo ou da lista de membros
@@ -267,7 +292,7 @@ window.processarTextoTranscritoMeuEspaco = function(frase) {
 
 // 5. RENDERIZAÇÃO DOS WIDGETS COMPLETOS E ATIVOS
 window.renderizarMeuEspaco = function() {
-    // Garante que o cartão de acesso esteja visível para o perfil atual
+    // Garante a visibilidade e eventos do cartão de acesso correspondente
     window.atualizarCartoesGeneroMeuEspaco();
 
     const container = document.getElementById('container-widgets-meuespaco');

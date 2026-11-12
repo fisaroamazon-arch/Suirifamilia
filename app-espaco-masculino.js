@@ -1,7 +1,7 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
-// Alta Performance: Forja com 6 Missões Editáveis, Sliders com Histórico
-// Retrátil, Carrossel de Mídia, Favoritos Estoicos e Caverna Operacional
+// Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
+// Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
 // Integrado Rigorosamente ao Catálogo Real de Ícones PNG da Pasta ./icone/
 // =========================================================================
 
@@ -120,18 +120,11 @@ window.abrirEspacoMasculino = async function() {
 };
 
 window.fecharEspacoMasculino = function() {
-    if (typeof window.navegarParaTela === 'function') {
-        window.navegarParaTela('meuespaco');
-    } else {
-        const telaAlvo = document.getElementById('secao-espaco-masculino');
-        if (telaAlvo) telaAlvo.classList.add('oculto');
-        const telaMeuEspaco = document.getElementById('secao-meuespaco');
-        if (telaMeuEspaco) telaMeuEspaco.classList.remove('oculto');
-    }
+    window.location.href = 'index.html';
 };
 
 // =========================================================================
-// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL (COM OS ÍCONES REAIS DA PASTA)
+// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL (TEMA FORJA ROMANA / BRASAS & AÇO)
 // =========================================================================
 
 window.renderizarEsqueletoEspacoMasculino = function() {
@@ -147,164 +140,169 @@ window.renderizarEsqueletoEspacoMasculino = function() {
     const sabedoriaArsenal = window.AcervoArsenalPratico[diaDoAno % window.AcervoArsenalPratico.length];
 
     container.innerHTML = `
-        <!-- Topo com Navegação e Ícone Escudo -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:4px 2px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1px solid #cbd5e1; color:#334155; box-shadow:0 2px 6px rgba(0,0,0,0.04);" onclick="window.fecharEspacoMasculino()">← Voltar</button>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:28px; height:28px; object-fit:contain;">
-                    <div>
-                        <h2 style="margin:0; font-size:19px; font-weight:900; color:#0f172a; letter-spacing:-0.3px;">Espaço Masculino</h2>
-                        <span style="font-size:11px; color:#0369a1; font-weight:600;">Descompressão, Foco & Blindagem</span>
-                    </div>
-                </div>
+        <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR EM AÇO ESCOVADO -->
+        <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
+            <button type="button" onclick="window.fecharEspacoMasculino()" 
+                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
+                <span style="font-size:14px; line-height:1; color:#f97316;">←</span>
+                <span>Voltar ao Lar</span>
+            </button>
+        </div>
+
+        <!-- LINHA 2: CABEÇALHO NOBRE COM ÍCONE 50px E CONTRASTE MÁXIMO -->
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
+            <div style="width:58px; height:58px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
+                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:48px; height:48px; object-fit:contain;">
+            </div>
+            <div style="flex:1; min-width:0;">
+                <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff; letter-spacing:-0.4px; line-height:1.15; text-shadow:0 2px 8px rgba(0,0,0,0.8);">Espaço Masculino</h1>
+                <span style="font-size:12px; color:#fbbf24; font-weight:700; display:block; margin-top:3px; letter-spacing:0.2px;">A Forja: Descompressão, Foco & Blindagem</span>
             </div>
         </div>
 
-        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA (COM BOTÃO DE HOJE -> CALENDÁRIO) -->
-        <div class="cartao-geral" style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:1.5px solid #7dd3fc; border-radius:20px; padding:18px 16px; margin-bottom:14px; box-shadow:0 6px 16px rgba(125,211,252,0.18);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span id="label-titulo-reflexao-estoica" style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
-                <span style="font-size:10.5px; font-weight:700; background:#ffffff; color:#0284c7; padding:2px 8px; border-radius:10px; border:1px solid #bae6fd;">365 Estoicos</span>
+        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA (TEXTOS BRANCOS E VISÍVEIS) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #38bdf8; border-radius:20px; padding:18px 16px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span id="label-titulo-reflexao-estoica" style="font-size:11.5px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
+                <span style="font-size:10.5px; font-weight:800; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:10px; border:1px solid #334155;">365 Estoicos</span>
             </div>
             
-            <p id="texto-reflexao-estoica-conteudo" style="font-size:13px; color:#0f172a; margin:0 0 8px 0; line-height:1.55; font-weight:500;">Carregando reflexão...</p>
-            <span id="autor-reflexao-estoica-conteudo" style="font-size:11px; font-weight:800; color:#0369a1; display:block; text-align:right; margin-bottom:12px;">— Autor</span>
+            <p id="texto-reflexao-estoica-conteudo" style="font-size:14px; color:#f8fafc; margin:0 0 10px 0; line-height:1.6; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.5);">Carregando reflexão...</p>
+            <span id="autor-reflexao-estoica-conteudo" style="font-size:11.5px; font-weight:800; color:#fbbf24; display:block; text-align:right; margin-bottom:14px;">— Autor</span>
 
-            <!-- Barra de Ações: Botão 'De Hoje' com icone-calendario.png -->
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #bae6fd; padding-top:10px; gap:6px;">
-                <button type="button" class="btn-secundario" style="padding:6px 10px; font-size:11px; border-radius:10px; background:#ffffff; color:#0284c7; border:1px solid #bae6fd; font-weight:700; display:inline-flex; align-items:center; gap:5px;" onclick="window.renderizarReflexaoEstoica(false)">
-                    <img src="./icone/icone-calendario.png" alt="Calendário" style="width:14px; height:14px; object-fit:contain;">
+            <!-- Barra de Ações -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:12px; gap:6px;">
+                <button type="button" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; color:#f8fafc; border:1px solid #475569; font-weight:700; display:inline-flex; align-items:center; gap:6px;" onclick="window.renderizarReflexaoEstoica(false)">
+                    <img src="./icone/icone-calendario.png" alt="Calendário" style="width:16px; height:16px; object-fit:contain;">
                     De Hoje
                 </button>
-                <button type="button" id="btn-favoritar-estoica" class="btn-secundario" style="padding:6px 12px; font-size:11px; border-radius:10px; background:#ffffff; border:1px solid #fcd34d; color:#b45309; font-weight:800;" onclick="window.alternarFavoritoReflexaoAtual()">🤍 Favoritar</button>
-                <button type="button" class="btn-principal" style="width:auto; padding:6px 12px; font-size:11px; border-radius:10px; background:#0284c7; font-weight:800;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
+                <button type="button" id="btn-favoritar-estoica" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; border:1px solid #d97706; color:#fde68a; font-weight:800;" onclick="window.alternarFavoritoReflexaoAtual()">🤍 Favoritar</button>
+                <button type="button" class="btn-principal" style="width:auto; padding:7px 14px; font-size:11.5px; border-radius:10px; background:#0284c7; color:#fff; font-weight:800; border:none;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
             </div>
 
             <!-- Painel Retrátil de Mensagens Favoritas -->
             <div style="margin-top:12px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:rgba(255,255,255,0.7); padding:8px 12px; border-radius:10px; border:1px solid #bae6fd;">
-                    <span style="font-size:11.5px; font-weight:800; color:#0369a1;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
-                    <span id="seta-favoritas" style="font-size:12px; color:#0369a1; transition:transform 0.2s ease;">▼</span>
+                <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:9px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
+                    <span id="seta-favoritas" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-favoritas-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 2: A FORJA (COM BOTÃO EDITAR -> ICONES-CONFIGURACAO.PNG) -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ef4444; margin-bottom:14px; padding:16px 18px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <!-- QUADRO 2: A FORJA (MISSÕES EM METAL ESCURO COM BRASAS) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #ef4444; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img src="./icone/icone-fogo.png" alt="A Forja" style="width:20px; height:20px; object-fit:contain;">
-                    <strong style="font-size:13.5px; color:#0f172a; font-weight:800;">A Forja (6 Missões Diárias)</strong>
+                    <img src="./icone/icone-fogo.png" alt="A Forja" style="width:30px; height:30px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">A Forja (6 Missões Diárias)</strong>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <!-- Botão Editar com icones-configuracao.png -->
-                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
-                        <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:13px; height:13px; object-fit:contain;">
+                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
+                        <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:16px; height:16px; object-fit:contain;">
                         Editar
                     </button>
-                    <span id="streak-forja" style="font-size:11.5px; font-weight:800; color:#ef4444; background:#fef2f2; padding:3px 8px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;">
-                        <img src="./icone/icone-fogo.png" alt="Fogo" style="width:13px; height:13px; object-fit:contain;"> 0 dias
+                    <span id="streak-forja" style="font-size:11.5px; font-weight:800; color:#f97316; background:#2a1205; padding:3px 8px; border-radius:8px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:4px;">
+                        <img src="./icone/icone-fogo.png" alt="Fogo" style="width:18px; height:18px; object-fit:contain;"> 0 dias
                     </span>
                 </div>
             </div>
 
-            <!-- Painel de Desempenho -->
-            <div style="background:#fef2f2; border:1px solid #fee2e2; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+            <!-- Painel de Desempenho Noturno -->
+            <div style="background:#1e1b18; border:1px solid #7c2d12; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
-                    <span style="font-weight:700; color:#7f1d1d;">Grau de Hoje: <strong id="lbl-grau-forja-hoje">Inerte</strong></span>
+                    <span style="font-weight:700; color:#fed7aa;">Grau de Hoje: <strong id="lbl-grau-forja-hoje" style="color:#f97316;">Inerte</strong></span>
                     <strong id="lbl-porcentagem-forja-hoje" style="color:#ef4444; font-weight:900;">0%</strong>
                 </div>
-                <div style="background:#e2e8f0; border-radius:8px; height:8px; width:100%; overflow:hidden;">
-                    <div id="barra-forja-fill-hoje" style="background:linear-gradient(90deg, #ef4444, #b91c1c); height:100%; width:0%; transition:width 0.3s ease;"></div>
+                <div style="background:#0f172a; border-radius:8px; height:8px; width:100%; overflow:hidden;">
+                    <div id="barra-forja-fill-hoje" style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:0%; transition:width 0.3s ease;"></div>
                 </div>
             </div>
 
             <!-- Formulário para Editar o Nome das 6 Missões -->
-            <div id="form-edicao-missoes-forja" class="oculto" style="background:#f8fafc; border:1.5px dashed #cbd5e1; padding:12px; border-radius:12px; margin-bottom:12px;">
-                <span style="font-size:11.5px; font-weight:800; color:#334155; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
+            <div id="form-edicao-missoes-forja" class="oculto" style="background:#0f172a; border:1.5px dashed #475569; padding:12px; border-radius:12px; margin-bottom:12px;">
+                <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
                 <div id="container-inputs-edicao-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;"></div>
                 <div style="display:flex; justify-content:flex-end; gap:6px;">
-                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:11px;" onclick="window.alternarEdicaoConfigForja()">Cancelar</button>
-                    <button type="button" class="btn-principal" style="width:auto; padding:4px 12px; font-size:11px; background:#ef4444;" onclick="window.salvarConfiguracaoMissoesForja()">Salvar Metas</button>
+                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:11px; background:#1e293b; color:#cbd5e1; border:1px solid #475569;" onclick="window.alternarEdicaoConfigForja()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="width:auto; padding:4px 12px; font-size:11px; background:#ea580c; color:#fff;" onclick="window.salvarConfiguracaoMissoesForja()">Salvar Metas</button>
                 </div>
             </div>
 
-            <!-- Grade das 6 Missões Diárias -->
+            <!-- Grade das 6 Missões Diárias (Botões em Metal) -->
             <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;"></div>
 
             <!-- Histórico Retrátil da Forja -->
-            <div style="border-top:1px dashed #e2e8f0; padding-top:10px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #f1f5f9;">
-                    <span style="font-size:11.5px; font-weight:800; color:#475569;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
-                    <span id="seta-historico-forja" style="font-size:12px; color:#475569; transition:transform 0.2s ease;">▼</span>
+            <div style="border-top:1px dashed #334155; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
+                    <span id="seta-historico-forja" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-historico-forja-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 3: RADAR ÍNTIMO (COM ENERGIA E ESTRESSE) -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ec4899; margin-bottom:14px; padding:16px 18px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+        <!-- QUADRO 3: RADAR ÍNTIMO (COM ENERGIA, ESTRESSE E LIBIDO) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #f43f5e; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="font-size:18px;">❤️</span>
-                    <strong style="font-size:13.5px; color:#0f172a; font-weight:800;">Radar Íntimo & Vitalidade</strong>
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Íntimo & Vitalidade</strong>
                 </div>
-                <button type="button" class="btn-principal" style="padding:5px 12px; font-size:11px; border-radius:10px; width:auto; background:#db2777;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
+                <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:#e11d48; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
             </div>
 
-            <div style="background:#fdf2f8; border:1px dashed #fbcfe8; padding:12px; border-radius:12px; margin-bottom:14px;">
-                <span style="font-size:10px; font-weight:800; color:#db2777; text-transform:uppercase; margin-bottom:4px; display:block;">Pílula Semanal • Semana ${semanaDoAno} de 52</span>
-                <p style="font-size:12px; color:#9d174d; margin:0; line-height:1.45; font-weight:600;">${pilulaSemanal}</p>
+            <div style="background:#2a101b; border:1px dashed #9f1239; padding:12px; border-radius:12px; margin-bottom:14px;">
+                <span style="font-size:10px; font-weight:800; color:#fb7185; text-transform:uppercase; margin-bottom:4px; display:block;">Pílula Semanal • Semana ${semanaDoAno} de 52</span>
+                <p style="font-size:12.5px; color:#ffe4e6; margin:0; line-height:1.5; font-weight:600;">${pilulaSemanal}</p>
             </div>
 
             <div style="margin-bottom:14px;">
-                <label style="font-size:11px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
-                <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:10px; border:1px solid #cbd5e1; font-size:12px; background:#f8fafc; outline:none;">
+                <label style="font-size:11px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
+                <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; border:1px solid #475569; font-size:12px; background:#0f172a; color:#f8fafc; outline:none; font-weight:600;">
             </div>
 
-            <!-- Barra: Energia Biológica com icone-energia.png -->
-            <div style="background:#f8fafc; border:1px solid #f1f5f9; padding:12px; border-radius:12px; margin-bottom:10px;">
+            <!-- Barra: Energia Biológica -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#334155; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-energia.png" alt="Energia" style="width:16px; height:16px; object-fit:contain;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/icone-energia.png" alt="Energia" style="width:18px; height:18px; object-fit:contain;">
                         Energia Biológica:
                     </span>
-                    <strong id="badge-energia-valor" style="font-size:12px; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:8px;">Nota 5 (Normal)</strong>
+                    <strong id="badge-energia-valor" style="font-size:11.5px; color:#38bdf8; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #0369a1;">Nota 5 (Normal)</strong>
                 </div>
                 <input type="range" id="range-energia" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#0284c7; cursor:pointer;" oninput="window.atualizarRotuloSlider('energia')">
             </div>
 
-            <!-- Barra: Nível de Estresse com icone-estresse.png -->
-            <div style="background:#f8fafc; border:1px solid #f1f5f9; padding:12px; border-radius:12px; margin-bottom:10px;">
+            <!-- Barra: Nível de Estresse -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#334155; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-estresse.png" alt="Estresse" style="width:16px; height:16px; object-fit:contain;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/icone-estresse.png" alt="Estresse" style="width:18px; height:18px; object-fit:contain;">
                         Nível de Estresse:
                     </span>
-                    <strong id="badge-estresse-valor" style="font-size:12px; color:#d97706; background:#fef3c7; padding:2px 8px; border-radius:8px;">Nota 5 (Moderado)</strong>
+                    <strong id="badge-estresse-valor" style="font-size:11.5px; color:#fbbf24; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #d97706;">Nota 5 (Moderado)</strong>
                 </div>
                 <input type="range" id="range-estresse" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloSlider('estresse')">
             </div>
 
-            <!-- Barra: Disposição / Libido com icone-fogo.png -->
-            <div style="background:#f8fafc; border:1px solid #f1f5f9; padding:12px; border-radius:12px; margin-bottom:12px;">
+            <!-- Barra: Disposição / Libido -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#334155; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-fogo.png" alt="Libido" style="width:16px; height:16px; object-fit:contain;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/icone-fogo.png" alt="Libido" style="width:18px; height:18px; object-fit:contain;">
                         Disposição / Libido:
                     </span>
-                    <strong id="badge-libido-valor" style="font-size:12px; color:#db2777; background:#fdf2f8; padding:2px 8px; border-radius:8px;">Nota 5 (Normal)</strong>
+                    <strong id="badge-libido-valor" style="font-size:11.5px; color:#f43f5e; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #be123c;">Nota 5 (Normal)</strong>
                 </div>
-                <input type="range" id="range-libido" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#ec4899; cursor:pointer;" oninput="window.atualizarRotuloSlider('libido')">
+                <input type="range" id="range-libido" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f43f5e; cursor:pointer;" oninput="window.atualizarRotuloSlider('libido')">
             </div>
 
             <!-- Histórico Retrátil do Radar -->
-            <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #f1f5f9;">
-                    <span style="font-size:11.5px; font-weight:800; color:#475569;">📅 Histórico Confidencial (<span id="contador-historico-radar">0</span>)</span>
-                    <span id="seta-historico-radar" style="font-size:12px; color:#475569; transition:transform 0.2s ease;">▼</span>
+            <div style="border-top:1px dashed #334155; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📅 Histórico Confidencial (<span id="contador-historico-radar">0</span>)</span>
+                    <span id="seta-historico-radar" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-historico-radar-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
                     <div id="lista-historico-radar-notas" style="display:flex; flex-direction:column; gap:6px;"></div>
@@ -312,84 +310,82 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 4: RECOMENDAÇÕES DE FILMES & SÉRIES (COM ICONE-FILME.PNG) -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+        <!-- QUADRO 4: RECOMENDAÇÕES DE FILMES & SÉRIES -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img src="./icone/icone-filme.png" alt="Filmes e Séries" style="width:20px; height:20px; object-fit:contain;">
-                    <strong style="font-size:13.5px; color:#0f172a; font-weight:800;">Curadoria: Filmes & Séries</strong>
+                    <img src="./icone/icone-filme.png" alt="Filmes e Séries" style="width:24px; height:24px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Curadoria: Filmes & Séries</strong>
                 </div>
-                <div style="display:flex; gap:4px; background:#f1f5f9; padding:3px; border-radius:10px;">
+                <div style="display:flex; gap:4px; background:#0f172a; padding:3px; border-radius:10px; border:1px solid #334155;">
                     <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#6366f1; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes</button>
-                    <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#64748b;" onclick="window.alternarAbaMidia('series')">Séries</button>
+                    <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#94a3b8;" onclick="window.alternarAbaMidia('series')">Séries</button>
                 </div>
             </div>
 
-            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1px solid #cbd5e1; border-radius:14px; padding:14px; position:relative; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid #334155; border-radius:14px; padding:14px; position:relative; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#e0e7ff; color:#4338ca; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
-                        <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#64748b;">-</span>
+                        <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#312e81; color:#c7d2fe; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
+                        <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#94a3b8;">-</span>
                     </div>
-                    <h3 id="midia-titulo-destaque" style="margin:6px 0 4px 0; font-size:16px; color:#1e293b; font-weight:900;">Título</h3>
-                    <p id="midia-descricao-destaque" style="font-size:12px; color:#475569; margin:0; line-height:1.45;">Descrição da obra e lição de conduta.</p>
+                    <h3 id="midia-titulo-destaque" style="margin:6px 0 4px 0; font-size:16px; color:#ffffff; font-weight:900;">Título</h3>
+                    <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0; line-height:1.45;">Descrição da obra e lição de conduta.</p>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #334155; padding-top:10px;">
                     <div style="display:flex; gap:6px;">
-                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px;" onclick="window.navegarCarrosselMidia(-1)">◄</button>
-                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px;" onclick="window.navegarCarrosselMidia(1)">►</button>
+                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)">◄</button>
+                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)">►</button>
                     </div>
 
-                    <button type="button" id="btn-marcar-assistido-acao" class="btn-sucesso" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800;" onclick="window.abrirModalAvaliacaoMidia()">✓ Já Assisti</button>
+                    <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer;" onclick="window.abrirModalAvaliacaoMidia()">✓ Já Assisti</button>
                 </div>
             </div>
 
-            <!-- Modal de Avaliação -->
-            <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#fef9ea; border:1.5px solid #fed7aa; border-radius:12px; padding:12px; text-align:center;">
-                <span style="font-size:12px; font-weight:800; color:#92400e; display:block; margin-bottom:6px;">Qual a sua avaliação para esta obra?</span>
+            <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#1e293b; border:1.5px solid #d97706; border-radius:12px; padding:12px; text-align:center;">
+                <span style="font-size:12px; font-weight:800; color:#fde68a; display:block; margin-bottom:6px;">Qual a sua avaliação para esta obra?</span>
                 <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
-                    <button type="button" onclick="window.confirmarAvaliacaoMidia(1)" style="font-size:20px; background:none; border:none; cursor:pointer;">★</button>
-                    <button type="button" onclick="window.confirmarAvaliacaoMidia(2)" style="font-size:20px; background:none; border:none; cursor:pointer;">★</button>
-                    <button type="button" onclick="window.confirmarAvaliacaoMidia(3)" style="font-size:20px; background:none; border:none; cursor:pointer;">★</button>
-                    <button type="button" onclick="window.confirmarAvaliacaoMidia(4)" style="font-size:20px; background:none; border:none; cursor:pointer;">★</button>
-                    <button type="button" onclick="window.confirmarAvaliacaoMidia(5)" style="font-size:20px; background:none; border:none; cursor:pointer;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(1)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(2)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(3)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(4)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(5)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                 </div>
-                <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
+                <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#0f172a; color:#cbd5e1; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
             </div>
 
-            <!-- Histórico de Assistidos -->
             <div style="margin-top:14px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
-                    <span style="font-size:11.5px; font-weight:800; color:#475569;">Obras Assistidas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
-                    <span id="seta-assistidos" style="font-size:12px; color:#475569; transition:transform 0.2s ease;">▼</span>
+                <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">Obras Assistidas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
+                    <span id="seta-assistidos" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-assistidos-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 5: ARSENAL PRÁTICO (COM O NOVO ICONE-FORTE.PNG) -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+        <!-- QUADRO 5: ARSENAL PRÁTICO -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                <img src="./icone/icone-forte.png" alt="Arsenal" style="width:22px; height:22px; object-fit:contain;">
-                <strong style="font-size:13.5px; color:#0f172a; font-weight:800;">Arsenal Prático</strong>
+                <img src="./icone/icone-forte.png" alt="Arsenal" style="width:26px; height:26px; object-fit:contain;">
+                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Arsenal Prático</strong>
             </div>
-            <div style="background:#ecfdf5; border:1px dashed #6ee7b7; padding:12px; border-radius:12px;">
-                <span style="font-size:10.5px; font-weight:800; color:#059669; text-transform:uppercase; margin-bottom:4px; display:block;">Doutrina Física & Nutrição</span>
-                <p style="font-size:12px; color:#047857; margin:0; line-height:1.45; font-weight:600;">${sabedoriaArsenal}</p>
+            <div style="background:#064e3b; border:1px dashed #34d399; padding:12px; border-radius:12px;">
+                <span style="font-size:10.5px; font-weight:800; color:#a7f3d0; text-transform:uppercase; margin-bottom:4px; display:block;">Doutrina Física & Nutrição</span>
+                <p style="font-size:12.5px; color:#ecfdf5; margin:0; line-height:1.45; font-weight:600;">${sabedoriaArsenal}</p>
             </div>
         </div>
 
-        <!-- QUADRO 6: OFICINA & GARAGEM (COM O NOVO ICONE-OFICINA.PNG) -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #475569; margin-bottom:14px; padding:16px 18px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+        <!-- QUADRO 6: OFICINA & GARAGEM -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #64748b; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                <img src="./icone/icone-oficina.png" alt="Oficina" style="width:20px; height:20px; object-fit:contain;">
-                <strong style="font-size:13.5px; color:#0f172a; font-weight:800;">Oficina & Garagem (Manutenções)</strong>
+                <img src="./icone/icone-oficina.png" alt="Oficina" style="width:24px; height:24px; object-fit:contain;">
+                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Oficina & Garagem (Manutenções)</strong>
             </div>
-            <p style="font-size:11px; color:#64748b; margin:0 0 10px 0;">Registo de revisões do veículo, filtros, ferramentas e manutenções do lar.</p>
+            <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px 0;">Registo de revisões do veículo, filtros, ferramentas e manutenções do lar.</p>
             <div style="display:flex; gap:6px; margin-bottom:10px;">
-                <input type="text" id="input-nova-manutencao" placeholder="Ex: Óleo do carro, filtro da torneira..." style="flex:1; padding:9px 12px; font-size:12px; border-radius:10px; border:1px solid #cbd5e1; background:#f8fafc; outline:none;">
-                <button type="button" style="padding:9px 14px; font-weight:800; border-radius:10px; background:#475569; color:#fff; border:none; cursor:pointer;" onclick="window.adicionarManutencao()">+</button>
+                <input type="text" id="input-nova-manutencao" placeholder="Ex: Óleo do carro, filtro da torneira..." style="flex:1; padding:9px 12px; font-size:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#fff; outline:none;">
+                <button type="button" style="padding:9px 16px; font-weight:800; border-radius:10px; background:#475569; color:#fff; border:none; cursor:pointer;" onclick="window.adicionarManutencao()">+</button>
             </div>
             <div id="lista-manutencao-garagem" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
@@ -439,14 +435,14 @@ window.atualizarBotaoFavoritoEstado = function() {
 
     if (ehFavorita) {
         btn.innerHTML = "❤️ Favoritada";
-        btn.style.background = "#fef3c7";
+        btn.style.background = "#78350f";
         btn.style.borderColor = "#f59e0b";
-        btn.style.color = "#b45309";
+        btn.style.color = "#fde68a";
     } else {
         btn.innerHTML = "🤍 Favoritar";
-        btn.style.background = "#ffffff";
-        btn.style.borderColor = "#cbd5e1";
-        btn.style.color = "#64748b";
+        btn.style.background = "#1e293b";
+        btn.style.borderColor = "#475569";
+        btn.style.color = "#cbd5e1";
     }
 };
 
@@ -491,18 +487,18 @@ window.renderizarListaFavoritasEstoicas = function() {
     if (elContador) elContador.textContent = window.dadosReflexoesFavoritas.length;
 
     if (window.dadosReflexoesFavoritas.length === 0) {
-        cont.innerHTML = '<span style="font-size:11px; color:#64748b; text-align:center; display:block; padding:8px;">Nenhuma reflexão favoritada ainda. Toque em "🤍 Favoritar" para guardar seus ensinamentos preferidos.</span>';
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhuma reflexão favoritada ainda.</span>';
         return;
     }
 
     cont.innerHTML = window.dadosReflexoesFavoritas.map(item => `
-        <div style="background:#ffffff; border:1px solid #bae6fd; border-left:3.5px solid #0284c7; padding:8px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div style="background:#0f172a; border:1px solid #334155; border-left:3.5px solid #0284c7; padding:8px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
             <div style="min-width:0; flex:1;">
-                <span style="font-size:10px; font-weight:800; color:#0369a1; text-transform:uppercase; display:block;">${item.data || 'Reflexão'} • ${item.autor}</span>
-                <p style="font-size:11.5px; color:#1e293b; margin:2px 0 0 0; line-height:1.4; font-weight:500;">"${item.texto}"</p>
+                <span style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; display:block;">${item.data || 'Reflexão'} • ${item.autor}</span>
+                <p style="font-size:11.5px; color:#e2e8f0; margin:2px 0 0 0; line-height:1.4; font-weight:500;">"${item.texto}"</p>
             </div>
             <button type="button" onclick="window.removerFavoritoEstoico('${item.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 4px; flex-shrink:0; display:flex; align-items:center;" title="Remover dos favoritos">
-                <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
+                <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
             </button>
         </div>
     `).join('');
@@ -517,7 +513,7 @@ window.removerFavoritoEstoico = function(id) {
 };
 
 // =========================================================================
-// 5. A FORJA: 6 MISSÕES EDITÁVEIS, AVALIAÇÃO E HISTÓRICO EXPANSÍVEL
+// 5. A FORJA: 6 MISSÕES EM METAL ESCURO & CONTRASTE
 // =========================================================================
 
 window.alternarEdicaoConfigForja = function() {
@@ -537,8 +533,8 @@ window.renderizarCamposEdicaoForja = function() {
     if (!cont) return;
     cont.innerHTML = window.configMissoesForja.map((m, idx) => `
         <div>
-            <label style="font-size:10.5px; font-weight:700; color:#64748b;">Missão ${idx + 1}:</label>
-            <input type="text" id="input-cfg-forja-${m.id}" value="${m.rotulo}" style="width:100%; box-sizing:border-box; padding:6px 8px; border-radius:8px; border:1px solid #cbd5e1; font-size:11.5px; outline:none;">
+            <label style="font-size:10.5px; font-weight:700; color:#94a3b8;">Missão ${idx + 1}:</label>
+            <input type="text" id="input-cfg-forja-${m.id}" value="${m.rotulo}" style="width:100%; box-sizing:border-box; padding:6px 8px; border-radius:8px; border:1px solid #475569; background:#1e293b; color:#fff; font-size:11.5px; outline:none;">
         </div>
     `).join('');
 };
@@ -561,11 +557,11 @@ window.salvarConfiguracaoMissoesForja = function() {
 };
 
 window.obterGrauHonraForja = function(qtdCumprida) {
-    if (qtdCumprida === 6) return { titulo: "🔥 Forjado no Aço (Ápice Absoluto)", cor: "#b91c1c" };
-    if (qtdCumprida === 5) return { titulo: "Vanguarda (Quase Imbatível)", cor: "#c2410c" };
-    if (qtdCumprida >= 3) return { titulo: "Guerreiro Firme (Ritmo de Batalha)", cor: "#d97706" };
-    if (qtdCumprida >= 1) return { titulo: "Iniciado (Faísca Acesa)", cor: "#0284c7" };
-    return { titulo: "Inerte (Desperte o Guerreiro)", cor: "#64748b" };
+    if (qtdCumprida === 6) return { titulo: "🔥 Forjado no Aço (Ápice Absoluto)", cor: "#ef4444" };
+    if (qtdCumprida === 5) return { titulo: "Vanguarda (Quase Imbatível)", cor: "#f97316" };
+    if (qtdCumprida >= 3) return { titulo: "Guerreiro Firme (Ritmo de Batalha)", cor: "#eab308" };
+    if (qtdCumprida >= 1) return { titulo: "Iniciado (Faísca Acesa)", cor: "#38bdf8" };
+    return { titulo: "Inerte (Desperte o Guerreiro)", cor: "#94a3b8" };
 };
 
 window.renderizarBotoesForja = function() {
@@ -578,9 +574,9 @@ window.renderizarBotoesForja = function() {
     grid.innerHTML = window.configMissoesForja.map(m => {
         const cumprido = !!registroHoje.itens[m.id];
         return `
-            <label style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; padding:10px 12px; border-radius:12px; border:1px solid ${cumprido ? '#fca5a5' : '#f1f5f9'}; cursor:pointer; transition:all 0.2s ease;">
-                <span style="font-size:11.5px; font-weight:700; color:${cumprido ? '#991b1b' : '#334155'};">${m.rotulo}</span>
-                <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:17px; height:17px; accent-color:#ef4444;">
+            <label style="display:flex; align-items:center; justify-content:space-between; background:${cumprido ? '#2a1205' : '#1e293b'}; padding:11px 12px; border-radius:12px; border:1.5px solid ${cumprido ? '#ea580c' : '#334155'}; cursor:pointer; transition:all 0.2s ease;">
+                <span style="font-size:12px; font-weight:800; color:${cumprido ? '#fed7aa' : '#f8fafc'};">${m.rotulo}</span>
+                <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:18px; height:18px; accent-color:#f97316;">
             </label>
         `;
     }).join('');
@@ -648,7 +644,7 @@ window.calcularOfensivaForja = function() {
 
     const elStreak = document.getElementById('streak-forja');
     if (elStreak) {
-        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:13px; height:13px; object-fit:contain;"> ${ofensiva} dias seguidos`;
+        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${ofensiva} dias seguidos`;
     }
 };
 
@@ -677,21 +673,21 @@ window.renderizarHistoricoForja = function() {
         });
 
         return `
-            <div style="background:#ffffff; border:1px solid #f1f5f9; padding:10px 12px; border-radius:12px; border-left:4px solid #ef4444;">
+            <div style="background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:12px; border-left:4px solid #ef4444;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <span style="font-size:10.5px; font-weight:800; color:#64748b;">${dtStr}</span>
-                    <strong style="font-size:11px; color:#ef4444;">${pct}% (${qtd}/6)</strong>
+                    <span style="font-size:10.5px; font-weight:800; color:#94a3b8;">${dtStr}</span>
+                    <strong style="font-size:11px; color:#f97316;">${pct}% (${qtd}/6)</strong>
                 </div>
-                <div style="font-size:11.5px; font-weight:800; color:#1e293b; margin-bottom:6px;">${grau}</div>
+                <div style="font-size:11.5px; font-weight:800; color:#ffffff; margin-bottom:6px;">${grau}</div>
                 
-                <div style="background:#e2e8f0; border-radius:6px; height:6px; width:100%; overflow:hidden; margin-bottom:8px;">
-                    <div style="background:linear-gradient(90deg, #ef4444, #b91c1c); height:100%; width:${pct}%;"></div>
+                <div style="background:#1e293b; border-radius:6px; height:6px; width:100%; overflow:hidden; margin-bottom:8px;">
+                    <div style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:${pct}%;"></div>
                 </div>
 
                 <div style="display:flex; flex-wrap:wrap; gap:4px;">
                     ${nomesItens.length > 0 ? nomesItens.map(n => `
-                        <span style="font-size:9.5px; font-weight:700; background:#fef2f2; color:#991b1b; padding:2px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                            <img src="./icone/icone-check.png" alt="Feito" style="width:10px; height:10px; object-fit:contain;"> ${n}
+                        <span style="font-size:9.5px; font-weight:700; background:#2a1205; color:#fed7aa; padding:2px 6px; border-radius:6px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:3px;">
+                            <img src="./icone/icone-check.png" alt="Feito" style="width:12px; height:12px; object-fit:contain;"> ${n}
                         </span>
                     `).join('') : '<span style="font-size:10px; color:#94a3b8;">Nenhum item cumprido</span>'}
                 </div>
@@ -804,20 +800,20 @@ window.renderizarHistoricoRadarIntimo = function() {
     }
 
     cont.innerHTML = hist.map(reg => `
-        <div style="background:#ffffff; border:1px solid #f1f5f9; padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-                <span style="font-size:10px; font-weight:800; color:#64748b; display:block;">Data: ${reg.data}${reg.ultima_relacao ? ' • Relação em ' + reg.ultima_relacao : ''}</span>
-                <span style="font-size:11.5px; color:#334155; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
-                    <img src="./icone/icone-energia.png" alt="Energia" style="width:13px; height:13px; object-fit:contain;"> ${reg.textoEnergia} | 
-                    <img src="./icone/icone-estresse.png" alt="Estresse" style="width:13px; height:13px; object-fit:contain;"> ${reg.textoEstresse}
+                <span style="font-size:10px; font-weight:800; color:#94a3b8; display:block;">Data: ${reg.data}${reg.ultima_relacao ? ' • Relação em ' + reg.ultima_relacao : ''}</span>
+                <span style="font-size:11.5px; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                    <img src="./icone/icone-energia.png" alt="Energia" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEnergia} | 
+                    <img src="./icone/icone-estresse.png" alt="Estresse" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEstresse}
                 </span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:10.5px; font-weight:800; color:#db2777; background:#fdf2f8; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                    <img src="./icone/icone-fogo.png" alt="Libido" style="width:12px; height:12px; object-fit:contain;"> ${reg.textoLibido}
+                <span style="font-size:10.5px; font-weight:800; color:#fb7185; background:#2a101b; border:1px solid #9f1239; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
+                    <img src="./icone/icone-fogo.png" alt="Libido" style="width:14px; height:14px; object-fit:contain;"> ${reg.textoLibido}
                 </span>
                 <button type="button" onclick="window.removerItemHistoricoRadar('${reg.id}')" style="background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center;" title="Remover registro">
-                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
                 </button>
             </div>
         </div>
@@ -842,10 +838,10 @@ window.alternarAbaMidia = function(aba) {
 
     if (aba === 'filmes') {
         if (btnF) { btnF.style.background = '#6366f1'; btnF.style.color = '#fff'; }
-        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#64748b'; }
+        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#94a3b8'; }
     } else {
         if (btnS) { btnS.style.background = '#6366f1'; btnS.style.color = '#fff'; }
-        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#64748b'; }
+        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#94a3b8'; }
     }
 
     window.atualizarVisualizacaoMidia();
@@ -887,7 +883,7 @@ window.atualizarVisualizacaoMidia = function() {
             btnAcao.textContent = `★ ${jaAvaliado.estrelas} Estrelas`;
             btnAcao.style.background = '#f59e0b';
         } else {
-            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Check" style="width:13px; height:13px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
+            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Check" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
             btnAcao.style.background = '#10b981';
         }
     }
@@ -938,15 +934,15 @@ window.renderizarHistoricoAssistidos = function() {
     }
 
     cont.innerHTML = assistidosOrdenados.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0;">
-                <strong style="font-size:12.5px; color:#334155; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
-                <span style="font-size:10.5px; color:#64748b; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10.5px; color:#94a3b8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <span style="font-size:12px; font-weight:800; color:#f59e0b;">${'★'.repeat(item.estrelas)}</span>
                 <button type="button" onclick="window.removerMidiaAssistida('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover dos assistidos">
-                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
                 </button>
             </div>
         </div>
@@ -1028,13 +1024,13 @@ window.renderizarListasMasculinas = function() {
             contManut.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:4px;">Nenhuma manutenção pendente.</span>';
         } else {
             contManut.innerHTML = window.dadosManutencaoGaragem.map(item => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 12px; border-radius:12px; border:1px solid #f1f5f9;">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:12px; border:1px solid #334155;">
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1;">
-                        <input type="checkbox" onchange="window.alternarManutencao('${item.id}')" ${item.concluido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#475569;">
-                        <span style="font-size:12.5px; color:#334155; font-weight:600; ${item.concluido ? 'text-decoration:line-through; color:#94a3b8;' : ''}">${item.titulo}</span>
+                        <input type="checkbox" onchange="window.alternarManutencao('${item.id}')" ${item.concluido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#f97316;">
+                        <span style="font-size:12.5px; color:#f8fafc; font-weight:600; ${item.concluido ? 'text-decoration:line-through; color:#64748b;' : ''}">${item.titulo}</span>
                     </label>
                     <button type="button" onclick="window.removerManutencao('${item.id}')" style="background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center;" title="Remover">
-                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:15px; height:15px; object-fit:contain;">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
                     </button>
                 </div>
             `).join('');

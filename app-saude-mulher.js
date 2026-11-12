@@ -1,14 +1,14 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-SAUDE-MULHER.JS (100% COMPLETO E INTEGRAL)
-// Ciclo, Diário da Alma, Rituais (6 Metas), Curadoria de Mídia e Modais Boutique
-// Integrado com o Catálogo de Ícones PNG Transparentes (./icone/)
+// Topo Nobre Redesenhado: Diário & Ciclo em Coluna Dupla, Ícones +20% Maior,
+// Botão de Voltar Elegante, Título Ampliado e Diário Rústico Paginado
 // =========================================================================
 
 window.dadosCicloMulher = [];
 window.dadosSintomasDiarios = [];
 window.dadosDiarioMulher = [];
 
-// Persistência das 6 Metas Diárias (O Santuário) e Mídia
+// Persistência das 6 Metas Diárias (O Santuário), Radar de Feminilidade e Mídia
 window.dadosRituaisFemininos = JSON.parse(localStorage.getItem('suiri_rituais_fem')) || {};
 window.configMetasFemininas = JSON.parse(localStorage.getItem('suiri_metas_fem_config')) || [
     "Hidratação Consciente (2L)",
@@ -19,11 +19,47 @@ window.configMetasFemininas = JSON.parse(localStorage.getItem('suiri_metas_fem_c
     "Desconexão Noturna (Zero Telas)"
 ];
 
+window.dadosRadarFeminilidade = JSON.parse(localStorage.getItem('suiri_radar_fem')) || {
+    vitalidade: 5,
+    paz_mental: 5,
+    afeto_libido: 5,
+    ultima_relacao: null,
+    historico: []
+};
+
 window.dadosMidiaMulherAssistida = JSON.parse(localStorage.getItem('suiri_midia_mulher_assistida')) || [];
 window.indiceMidiaMulher = { filmes: 0, series: 0 };
 window.abaMidiaMulherAtiva = 'filmes';
 
-// Catálogo Fallback caso os arrays globais ainda não tenham carregado
+// Estado da Paginação do Diário
+window.paginasDiarioAtuais = [""];
+window.indicePaginaDiarioAtual = 0;
+window.humorDiarioSelecionadoAtual = "Feliz";
+
+// Helpers Seguros de Sessão e Supabase
+function obterClienteSupabaseSeguro() {
+    return window.clienteSupabase || window.cliente || window.supabaseClient || (typeof cliente !== 'undefined' ? cliente : null);
+}
+
+function obterUsuarioIdSeguro() {
+    if (window.obterUsuarioId && typeof window.obterUsuarioId === 'function') {
+        const id = window.obterUsuarioId();
+        if (id) return id;
+    }
+    if (window.perfilAtual && window.perfilAtual.id) return window.perfilAtual.id;
+
+    try {
+        const raw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
+        if (raw) {
+            const p = JSON.parse(raw);
+            if (p && p.id) return p.id;
+        }
+    } catch (e) {}
+
+    return localStorage.getItem('suiri_usuario_id') || null;
+}
+
+// Catálogo Base de Filmes e Séries Femininas
 window.CatalogoFilmesMulher = window.CatalogoFilmesMasculinos || [
     { id: "f1", titulo: "Comer, Rezar, Amar", ano: "2010", categoria: "Autodescoberta", desc: "A coragem de romper a rotina e reencontrar o prazer e a espiritualidade pelo mundo." },
     { id: "f2", titulo: "O Fabuloso Destino de Amélie Poulain", ano: "2001", categoria: "Sensibilidade & Afeto", desc: "A delicadeza em transformar pequenos gestos quotidianos em poesia visual." },
@@ -82,40 +118,44 @@ function formatarDataVisor(data) {
     return String(data.getDate()).padStart(2, '0') + '/' + String(data.getMonth() + 1).padStart(2, '0') + '/' + data.getFullYear();
 }
 
+// Injeção de fontes elegantes para o livro de memórias
+(function carregarFontesElegantes() {
+    if (!document.getElementById('fontes-diario-papel')) {
+        const link = document.createElement('link');
+        link.id = 'fontes-diario-papel';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Alex+Brush&family=Playfair+Display:ital,wght@1,500;1,600&family=Great+Vibes&display=swap';
+        document.head.appendChild(link);
+    }
+})();
+
 // =========================================================================
-// 1. RENDERIZAÇÃO DA INTERFACE PRINCIPAL
+// 1. RENDERIZAÇÃO DA INTERFACE PRINCIPAL (TOPO ELEGANTE E ÍCONES +20%)
 // =========================================================================
 
 window.abrirEspacoMulher = async function() {
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || null);
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-
-    if (!usuarioId || !supabase) {
-        return typeof window.mostrarToast === 'function' ? window.mostrarToast("Sessão não identificada.", "erro") : alert("Sessão não identificada.");
-    }
-
-    if (typeof window.navegarParaTela === 'function') {
-        const secoes = document.querySelectorAll('.secao-conteudo-app');
-        secoes.forEach(sec => sec.classList.add('oculto'));
-        const telaAlvo = document.getElementById('secao-espaco-mulher');
-        if (telaAlvo) telaAlvo.classList.remove('oculto');
-        document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('ativo'));
-    }
+    const usuarioId = obterUsuarioIdSeguro();
+    const supabase = obterClienteSupabaseSeguro();
 
     window.renderizarEsqueletoEspacoMulher();
+    window.processarEExibirPrevisao();
     window.sincronizarCheckboxesRituaisHoje();
     window.calcularOfensivaERendimentoRituais();
+    window.renderizarHistoricoRadarFeminilidade();
     window.atualizarVisualizacaoMidiaMulher();
     window.renderizarHistoricoAssistidosMulher();
     window.renderizarHistoricoRituaisRetratil();
 
-    await window.carregarDadosCicloMulher();
-    await window.carregarHistoricoSintomas();
-    await window.carregarDiarioMulher();
+    if (usuarioId && supabase) {
+        await window.carregarDadosCicloMulher();
+        await window.carregarHistoricoSintomas();
+        await window.carregarDiarioMulher();
+        await window.carregarRadarFeminilidadeNuvem();
+    }
 };
 
 window.fecharEspacoMulher = function() {
-    if (typeof window.navegarParaTela === 'function') window.navegarParaTela('meuespaco');
+    window.location.href = 'index.html';
 };
 
 window.renderizarEsqueletoEspacoMulher = function() {
@@ -124,143 +164,230 @@ window.renderizarEsqueletoEspacoMulher = function() {
 
     container.innerHTML = `
         <div id="vista-principal-espaco-mulher">
-            <!-- TOPO DA PÁGINA -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; padding: 4px 2px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1px solid #fbcfe8; color:#be185d; box-shadow:0 2px 6px rgba(244,114,182,0.1);" onclick="window.fecharEspacoMulher()">← Voltar</button>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width:28px; height:28px; object-fit:contain;">
-                        <div>
-                            <h2 style="margin:0; font-size:19px; font-weight:900; color:#831843; letter-spacing:-0.3px;">Espaço Mulher</h2>
-                            <span style="font-size:11px; color:#9d174d; font-weight:600;">Seu refúgio de ritmo e autocuidado</span>
-                        </div>
+            
+            <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR SOFISTICADO (ESTILO PÍLULA VIDRO) -->
+            <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
+                <button type="button" onclick="window.fecharEspacoMulher()" 
+                        style="display:inline-flex; align-items:center; gap:8px; padding:8px 18px; border-radius:20px; font-size:12.5px; font-weight:800; background:rgba(255,255,255,0.92); border:1.5px solid #e9d5ff; color:#581c87; box-shadow:0 3px 10px rgba(124,58,237,0.06); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
+                    <span style="font-size:16px; line-height:1;">←</span>
+                    <span>Voltar ao Lar</span>
+                </button>
+            </div>
+
+            <!-- LINHA 2: CABEÇALHO COM ÍCONE +20% (50px) E TIPOGRAFIA NOBRE (23px) -->
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px; padding:2px 4px;">
+                <div style="width:58px; height:58px; border-radius:18px; background:linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border:1.5px solid #d8b4fe; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 6px 16px rgba(124,58,237,0.12);">
+                    <img src="./icone/icone-mulher.png" alt="Espaço Mulher" style="width:50px; height:50px; object-fit:contain;">
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <h1 style="margin:0; font-size:23px; font-weight:900; color:#3b0764; letter-spacing:-0.5px; line-height:1.15;">Espaço Mulher</h1>
+                    <span style="font-size:12px; color:#6b21a8; font-weight:600; display:block; margin-top:2px;">Seu refúgio de ritmo, equilíbrio e autocuidado</span>
+                </div>
+            </div>
+
+            <!-- LINHA 3: DIÁRIO E CICLO (50% / 50% COM ÍCONES +20%: 29px) -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                <!-- Botão Diário à Esquerda com diario.png -->
+                <button type="button" onclick="window.abrirPaginaDiario()" 
+                        style="width:100%; box-sizing:border-box; padding:12px 14px; border-radius:18px; border:1.5px solid #d8b4fe; background:linear-gradient(135deg, #ffffff 0%, #faf5ff 100%); color:#3b0764; box-shadow:0 4px 14px rgba(124,58,237,0.08); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform 0.15s ease;">
+                    <img src="./icone/diario.png" onerror="this.onerror=null; this.src='./icone/icone-livro.png'; this.style.display='inline-block';" alt="Diário" style="width:29px; height:29px; object-fit:contain; flex-shrink:0;">
+                    <div style="text-align:left;">
+                        <strong style="font-size:13.5px; display:block; line-height:1.2; font-weight:900;">Diário</strong>
+                        <span style="font-size:10.5px; color:#7c3aed; font-weight:600;">Memórias & Alma</span>
                     </div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                    <button type="button" class="btn-secundario" style="padding:8px 12px; border-radius:14px; font-size:11.5px; font-weight:800; border:1px solid #f472b6; background:#fff1f2; color:#9d174d;" onclick="window.abrirPaginaDiario()">Diário</button>
-                    <button type="button" class="btn-secundario" style="padding:8px 12px; border-radius:14px; font-size:11.5px; font-weight:800; border:1px solid #f472b6; background:#fff1f2; color:#9d174d;" onclick="window.abrirModalRegistroCiclo()">+ Ciclo</button>
-                </div>
+                </button>
+
+                <!-- Botão Ciclo à Direita com ciclo.png -->
+                <button type="button" onclick="window.abrirModalRegistroCiclo()" 
+                        style="width:100%; box-sizing:border-box; padding:12px 14px; border-radius:18px; border:1.5px solid #d8b4fe; background:linear-gradient(135deg, #ffffff 0%, #faf5ff 100%); color:#3b0764; box-shadow:0 4px 14px rgba(124,58,237,0.08); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform 0.15s ease;">
+                    <img src="./icone/ciclo.png" onerror="this.onerror=null; this.src='./icone/icone-mulher.png'; this.style.display='inline-block';" alt="Ciclo" style="width:29px; height:29px; object-fit:contain; flex-shrink:0;">
+                    <div style="text-align:left;">
+                        <strong style="font-size:13.5px; display:block; line-height:1.2; font-weight:900;">Ciclo</strong>
+                        <span style="font-size:10.5px; color:#7c3aed; font-weight:600;">Registar Período</span>
+                    </div>
+                </button>
             </div>
 
             <!-- BOTÕES DE BEM-ESTAR -->
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
-                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #f472b6; background:#fff1f2; color:#9d174d; box-shadow:0 2px 6px rgba(244,114,182,0.1);" onclick="window.abrirModalRespiracaoGuiada()">1 Minuto Zen</button>
-                <button type="button" class="btn-secundario" style="padding:10px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #ec4899; background:#fdf2f8; color:#be185d; box-shadow:0 2px 6px rgba(236,72,153,0.1);" onclick="window.abrirModoAcolhimentoEmergencia()">Modo Alívio (TPM)</button>
+                <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #c084fc; background:#ffffff; color:#581c87; box-shadow:0 2px 8px rgba(124,58,237,0.08);" onclick="window.abrirModalRespiracaoGuiada()">🌬️ 1 Minuto Zen</button>
+                <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #a855f7; background:#faf5ff; color:#6b21a8; box-shadow:0 2px 8px rgba(168,85,247,0.08);" onclick="window.abrirModoAcolhimentoEmergencia()">🌸 Modo Alívio (TPM)</button>
             </div>
 
             <!-- CARTÃO DO CICLO & DICA DA FASE -->
-            <div class="cartao-geral" style="background: radial-gradient(circle at 50% 0%, #ffffff 0%, #fff1f2 60%, #fce7f3 100%); border: 1.5px solid rgba(244, 114, 182, 0.4); text-align:center; padding: 22px 18px; border-radius: 24px; box-shadow: 0 10px 25px rgba(244,114,182,0.12); position:relative; overflow:hidden;">
-                <span style="font-size:11px; font-weight:800; color:#be185d; text-transform:uppercase; letter-spacing:1.5px; display:inline-block; margin-bottom:6px; background:rgba(255,255,255,0.7); padding:3px 12px; border-radius:20px; border:1px solid #fbcfe8;">Fase do Ciclo</span>
-                <div id="display-fase-ciclo-atual" style="font-size:22px; font-weight:900; color:#831843; margin-bottom:4px;">Calculando...</div>
-                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#9d174d; margin:0 0 4px 0; font-weight:600;">Analisando...</p>
-                <span id="txt-data-base-calculo" style="font-size:10.5px; color:#a21caf; display:block; margin-bottom:10px; font-weight:600;"></span>
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #e9d5ff; border-left:4px solid #7c3aed; text-align:center; padding:22px 18px; border-radius:24px; box-shadow:0 10px 25px rgba(88,28,135,0.06); position:relative; overflow:hidden;">
+                <span style="font-size:11px; font-weight:800; color:#6b21a8; text-transform:uppercase; letter-spacing:1.5px; display:inline-block; margin-bottom:6px; background:#f3e8ff; padding:3px 12px; border-radius:20px; border:1px solid #e9d5ff;">Fase do Ciclo</span>
+                <div id="display-fase-ciclo-atual" style="font-size:22px; font-weight:900; color:#3b0764; margin-bottom:4px;">Ciclo Natural</div>
+                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#581c87; margin:0 0 4px 0; font-weight:600;">Toque em "+ Ciclo" para registar a sua data.</p>
+                <span id="txt-data-base-calculo" style="font-size:10.5px; color:#7e22ce; display:block; margin-bottom:10px; font-weight:600;"></span>
                 
-                <div style="background: #fce7f3; border-radius: 12px; height: 8px; width: 100%; overflow: hidden;">
-                    <div id="barra-progresso-ciclo" style="background: linear-gradient(90deg, #f472b6, #db2777); height: 100%; width: 0%; border-radius:12px;"></div>
+                <div style="background:#f3e8ff; border-radius:12px; height:8px; width:100%; overflow:hidden;">
+                    <div id="barra-progresso-ciclo" style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:35%; border-radius:12px;"></div>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; font-weight: 800; color: #be185d;">
+                <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; font-weight:800; color:#6b21a8;">
                     <span id="txt-dia-ciclo-atual">Dia 1</span>
                     <span id="txt-dia-ciclo-final">Dia 28</span>
                 </div>
 
-                <!-- QUADRO DE SAÚDE BIOLÓGICA DA FASE -->
-                <div style="background:rgba(255,255,255,0.85); border:1px dashed #f472b6; border-radius:14px; padding:12px; margin-top:14px; text-align:left; display:flex; align-items:flex-start; gap:10px;">
-                    <img id="icone-dica-diaria-img" src="./icone/icone-mulher.png" alt="Fase" style="width:24px; height:24px; object-fit:contain; flex-shrink:0; margin-top:2px;">
-                    <div>
-                        <strong style="font-size:11.5px; color:#831843; text-transform:uppercase; display:block; margin-bottom:2px;">Conselho Biológico da Fase:</strong>
-                        <p id="txt-dica-diaria-ciclo" style="font-size:12px; color:#9d174d; margin:0; line-height:1.45; font-weight:500;">A carregar orientação...</p>
+                <!-- QUADRO DE SAÚDE BIOLÓGICA DA FASE (Ícone +20%: 29px) -->
+                <div style="background:#faf5ff; border:1px dashed #c084fc; border-radius:14px; padding:12px; margin-top:14px; text-align:left; display:flex; align-items:flex-start; gap:10px;">
+                    <img id="icone-dica-diaria-img" src="./icone/icone-mulher.png" alt="Fase" style="width:29px; height:29px; object-fit:contain; flex-shrink:0; margin-top:2px;">
+                    <div style="flex:1;">
+                        <strong style="font-size:11.5px; color:#3b0764; text-transform:uppercase; display:block; margin-bottom:2px;">Conselho Biológico da Fase:</strong>
+                        <p id="txt-dica-diaria-ciclo" style="font-size:12px; color:#581c87; margin:0; line-height:1.45; font-weight:500;">A carregar orientação...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- QUADRO DE INSPIRAÇÃO LITERÁRIA & ALMA -->
-            <div class="cartao-geral" style="background: linear-gradient(135deg, #fff7ed 0%, #fdf4ff 100%); border: 1.5px dashed #f472b6; margin-top:14px; padding:14px 16px; border-radius:18px;">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                    <img src="./icone/icone-lampada-pense.png" alt="Inspiração" style="width:18px; height:18px; object-fit:contain;">
-                    <strong style="font-size:12.5px; color:#9d174d; font-weight:800;">Inspiração Literária & Alma</strong>
+            <!-- QUADRO DE INSPIRAÇÃO LITERÁRIA & ALMA (Ícone +20%: 22px) -->
+            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #a855f7; margin-top:14px; padding:14px 16px; border-radius:18px; box-shadow:0 4px 12px rgba(88,28,135,0.04);">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                    <img src="./icone/icone-lampada-pense.png" alt="Inspiração" style="width:22px; height:22px; object-fit:contain;">
+                    <strong style="font-size:12.5px; color:#3b0764; font-weight:800;">Inspiração Literária & Alma</strong>
                 </div>
-                <p id="txt-inspiracao-diaria" style="font-size:12px; color:#701a75; margin:0; line-height:1.5; font-style:italic;">A procurar reflexão...</p>
+                <p id="txt-inspiracao-diaria" style="font-size:12px; color:#581c87; margin:0; line-height:1.55; font-style:italic;">A procurar reflexão...</p>
             </div>
 
-            <!-- QUADRO: O SANTUÁRIO (6 METAS DIÁRIAS FEMININAS) -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-left:4px solid #db2777; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(244,114,182,0.1);">
+            <!-- QUADRO: RADAR DE FEMINILIDADE & BEM-ESTAR -->
+            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #7c3aed; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:20px;">✨</span>
+                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Radar de Feminilidade & Bem-Estar</strong>
+                    </div>
+                    <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; border:none; font-weight:800; cursor:pointer;" onclick="window.salvarRadarFeminilidadeCompleto()">Guardar</button>
+                </div>
+
+                <p style="font-size:11.5px; color:#6b21a8; margin:0 0 12px 0; line-height:1.4;">Avalie o seu estado interior de hoje com sinceridade e delicadeza:</p>
+
+                <!-- Data da Última Conexão Íntima -->
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
+                    <input type="date" id="slider-data-relacao-fem" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:12px; border:1.5px solid #e9d5ff; font-size:12px; background:#faf5ff; color:#3b0764; outline:none; font-weight:600;">
+                </div>
+
+                <!-- Slider 1: Vitalidade & Brilho (Ícone +20%: 18px) -->
+                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                            <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:18px; height:18px; object-fit:contain;">
+                            Vitalidade & Brilho:
+                        </span>
+                        <strong id="badge-vitalidade-valor" style="font-size:11.5px; color:#581c87; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Equilíbrio)</strong>
+                    </div>
+                    <input type="range" id="range-vitalidade-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('vitalidade')">
+                </div>
+
+                <!-- Slider 2: Paz Mental & Carga Emocional (Ícone +20%: 18px) -->
+                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                            <img src="./icone/icone-estresse.png" alt="Paz Mental" style="width:18px; height:18px; object-fit:contain;">
+                            Paz Mental & Leveza:
+                        </span>
+                        <strong id="badge-pazmental-valor" style="font-size:11.5px; color:#7e22ce; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Serena)</strong>
+                    </div>
+                    <input type="range" id="range-pazmental-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#a855f7; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('paz_mental')">
+                </div>
+
+                <!-- Slider 3: Afeto & Libido / Conexão (Ícone +20%: 18px) -->
+                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                            <img src="./icone/icone-fogo.png" alt="Afeto" style="width:18px; height:18px; object-fit:contain;">
+                            Afeto & Magnetismo:
+                        </span>
+                        <strong id="badge-afeto-valor" style="font-size:11.5px; color:#9333ea; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Conexão Serena)</strong>
+                    </div>
+                    <input type="range" id="range-afeto-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#9333ea; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('afeto_libido')">
+                </div>
+
+                <!-- Histórico Confidencial Retrátil do Radar -->
+                <div style="border-top:1px dashed #e9d5ff; padding-top:10px;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-historico-radar-fem', 'seta-hist-radar-fem')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #ede9fe;">
+                        <span style="font-size:11.5px; font-weight:800; color:#581c87;">🌸 Histórico do Radar (<span id="contador-historico-radar-fem">0</span>)</span>
+                        <span id="seta-hist-radar-fem" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
+                    </div>
+                    <div id="bloco-historico-radar-fem" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
+                        <div id="lista-historico-radar-fem" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUADRO: O SANTUÁRIO (Ícones +20%: 24px, Fogo 15px, Config 16px) -->
+            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #9333ea; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="./icone/icone-mulher.png" alt="Rituais" style="width:20px; height:20px; object-fit:contain;">
-                        <strong style="font-size:13.5px; color:#831843; font-weight:800;">O Santuário (Rituais Diários)</strong>
+                        <img src="./icone/icone-mulher.png" alt="Rituais" style="width:24px; height:24px; object-fit:contain;">
+                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">O Santuário (Rituais Diários)</strong>
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#db2777; background:#fdf2f8; padding:3px 8px; border-radius:8px; border:1px solid #fbcfe8; display:inline-flex; align-items:center; gap:4px;">
-                            <img src="./icone/icone-fogo.png" alt="Fogo" style="width:12px; height:12px; object-fit:contain;"> 0 dias
+                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#6b21a8; background:#f3e8ff; padding:3px 8px; border-radius:8px; border:1px solid #e9d5ff; display:inline-flex; align-items:center; gap:4px;">
+                            <img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> 0 dias
                         </span>
-                        <button type="button" style="background:#fff1f2; border:1px solid #fbcfe8; color:#be185d; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">
-                            <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:13px; height:13px; object-fit:contain;">
+                        <button type="button" style="background:#faf5ff; border:1px solid #e9d5ff; color:#581c87; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">
+                            <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:16px; height:16px; object-fit:contain;">
                         </button>
                     </div>
                 </div>
 
-                <!-- Título e Barra de Progresso do Dia -->
-                <div style="background:#fffafb; border:1px solid #fce7f3; border-radius:14px; padding:10px 12px; margin-bottom:12px;">
+                <div style="background:#faf5ff; border:1px solid #ede9fe; border-radius:14px; padding:10px 12px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span id="badge-titulo-rituais" style="font-size:11.5px; font-weight:800; color:#831843;">Desperte a Alma (0/6)</span>
-                        <strong id="badge-pct-rituais" style="font-size:11.5px; font-weight:800; color:#db2777;">0%</strong>
+                        <span id="badge-titulo-rituais" style="font-size:11.5px; font-weight:800; color:#3b0764;">Desperte a Alma (0/6)</span>
+                        <strong id="badge-pct-rituais" style="font-size:11.5px; font-weight:800; color:#7c3aed;">0%</strong>
                     </div>
-                    <div style="background:#fce7f3; border-radius:10px; height:7px; width:100%; overflow:hidden;">
-                        <div id="barra-progresso-rituais" style="background:linear-gradient(90deg, #f472b6, #db2777); height:100%; width:0%; border-radius:10px; transition:width 0.3s ease;"></div>
+                    <div style="background:#e9d5ff; border-radius:10px; height:7px; width:100%; overflow:hidden;">
+                        <div id="barra-progresso-rituais" style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:0%; border-radius:10px; transition:width 0.3s ease;"></div>
                     </div>
                 </div>
 
-                <!-- As 6 Caixas de Seleção -->
                 <div id="container-grid-metas-mulher" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
 
-                <!-- Histórico Retrátil dos Rituais -->
-                <div style="margin-top:14px; border-top:1px dashed #fce7f3; padding-top:10px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-historico-rituais', 'seta-hist-rituais')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#fffafb; padding:8px 12px; border-radius:10px; border:1px solid #fbcfe8;">
-                        <span style="font-size:11.5px; font-weight:800; color:#831843;">Histórico dos Rituais (<span id="contador-historico-rituais">0</span>)</span>
-                        <span id="seta-hist-rituais" style="font-size:11px; color:#9d174d; transition:transform 0.2s ease;">▼</span>
+                <div style="margin-top:14px; border-top:1px dashed #ede9fe; padding-top:10px;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-historico-rituais', 'seta-hist-rituais')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #e9d5ff;">
+                        <span style="font-size:11.5px; font-weight:800; color:#581c87;">Histórico dos Rituais (<span id="contador-historico-rituais">0</span>)</span>
+                        <span id="seta-hist-rituais" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
                     </div>
                     <div id="bloco-historico-rituais" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
             </div>
 
-            <!-- QUADRO: CURADORIA DE FILMES & SÉRIES -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-left:4px solid #a855f7; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(168,85,247,0.08);">
+            <!-- QUADRO: CURADORIA DE FILMES & SÉRIES (Ícone +20%: 24px, Check 16px) -->
+            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #6b21a8; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="./icone/icone-filme.png" alt="Filmes" style="width:20px; height:20px; object-fit:contain;">
-                        <strong style="font-size:13.5px; color:#581c87; font-weight:800;">Curadoria: Filmes & Séries</strong>
+                        <img src="./icone/icone-filme.png" alt="Filmes" style="width:24px; height:24px; object-fit:contain;">
+                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Curadoria: Filmes & Séries</strong>
                     </div>
-                    <div style="display:flex; gap:4px; background:#f5f3ff; padding:3px; border-radius:10px; border:1px solid #ede9fe;">
-                        <button type="button" id="btn-aba-filmes-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#9333ea; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes</button>
-                        <button type="button" id="btn-aba-series-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#6b21a8;" onclick="window.alternarAbaMidiaMulher('series')">Séries</button>
+                    <div style="display:flex; gap:4px; background:#f3e8ff; padding:3px; border-radius:10px; border:1px solid #e9d5ff;">
+                        <button type="button" id="btn-aba-filmes-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#7c3aed; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes</button>
+                        <button type="button" id="btn-aba-series-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#581c87;" onclick="window.alternarAbaMidiaMulher('series')">Séries</button>
                     </div>
                 </div>
 
-                <!-- Cartão do Carrossel em Destaque -->
-                <div id="card-carrossel-midia-mulher" style="background:linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%); border:1px solid #f3e8ff; border-radius:16px; padding:14px; position:relative; min-height:120px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div id="card-carrossel-midia-mulher" style="background:linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border:1px solid #e9d5ff; border-radius:16px; padding:14px; position:relative; min-height:120px; display:flex; flex-direction:column; justify-content:space-between;">
                     <div>
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <span id="midia-mulher-categoria" style="font-size:10px; font-weight:800; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
-                            <span id="midia-mulher-tempo" style="font-size:11px; font-weight:700; color:#86198f;">-</span>
+                            <span id="midia-mulher-categoria" style="font-size:10px; font-weight:800; background:#ede9fe; color:#581c87; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
+                            <span id="midia-mulher-tempo" style="font-size:11px; font-weight:700; color:#7e22ce;">-</span>
                         </div>
-                        <h3 id="midia-mulher-titulo" style="margin:6px 0 4px 0; font-size:16px; color:#581c87; font-weight:900;">Título</h3>
-                        <p id="midia-mulher-desc" style="font-size:12px; color:#4a044e; margin:0; line-height:1.45;">Descrição da obra e reflexão.</p>
+                        <h3 id="midia-mulher-titulo" style="margin:6px 0 4px 0; font-size:16px; color:#3b0764; font-weight:900;">Título</h3>
+                        <p id="midia-mulher-desc" style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">Descrição da obra e reflexão.</p>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #f5d0fe; padding-top:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #d8b4fe; padding-top:10px;">
                         <div style="display:flex; gap:6px;">
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #f3e8ff; color:#7e22ce;" onclick="window.navegarCarrosselMidiaMulher(-1)">◄</button>
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #f3e8ff; color:#7e22ce;" onclick="window.navegarCarrosselMidiaMulher(1)">►</button>
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #e9d5ff; color:#6b21a8;" onclick="window.navegarCarrosselMidiaMulher(-1)">◄</button>
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #e9d5ff; color:#6b21a8;" onclick="window.navegarCarrosselMidiaMulher(1)">►</button>
                         </div>
-                        <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#9333ea; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalAvaliacaoMidiaMulher()">
-                            <img src="./icone/icone-check.png" alt="Assistido" style="width:13px; height:13px; object-fit:contain;"> Já Assisti
+                        <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#7c3aed; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidiaMulher()">
+                            <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
                         </button>
                     </div>
                 </div>
 
-                <!-- Caixa Flutuante de Avaliação com 5 Estrelas -->
-                <div id="caixa-avaliacao-midia-mulher" class="oculto" style="margin-top:10px; background:#fdf4ff; border:1.5px solid #f0abfc; border-radius:14px; padding:12px; text-align:center;">
-                    <span style="font-size:12px; font-weight:800; color:#86198f; display:block; margin-bottom:6px;">Quantas estrelas dá a esta obra?</span>
+                <div id="caixa-avaliacao-midia-mulher" class="oculto" style="margin-top:10px; background:#faf5ff; border:1.5px solid #c084fc; border-radius:14px; padding:12px; text-align:center;">
+                    <span style="font-size:12px; font-weight:800; color:#581c87; display:block; margin-bottom:6px;">Quantas estrelas dá a esta obra?</span>
                     <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(1)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(2)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
@@ -268,156 +395,214 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(4)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(5)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                     </div>
-                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; border-radius:8px; color:#86198f;" onclick="document.getElementById('caixa-avaliacao-midia-mulher').classList.add('oculto')">Cancelar</button>
+                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; border-radius:8px; color:#581c87;" onclick="document.getElementById('caixa-avaliacao-midia-mulher').classList.add('oculto')">Cancelar</button>
                 </div>
 
-                <!-- Histórico Retrátil de Filmes e Séries Assistidos -->
                 <div style="margin-top:14px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-assistidos-mulher', 'seta-assistidos-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #f3e8ff;">
-                        <span style="font-size:11.5px; font-weight:800; color:#581c87;">Obras Assistidas (<span id="contador-assistidos-mulher">0</span>) • Mais Bem Avaliadas no Topo</span>
-                        <span id="seta-assistidos-mulher" style="font-size:11px; color:#7e22ce; transition:transform 0.2s ease;">▼</span>
+                    <div onclick="window.alternarRetratilGenerico('bloco-assistidos-mulher', 'seta-assistidos-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #e9d5ff;">
+                        <span style="font-size:11.5px; font-weight:800; color:#3b0764;">Obras Assistidas (<span id="contador-assistidos-mulher">0</span>) • Mais Bem Avaliadas no Topo</span>
+                        <span id="seta-assistidos-mulher" style="font-size:11px; color:#6b21a8; transition:transform 0.2s ease;">▼</span>
                     </div>
                     <div id="bloco-assistidos-mulher" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
             </div>
 
             <!-- COMO SE SENTE HOJE -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #fbcfe8; border-radius:20px; margin-top:14px; padding:14px 16px;">
-                <h4 style="font-size:13.5px; font-weight:800; color:#831843; margin:0 0 10px 0;">Como se sente hoje? (Pode marcar vários)</h4>
+            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-radius:20px; margin-top:14px; padding:14px 16px; box-shadow:0 4px 12px rgba(88,28,135,0.04);">
+                <h4 style="font-size:13.5px; font-weight:800; color:#3b0764; margin:0 0 10px 0;">Como se sente hoje? (Pode marcar vários)</h4>
                 
-                <label style="font-size:11px; font-weight:800; color:#9d174d; display:block; margin-bottom:6px;">Humor / Ânimo</label>
+                <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:6px;">Humor / Ânimo</label>
                 <div id="grupo-tags-humor" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-                    <button type="button" class="tag-opcao-humor" data-valor="calma" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Calma / Leve</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="energica" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Com Energia</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="sensivel" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Sensível / Doce</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="irritada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Irritada / Intensa</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="cansada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Cansada / Fadigada</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="calma" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Calma / Leve</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="energica" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Com Energia</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="sensivel" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Sensível / Doce</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="irritada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Irritada / Intensa</button>
+                    <button type="button" class="tag-opcao-humor" data-valor="cansada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cansada / Fadigada</button>
                 </div>
 
-                <label style="font-size:11px; font-weight:800; color:#9d174d; display:block; margin-bottom:6px;">Sensação Física / Sintomas</label>
+                <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:6px;">Sensação Física / Sintomas</label>
                 <div id="grupo-tags-sintoma" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
-                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_leve" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Leve</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_forte" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Forte</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="dor_cabeca" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Dor de Cabeça</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="seios_sensiveis" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Seios Sensíveis</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="inchaco" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; color:#831843; font-size:11.5px; font-weight:700; cursor:pointer;">Inchaço</button>
+                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_leve" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Leve</button>
+                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_forte" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Forte</button>
+                    <button type="button" class="tag-opcao-sintoma" data-valor="dor_cabeca" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Dor de Cabeça</button>
+                    <button type="button" class="tag-opcao-sintoma" data-valor="seios_sensiveis" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Seios Sensíveis</button>
+                    <button type="button" class="tag-opcao-sintoma" data-valor="inchaco" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Inchaço</button>
                 </div>
                 
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #fce7f3; padding-top:10px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#be123c; font-weight:800; cursor:pointer;">
-                        <input type="checkbox" id="check-menstruando-hoje" style="width:18px; height:18px; accent-color:#be123c; border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #ede9fe; padding-top:10px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#7c3aed; font-weight:800; cursor:pointer;">
+                        <input type="checkbox" id="check-menstruando-hoje" style="width:18px; height:18px; accent-color:#7c3aed; border-radius:6px;">
                         Menstruando hoje
                     </label>
-                    <button type="button" class="btn-principal" style="width:auto; padding:8px 16px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
+                    <button type="button" class="btn-principal" style="width:auto; padding:8px 16px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
                 </div>
             </div>
 
             <div id="container-historico-sintomas-ciclos" style="margin-top:14px; display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <!-- VISTA DE PÁGINA INTEIRA: DIÁRIO DA ALMA -->
+        <!-- ================================================================= -->
+        <!-- VISTA DE PÁGINA INTEIRA: DIÁRIO EM FOLHA DE PAPEL RÚSTICO PAGINADO -->
+        <!-- ================================================================= -->
         <div id="vista-pagina-diario-mulher" class="oculto">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding: 4px 2px;">
-                <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1px solid #fbcfe8; color:#be185d;" onclick="window.fecharPaginaDiario()">← Voltar ao Espaço</button>
-                <h3 style="margin:0; font-size:18px; font-weight:900; color:#831843;">Meu Diário da Alma</h3>
-                <button type="button" class="btn-principal" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); border:none; color:#fff;" onclick="window.salvarPaginaDiarioCompleta()">Guardar</button>
+                <button type="button" class="btn-secundario" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:700; background:#ffffff; border:1.5px solid #d5c3a5; color:#5c4426;" onclick="window.fecharPaginaDiario()">← Voltar ao Espaço</button>
+                <div style="text-align:center;">
+                    <h3 style="margin:0; font-size:18px; font-weight:900; color:#3b0764; font-family:'Playfair Display', serif;">Livro de Memórias</h3>
+                    <span style="font-size:11px; color:#78593a; font-weight:600;">Confidências da Alma</span>
+                </div>
+                <button type="button" class="btn-principal" style="padding:8px 14px; border-radius:14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff;" onclick="window.salvarPaginaDiarioCompleta()">Guardar</button>
             </div>
 
-            <div class="cartao-geral" style="background: #fffdfa; border: 2px solid #f472b6; border-radius: 22px; padding: 20px; box-shadow: 0 10px 25px rgba(244,114,182,0.15); position: relative;">
+            <!-- ESTRUTURA DO LIVRO / FOLHA DE PAPEL RÚSTICO -->
+            <div id="livro-papel-container" style="background:#fbf5e8; border:2px solid #d5c3a5; border-radius:16px; padding:22px 18px 18px 18px; box-shadow:0 12px 30px rgba(78,52,24,0.18), inset 0 0 45px rgba(213,195,165,0.35); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:0; bottom:0; left:0; width:12px; background:linear-gradient(90deg, rgba(168,138,98,0.4) 0%, rgba(213,195,165,0.1) 80%, transparent 100%); pointer-events:none;"></div>
+                
                 <input type="hidden" id="diario-id-edit">
 
-                <div style="margin-bottom: 12px;">
-                    <label style="font-size:11px; font-weight:800; color:#9d174d; text-transform:uppercase; display:block; margin-bottom:4px;">Título / Tema</label>
-                    <input type="text" id="diario-titulo" placeholder="Ex: Reflexões de hoje..." style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:12px; border:1.5px solid #fbcfe8; background:#fffafb; font-weight:700; color:#831843; outline:none;">
+                <!-- Título da Crónica / Pensamento -->
+                <div style="margin-bottom:10px; border-bottom:1.5px solid #d8c6aa; padding-bottom:6px;">
+                    <input type="text" id="diario-titulo" placeholder="Título da Página..." style="width:100%; box-sizing:border-box; border:none; background:transparent; font-size:17px; font-weight:800; color:#3c2a1a; font-family:'Playfair Display', Georgia, serif; outline:none;">
                 </div>
 
-                <div style="margin-bottom: 14px;">
-                    <label style="font-size:11px; font-weight:800; color:#9d174d; text-transform:uppercase; display:block; margin-bottom:4px;">Estilo da Escrita</label>
-                    <div style="display:flex; gap:8px;">
-                        <button type="button" id="btn-fonte-cursiva" class="btn-principal" style="flex:1; padding:8px; border-radius:12px; font-family:'Georgia', serif; font-style:italic; font-size:12px; background:#db2777; color:#fff; border:none; cursor:pointer;" onclick="window.mudarEstiloFonteDiario('cursiva')">Cursiva (Manuscrita)</button>
-                        <button type="button" id="btn-fonte-forma" class="btn-secundario" style="flex:1; padding:8px; border-radius:12px; font-family:'Segoe UI', sans-serif; font-size:12px; background:#fff; color:#9d174d; border:1.5px solid #fbcfe8; cursor:pointer;" onclick="window.mudarEstiloFonteDiario('forma')">Letra de Forma</button>
+                <!-- BLOCO 1: TERMÔMETRO FÍSICO (0 A 10: BOROCOCHÔ, MULHERÃO, DEUSA) -->
+                <div style="background:#f5eedc; border:1px solid #d8c6aa; border-radius:12px; padding:10px 12px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span style="font-size:11px; font-weight:800; color:#5c4426; text-transform:uppercase; letter-spacing:0.5px;">Sensação Física Hoje:</span>
+                        <strong id="badge-termo-fisico-diario" style="font-size:12px; font-weight:800; color:#7c3aed; background:#ede3ce; padding:2px 8px; border-radius:8px;">Nota 7 (Mulherão 💃)</strong>
+                    </div>
+                    <input type="range" id="range-termo-fisico-diario" min="0" max="10" value="7" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloTermoFisicoDiario(this.value)">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#78593a; margin-top:3px;">
+                        <span>0-3: Borocochô 🥀</span>
+                        <span>4-7: Mulherão 💃</span>
+                        <span>8-10: Deusa ✨</span>
+                    </div>
+                </div>
+
+                <!-- BLOCO 2: HUMOR DA PÁGINA (6 BOTÕES) -->
+                <div style="margin-bottom:12px; border-bottom:1px dashed #d8c6aa; padding-bottom:10px;">
+                    <span style="font-size:11px; font-weight:800; color:#5c4426; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Como você se sente nesta página?</span>
+                    <div id="grid-humores-diario-botoes" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
+                        <button type="button" class="btn-humor-diario-opcao" data-humor="Irritada" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:700; border-radius:8px; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; cursor:pointer;">Irritada 🌪️</button>
+                        <button type="button" class="btn-humor-diario-opcao" data-humor="Frustrada" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:700; border-radius:8px; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; cursor:pointer;">Frustrada 🌧️</button>
+                        <button type="button" class="btn-humor-diario-opcao" data-humor="Decepcionada" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:700; border-radius:8px; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; cursor:pointer;">Decepcionada 🍂</button>
+                        <button type="button" class="btn-humor-diario-opcao" data-humor="Em Paz" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:700; border-radius:8px; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; cursor:pointer;">Em Paz 🕊️</button>
+                        <button type="button" class="btn-humor-diario-opcao ativo" data-humor="Feliz" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:800; border-radius:8px; border:1.5px solid #7c3aed; background:#7c3aed; color:#ffffff; cursor:pointer;">Feliz 🌸</button>
+                        <button type="button" class="btn-humor-diario-opcao" data-humor="Radiante" onclick="window.selecionarHumorDiario(this)" style="padding:6px 4px; font-size:11px; font-weight:700; border-radius:8px; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; cursor:pointer;">Radiante ✨</button>
+                    </div>
+                </div>
+
+                <!-- Seletor Elegante de Caligrafia -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px dashed #d8c6aa; padding-bottom:8px;">
+                    <span style="font-size:11px; font-weight:700; color:#78593a; text-transform:uppercase; letter-spacing:0.5px;">Estilo da Tinta:</span>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" id="btn-fonte-cursiva" style="border:none; padding:4px 10px; border-radius:8px; font-family:'Great Vibes', cursive; font-size:15px; background:#7c3aed; color:#fff; cursor:pointer;" onclick="window.mudarEstiloFonteDiario('cursiva')">Caligrafia Elegante</button>
+                        <button type="button" id="btn-fonte-forma" style="border:1px solid #d5c3a5; padding:4px 10px; border-radius:8px; font-family:'Segoe UI', sans-serif; font-size:11px; font-weight:700; background:#ffffff; color:#5c4426; cursor:pointer;" onclick="window.mudarEstiloFonteDiario('forma')">Letra de Forma</button>
                     </div>
                     <input type="hidden" id="diario-tipo-fonte" value="cursiva">
                 </div>
 
-                <div>
-                    <label style="font-size:11px; font-weight:800; color:#9d174d; text-transform:uppercase; display:block; margin-bottom:4px;">Página de Desabafos</label>
-                    <div style="position: relative; border: 1.5px solid #fbcfe8; border-radius: 16px; background-color: #fffdf9; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; background-image: linear-gradient(to bottom, transparent 31px, #fbcfe8 31px); background-size: 100% 32px; opacity: 0.4;"></div>
-                        <textarea id="diario-conteudo" rows="14" placeholder="Escreva o que vai no coração..." style="width: 100%; box-sizing: border-box; padding: 14px; border: none; background: transparent; font-size: 15px; line-height: 32px; outline: none; resize: vertical; font-family: 'Georgia', serif; font-style: italic; color: #4a044e; position: relative; z-index: 2;"></textarea>
+                <!-- Folha Pautada com Espaçamento Real -->
+                <div style="position:relative; min-height:360px; background-color:transparent;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; background-image:linear-gradient(to bottom, transparent 33px, rgba(168,138,98,0.25) 34px); background-size:100% 34px;"></div>
+                    <textarea id="diario-conteudo-pagina-ativa" rows="11" placeholder="Escreva nesta folha o que vai no coração..." 
+                              style="width:100%; box-sizing:border-box; padding:4px 6px; border:none; background:transparent; font-size:18px; line-height:34px; outline:none; resize:none; font-family:'Alex Brush', 'Great Vibes', cursive; color:#2c1f14; position:relative; z-index:2;"
+                              oninput="window.monitorarLimiteLinhasPagina(this)"></textarea>
+                </div>
+
+                <!-- Rodapé da Folha com Navegação e Virada de Página -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; border-top:1.5px solid #d8c6aa; padding-top:10px;">
+                    <button type="button" class="btn-secundario" style="padding:5px 10px; font-size:11px; font-weight:700; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; border-radius:8px;" onclick="window.navegarPaginaDiario(-1)">← Folha Anterior</button>
+                    
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span id="indicador-pagina-diario-atual" style="font-size:12px; font-weight:800; color:#5c4426; font-family:'Playfair Display', serif;">Página 1 de 1</span>
+                        <button type="button" style="padding:4px 8px; font-size:11px; font-weight:800; border-radius:8px; border:1.5px dashed #7c3aed; background:#faf5ff; color:#7c3aed; cursor:pointer;" onclick="window.adicionarNovaPaginaAoDiario()" title="Criar nova folha">+ Nova Folha</button>
                     </div>
+
+                    <button type="button" class="btn-secundario" style="padding:5px 10px; font-size:11px; font-weight:700; border:1px solid #d5c3a5; background:#ffffff; color:#5c4426; border-radius:8px;" onclick="window.navegarPaginaDiario(1)">Próxima Folha →</button>
                 </div>
             </div>
 
-            <!-- PÁGINAS ANTERIORES -->
-            <div style="margin-top: 20px;">
-                <h4 style="font-size:13px; font-weight:800; color:#831843; margin:0 0 10px 4px; text-transform:uppercase; letter-spacing:0.5px;">Páginas Anteriores</h4>
+            <!-- PÁGINAS ANTERIORES / DIÁRIO HISTÓRICO -->
+            <div style="margin-top:22px;">
+                <h4 style="font-size:13.5px; font-weight:800; color:#3b0764; margin:0 0 10px 4px; text-transform:uppercase; letter-spacing:0.5px;">Capítulos Gravados Anteriores</h4>
                 <div id="container-lista-diario-mulher" style="display:flex; flex-direction:column; gap:10px;">
-                    <span style="font-size:11px; color:#9d174d;">A carregar diário...</span>
+                    <span style="font-size:11px; color:#6b21a8;">A carregar diário...</span>
                 </div>
             </div>
         </div>
 
         <!-- MODAIS BOUTIQUE -->
-        <!-- MODAL 1: LEITURA IMERSIVA DO DIÁRIO -->
-        <div id="vista-leitura-diario-inteira" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000080; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div style="background:#fffdfa; width:100%; max-width:480px; max-height:86vh; padding:22px; border-radius:28px; border:1.5px solid #fbcfe8; box-shadow:0 25px 60px rgba(112,26,117,0.22); display:flex; flex-direction:column; position:relative; overflow:hidden;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #fce7f3; padding-bottom:8px;">
+        <!-- MODAL 1: LEITURA IMERSIVA DO DIÁRIO (PAGINADA) -->
+        <div id="vista-leitura-diario-inteira" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.65); z-index:1000080; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
+            <div style="background:#fbf5e8; width:100%; max-width:480px; max-height:86vh; padding:22px; border-radius:24px; border:2px solid #d5c3a5; box-shadow:0 25px 60px rgba(59,7,100,0.3); display:flex; flex-direction:column; position:relative; overflow:hidden;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1.5px solid #d8c6aa; padding-bottom:8px;">
                     <div>
-                        <span id="leitura-data-pagina" style="font-size:11px; font-weight:800; color:#db2777; text-transform:uppercase; letter-spacing:0.5px;">Data</span>
-                        <h3 id="leitura-titulo-pagina" style="margin:2px 0 0 0; font-size:17px; font-weight:900; color:#831843;">Título</h3>
+                        <span id="leitura-data-pagina" style="font-size:10.5px; font-weight:800; color:#78593a; text-transform:uppercase; letter-spacing:0.5px;">Data</span>
+                        <h3 id="leitura-titulo-pagina" style="margin:2px 0 0 0; font-size:17.5px; font-weight:900; color:#3c2a1a; font-family:'Playfair Display', serif;">Título</h3>
                     </div>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#be185d; border:1px solid #fbcfe8; background:#fff1f2; font-weight:800;" onclick="window.fecharLeituraDiarioInteira()">✕</button>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#5c4426; border:1px solid #d5c3a5; background:#ffffff; font-weight:800;" onclick="window.fecharLeituraDiarioInteira()">✕</button>
                 </div>
-                <div style="flex:1; position: relative; border: 1.5px solid #fce7f3; border-radius: 18px; background-color: #fffdf9; overflow-y: auto; padding: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; background-image: linear-gradient(to bottom, transparent 31px, #fbcfe8 31px); background-size: 100% 32px; opacity: 0.35;"></div>
-                    <div id="leitura-conteudo-pagina" style="font-size:15.5px; line-height:32px; color:#4a044e; white-space: pre-wrap; position:relative; z-index:2;"></div>
+
+                <div id="leitura-meta-badges" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;"></div>
+
+                <div style="flex:1; position:relative; border-radius:14px; background-color:transparent; overflow-y:auto; padding:12px 6px;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; background-image:linear-gradient(to bottom, transparent 33px, rgba(168,138,98,0.2) 34px); background-size:100% 34px;"></div>
+                    <div id="leitura-conteudo-pagina" style="font-size:18px; line-height:34px; color:#2c1f14; white-space:pre-wrap; position:relative; z-index:2; font-family:'Alex Brush', 'Great Vibes', cursive;"></div>
                 </div>
-                <div style="display:flex; gap:8px; margin-top:14px; justify-content:flex-end;">
-                    <button type="button" class="btn-secundario" style="border-radius:12px; padding:10px 14px; font-size:12px; color:#be185d; border:1px solid #fbcfe8; font-weight:700; display:inline-flex; align-items:center; gap:4px;" onclick="window.editarPaginaAtualLeitura()">
-                        <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;"> Editar Página
+
+                <div id="barra-nav-leitura-paginas" style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px dashed #d8c6aa; padding-top:8px;">
+                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px;" onclick="window.navegarLeituraPagina(-1)">← Anterior</button>
+                    <span id="leitura-indicador-pagina" style="font-size:11.5px; font-weight:800; color:#5c4426;">Página 1</span>
+                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px;" onclick="window.navegarLeituraPagina(1)">Próxima →</button>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                    <!-- Botão Editar Capítulo com Ícone +20%: 16px -->
+                    <button type="button" class="btn-secundario" style="border-radius:12px; padding:9px 14px; font-size:11.5px; color:#5c4426; border:1px solid #d5c3a5; font-weight:700; display:inline-flex; align-items:center; gap:5px;" onclick="window.editarPaginaAtualLeitura()">
+                        <img src="./icone/icone-editar.png" alt="Editar" style="width:16px; height:16px; object-fit:contain;"> Editar Capítulo
                     </button>
-                    <button type="button" class="btn-principal" style="border-radius:12px; padding:10px 16px; font-size:12px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none;" onclick="window.fecharLeituraDiarioInteira()">Voltar ao Diário</button>
+                    <button type="button" class="btn-principal" style="border-radius:12px; padding:9px 16px; font-size:11.5px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.fecharLeituraDiarioInteira()">Fechar</button>
                 </div>
             </div>
         </div>
 
         <!-- MODAL 2: REGISTO DO CICLO -->
-        <div id="modal-registro-ciclo-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000050; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:24px; border-radius:28px; border:1.5px solid #fbcfe8; box-shadow: 0 25px 60px rgba(112,26,117,0.22);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #fce7f3; padding-bottom:8px;">
-                    <h3 style="margin:0; font-size:17px; font-weight:900; color:#831843;">Registar Ciclo Menstrual</h3>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#be185d; border:1px solid #fbcfe8; background:#fff1f2; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
+        <div id="modal-registro-ciclo-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000050; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
+            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:24px; border-radius:28px; border:1.5px solid #e9d5ff; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #ede9fe; padding-bottom:8px;">
+                    <h3 style="margin:0; font-size:17px; font-weight:900; color:#3b0764;">Registar Ciclo Menstrual</h3>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #e9d5ff; background:#faf5ff; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <div>
-                        <label style="font-size:11.5px; font-weight:800; color:#9d174d; margin-bottom:5px; display:block;">Primeiro dia do ciclo</label>
-                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #fbcfe8; background:#fffafb; font-weight:700; color:#831843; outline:none;">
+                        <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Primeiro dia do ciclo</label>
+                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #e9d5ff; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
                     </div>
                     <div>
-                        <label style="font-size:11.5px; font-weight:800; color:#9d174d; margin-bottom:5px; display:block;">Duração do sangramento (dias)</label>
-                        <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #fbcfe8; background:#fffafb; font-weight:700; color:#831843; outline:none;">
+                        <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Duração do sangramento (dias)</label>
+                        <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #e9d5ff; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:20px;">
-                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #fbcfe8; color:#be185d; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
-                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarCicloHistorico()">Confirmar</button>
+                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #e9d5ff; color:#581c87; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarCicloHistorico()">Confirmar</button>
                 </div>
             </div>
         </div>
 
         <!-- MODAL 3: PERSONALIZAR 6 METAS -->
-        <div id="modal-config-metas-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000060; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:390px; max-height:86vh; overflow-y:auto; padding:24px; border-radius:28px; border:1.5px solid #fbcfe8; box-shadow:0 25px 60px rgba(112,26,117,0.22);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #fce7f3; padding-bottom:8px;">
-                    <h3 style="margin:0; font-size:16.5px; font-weight:900; color:#831843;">Personalizar 6 Metas</h3>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#be185d; border:1px solid #fbcfe8; background:#fff1f2; font-weight:800;" onclick="window.fecharModalEditarMetasMulher()">✕</button>
+        <div id="modal-config-metas-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000060; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
+            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:390px; max-height:86vh; overflow-y:auto; padding:24px; border-radius:28px; border:1.5px solid #e9d5ff; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #ede9fe; padding-bottom:8px;">
+                    <h3 style="margin:0; font-size:16.5px; font-weight:900; color:#3b0764;">Personalizar 6 Metas</h3>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #e9d5ff; background:#faf5ff; font-weight:800;" onclick="window.fecharModalEditarMetasMulher()">✕</button>
                 </div>
-                <p style="font-size:11.5px; color:#9d174d; margin:0 0 14px 0; line-height:1.4;">Defina os seus hábitos ou rituais diários inegociáveis de autocuidado:</p>
+                <p style="font-size:11.5px; color:#6b21a8; margin:0 0 14px 0; line-height:1.4;">Defina os seus rituais inegociáveis de autocuidado diário:</p>
                 <div id="container-inputs-editar-metas-mulher" style="display:flex; flex-direction:column; gap:8px;"></div>
                 <div style="display:flex; gap:8px; margin-top:16px;">
-                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #fbcfe8; color:#be185d; font-weight:700;" onclick="window.fecharModalEditarMetasMulher()">Cancelar</button>
-                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarNovasMetasConfiguradasMulher()">Guardar</button>
+                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #e9d5ff; color:#581c87; font-weight:700;" onclick="window.fecharModalEditarMetasMulher()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarNovasMetasConfiguradasMulher()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -425,7 +610,227 @@ window.renderizarEsqueletoEspacoMulher = function() {
 };
 
 // =========================================================================
-// 2. LÓGICA DAS 6 METAS DIÁRIAS (O SANTUÁRIO / RITUAIS FEMININOS)
+// 2. CONTROLE DO TERMÔMETRO FÍSICO E BOTÕES DE HUMOR NO DIÁRIO
+// =========================================================================
+
+window.obterDescricaoTermoFisicoDiario = function(valor) {
+    const v = parseInt(valor, 10);
+    if (v <= 3) return `Nota ${v} (Borocochô 🥀)`;
+    if (v <= 7) return `Nota ${v} (Mulherão 💃)`;
+    return `Nota ${v} (Deusa ✨)`;
+};
+
+window.atualizarRotuloTermoFisicoDiario = function(val) {
+    const badge = document.getElementById('badge-termo-fisico-diario');
+    if (badge) {
+        badge.textContent = window.obterDescricaoTermoFisicoDiario(val);
+    }
+};
+
+window.selecionarHumorDiario = function(btn) {
+    document.querySelectorAll('.btn-humor-diario-opcao').forEach(b => {
+        b.classList.remove('ativo');
+        b.style.background = '#ffffff';
+        b.style.color = '#5c4426';
+        b.style.borderColor = '#d5c3a5';
+        b.style.fontWeight = '700';
+    });
+
+    btn.classList.add('ativo');
+    btn.style.background = '#7c3aed';
+    btn.style.color = '#ffffff';
+    btn.style.borderColor = '#7c3aed';
+    btn.style.fontWeight = '800';
+
+    window.humorDiarioSelecionadoAtual = btn.getAttribute('data-humor') || 'Feliz';
+};
+
+// =========================================================================
+// 3. RADAR DE FEMINILIDADE & BEM-ESTAR (SLIDERS 1 A 10 E HISTÓRICO)
+// =========================================================================
+
+window.obterDescricaoNotaFeminilidade = function(tipo, valor) {
+    const v = parseInt(valor, 10);
+    if (tipo === 'vitalidade') {
+        if (v <= 2) return `Nota ${v} (Exaustão / Bateria Baixa)`;
+        if (v <= 4) return `Nota ${v} (Pedindo Repouso)`;
+        if (v <= 6) return `Nota ${v} (Equilíbrio / Estável)`;
+        if (v <= 8) return `Nota ${v} (Vitalidade Ativa)`;
+        return `Nota ${v} (Plenitude & Radiante)`;
+    } else if (tipo === 'paz_mental') {
+        if (v <= 2) return `Nota ${v} (Serenidade Total)`;
+        if (v <= 4) return `Nota ${v} (Leveza / Em Paz)`;
+        if (v <= 6) return `Nota ${v} (Emoções Oscilantes)`;
+        if (v <= 8) return `Nota ${v} (Mente Inquieta / Tensa)`;
+        return `Nota ${v} (Sobrecarga / Pedindo Pausa)`;
+    } else if (tipo === 'afeto_libido') {
+        if (v <= 3) return `Nota ${v} (Recolhimento / Em Si)`;
+        if (v <= 7) return `Nota ${v} (Conexão Serena)`;
+        return `Nota ${v} (Desejo Vivo & Magnetismo)`;
+    }
+    return `Nota ${v}`;
+};
+
+window.atualizarRotuloSliderFeminilidade = function(tipo) {
+    let elRange, elBadge;
+    if (tipo === 'vitalidade') {
+        elRange = document.getElementById('range-vitalidade-fem');
+        elBadge = document.getElementById('badge-vitalidade-valor');
+    } else if (tipo === 'paz_mental') {
+        elRange = document.getElementById('range-pazmental-fem');
+        elBadge = document.getElementById('badge-pazmental-valor');
+    } else if (tipo === 'afeto_libido') {
+        elRange = document.getElementById('range-afeto-fem');
+        elBadge = document.getElementById('badge-afeto-valor');
+    }
+
+    if (elRange && elBadge) {
+        elBadge.textContent = window.obterDescricaoNotaFeminilidade(tipo, elRange.value);
+    }
+};
+
+window.salvarRadarFeminilidadeCompleto = async function() {
+    const dtRelacao = document.getElementById('slider-data-relacao-fem')?.value || null;
+    const vVit = parseInt(document.getElementById('range-vitalidade-fem')?.value || '5', 10);
+    const vPaz = parseInt(document.getElementById('range-pazmental-fem')?.value || '5', 10);
+    const vAfeto = parseInt(document.getElementById('range-afeto-fem')?.value || '5', 10);
+    const hojeStr = new Date().toISOString().split('T')[0];
+
+    const novoRegistro = {
+        id: 'rad_fem_' + Date.now(),
+        data: hojeStr,
+        ultima_relacao: dtRelacao,
+        vitalidade: vVit,
+        paz_mental: vPaz,
+        afeto_libido: vAfeto,
+        txtVit: window.obterDescricaoNotaFeminilidade('vitalidade', vVit),
+        txtPaz: window.obterDescricaoNotaFeminilidade('paz_mental', vPaz),
+        txtAfeto: window.obterDescricaoNotaFeminilidade('afeto_libido', vAfeto)
+    };
+
+    window.dadosRadarFeminilidade.ultima_relacao = dtRelacao;
+    window.dadosRadarFeminilidade.vitalidade = vVit;
+    window.dadosRadarFeminilidade.paz_mental = vPaz;
+    window.dadosRadarFeminilidade.afeto_libido = vAfeto;
+
+    if (!Array.isArray(window.dadosRadarFeminilidade.historico)) {
+        window.dadosRadarFeminilidade.historico = [];
+    }
+
+    window.dadosRadarFeminilidade.historico.unshift(novoRegistro);
+    if (window.dadosRadarFeminilidade.historico.length > 20) {
+        window.dadosRadarFeminilidade.historico = window.dadosRadarFeminilidade.historico.slice(0, 20);
+    }
+
+    localStorage.setItem('suiri_radar_fem', JSON.stringify(window.dadosRadarFeminilidade));
+    window.renderizarHistoricoRadarFeminilidade();
+
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast("Radar de Feminilidade guardado com sucesso!", "sucesso");
+    }
+
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    if (supabase && usuarioId) {
+        try {
+            await supabase.from('espaco_fem_radar').upsert({
+                usuario_id: usuarioId,
+                data_registro: hojeStr,
+                ultima_relacao: dtRelacao,
+                vitalidade: vVit,
+                paz_mental: vPaz,
+                afeto_libido: vAfeto
+            }, { onConflict: 'usuario_id, data_registro' });
+        } catch (e) {}
+    }
+};
+
+window.renderizarHistoricoRadarFeminilidade = function() {
+    const cont = document.getElementById('lista-historico-radar-fem');
+    const elContador = document.getElementById('contador-historico-radar-fem');
+    if (!cont) return;
+
+    const hist = window.dadosRadarFeminilidade.historico || [];
+    if (elContador) elContador.textContent = hist.length;
+
+    if (hist.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#6b21a8; text-align:center; display:block; padding:8px;">Nenhuma avaliação confidencial guardada ainda.</span>';
+        return;
+    }
+
+    cont.innerHTML = hist.map(reg => {
+        const partes = reg.data.split('-');
+        const dataFmt = `${partes[2]}/${partes[1]}`;
+        const infoRelacao = reg.ultima_relacao ? ` • Conexão: ${reg.ultima_relacao.split('-').slice(1).reverse().join('/')}` : '';
+
+        return `
+            <div style="background:#ffffff; border:1px solid #ede9fe; padding:8px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <span style="font-size:10px; font-weight:800; color:#581c87; display:block;">${dataFmt}${infoRelacao}</span>
+                    <span style="font-size:11px; color:#3b0764; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                        <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:16px; height:16px; object-fit:contain;"> ${reg.txtVit} | 
+                        <img src="./icone/icone-estresse.png" alt="Paz" style="width:16px; height:16px; object-fit:contain;"> ${reg.txtPaz}
+                    </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:10.5px; font-weight:800; color:#7c3aed; background:#f3e8ff; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
+                        <img src="./icone/icone-fogo.png" alt="Afeto" style="width:15px; height:15px; object-fit:contain;"> ${reg.txtAfeto}
+                    </span>
+                    <button type="button" onclick="window.removerItemHistoricoRadarFeminilidade('${reg.id}')" style="background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center;" title="Remover registo">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+window.removerItemHistoricoRadarFeminilidade = function(id) {
+    if (!window.dadosRadarFeminilidade.historico) return;
+    window.dadosRadarFeminilidade.historico = window.dadosRadarFeminilidade.historico.filter(r => r.id !== id);
+    localStorage.setItem('suiri_radar_fem', JSON.stringify(window.dadosRadarFeminilidade));
+    window.renderizarHistoricoRadarFeminilidade();
+};
+
+window.carregarRadarFeminilidadeNuvem = async function() {
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    if (!supabase || !usuarioId) return;
+
+    try {
+        const { data } = await supabase
+            .from('espaco_fem_radar')
+            .select('*')
+            .eq('usuario_id', usuarioId)
+            .order('data_registro', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (data) {
+            window.dadosRadarFeminilidade.ultima_relacao = data.ultima_relacao;
+            window.dadosRadarFeminilidade.vitalidade = data.vitalidade || 5;
+            window.dadosRadarFeminilidade.paz_mental = data.paz_mental || 5;
+            window.dadosRadarFeminilidade.afeto_libido = data.afeto_libido || 5;
+
+            const inDt = document.getElementById('slider-data-relacao-fem');
+            const rngVit = document.getElementById('range-vitalidade-fem');
+            const rngPaz = document.getElementById('range-pazmental-fem');
+            const rngAfeto = document.getElementById('range-afeto-fem');
+
+            if (inDt) inDt.value = data.ultima_relacao || '';
+            if (rngVit) rngVit.value = data.vitalidade || 5;
+            if (rngPaz) rngPaz.value = data.paz_mental || 5;
+            if (rngAfeto) rngAfeto.value = data.afeto_libido || 5;
+
+            window.atualizarRotuloSliderFeminilidade('vitalidade');
+            window.atualizarRotuloSliderFeminilidade('paz_mental');
+            window.atualizarRotuloSliderFeminilidade('afeto_libido');
+        }
+    } catch (e) {}
+};
+
+// =========================================================================
+// 4. LÓGICA DAS 6 METAS DIÁRIAS (O SANTUÁRIO)
 // =========================================================================
 
 window.alternarRetratilGenerico = function(conteudoId, setaId) {
@@ -456,9 +861,9 @@ window.sincronizarCheckboxesRituaisHoje = function() {
     containerGrid.innerHTML = window.configMetasFemininas.map((meta, idx) => {
         const checked = !!registroHoje[`meta_${idx}`];
         return `
-            <label style="display:flex; align-items:center; justify-content:space-between; background:#fffafb; padding:10px 12px; border-radius:12px; border:1px solid #fce7f3; cursor:pointer;">
-                <span style="font-size:11.5px; font-weight:700; color:#831843; line-height:1.3; overflow:hidden; text-overflow:ellipsis;">${meta}</span>
-                <input type="checkbox" id="check-ritual-fem-${idx}" onchange="window.salvarCheckinRitualMulher(${idx})" ${checked ? 'checked' : ''} style="width:16px; height:16px; accent-color:#db2777; flex-shrink:0;">
+            <label style="display:flex; align-items:center; justify-content:space-between; background:#faf5ff; padding:10px 12px; border-radius:12px; border:1px solid #ede9fe; cursor:pointer;">
+                <span style="font-size:11.5px; font-weight:700; color:#3b0764; line-height:1.3; overflow:hidden; text-overflow:ellipsis;">${meta}</span>
+                <input type="checkbox" id="check-ritual-fem-${idx}" onchange="window.salvarCheckinRitualMulher(${idx})" ${checked ? 'checked' : ''} style="width:16px; height:16px; accent-color:#7c3aed; flex-shrink:0;">
             </label>
         `;
     }).join('');
@@ -484,8 +889,8 @@ window.salvarCheckinRitualMulher = async function(idx) {
     window.calcularOfensivaERendimentoRituais();
     window.renderizarHistoricoRituaisRetratil();
 
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
     if (supabase && usuarioId) {
         try {
             await supabase.from('espaco_fem_checkins').upsert({
@@ -529,7 +934,7 @@ window.calcularOfensivaERendimentoRituais = function() {
 
     const elStreak = document.getElementById('streak-rituais-mulher');
     if (elStreak) {
-        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:12px; height:12px; object-fit:contain;"> ${ofensiva} dias`;
+        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${ofensiva} dias`;
     }
 };
 
@@ -542,7 +947,7 @@ window.renderizarHistoricoRituaisRetratil = function() {
     if (elContador) elContador.textContent = datas.length;
 
     if (datas.length === 0) {
-        cont.innerHTML = '<span style="font-size:11px; color:#9d174d; text-align:center; display:block; padding:8px;">Nenhum registo diário guardado ainda.</span>';
+        cont.innerHTML = '<span style="font-size:11px; color:#6b21a8; text-align:center; display:block; padding:8px;">Nenhum registo diário guardado ainda.</span>';
         return;
     }
 
@@ -555,15 +960,15 @@ window.renderizarHistoricoRituaisRetratil = function() {
         const titulo = window.obterTituloRituaisMulher(total);
 
         return `
-            <div style="background:#fffafb; border:1px solid #fce7f3; border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="background:#ffffff; border:1px solid #ede9fe; border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <strong style="font-size:12px; color:#831843;">${dataFormatada} • ${titulo}</strong>
+                        <strong style="font-size:12px; color:#3b0764;">${dataFormatada} • ${titulo}</strong>
                     </div>
-                    <span style="font-size:11px; font-weight:800; color:#db2777;">${total}/6 (${pct}%)</span>
+                    <span style="font-size:11px; font-weight:800; color:#7c3aed;">${total}/6 (${pct}%)</span>
                 </div>
-                <div style="background:#fce7f3; border-radius:8px; height:5px; width:100%; overflow:hidden;">
-                    <div style="background:linear-gradient(90deg, #f472b6, #db2777); height:100%; width:${pct}%;"></div>
+                <div style="background:#ede9fe; border-radius:8px; height:5px; width:100%; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:${pct}%;"></div>
                 </div>
             </div>
         `;
@@ -577,8 +982,8 @@ window.abrirModalEditarMetasMulher = function() {
 
     container.innerHTML = window.configMetasFemininas.map((meta, i) => `
         <div>
-            <label style="font-size:10.5px; font-weight:800; color:#9d174d; display:block; margin-bottom:2px;">Meta ${i + 1}</label>
-            <input type="text" id="input-edit-meta-mulher-${i}" value="${meta}" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:10px; border:1.5px solid #fbcfe8; background:#fffafb; font-size:12px; font-weight:600; color:#831843;">
+            <label style="font-size:10.5px; font-weight:800; color:#581c87; display:block; margin-bottom:2px;">Meta ${i + 1}</label>
+            <input type="text" id="input-edit-meta-mulher-${i}" value="${meta}" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:10px; border:1.5px solid #e9d5ff; background:#faf5ff; font-size:12px; font-weight:600; color:#3b0764;">
         </div>
     `).join('');
 
@@ -607,7 +1012,7 @@ window.salvarNovasMetasConfiguradasMulher = function() {
 };
 
 // =========================================================================
-// 3. CURADORIA DE FILMES & SÉRIES (CARROSSEL, ESTRELAS E HISTÓRICO)
+// 5. CURADORIA DE FILMES & SÉRIES (CARROSSEL, ESTRELAS E HISTÓRICO)
 // =========================================================================
 
 window.alternarAbaMidiaMulher = function(aba) {
@@ -616,11 +1021,11 @@ window.alternarAbaMidiaMulher = function(aba) {
     const btnS = document.getElementById('btn-aba-series-mulher');
 
     if (aba === 'filmes') {
-        if (btnF) { btnF.style.background = '#9333ea'; btnF.style.color = '#fff'; }
-        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#6b21a8'; }
+        if (btnF) { btnF.style.background = '#7c3aed'; btnF.style.color = '#fff'; }
+        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#581c87'; }
     } else {
-        if (btnS) { btnS.style.background = '#9333ea'; btnS.style.color = '#fff'; }
-        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#6b21a8'; }
+        if (btnS) { btnS.style.background = '#7c3aed'; btnS.style.color = '#fff'; }
+        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#581c87'; }
     }
 
     window.atualizarVisualizacaoMidiaMulher();
@@ -670,8 +1075,8 @@ window.atualizarVisualizacaoMidiaMulher = function() {
             btnAcao.textContent = `★ ${jaVisto.estrelas} Estrelas`;
             btnAcao.style.background = '#f59e0b';
         } else {
-            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Assistido" style="width:13px; height:13px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
-            btnAcao.style.background = '#9333ea';
+            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
+            btnAcao.style.background = '#7c3aed';
         }
     }
 };
@@ -715,20 +1120,20 @@ window.renderizarHistoricoAssistidosMulher = function() {
     if (elContador) elContador.textContent = ordenados.length;
 
     if (ordenados.length === 0) {
-        cont.innerHTML = '<span style="font-size:11px; color:#86198f; text-align:center; display:block; padding:8px;">Nenhuma obra avaliada ainda.</span>';
+        cont.innerHTML = '<span style="font-size:11px; color:#6b21a8; text-align:center; display:block; padding:8px;">Nenhuma obra avaliada ainda.</span>';
         return;
     }
 
     cont.innerHTML = ordenados.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #f3e8ff; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #ede9fe; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0;">
-                <strong style="font-size:12.5px; color:#581c87; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
-                <span style="font-size:10px; color:#7e22ce; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+                <strong style="font-size:12.5px; color:#3b0764; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10px; color:#6b21a8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <span style="font-size:12px; font-weight:800; color:#f59e0b;">${'★'.repeat(item.estrelas)}</span>
                 <button type="button" onclick="window.removerMidiaMulherAssistida('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover">
-                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
                 </button>
             </div>
         </div>
@@ -743,25 +1148,25 @@ window.removerMidiaMulherAssistida = function(id) {
 };
 
 // =========================================================================
-// 4. MÚLTIPLA ESCOLHA DE HUMOR E SINTOMAS
+// 6. MÚLTIPLA ESCOLHA DE HUMOR E SINTOMAS
 // =========================================================================
 
 window.toggleTagSelecao = function(btn) {
     btn.classList.toggle('selecionado');
     if (btn.classList.contains('selecionado')) {
-        btn.style.background = '#fce7f3';
-        btn.style.borderColor = '#db2777';
-        btn.style.color = '#831843';
+        btn.style.background = '#f3e8ff';
+        btn.style.borderColor = '#7c3aed';
+        btn.style.color = '#3b0764';
     } else {
-        btn.style.background = '#fffafb';
-        btn.style.borderColor = '#fbcfe8';
-        btn.style.color = '#831843';
+        btn.style.background = '#faf5ff';
+        btn.style.borderColor = '#e9d5ff';
+        btn.style.color = '#3b0764';
     }
 };
 
 window.salvarRegistroSintomaDiario = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
     if (!supabase || !usuarioId) return;
 
     const humoresSelecionados = Array.from(document.querySelectorAll('.tag-opcao-humor.selecionado')).map(b => b.getAttribute('data-valor'));
@@ -800,12 +1205,14 @@ window.salvarRegistroSintomaDiario = async function() {
 };
 
 // =========================================================================
-// 5. DIÁRIO EM PÁGINA INTEIRA & LEITURA IMERSIVA
+// 7. DIÁRIO DA ALMA: LIVRO DE MEMÓRIAS EM PAPEL RÚSTICO PAGINADO
 // =========================================================================
 
-let paginaDiarioEmLeituraAtual = null;
+let capituloDiarioEmLeituraAtual = null;
+let indicePaginaLeituraAtual = 0;
+let listaPaginasLeitura = [];
 
-window.abrirPaginaDiario = function(id = '', titulo = '', conteudo = '', tipoFonte = 'cursiva') {
+window.abrirPaginaDiario = function(id = '', titulo = '', conteudoCompleto = '', tipoFonte = 'cursiva', metaSalva = null) {
     const vistaPrincipal = document.getElementById('vista-principal-espaco-mulher');
     const vistaDiario = document.getElementById('vista-pagina-diario-mulher');
 
@@ -814,8 +1221,44 @@ window.abrirPaginaDiario = function(id = '', titulo = '', conteudo = '', tipoFon
         vistaDiario.classList.remove('oculto');
 
         document.getElementById('diario-id-edit').value = id;
-        document.getElementById('diario-titulo').value = titulo;
-        document.getElementById('diario-conteudo').value = conteudo;
+        document.getElementById('diario-titulo').value = titulo || '';
+
+        let textoLimpo = conteudoCompleto || '';
+        let meta = metaSalva || { fisico: 7, humor: "Feliz" };
+
+        const regexMeta = /<!--suiri_meta:(\{.*?\})-->/;
+        const matchMeta = textoLimpo.match(regexMeta);
+        if (matchMeta) {
+            try {
+                meta = JSON.parse(matchMeta[1]);
+                textoLimpo = textoLimpo.replace(regexMeta, '').trim();
+            } catch (e) {}
+        }
+
+        const rngFisico = document.getElementById('range-termo-fisico-diario');
+        if (rngFisico) {
+            rngFisico.value = meta.fisico !== undefined ? meta.fisico : 7;
+            window.atualizarRotuloTermoFisicoDiario(rngFisico.value);
+        }
+
+        const humorParaAtivar = meta.humor || "Feliz";
+        const btnHumor = document.querySelector(`.btn-humor-diario-opcao[data-humor="${humorParaAtivar}"]`);
+        if (btnHumor) {
+            window.selecionarHumorDiario(btnHumor);
+        } else {
+            window.humorDiarioSelecionadoAtual = humorParaAtivar;
+        }
+
+        if (textoLimpo.includes('<!--suiri_page_break-->')) {
+            window.paginasDiarioAtuais = textoLimpo.split('<!--suiri_page_break-->');
+        } else if (textoLimpo) {
+            window.paginasDiarioAtuais = [textoLimpo];
+        } else {
+            window.paginasDiarioAtuais = [""];
+        }
+
+        window.indicePaginaDiarioAtual = 0;
+        window.atualizarVisorPaginaDiario();
         window.mudarEstiloFonteDiario(tipoFonte);
     }
 };
@@ -830,44 +1273,64 @@ window.fecharPaginaDiario = function() {
     }
 };
 
-window.lerPaginaDiarioInteira = function(id, titulo, conteudo, dataRegistro, tipoFonte) {
-    paginaDiarioEmLeituraAtual = { id, titulo, conteudo, dataRegistro, tipoFonte };
-    
-    const modalLeitura = document.getElementById('vista-leitura-diario-inteira');
-    const elTitulo = document.getElementById('leitura-titulo-pagina');
-    const elData = document.getElementById('leitura-data-pagina');
-    const elConteudo = document.getElementById('leitura-conteudo-pagina');
+window.atualizarVisorPaginaDiario = function() {
+    const txtArea = document.getElementById('diario-conteudo-pagina-ativa');
+    const elIndicador = document.getElementById('indicador-pagina-diario-atual');
 
-    if (elTitulo) elTitulo.textContent = titulo || 'Pensamento do Dia';
-    if (elData) elData.textContent = dataRegistro;
-    if (elConteudo) {
-        elConteudo.textContent = conteudo;
-        elConteudo.style.fontFamily = tipoFonte === 'cursiva' ? "'Georgia', serif" : "'Segoe UI', sans-serif";
-        elConteudo.style.fontStyle = tipoFonte === 'cursiva' ? "italic" : "normal";
+    if (txtArea) {
+        txtArea.value = window.paginasDiarioAtuais[window.indicePaginaDiarioAtual] || '';
     }
 
-    if (modalLeitura) modalLeitura.classList.remove('oculto');
+    if (elIndicador) {
+        elIndicador.textContent = `Página ${window.indicePaginaDiarioAtual + 1} de ${window.paginasDiarioAtuais.length}`;
+    }
 };
 
-window.fecharLeituraDiarioInteira = function() {
-    const modalLeitura = document.getElementById('vista-leitura-diario-inteira');
-    if (modalLeitura) modalLeitura.classList.add('oculto');
+window.salvarTextoPaginaAtualEmMemoria = function() {
+    const txtArea = document.getElementById('diario-conteudo-pagina-ativa');
+    if (txtArea) {
+        window.paginasDiarioAtuais[window.indicePaginaDiarioAtual] = txtArea.value;
+    }
 };
 
-window.editarPaginaAtualLeitura = function() {
-    if (!paginaDiarioEmLeituraAtual) return;
-    window.fecharLeituraDiarioInteira();
-    window.abrirPaginaDiario(
-        paginaDiarioEmLeituraAtual.id,
-        paginaDiarioEmLeituraAtual.titulo,
-        paginaDiarioEmLeituraAtual.conteudo,
-        paginaDiarioEmLeituraAtual.tipoFonte
-    );
+window.adicionarNovaPaginaAoDiario = function() {
+    window.salvarTextoPaginaAtualEmMemoria();
+    window.paginasDiarioAtuais.push("");
+    window.indicePaginaDiarioAtual = window.paginasDiarioAtuais.length - 1;
+    window.atualizarVisorPaginaDiario();
+    document.getElementById('diario-conteudo-pagina-ativa')?.focus();
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast(`Nova folha aberta (Página ${window.indicePaginaDiarioAtual + 1})`, "info");
+    }
+};
+
+window.navegarPaginaDiario = function(direcao) {
+    window.salvarTextoPaginaAtualEmMemoria();
+    const novoIndex = window.indicePaginaDiarioAtual + direcao;
+
+    if (novoIndex >= 0 && novoIndex < window.paginasDiarioAtuais.length) {
+        window.indicePaginaDiarioAtual = novoIndex;
+        window.atualizarVisorPaginaDiario();
+    } else if (novoIndex >= window.paginasDiarioAtuais.length) {
+        const textoAtual = window.paginasDiarioAtuais[window.indicePaginaDiarioAtual]?.trim();
+        if (textoAtual.length > 0) {
+            window.adicionarNovaPaginaAoDiario();
+        }
+    }
+};
+
+window.monitorarLimiteLinhasPagina = function(textarea) {
+    const linhas = textarea.value.split('\n');
+    if (linhas.length > 18) {
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast("Fim da folha alcançado. Toque em '+ Nova Folha' para virar a página.", "info");
+        }
+    }
 };
 
 window.mudarEstiloFonteDiario = function(tipo) {
     const inputTipo = document.getElementById('diario-tipo-fonte');
-    const txtArea = document.getElementById('diario-conteudo');
+    const txtArea = document.getElementById('diario-conteudo-pagina-ativa');
     const btnCursiva = document.getElementById('btn-fonte-cursiva');
     const btnForma = document.getElementById('btn-fonte-forma');
 
@@ -875,90 +1338,54 @@ window.mudarEstiloFonteDiario = function(tipo) {
 
     if (tipo === 'cursiva') {
         if (txtArea) {
-            txtArea.style.fontFamily = "'Georgia', serif";
-            txtArea.style.fontStyle = "italic";
+            txtArea.style.fontFamily = "'Alex Brush', 'Great Vibes', cursive";
+            txtArea.style.fontSize = "20px";
+            txtArea.style.lineHeight = "34px";
+            txtArea.style.fontStyle = "normal";
         }
-        if (btnCursiva) { btnCursiva.style.background = '#db2777'; btnCursiva.style.color = '#fff'; btnCursiva.style.border = 'none'; }
-        if (btnForma) { btnForma.style.background = '#fff'; btnForma.style.color = '#9d174d'; btnForma.style.border = '1.5px solid #fbcfe8'; }
+        if (btnCursiva) { btnCursiva.style.background = '#7c3aed'; btnCursiva.style.color = '#fff'; btnCursiva.style.border = 'none'; }
+        if (btnForma) { btnForma.style.background = '#fff'; btnForma.style.color = '#5c4426'; btnForma.style.border = '1px solid #d5c3a5'; }
     } else {
         if (txtArea) {
             txtArea.style.fontFamily = "'Segoe UI', sans-serif";
+            txtArea.style.fontSize = "14.5px";
+            txtArea.style.lineHeight = "34px";
             txtArea.style.fontStyle = "normal";
         }
-        if (btnForma) { btnForma.style.background = '#db2777'; btnForma.style.color = '#fff'; btnForma.style.border = 'none'; }
-        if (btnCursiva) { btnCursiva.style.background = '#fff'; btnCursiva.style.color = '#9d174d'; btnCursiva.style.border = '1.5px solid #fbcfe8'; }
-    }
-};
-
-window.carregarDiarioMulher = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
-    const container = document.getElementById('container-lista-diario-mulher');
-    if (!supabase || !usuarioId || !container) return;
-
-    try {
-        const { data, error } = await supabase
-            .from('saude_diario')
-            .select('*')
-            .eq('usuario_id', usuarioId)
-            .order('criado_em', { ascending: false });
-
-        if (!error && data) {
-            window.dadosDiarioMulher = data;
-            if (data.length === 0) {
-                container.innerHTML = '<span style="font-size:11.5px; color:#9d174d;">Nenhuma página escrita ainda. Comece agora!</span>';
-                return;
-            }
-
-            container.innerHTML = data.map(item => {
-                const partes = item.data_registro.split('-');
-                const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-                const estiloFonte = item.tipo_fonte === 'cursiva' ? "font-family: Georgia, serif; font-style: italic;" : "font-family: 'Segoe UI', sans-serif;";
-                const conteudoResumo = item.conteudo.length > 120 ? item.conteudo.substring(0, 120) + '...' : item.conteudo;
-
-                return `
-                    <div style="background:#fffdf9; border:1px solid #fbcfe8; border-radius:16px; padding:14px 16px; box-shadow:0 2px 8px rgba(244,114,182,0.06);">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <strong style="font-size:13.5px; color:#831843;">${item.titulo || 'Pensamento do Dia'}</strong>
-                            <span style="font-size:11px; color:#9d174d; font-weight:700;">${dataFormatada}</span>
-                        </div>
-                        <p style="font-size:12.5px; color:#4a044e; margin:0 0 10px 0; line-height:1.5; ${estiloFonte} white-space: pre-wrap;">${conteudoResumo}</p>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <button type="button" style="background:#fce7f3; border:none; color:#831843; padding:6px 14px; border-radius:10px; font-size:11.5px; font-weight:800; cursor:pointer;" onclick="window.lerPaginaDiarioInteira('${item.id}', '${item.titulo || ''}', \`${item.conteudo.replace(/`/g, '\\`')}\`, '${dataFormatada}', '${item.tipo_fonte || 'cursiva'}')">Ler Página</button>
-                            <div style="display:flex; gap:6px;">
-                                <button type="button" style="background:#ffe4e6; border:none; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirPaginaDiario('${item.id}')" title="Excluir">
-                                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:14px; height:14px; object-fit:contain;">
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-    } catch (err) {
-        console.error("Erro ao carregar diário:", err);
+        if (btnForma) { btnForma.style.background = '#7c3aed'; btnForma.style.color = '#fff'; btnForma.style.border = 'none'; }
+        if (btnCursiva) { btnCursiva.style.background = '#fff'; btnCursiva.style.color = '#5c4426'; btnCursiva.style.border = '1px solid #d5c3a5'; }
     }
 };
 
 window.salvarPaginaDiarioCompleta = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
+    window.salvarTextoPaginaAtualEmMemoria();
+
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
     
     const id = document.getElementById('diario-id-edit')?.value;
-    const titulo = document.getElementById('diario-titulo')?.value;
-    const conteudo = document.getElementById('diario-conteudo')?.value;
+    const titulo = document.getElementById('diario-titulo')?.value?.trim();
     const tipoFonte = document.getElementById('diario-tipo-fonte')?.value || 'cursiva';
 
+    const vFisico = parseInt(document.getElementById('range-termo-fisico-diario')?.value || '7', 10);
+    const vHumor = window.humorDiarioSelecionadoAtual || 'Feliz';
+
+    const paginasFiltradas = window.paginasDiarioAtuais.filter((p, idx) => idx === 0 || p.trim().length > 0);
+    let conteudoBase = paginasFiltradas.join('<!--suiri_page_break-->');
+
     if (!supabase || !usuarioId) return;
-    if (!conteudo || !conteudo.trim()) {
-        return typeof window.mostrarToast === 'function' ? window.mostrarToast("Escreva algo na página do diário.", "erro") : alert("Escreva algo.");
+    if (!conteudoBase || !conteudoBase.trim()) {
+        return typeof window.mostrarToast === 'function' ? window.mostrarToast("Escreva algo na folha do diário.", "erro") : alert("Escreva algo.");
     }
+
+    const metaTag = `<!--suiri_meta:${JSON.stringify({ fisico: vFisico, humor: vHumor, txtFisico: window.obterDescricaoTermoFisicoDiario(vFisico) })}-->`;
+    const conteudoCompleto = metaTag + '\n' + conteudoBase;
 
     try {
         const payload = {
             usuario_id: usuarioId,
             titulo: titulo || 'Pensamento do Dia',
-            conteudo: conteudo.trim(),
+            conteudo: conteudoCompleto,
             tipo_fonte: tipoFonte
         };
 
@@ -974,30 +1401,203 @@ window.salvarPaginaDiarioCompleta = async function() {
         if (error) {
             window.mostrarToast("Erro ao guardar no diário: " + error.message, "erro");
         } else {
-            window.mostrarToast("Página guardada com carinho no diário!", "sucesso");
+            window.mostrarToast("Capítulo guardado com carinho no seu livro de memórias!", "sucesso");
             window.fecharPaginaDiario();
             await window.carregarDiarioMulher();
         }
     } catch (err) { console.error(err); }
 };
 
+window.carregarDiarioMulher = async function() {
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    const container = document.getElementById('container-lista-diario-mulher');
+    if (!supabase || !usuarioId || !container) return;
+
+    try {
+        const { data, error } = await supabase
+            .from('saude_diario')
+            .select('*')
+            .eq('usuario_id', usuarioId)
+            .order('criado_em', { ascending: false });
+
+        if (!error && data) {
+            window.dadosDiarioMulher = data;
+            if (data.length === 0) {
+                container.innerHTML = '<span style="font-size:11.5px; color:#78593a; font-style:italic;">Nenhum capítulo gravado ainda. Comece a sua primeira folha de memórias!</span>';
+                return;
+            }
+
+            container.innerHTML = data.map(item => {
+                const partes = item.data_registro.split('-');
+                const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                
+                let textoLimpo = item.conteudo || '';
+                let meta = { fisico: 7, humor: 'Feliz', txtFisico: 'Mulherão 💃' };
+
+                const matchMeta = textoLimpo.match(/<!--suiri_meta:(\{.*?\})-->/);
+                if (matchMeta) {
+                    try {
+                        meta = JSON.parse(matchMeta[1]);
+                        textoLimpo = textoLimpo.replace(/<!--suiri_meta:(\{.*?\})-->/, '').trim();
+                    } catch (e) {}
+                }
+
+                const paginas = textoLimpo.includes('<!--suiri_page_break-->') 
+                    ? textoLimpo.split('<!--suiri_page_break-->') 
+                    : [textoLimpo];
+
+                const primeiraPagina = paginas[0] || '';
+                const resumo = primeiraPagina.length > 110 ? primeiraPagina.substring(0, 110) + '...' : primeiraPagina;
+                const estiloFonte = item.tipo_fonte === 'cursiva' ? "font-family:'Alex Brush', 'Great Vibes', cursive; font-size:18px;" : "font-family:'Segoe UI', sans-serif; font-size:12.5px;";
+
+                const descFisicaCurta = meta.fisico <= 3 ? 'Borocochô 🥀' : (meta.fisico <= 7 ? 'Mulherão 💃' : 'Deusa ✨');
+
+                return `
+                    <div style="background:#fbf5e8; border:1.5px solid #d5c3a5; border-radius:16px; padding:14px 16px; box-shadow:0 3px 10px rgba(78,52,24,0.06); position:relative;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px dashed #d8c6aa; padding-bottom:6px;">
+                            <strong style="font-size:14px; color:#3c2a1a; font-family:'Playfair Display', serif;">${item.titulo || 'Pensamento do Dia'}</strong>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:10px; font-weight:800; background:#f0e4cd; color:#5c4426; padding:2px 6px; border-radius:6px;">${paginas.length} folha${paginas.length > 1 ? 's' : ''}</span>
+                                <span style="font-size:11px; color:#78593a; font-weight:700;">${dataFormatada}</span>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+                            <span style="font-size:10px; font-weight:800; background:#ede3ce; color:#5c4426; padding:2px 7px; border-radius:6px; border:1px solid #d5c3a5;">
+                                ${descFisicaCurta} (${meta.fisico}/10)
+                            </span>
+                            <span style="font-size:10px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:2px 7px; border-radius:6px; border:1px solid #e9d5ff;">
+                                Humor: ${meta.humor || 'Feliz'}
+                            </span>
+                        </div>
+
+                        <p style="color:#2c1f14; margin:0 0 10px 0; line-height:1.45; ${estiloFonte} white-space:pre-wrap;">"${resumo}"</p>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <button type="button" style="background:#7c3aed; border:none; color:#ffffff; padding:6px 14px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;" onclick="window.abrirLeitorCapituloDiario('${item.id}')">📖 Abrir Livro</button>
+                            <div style="display:flex; gap:6px;">
+                                <!-- Botão Excluir com Ícone +20%: 16px -->
+                                <button type="button" style="background:#fef2f2; border:1px solid #fecaca; width:32px; height:32px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirPaginaDiario('${item.id}')" title="Excluir">
+                                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error("Erro ao carregar diário:", err);
+    }
+};
+
+window.abrirLeitorCapituloDiario = function(idCapitulo) {
+    const item = window.dadosDiarioMulher.find(d => d.id === idCapitulo);
+    if (!item) return;
+
+    capituloDiarioEmLeituraAtual = item;
+    
+    let textoLimpo = item.conteudo || '';
+    let meta = { fisico: 7, humor: 'Feliz', txtFisico: 'Mulherão 💃' };
+
+    const matchMeta = textoLimpo.match(/<!--suiri_meta:(\{.*?\})-->/);
+    if (matchMeta) {
+        try {
+            meta = JSON.parse(matchMeta[1]);
+            textoLimpo = textoLimpo.replace(/<!--suiri_meta:(\{.*?\})-->/, '').trim();
+        } catch (e) {}
+    }
+
+    listaPaginasLeitura = textoLimpo.includes('<!--suiri_page_break-->') 
+        ? textoLimpo.split('<!--suiri_page_break-->') 
+        : [textoLimpo];
+    indicePaginaLeituraAtual = 0;
+
+    const modalLeitura = document.getElementById('vista-leitura-diario-inteira');
+    const elTitulo = document.getElementById('leitura-titulo-pagina');
+    const elData = document.getElementById('leitura-data-pagina');
+    const elBadges = document.getElementById('leitura-meta-badges');
+
+    const partes = item.data_registro.split('-');
+    const dataFmt = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+    if (elTitulo) elTitulo.textContent = item.titulo || 'Pensamento do Dia';
+    if (elData) elData.textContent = dataFmt;
+
+    if (elBadges) {
+        const descFisicaCurta = meta.fisico <= 3 ? 'Borocochô 🥀' : (meta.fisico <= 7 ? 'Mulherão 💃' : 'Deusa ✨');
+        elBadges.innerHTML = `
+            <span style="font-size:10.5px; font-weight:800; background:#ede3ce; color:#5c4426; padding:3px 8px; border-radius:6px; border:1px solid #d5c3a5;">
+                Física: ${descFisicaCurta} (${meta.fisico}/10)
+            </span>
+            <span style="font-size:10.5px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:3px 8px; border-radius:6px; border:1px solid #e9d5ff;">
+                Humor: ${meta.humor || 'Feliz'}
+            </span>
+        `;
+    }
+
+    window.atualizarVisorLeituraPagina();
+    if (modalLeitura) modalLeitura.classList.remove('oculto');
+};
+
+window.atualizarVisorLeituraPagina = function() {
+    const elConteudo = document.getElementById('leitura-conteudo-pagina');
+    const elIndicador = document.getElementById('leitura-indicador-pagina');
+
+    if (!capituloDiarioEmLeituraAtual) return;
+
+    const textoPagina = listaPaginasLeitura[indicePaginaLeituraAtual] || '';
+    const tipoFonte = capituloDiarioEmLeituraAtual.tipo_fonte || 'cursiva';
+
+    if (elConteudo) {
+        elConteudo.textContent = textoPagina;
+        elConteudo.style.fontFamily = tipoFonte === 'cursiva' ? "'Alex Brush', 'Great Vibes', cursive" : "'Segoe UI', sans-serif";
+        elConteudo.style.fontSize = tipoFonte === 'cursiva' ? "20px" : "14.5px";
+    }
+
+    if (elIndicador) {
+        elIndicador.textContent = `Página ${indicePaginaLeituraAtual + 1} de ${listaPaginasLeitura.length}`;
+    }
+};
+
+window.navegarLeituraPagina = function(dir) {
+    const novoIdx = indicePaginaLeituraAtual + dir;
+    if (novoIdx >= 0 && novoIdx < listaPaginasLeitura.length) {
+        indicePaginaLeituraAtual = novoIdx;
+        window.atualizarVisorLeituraPagina();
+    }
+};
+
+window.fecharLeituraDiarioInteira = function() {
+    const modalLeitura = document.getElementById('vista-leitura-diario-inteira');
+    if (modalLeitura) modalLeitura.classList.add('oculto');
+};
+
+window.editarPaginaAtualLeitura = function() {
+    if (!capituloDiarioEmLeituraAtual) return;
+    const item = capituloDiarioEmLeituraAtual;
+    window.fecharLeituraDiarioInteira();
+    window.abrirPaginaDiario(item.id, item.titulo, item.conteudo, item.tipo_fonte || 'cursiva');
+};
+
 window.excluirPaginaDiario = async function(idDiario) {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
+    const supabase = obterClienteSupabaseSeguro();
     if (!supabase || !idDiario) return;
 
-    if (!confirm("Deseja mesmo apagar esta página do diário?")) return;
+    if (!confirm("Deseja mesmo apagar este capítulo de memórias?")) return;
 
     try {
         const { error } = await supabase.from('saude_diario').delete().eq('id', idDiario);
         if (!error) {
-            window.mostrarToast("Página removida com sucesso!", "sucesso");
+            window.mostrarToast("Capítulo removido com sucesso!", "sucesso");
             await window.carregarDiarioMulher();
         }
     } catch (err) { console.error(err); }
 };
 
 // =========================================================================
-// 6. FERRAMENTAS DE BEM-ESTAR (RESPIRAÇÃO E MODO ALÍVIO BOUTIQUE)
+// 8. FERRAMENTAS DE BEM-ESTAR (RESPIRAÇÃO E MODO ALÍVIO BOUTIQUE)
 // =========================================================================
 
 window.abrirModalRespiracaoGuiada = function() {
@@ -1006,18 +1606,18 @@ window.abrirModalRespiracaoGuiada = function() {
         modal = document.createElement('div');
         modal.id = 'modal-respiracao-guiada';
         modal.className = 'modal-overlay';
-        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000100; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
+        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000100; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
         modal.innerHTML = `
-            <div style="background:linear-gradient(135deg, #ffffff 0%, #fff1f2 100%); width:100%; max-width:360px; padding:30px 24px; border-radius:30px; border:1.5px solid #fbcfe8; text-align:center; box-shadow:0 25px 60px rgba(112,26,117,0.22);">
-                <h3 style="margin:0 0 6px 0; font-size:20px; font-weight:900; color:#831843;">Respiração Consciente</h3>
-                <p id="txt-instrucao-respiracao" style="font-size:13.5px; color:#9d174d; margin:0 0 24px 0; font-weight:700;"> Inspire fundo pelo nariz... </p>
+            <div style="background:#ffffff; width:100%; max-width:360px; padding:30px 24px; border-radius:30px; border:1.5px solid #e9d5ff; text-align:center; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+                <h3 style="margin:0 0 6px 0; font-size:20px; font-weight:900; color:#3b0764;">Respiração Consciente</h3>
+                <p id="txt-instrucao-respiracao" style="font-size:13.5px; color:#581c87; margin:0 0 24px 0; font-weight:700;"> Inspire fundo pelo nariz... </p>
                 
                 <div style="display:flex; align-items:center; justify-content:center; height:180px; margin-bottom:24px;">
-                    <div id="circulo-respiracao" style="width:110px; height:110px; background:linear-gradient(135deg, #f472b6, #db2777); border-radius:50%; box-shadow:0 0 35px rgba(236,72,153,0.5); transition: transform 4s ease-in-out;"></div>
+                    <div id="circulo-respiracao" style="width:110px; height:110px; background:linear-gradient(135deg, #a855f7, #6b21a8); border-radius:50%; box-shadow:0 0 35px rgba(124,58,237,0.35); transition: transform 4s ease-in-out;"></div>
                 </div>
 
-                <p style="font-size:11.5px; color:#64748b; margin:0 0 20px 0; font-weight:500;">Deixe o corpo relaxar e solte a tensão dos ombros.</p>
-                <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModalRespiracao()">Encerrar Pausa</button>
+                <p style="font-size:11.5px; color:#6b21a8; margin:0 0 20px 0; font-weight:500;">Deixe o corpo relaxar e solte a tensão dos ombros.</p>
+                <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModalRespiracao()">Encerrar Pausa</button>
             </div>
         `;
         document.body.appendChild(modal);
@@ -1061,49 +1661,49 @@ window.abrirModoAcolhimentoEmergencia = function() {
         modal = document.createElement('div');
         modal.id = 'modal-modo-acolhimento';
         modal.className = 'modal-overlay';
-        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(74,4,78,0.48); z-index:1000200; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
+        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000200; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
         modal.innerHTML = `
-            <div style="background:#ffffff; width:100%; max-width:420px; max-height:86vh; padding:24px; border-radius:30px; border:1.5px solid #fbcfe8; overflow-y:auto; box-shadow:0 25px 60px rgba(112,26,117,0.22); text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #fce7f3; padding-bottom:10px;">
+            <div style="background:#ffffff; width:100%; max-width:420px; max-height:86vh; padding:24px; border-radius:30px; border:1.5px solid #e9d5ff; overflow-y:auto; box-shadow:0 25px 60px rgba(59,7,100,0.22); text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #ede9fe; padding-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="./icone/icone-mulher.png" alt="Acolhimento" style="width:24px; height:24px; object-fit:contain;">
-                        <h3 style="margin:0; font-size:18px; font-weight:900; color:#831843;">Modo Acolhimento</h3>
+                        <img src="./icone/icone-mulher.png" alt="Acolhimento" style="width:29px; height:29px; object-fit:contain;">
+                        <h3 style="margin:0; font-size:18px; font-weight:900; color:#3b0764;">Modo Acolhimento</h3>
                     </div>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; font-weight:800; color:#be185d; background:#fff1f2; border:1px solid #fbcfe8;" onclick="window.fecharModoAcolhimento()">✕</button>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; font-weight:800; color:#581c87; background:#faf5ff; border:1px solid #e9d5ff;" onclick="window.fecharModoAcolhimento()">✕</button>
                 </div>
 
-                <p style="font-size:12.5px; color:#9d174d; line-height:1.5; margin:0 0 16px 0; font-weight:600;">
+                <p style="font-size:12.5px; color:#581c87; line-height:1.5; margin:0 0 16px 0; font-weight:600;">
                     As cobranças do mundo podem esperar. Este é o seu momento de pausa inegociável. Respire e acolha o seu corpo.
                 </p>
 
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <div style="background:#fff1f2; border:1px solid #fbcfe8; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#831843; display:block; margin-bottom:5px;">Posições de Alívio (Cólica)</strong>
-                        <p style="font-size:12px; color:#475569; margin:0; line-height:1.45;">
+                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                        <strong style="font-size:13px; color:#3b0764; display:block; margin-bottom:5px;">Posições de Alívio (Cólica)</strong>
+                        <p style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">
                             • <strong>Postura da Criança:</strong> Ajoelhe-se, encoste os glúteos nos calcanhares e estique os braços à frente no chão.<br>
                             • <strong>Pernas na Parede:</strong> Deite de costas e apoie as pernas esticadas na parede para aliviar a tensão pélvica.
                         </p>
                     </div>
 
-                    <div style="background:#fdf4ff; border:1px solid #f5d0fe; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#86198f; display:block; margin-bottom:5px;">Filmes & Séries Reconfortantes</strong>
-                        <p style="font-size:12px; color:#475569; margin:0; line-height:1.45;">
+                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                        <strong style="font-size:13px; color:#581c87; display:block; margin-bottom:5px;">Filmes & Séries Reconfortantes</strong>
+                        <p style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">
                             • O Fabuloso Destino de Amélie Poulain<br>
                             • Comer, Rezar, Amar<br>
                             • Anne with an E (Série)
                         </p>
                     </div>
 
-                    <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:16px; padding:14px;">
-                        <strong style="font-size:13px; color:#b45309; display:block; margin-bottom:5px;">Poesia de Acolhimento</strong>
-                        <blockquote style="font-size:12px; color:#78350f; font-style:italic; margin:0; line-height:1.45;">
+                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                        <strong style="font-size:13px; color:#7e22ce; display:block; margin-bottom:5px;">Poesia de Acolhimento</strong>
+                        <blockquote style="font-size:12px; color:#3b0764; font-style:italic; margin:0; line-height:1.45;">
                             “Não há mal que dure sempre, nem cansaço que o descanso não cure. Permita-se recolher, aquecer a alma e esperar a nova primavera.”
                         </blockquote>
                     </div>
                 </div>
 
                 <div style="margin-top:18px;">
-                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalRespiracaoGuiada();">Iniciar 1 Minuto de Respiração Guiada</button>
+                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalRespiracaoGuiada();">Iniciar 1 Minuto de Respiração Guiada</button>
                 </div>
             </div>
         `;
@@ -1118,7 +1718,7 @@ window.fecharModoAcolhimento = function() {
 };
 
 // =========================================================================
-// 7. PREVISÕES, CICLOS E SINCRONIZAÇÃO
+// 9. PREVISÕES, CICLOS E SINCRONIZAÇÃO
 // =========================================================================
 
 window.abrirModalRegistroCiclo = function() {
@@ -1139,19 +1739,19 @@ window.fecharModalRegistroCiclo = function() {
 };
 
 window.carregarDadosCicloMulher = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
-    if (!supabase || !usuarioId) return;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    if (supabase && usuarioId) {
+        try {
+            const { data, error } = await supabase
+                .from('saude_ciclos')
+                .select('*')
+                .eq('usuario_id', usuarioId)
+                .order('data_inicio', { ascending: false });
 
-    try {
-        const { data, error } = await supabase
-            .from('saude_ciclos')
-            .select('*')
-            .eq('usuario_id', usuarioId)
-            .order('data_inicio', { ascending: false });
-
-        if (!error && data) window.dadosCicloMulher = data;
-    } catch (err) { console.error(err); }
+            if (!error && data) window.dadosCicloMulher = data;
+        } catch (err) { console.error(err); }
+    }
     window.processarEExibirPrevisao();
 };
 
@@ -1160,7 +1760,6 @@ window.processarEExibirPrevisao = function() {
     const elPrevisao = document.getElementById('txt-previsao-proxima-menstruacao');
     const elDataBase = document.getElementById('txt-data-base-calculo');
     const elDica = document.getElementById('txt-dica-diaria-ciclo');
-    const elIconeDicaImg = document.getElementById('icone-dica-diaria-img');
     const elBarra = document.getElementById('barra-progresso-ciclo');
     const elTxtDia = document.getElementById('txt-dia-ciclo-atual');
     const elTxtFinal = document.getElementById('txt-dia-ciclo-final');
@@ -1168,23 +1767,30 @@ window.processarEExibirPrevisao = function() {
 
     const hoje = obterHoje();
     const inicioAno = criarDataAbsoluta(hoje.getFullYear(), 1, 1);
-    const diaDoAno = calcularDiffDias(hoje, inicioAno);
+    const diaDoAno = Math.max(0, calcularDiffDias(hoje, inicioAno));
 
     if (elInspiracao) {
-        let catalogoInspiracao = INSPIRACOES_FALLBACK;
-        if (window.AcervoBemEstarMulher && window.AcervoBemEstarMulher.length > 0) {
-            catalogoInspiracao = window.AcervoBemEstarMulher;
-        }
+        let catalogoInspiracao = (window.AcervoBemEstarMulher && window.AcervoBemEstarMulher.length > 0)
+            ? window.AcervoBemEstarMulher
+            : INSPIRACOES_FALLBACK;
         elInspiracao.innerHTML = catalogoInspiracao[diaDoAno % catalogoInspiracao.length];
     }
 
     const ciclosValidosPassados = window.dadosCicloMulher ? window.dadosCicloMulher.filter(c => parseData(c.data_inicio).getTime() <= hoje.getTime()) : [];
 
     if (ciclosValidosPassados.length === 0) {
-        if (elFase) elFase.textContent = "Sem registos";
-        if (elPrevisao) elPrevisao.textContent = "Adicione o seu último ciclo para iniciar as previsões.";
-        if (elDataBase) elDataBase.textContent = "Base: Nenhum histórico encontrado";
-        if (elDica) elDica.textContent = "Acompanhar o seu ciclo ajuda a entender as suas oscilações de energia.";
+        if (elFase) elFase.textContent = "Ciclo Natural (Bem-Estar)";
+        if (elPrevisao) elPrevisao.textContent = "Toque em '+ Ciclo' para acompanhar a sua previsão.";
+        if (elDataBase) elDataBase.textContent = "Sem histórico inicial registado";
+        
+        let dicaGenerica = "A sua energia e criatividade renovam-se a cada dia. Respeite os seus limites e cuide de si com carinho.";
+        if (window.AcervoDicasMulher && window.AcervoDicasMulher.folicular && window.AcervoDicasMulher.folicular.length > 0) {
+            dicaGenerica = window.AcervoDicasMulher.folicular[diaDoAno % window.AcervoDicasMulher.folicular.length];
+        }
+        if (elDica) elDica.textContent = dicaGenerica;
+        if (elBarra) elBarra.style.width = "40%";
+        if (elTxtDia) elTxtDia.textContent = "Dia 1";
+        if (elTxtFinal) elTxtFinal.textContent = "Dia 28";
         return;
     }
 
@@ -1230,19 +1836,19 @@ window.processarEExibirPrevisao = function() {
     } else if (diaAtualDoCiclo >= 1 && diaAtualDoCiclo <= duracaoSangramento) {
         faseTexto = "Fase Menstrual";
         chaveFase = "menstrual";
-        corGradiente = "linear-gradient(90deg, #fb7185, #e11d48)";
+        corGradiente = "linear-gradient(90deg, #e11d48, #9f1239)";
     } else if (diaAtualDoCiclo > duracaoSangramento && diaAtualDoCiclo < inicioJanelaFertil) {
         faseTexto = "Fase Folicular";
         chaveFase = "folicular";
-        corGradiente = "linear-gradient(90deg, #34d399, #059669)";
+        corGradiente = "linear-gradient(90deg, #10b981, #047857)";
     } else if (diaAtualDoCiclo >= inicioJanelaFertil && diaAtualDoCiclo <= fimJanelaFertil) {
         faseTexto = "Fase Ovulatória";
         chaveFase = "ovulatoria";
-        corGradiente = "linear-gradient(90deg, #fbbf24, #d97706)";
+        corGradiente = "linear-gradient(90deg, #f59e0b, #b45309)";
     } else {
         faseTexto = "Fase Lútea";
         chaveFase = "lutea";
-        corGradiente = "linear-gradient(90deg, #a78bfa, #7c3aed)";
+        corGradiente = "linear-gradient(90deg, #a855f7, #6b21a8)";
     }
 
     if (elFase) elFase.textContent = faseTexto;
@@ -1283,8 +1889,8 @@ window.processarEExibirPrevisao = function() {
 };
 
 window.salvarCicloHistorico = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
     
     const dataInicio = document.getElementById('input-data-inicio-ciclo')?.value;
     const duracao = parseInt(document.getElementById('input-duracao-sangramento')?.value || '5', 10);
@@ -1310,8 +1916,8 @@ window.salvarCicloHistorico = async function() {
 };
 
 window.carregarHistoricoSintomas = async function() {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
-    const usuarioId = window.obterUsuarioId ? window.obterUsuarioId() : null;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
     if (!supabase || !usuarioId) return;
 
     const limiteObj = new Date();
@@ -1338,7 +1944,7 @@ window.renderizarHistoricoSintomas = function() {
     if (!container) return;
 
     if (!window.dadosSintomasDiarios || window.dadosSintomasDiarios.length === 0) {
-        container.innerHTML = '<span style="font-size:11.5px; color:#9d174d; text-align:center; display:block; padding:12px; font-weight:600;">Sem registos recentes.</span>';
+        container.innerHTML = '<span style="font-size:11.5px; color:#6b21a8; text-align:center; display:block; padding:12px; font-weight:600;">Sem registos recentes.</span>';
         return;
     }
 
@@ -1350,23 +1956,24 @@ window.renderizarHistoricoSintomas = function() {
         const gota = reg.sangramento_ativo ? ' • Sangramento Ativo' : '';
 
         return `
-            <div style="background:#ffffff; border:1px solid #fce7f3; border-radius:14px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="background:#ffffff; border:1px solid #ede9fe; border-radius:14px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; flex-direction:column; gap:2px;">
-                    <strong style="font-size:12.5px; color:#831843;">${dataFormatada}${gota}</strong>
-                    <span style="font-size:11px; color:#64748b; font-weight:500;">Humor: ${humorTxt} • Física: ${fisicoTxt}</span>
+                    <strong style="font-size:12.5px; color:#3b0764;">${dataFormatada}${gota}</strong>
+                    <span style="font-size:11px; color:#581c87; font-weight:500;">Humor: ${humorTxt} • Física: ${fisicoTxt}</span>
                 </div>
-                <button type="button" style="background:#ffe4e6; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirRegistroSintoma('${reg.id}')" title="Excluir">
-                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
+                <!-- Botão Excluir com Ícone +20%: 16px -->
+                <button type="button" style="background:#fef2f2; border:none; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirRegistroSintoma('${reg.id}')" title="Excluir">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
                 </button>
             </div>
         `;
     }).join('');
 
-    container.innerHTML = `<h4 style="font-size:12px; color:#9d174d; margin: 6px 0 8px 2px; text-transform:uppercase; font-weight:800;">Últimos Registos</h4>` + htmlLista;
+    container.innerHTML = `<h4 style="font-size:12px; color:#581c87; margin: 6px 0 8px 2px; text-transform:uppercase; font-weight:800;">Últimos Registos</h4>` + htmlLista;
 };
 
 window.excluirRegistroSintoma = async function(idSintoma) {
-    const supabase = window.obterClienteSupabase ? window.obterClienteSupabase() : null;
+    const supabase = obterClienteSupabaseSeguro();
     if (!supabase || !idSintoma) return;
 
     if (!confirm("Deseja mesmo eliminar este registo?")) return;

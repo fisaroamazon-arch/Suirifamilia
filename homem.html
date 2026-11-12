@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Suiri - Espaço Masculino</title>
+
+    <!-- Configurações e Cores da Forja Romana / Medieval -->
+    <meta name="theme-color" content="#0c0f14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icone.jpg">
+
+    <!-- Tipografia e Estilos Dedicados -->
+    <link rel="stylesheet" href="css-base.css">
+    <link rel="stylesheet" href="css-modulos.css">
+    <link rel="stylesheet" href="css-modais.css">
+
+    <!-- Dependências Externas -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            /* Paleta Forja Romana / Ferro Forjado & Brasas */
+            --cor-primaria-masc: #f97316;
+            --cor-secundaria-masc: #ea580c;
+            --texto-titulo-masc: #f8fafc;
+            --bg-forja: #181d28;
+            --borda-masc: #334155;
+            --cor-aco: #94a3b8;
+            --cor-brasa: #ffedd5;
+        }
+
+        /* =========================================================================
+           CAMADA 0: VÍDEO DE FUNDO EM TELA TOTAL (LOOP INFINITO)
+           ========================================================================= */
+        #container-video-fundo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #video-cenario-fundo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            pointer-events: none;
+            /* CORES DAS CHAMAS VIVAS E REALÇADAS (SEM EFEITO OPACO) */
+            filter: contrast(120%) saturate(150%) brightness(108%);
+        }
+
+        /* VÉU TRANSPARENTE: NÃO DEIXA O FOGO LAVADO/ACINZENTADO */
+        #container-video-fundo::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: transparent !important;
+            pointer-events: none;
+        }
+
+        body {
+            background: transparent !important;
+            min-height: 100vh;
+            padding: 14px 10px 45px 10px;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .container-homem {
+            width: 100%;
+            max-width: 540px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        .bottom-nav-fixa-inferior, .bottom-nav {
+            display: none !important;
+        }
+
+        /* =========================================================================
+           EFEITO VIDRO FOSCO ESCURO (DARK GLASSMORPHISM) NOS CARTÕES DA FORJA
+           ========================================================================= */
+        .cartao-geral {
+            background: rgba(15, 20, 30, 0.68) !important;
+            border: 1px solid rgba(148, 163, 184, 0.28) !important;
+            border-left: 4px solid #ea580c !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65) !important;
+            backdrop-filter: blur(14px) !important;
+            -webkit-backdrop-filter: blur(14px) !important;
+            color: #f1f5f9 !important;
+            border-radius: 18px !important;
+        }
+
+        /* Efeito de vidro fumê para inputs, selects e áreas de inserção */
+        select, input[type="text"], input[type="date"], input[type="number"], textarea {
+            background: rgba(17, 24, 39, 0.58) !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(148, 163, 184, 0.35) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        /* =========================================================================
+           AMPLIAÇÃO UNIVERSAL DOS ÍCONES (+20%)
+           ========================================================================= */
+        img[src*="./icone/"],
+        img[src*="icone/"],
+        .icone-svg,
+        .icone-sistema-img {
+            transform: scale(1.2);
+            transform-origin: center center;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        button img[src*="./icone/"],
+        label img[src*="./icone/"],
+        span img[src*="./icone/"] {
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+
+        /* =========================================================================
+           CAMADA 1: ANIMAÇÃO DE BRASAS E FAGULHAS DE FOGO SUBINDO (60 FPS)
+           ========================================================================= */
+        #container-fogo-fundo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .brasa-suiri {
+            position: absolute;
+            bottom: -30px;
+            background: radial-gradient(circle, rgba(251, 146, 60, 0.9) 0%, rgba(239, 68, 68, 0.6) 50%, rgba(185, 28, 28, 0) 100%);
+            border-radius: 50%;
+            filter: blur(0.6px);
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.7);
+            animation: subirBrasa linear infinite;
+        }
+
+        @keyframes subirBrasa {
+            0% {
+                transform: translateY(0) scale(0.6) translateX(0);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.85;
+            }
+            50% {
+                transform: translateY(-50vh) scale(1.1) translateX(14px);
+                opacity: 0.7;
+            }
+            85% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-110vh) scale(0.4) translateX(-18px);
+                opacity: 0;
+            }
+        }
+
+        .brasa-1 { left: 10%; width: 6px; height: 10px; animation-duration: 9s; animation-delay: 0s; }
+        .brasa-2 { left: 24%; width: 8px; height: 13px; animation-duration: 13s; animation-delay: 2s; }
+        .brasa-3 { left: 38%; width: 5px; height: 9px; animation-duration: 10s; animation-delay: 4.5s; }
+        .brasa-4 { left: 55%; width: 9px; height: 14px; animation-duration: 11s; animation-delay: 1s; }
+        .brasa-5 { left: 70%; width: 6px; height: 11px; animation-duration: 14s; animation-delay: 6s; }
+        .brasa-6 { left: 84%; width: 8px; height: 12px; animation-duration: 8.5s; animation-delay: 3s; }
+        .brasa-7 { left: 92%; width: 5px; height: 8px; animation-duration: 12s; animation-delay: 5s; }
+    </style>
+</head>
+<body>
+
+    <!-- CAMADA 0: VÍDEO MP4 EM TELA CHEIA E CICLO CONTÍNUO -->
+    <div id="container-video-fundo">
+        <video id="video-cenario-fundo" autoplay loop muted playsinline webkit-playsinline preload="auto">
+            <source src="fogo.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- CAMADA 1: CAMADA DE FAGULHAS / BRASAS DE FOGO NO FUNDO -->
+    <div id="container-fogo-fundo">
+        <div class="brasa-suiri brasa-1"></div>
+        <div class="brasa-suiri brasa-2"></div>
+        <div class="brasa-suiri brasa-3"></div>
+        <div class="brasa-suiri brasa-4"></div>
+        <div class="brasa-suiri brasa-5"></div>
+        <div class="brasa-suiri brasa-6"></div>
+        <div class="brasa-suiri brasa-7"></div>
+    </div>
+
+    <main class="container-homem">
+        <!-- ÁREA ONDE O APP-ESPACO-MASCULINO.JS INJETA OS BLOCOS -->
+        <section id="secao-espaco-masculino"></section>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <!-- SCRIPTS MODULARES -->
+    <script src="app-core.js"></script>
+    <script src="app-dicas-masculinas.js"></script>
+    <script src="app-espaco-masculino.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Assegura a reprodução contínua do vídeo caso o browser pause
+            const vidFundo = document.getElementById('video-cenario-fundo');
+            if (vidFundo) {
+                vidFundo.play().catch(() => {});
+            }
+
+            // 1. TRAVA DE PRIVACIDADE E SESSÃO
+            const perfilRaw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
+            let perfil = {};
+            try {
+                perfil = JSON.parse(perfilRaw || '{}');
+            } catch (e) {
+                perfil = {};
+            }
+
+            // Se for do sexo feminino, redireciona de volta imediatamente
+            if (perfil.sexo && perfil.sexo.toLowerCase() === 'feminino') {
+                if (typeof window.mostrarToast === 'function') {
+                    window.mostrarToast("Acesso restrito ao Espaço Masculino.", "erro");
+                }
+                setTimeout(() => {
+                    window.location.replace('index.html');
+                }, 400);
+                return;
+            }
+
+            // Sobrescrita do fechar para garantir o retorno perfeito ao index.html
+            window.fecharEspacoMasculino = function() {
+                window.location.href = 'index.html';
+            };
+
+            // 2. INICIALIZAÇÃO DA INTERFACE
+            if (typeof window.renderizarEsqueletoEspacoMasculino === 'function') {
+                window.renderizarEsqueletoEspacoMasculino();
+                if (typeof window.renderizarReflexaoEstoica === 'function') window.renderizarReflexaoEstoica(false);
+                if (typeof window.renderizarListaFavoritasEstoicas === 'function') window.renderizarListaFavoritasEstoicas();
+                if (typeof window.renderizarBotoesForja === 'function') window.renderizarBotoesForja();
+                if (typeof window.renderizarHistoricoForja === 'function') window.renderizarHistoricoForja();
+                if (typeof window.renderizarHistoricoRadarIntimo === 'function') window.renderizarHistoricoRadarIntimo();
+                if (typeof window.atualizarVisualizacaoMidia === 'function') window.atualizarVisualizacaoMidia();
+                if (typeof window.renderizarHistoricoAssistidos === 'function') window.renderizarHistoricoAssistidos();
+                if (typeof window.renderizarListasMasculinas === 'function') window.renderizarListasMasculinas();
+
+                if (typeof window.carregarDadosNuvemEspacoMasculino === 'function') {
+                    try {
+                        await window.carregarDadosNuvemEspacoMasculino();
+                    } catch (e) {
+                        console.warn("Base local ativa para o Espaço Masculino.");
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

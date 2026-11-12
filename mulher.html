@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Suiri - Espaço Mulher</title>
+
+    <!-- Configurações e Cores do Espaço Mulher Sóbrio -->
+    <meta name="theme-color" content="#581c87">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="icone.jpg">
+
+    <!-- Tipografia e Estilos Dedicados -->
+    <link rel="stylesheet" href="css-base.css">
+    <link rel="stylesheet" href="css-modulos.css">
+    <link rel="stylesheet" href="css-modais.css">
+
+    <!-- Dependências Externas -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            /* Paleta Mulher Madura & Sóbria: Ameixa, Lavanda & Figo */
+            --cor-primaria-fem: #7c3aed;
+            --cor-secundaria-fem: #581c87;
+            --texto-titulo-fem: #3b0764;
+            --bg-delicado-fem: #ffffff;
+            --borda-fem: #e9d5ff;
+        }
+
+        /* CAMADA 0: VÍDEO DE FUNDO EM TELA TOTAL (LOOP INFINITO) */
+        #container-video-fundo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #video-cenario-fundo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            pointer-events: none;
+            /* CORES VIVAS E REALÇADAS (SEM EFEITO OPACO) */
+            filter: contrast(115%) saturate(145%) brightness(105%);
+        }
+
+        /* VÉU TRANSPARENTE: NÃO ESCURECE E NEM LAVA O VÍDEO */
+        #container-video-fundo::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: transparent !important;
+            pointer-events: none;
+        }
+
+        body {
+            background: transparent !important;
+            min-height: 100vh;
+            padding: 14px 10px 40px 10px;
+            color: #1e1b4b;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .container-mulher {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        /* Anulação estrita de barras inferiores ou gestos da tela principal */
+        .bottom-nav-fixa-inferior, .bottom-nav {
+            display: none !important;
+        }
+
+        /* ========================================================== */
+        /* EFEITO VIDRO FOSCO TRANSLÚCIDO (GLASSMORPHISM) NOS CARDS   */
+        /* ========================================================== */
+        .cartao-geral {
+            background: rgba(255, 255, 255, 0.72) !important;
+            border: 1px solid rgba(233, 213, 255, 0.65) !important;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-radius: 20px !important;
+        }
+
+        /* Efeito vidro nos campos de seleção, botões e caixas internas */
+        select, input[type="text"], input[type="date"], input[type="number"], textarea {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(233, 213, 255, 0.75) !important;
+        }
+
+        /* ========================================================== */
+        /* ANIMAÇÃO DE PÉTALAS FLUTUANDO / SUBINDO SUAVEMENTE        */
+        /* ========================================================== */
+        #container-petalas-fundo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .petala-suiri {
+            position: absolute;
+            bottom: -30px;
+            background: radial-gradient(circle, rgba(192, 132, 252, 0.45) 0%, rgba(168, 85, 247, 0.22) 70%, transparent 100%);
+            border-radius: 70% 30% 60% 40% / 60% 40% 70% 30%;
+            opacity: 0.65;
+            filter: blur(0.5px);
+            animation: subirPetala linear infinite;
+        }
+
+        @keyframes subirPetala {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.85);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.65;
+            }
+            85% {
+                opacity: 0.55;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(380deg) scale(1.15);
+                opacity: 0;
+            }
+        }
+
+        /* Variações orgânicas de velocidade, tamanho e atraso */
+        .petala-1 { left: 8%; width: 18px; height: 26px; animation-duration: 14s; animation-delay: 0s; }
+        .petala-2 { left: 22%; width: 14px; height: 20px; animation-duration: 18s; animation-delay: 3s; }
+        .petala-3 { left: 40%; width: 22px; height: 30px; animation-duration: 16s; animation-delay: 6s; }
+        .petala-4 { left: 60%; width: 16px; height: 22px; animation-duration: 15s; animation-delay: 2s; }
+        .petala-5 { left: 75%; width: 20px; height: 28px; animation-duration: 19s; animation-delay: 8s; }
+        .petala-6 { left: 88%; width: 15px; height: 24px; animation-duration: 17s; animation-delay: 4s; }
+        .petala-7 { left: 50%; width: 18px; height: 25px; animation-duration: 21s; animation-delay: 10s; }
+    </style>
+</head>
+<body>
+
+    <!-- CAMADA 0: VÍDEO MP4 EM TELA CHEIA E CICLO CONTÍNUO -->
+    <div id="container-video-fundo">
+        <video id="video-cenario-fundo" autoplay loop muted playsinline webkit-playsinline preload="auto">
+            <source src="flores.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- CAMADA 1: PÉTALAS FLUTUANTES NO FUNDO -->
+    <div id="container-petalas-fundo">
+        <div class="petala-suiri petala-1"></div>
+        <div class="petala-suiri petala-2"></div>
+        <div class="petala-suiri petala-3"></div>
+        <div class="petala-suiri petala-4"></div>
+        <div class="petala-suiri petala-5"></div>
+        <div class="petala-suiri petala-6"></div>
+        <div class="petala-suiri petala-7"></div>
+    </div>
+
+    <!-- CAMADA 2: CONTEÚDO PRINCIPAL DO ESPAÇO MULHER -->
+    <main class="container-mulher">
+        <section id="secao-espaco-mulher"></section>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <!-- SCRIPTS MODULARES -->
+    <script src="app-core.js"></script>
+    <script src="app-saude-dicas.js"></script>
+    <script src="app-saude-mulher.js"></script>
+
+    <script>
+        // 1. TRAVA DE PRIVACIDADE E SESSÃO
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Assegura a reprodução contínua do vídeo caso o navegador pause
+            const vidFundo = document.getElementById('video-cenario-fundo');
+            if (vidFundo) {
+                vidFundo.play().catch(() => {});
+            }
+
+            const perfilRaw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
+            let perfil = {};
+            try {
+                perfil = JSON.parse(perfilRaw || '{}');
+            } catch (e) {
+                perfil = {};
+            }
+
+            // Se for do sexo masculino, redireciona com segurança de volta para o início
+            if (perfil.sexo && perfil.sexo.toLowerCase() === 'masculino') {
+                if (typeof window.mostrarToast === 'function') {
+                    window.mostrarToast("Acesso restrito ao Espaço Mulher.", "erro");
+                }
+                setTimeout(() => {
+                    window.location.replace('index.html');
+                }, 400);
+                return;
+            }
+
+            // Sobrescreve o fecho para garantir o retorno perfeito ao index.html
+            window.fecharEspacoMulher = function() {
+                window.location.href = 'index.html';
+            };
+
+            // Inicia a renderização do Espaço Mulher
+            if (typeof window.renderizarEsqueletoEspacoMulher === 'function') {
+                window.renderizarEsqueletoEspacoMulher();
+                if (typeof window.processarEExibirPrevisao === 'function') window.processarEExibirPrevisao();
+                if (typeof window.sincronizarCheckboxesRituaisHoje === 'function') window.sincronizarCheckboxesRituaisHoje();
+                if (typeof window.calcularOfensivaERendimentoRituais === 'function') window.calcularOfensivaERendimentoRituais();
+                if (typeof window.renderizarHistoricoRadarFeminilidade === 'function') window.renderizarHistoricoRadarFeminilidade();
+                if (typeof window.atualizarVisualizacaoMidiaMulher === 'function') window.atualizarVisualizacaoMidiaMulher();
+                if (typeof window.renderizarHistoricoAssistidosMulher === 'function') window.renderizarHistoricoAssistidosMulher();
+                if (typeof window.renderizarHistoricoRituaisRetratil === 'function') window.renderizarHistoricoRituaisRetratil();
+
+                if (typeof window.carregarDadosCicloMulher === 'function') await window.carregarDadosCicloMulher();
+                if (typeof window.carregarHistoricoSintomas === 'function') await window.carregarHistoricoSintomas();
+                if (typeof window.carregarDiarioMulher === 'function') await window.carregarDiarioMulher();
+                if (typeof window.carregarRadarFeminilidadeNuvem === 'function') await window.carregarRadarFeminilidadeNuvem();
+            }
+        });
+    </script>
+</body>
+</html>

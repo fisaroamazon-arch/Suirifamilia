@@ -1,9 +1,8 @@
 /* ========================================================== */
 /* SUIRI GESTOR FAMILIAR - CSS-BASE.CSS (100% COMPLETO)       */
-/* Tema Ouro Suave, Tons Pastéis, Notificações & MODO KIDS    */
+/* Tema Solar Acolhedor, Tons Pastéis, Notificações & KIDS   */
 /* Transições Ultra-Suaves Direcionais entre Janelas e Modais */
-/* Barra de Navegação Inferior Fixa, Avatar Ampliado,         */
-/* Casinha 220px Alinhada & Animações de Partículas/Confetes  */
+/* Barra de Navegação Inferior Fixa & Calibração de Cores     */
 /* ========================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -11,43 +10,43 @@
 :root {
     color-scheme: light;
 
-    /* Fundo Degradê Ouro Delicado */
-    --bg-ouro-degrade: linear-gradient(160deg, #fffdf8 0%, #fef9e8 40%, #fef3c7 100%);
-    --cor-fundo: #fffdf8;
+    /* Fundo Luminoso & Arejado (Fim do aspecto encardido) */
+    --bg-ouro-degrade: linear-gradient(175deg, #ffffff 0%, #fbfcfd 50%, #f8fafc 100%);
+    --cor-fundo: #f8fafc;
 
-    /* Tons Pastéis Elegantes */
+    /* Tons Pastéis Frescos e Suaves */
     --pastel-card: #ffffff;
     --suiri-surface-light: #ffffff;
-    --suiri-surface-secondary-light: #fef9ea;
+    --suiri-surface-secondary-light: #fffbeb;
     --pastel-ouro: #fef3c7;
     --pastel-ouro-forte: #fde68a;
     --pastel-verde: #dcfce7;
-    --pastel-rosa: #fee2e2;
+    --pastel-rosa: #ffe4e6;
     --pastel-azul: #e0f2fe;
     --pastel-roxo: #f3e8ff;
 
-    /* Tipografia & Contrastes */
-    --texto-principal: #334155;
-    --cor-texto: #334155;
+    /* Tipografia de Alto Conforto */
+    --texto-principal: #1e293b;
+    --cor-texto: #1e293b;
     --texto-suave: #64748b;
     --suiri-text-muted-light: #64748b;
 
-    /* Bordas & Sombras */
-    --borda-delicada: rgba(217, 119, 6, 0.16);
-    --suiri-border-light: rgba(217, 119, 6, 0.16);
-    --suiri-border: rgba(217, 119, 6, 0.16);
-    --sombra-elegante: 0 4px 20px rgba(180, 120, 20, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
-    --sombra-card: 0 4px 20px rgba(180, 120, 20, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+    /* Bordas Delicadas e Sombras Leves */
+    --borda-delicada: rgba(249, 115, 22, 0.18);
+    --suiri-border-light: rgba(226, 232, 240, 0.9);
+    --suiri-border: rgba(249, 115, 22, 0.18);
+    --sombra-elegante: 0 4px 18px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+    --sombra-card: 0 4px 18px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
 
-    /* Cores de Ação Harmonizadas */
-    --cor-primaria: #d97706;
-    --cor-primaria-hover: #b45309;
-    --cor-primaria-suave: #fef3c7;
-    --cor-botao: #d97706;
+    /* Cores de Ação Harmonizadas (Laranja Solar & Acentos Vivos) */
+    --cor-primaria: #f97316;
+    --cor-primaria-hover: #ea580c;
+    --cor-primaria-suave: #fff7ed;
+    --cor-botao: #f97316;
     --cor-sucesso: #10b981;
     --cor-erro: #f43f5e;
-    --cor-alerta: #d97706;
-    --cor-azul-evento: #0ea5e9;
+    --cor-alerta: #f59e0b;
+    --cor-azul-evento: #0284c7;
 
     /* Raios de Arredondamento */
     --input-bg: #ffffff;
@@ -130,17 +129,17 @@ h1, h2, h3, h4, span, p, label, strong {
     -webkit-backface-visibility: hidden;
 }
 
-/* Entrada padrão suave (quando não há direção lateral específica) */
+/* Entrada padrão suave */
 .secao-conteudo-app:not(.oculto) {
     animation: transicaoJanelaPadraoSuave 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Entrada deslizando da direita (avançando na navegação) */
+/* Entrada deslizando da direita */
 .secao-conteudo-app.animar-entrada-direita:not(.oculto) {
     animation: deslizarEntradaDireitaSuave 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Entrada deslizando da esquerda (voltando na navegação) */
+/* Entrada deslizando da esquerda */
 .secao-conteudo-app.animar-entrada-esquerda:not(.oculto) {
     animation: deslizarEntradaEsquerdaSuave 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -178,7 +177,7 @@ h1, h2, h3, h4, span, p, label, strong {
     }
 }
 
-/* Suavização da abertura de todas as janelas flutuantes (Modais) */
+/* Suavização de Modais */
 .modal-overlay:not(.oculto) {
     animation: fadeOverlayModalSuave 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -203,7 +202,7 @@ h1, h2, h3, h4, span, p, label, strong {
     }
 }
 
-/* Suavização nativa para View Transitions API (Navegadores modernos) */
+/* View Transitions API */
 ::view-transition-old(root) {
     animation: 0.22s cubic-bezier(0.4, 0, 1, 1) both fadeOutViewTransition;
 }
@@ -233,17 +232,17 @@ h1, h2, h3, h4, span, p, label, strong {
     letter-spacing: 1px;
     background: linear-gradient(
         120deg, 
-        #b45309 0%, 
-        #d97706 25%, 
+        #ea580c 0%, 
+        #f97316 25%, 
         #fef08a 50%, 
-        #d97706 75%, 
-        #92400e 100%
+        #f97316 75%, 
+        #c2410c 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: brilhoOuroLuz 6s ease-in-out infinite;
-    filter: drop-shadow(0 2px 8px rgba(217, 119, 6, 0.22));
+    filter: drop-shadow(0 2px 8px rgba(249, 115, 22, 0.22));
 }
 
 @keyframes brilhoOuroLuz {
@@ -258,7 +257,7 @@ h1, h2, h3, h4, span, p, label, strong {
 }
 
 /* ========================================================== */
-/* ÍCONES SVG                                                 */
+/* ÍCONES SVG & JPEG                                          */
 /* ========================================================== */
 .icone-svg {
     width: 18px;
@@ -273,8 +272,17 @@ h1, h2, h3, h4, span, p, label, strong {
     vertical-align: middle;
 }
 
+.icone-img {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 /* ========================================================== */
-/* BARRA DE NAVEGAÇÃO INFERIOR FIXA (BOTTOM DOCK NATIVO)      */
+/* BARRA DE NAVEGAÇÃO INFERIOR FIXA                           */
 /* ========================================================== */
 .bottom-nav,
 .bottom-nav-fixa-inferior {
@@ -285,8 +293,8 @@ h1, h2, h3, h4, span, p, label, strong {
     right: 0 !important;
     width: 100vw !important;
     height: 64px !important;
-    background: rgba(255, 255, 255, 0.94) !important;
-    border-top: 1.5px solid var(--borda-delicada) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-top: 1.5px solid rgba(226, 232, 240, 0.8) !important;
     border-bottom: none !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
@@ -295,7 +303,7 @@ h1, h2, h3, h4, span, p, label, strong {
     align-items: center !important;
     justify-content: center !important;
     padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px)) 8px !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.04) !important;
 }
 
 .bottom-nav-list {
@@ -323,7 +331,7 @@ h1, h2, h3, h4, span, p, label, strong {
     border-radius: var(--raio-sm) !important;
     border: 1px solid transparent !important;
     background: transparent !important;
-    transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 .bottom-nav-item span {
@@ -333,9 +341,9 @@ h1, h2, h3, h4, span, p, label, strong {
 
 .bottom-nav-item.ativo {
     color: var(--cor-primaria) !important;
-    background: var(--pastel-ouro) !important;
-    border-color: rgba(217, 119, 6, 0.3) !important;
-    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1) !important;
+    background: #fff7ed !important;
+    border-color: rgba(249, 115, 22, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -344,7 +352,7 @@ h1, h2, h3, h4, span, p, label, strong {
 /* ========================================================== */
 .cartao-geral {
     background: var(--pastel-card);
-    border: 1px solid var(--borda-delicada);
+    border: 1px solid rgba(226, 232, 240, 0.85);
     border-radius: var(--raio-lg);
     padding: 14px 16px;
     margin-bottom: 14px;
@@ -361,14 +369,14 @@ h1, h2, h3, h4, span, p, label, strong {
     justify-content: space-between;
     align-items: center;
     background: var(--pastel-card);
-    border: 1.5px solid var(--borda-delicada);
+    border: 1.5px solid rgba(226, 232, 240, 0.85);
     border-radius: var(--raio-lg);
     box-shadow: var(--sombra-elegante);
     margin-bottom: 12px;
     padding: 12px 14px;
 }
 
-/* FOTO DE PERFIL BEM MAIOR (68px) */
+/* Avatar de perfil grande */
 .avatar-topo-usuario {
     width: 68px !important;
     height: 68px !important;
@@ -378,7 +386,7 @@ h1, h2, h3, h4, span, p, label, strong {
     border: 2px solid var(--cor-primaria) !important;
     cursor: pointer !important;
     background: var(--suiri-surface-secondary-light) !important;
-    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2) !important;
+    box-shadow: 0 3px 10px rgba(249, 115, 22, 0.18) !important;
     flex-shrink: 0 !important;
     display: block !important;
 }
@@ -404,7 +412,7 @@ select {
     width: 100%;
     padding: 10px 34px 10px 12px;
     background-color: #ffffff;
-    border: 1.5px solid var(--borda-delicada);
+    border: 1.5px solid rgba(226, 232, 240, 0.9);
     border-radius: var(--raio-md);
     font-size: 13px;
     font-weight: 600;
@@ -414,7 +422,7 @@ select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 15px;
@@ -426,7 +434,7 @@ select {
 
 input:focus, select:focus, textarea:focus {
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.16);
 }
 
 select option {
@@ -472,10 +480,10 @@ button {
 }
 
 .btn-principal {
-    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     color: #ffffff;
     width: 100%;
-    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2);
+    box-shadow: 0 3px 10px rgba(249, 115, 22, 0.24);
 }
 
 .btn-sucesso {
@@ -497,16 +505,16 @@ button {
 }
 
 /* ========================================================== */
-/* BOTÃO TROCAR MEMBRO INTEGRADO (PÍLULA HARMONIZADA)         */
+/* BOTÃO TROCAR MEMBRO INTEGRADO                              */
 /* ========================================================== */
 .btn-circular-trocar-membro,
 #btn-trocar-membro-topo {
     width: auto !important;
     height: auto !important;
     border-radius: 12px !important;
-    background: var(--suiri-surface-secondary-light, #fef9ea) !important;
-    border: 1.5px solid rgba(217, 119, 6, 0.25) !important;
-    color: var(--cor-primaria, #d97706) !important;
+    background: #fff7ed !important;
+    border: 1.5px solid rgba(249, 115, 22, 0.25) !important;
+    color: var(--cor-primaria, #f97316) !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -515,14 +523,14 @@ button {
     cursor: pointer !important;
     flex-shrink: 0 !important;
     margin-top: 4px !important;
-    box-shadow: 0 1px 3px rgba(217, 119, 6, 0.08) !important;
+    box-shadow: 0 1px 3px rgba(249, 115, 22, 0.08) !important;
     transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease !important;
 }
 
 .btn-circular-trocar-membro:hover,
 #btn-trocar-membro-topo:hover {
-    background: var(--pastel-ouro, #fef3c7) !important;
-    border-color: var(--cor-primaria, #d97706) !important;
+    background: #ffedd5 !important;
+    border-color: var(--cor-primaria, #f97316) !important;
 }
 
 .btn-circular-trocar-membro:active,
@@ -531,7 +539,7 @@ button {
 }
 
 /* ========================================================== */
-/* SELETOR DE IDIOMAS COM BANDEIRAS FLUTUANTE (TOPO DIREITO)  */
+/* SELETOR DE IDIOMAS FLUTUANTE (TOPO DIREITO)               */
 /* ========================================================== */
 #menu-idiomas-flutuante {
     position: fixed;
@@ -546,12 +554,12 @@ button {
     height: 36px;
     border-radius: 50%;
     background: #ffffff;
-    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    border: 1.5px solid rgba(249, 115, 22, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     transition: transform 0.15s ease;
 }
 
@@ -572,13 +580,13 @@ button {
     top: 42px;
     right: 0;
     background: #ffffff;
-    border: 1.5px solid rgba(217, 119, 6, 0.25);
+    border: 1.5px solid rgba(226, 232, 240, 0.9);
     border-radius: 16px;
     padding: 6px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     animation: surgimentoDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -599,7 +607,7 @@ button {
 }
 
 .item-idioma-opcao:hover {
-    background: #fef3c7;
+    background: #fff7ed;
 }
 
 @keyframes surgimentoDropdown {
@@ -607,7 +615,6 @@ button {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Oculta o widget nativo original do Google */
 #google_translate_element {
     display: none !important;
 }
@@ -644,7 +651,7 @@ body {
     font-size: 13px;
     font-weight: 700;
     text-align: center;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -658,15 +665,15 @@ body {
 }
 
 .toast-erro {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
+    background: #ffe4e6;
+    color: #9f1239;
+    border: 1px solid #fecdd3;
 }
 
 .toast-info {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
 }
 
 @keyframes surgimentoToast {
@@ -692,8 +699,8 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    border: 2px solid var(--borda-delicada) !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
+    border: 2px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16) !important;
 }
 
 .grade-avatares-expandida {
@@ -714,7 +721,7 @@ body {
     border-radius: 20px;
     background: #ffffff;
     border: 2px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
 }
 
@@ -746,8 +753,6 @@ body {
 /* ========================================================== */
 /* CENÁRIO KIDS: FOTOGRAFIAS LOCAIS + ASTROS EM SVG INLINE    */
 /* ========================================================== */
-
-/* 1. Manhã / Dia (Padrão e .cenario-dia - 06:00 às 15:59) */
 body.modo-kids-ativo,
 body.modo-kids-ativo.cenario-dia {
     background-color: #7dd3fc !important; 
@@ -771,7 +776,6 @@ body.modo-kids-ativo.cenario-dia {
     transition: background-image 1.2s ease-in-out !important;
 }
 
-/* 2. Fim de Tarde / Pôr do Sol (.cenario-tarde - 16:00 às 18:29) */
 body.modo-kids-ativo.cenario-tarde {
     background-color: #fb923c !important;
     background-image: 
@@ -790,7 +794,6 @@ body.modo-kids-ativo.cenario-tarde {
     background-attachment: fixed !important;
 }
 
-/* 3. Noite Estrelada (.cenario-noite - 18:30 às 05:59) */
 body.modo-kids-ativo.cenario-noite {
     background-color: #0f172a !important;
     background-image: 
@@ -859,14 +862,14 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.78);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(253, 230, 138, 0.65);
+    border: 2px solid rgba(254, 215, 170, 0.7);
     border-radius: 24px;
     padding: 12px 16px;
     margin-bottom: 14px;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
 }
 
 .avatar-kids-circulo {
@@ -884,13 +887,13 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(254, 243, 199, 0.92);
-    border: 1.5px solid rgba(253, 230, 138, 0.95);
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 13px;
     font-weight: 800;
-    color: #b45309;
+    color: #ea580c;
 }
 
 /* LOJINHA GIGANTE */
@@ -900,13 +903,13 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     gap: 14px;
     width: 100%;
     padding: 16px 20px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(236, 72, 153, 0.95) 50%, rgba(139, 92, 246, 0.95) 100%);
+    background: linear-gradient(135deg, #f97316 0%, #ec4899 50%, #8b5cf6 100%);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 26px;
     color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.32);
     cursor: pointer;
     margin-bottom: 16px;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
@@ -914,7 +917,7 @@ body.modo-kids-ativo #tela-kids-exclusiva {
 .btn-lojinha-kids-gigante:active { transform: scale(0.96); }
 
 .card-missao-kids {
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 2px solid rgba(226, 232, 240, 0.9);
@@ -923,11 +926,11 @@ body.modo-kids-ativo #tela-kids-exclusiva {
     margin-bottom: 12px;
     display: flex;
     justify-content: space-between;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-missao-kids.concluida {
-    background: rgba(240, 253, 244, 0.9) !important;
+    background: rgba(240, 253, 244, 0.92) !important;
     border-color: rgba(134, 239, 172, 0.9) !important;
     border-left: 8px solid #10b981 !important;
 }
@@ -938,7 +941,7 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid 
 body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 2px solid rgba(167, 243, 208, 0.6) !important; }
 
 /* ========================================================== */
-/* TAMAGOTCHI CHUÍRI E CASINHA APOIADOS NO RODAPÉ             */
+/* TAMAGOTCHI CHUÍRI E CASINHA                                */
 /* ========================================================== */
 #container-tamagotchi-kids,
 .palco-flutuante-chuiri-kids {
@@ -995,15 +998,18 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
     line-height: 1.4;
     padding: 12px 14px;
     border-radius: 18px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
     border: 2.5px solid #10b981;
     pointer-events: none;
 }
 
+/* ========================================================== */
+/* FILTROS DE MISSÃO (MODERNIZADOS - SEM O CASTANHO PESADO)   */
+/* ========================================================== */
 .btn-filtro-missao {
-    padding: 8px 14px;
-    border: 1.5px solid var(--borda-delicada);
-    background: #f8fafc;
+    padding: 8px 16px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
     font-weight: 700;
     font-size: 13px;
     color: var(--texto-suave);
@@ -1013,10 +1019,10 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
 }
 
 .btn-filtro-missao.ativo {
-    background: #ffffff;
-    color: var(--cor-primaria);
-    border-color: var(--cor-primaria);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+    background: #fff7ed !important;
+    color: #ea580c !important;
+    border-color: #ea580c !important;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.18) !important;
 }
 
 /* ========================================================== */
@@ -1038,14 +1044,14 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
     border: 2.5px solid #f97316 !important;
     object-fit: cover !important;
     margin-left: 0 !important;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.12) !important;
     background: #ffffff !important;
     transition: all 0.3s ease !important;
 }
 
 .avatar-kids-mini.fez-missao {
     border-color: #10b981 !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.55) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.45) !important;
     transform: scale(1.06);
 }
 
@@ -1071,4 +1077,26 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid 
         opacity: 0;
         transform: translate(var(--tx, 40px), var(--ty, -60px)) scale(0.2) rotate(240deg);
     }
+}
+/* =========================================================================
+   AMPLIAÇÃO UNIVERSAL DOS ÍCONES (+20%) EM TODAS AS TELAS
+   ========================================================================= */
+
+/* Escala todas as imagens da pasta ./icone/ e ícones vetoriais */
+img[src*="./icone/"],
+img[src*="icone/"],
+.icone-svg,
+.icone-sistema-img {
+    transform: scale(1.2);
+    transform-origin: center center;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Compensação suave de margem para evitar sobreposição em textos adjacentes */
+button img[src*="./icone/"],
+label img[src*="./icone/"],
+span img[src*="./icone/"] {
+    margin-left: 2px;
+    margin-right: 2px;
 }
