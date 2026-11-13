@@ -6,6 +6,7 @@
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
 // Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline (IndexedDB)
 // SVGs Coloridos Ilustrados com Preenchimento e Catálogo com Busca Semântica
+// AJUSTE: Abertura Direta Sem Vídeo Splash de Introdução
 // =========================================================================
 
 // Configuração do Supabase
@@ -340,54 +341,6 @@ window.alternarAbaLoginCadastro = function(aba) {
     }
 };
 
-// =========================================================================
-// 3. MOTOR DE APRESENTAÇÃO DO VÍDEO SPLASH E PERMISSÃO PUSH
-// =========================================================================
-window.gerenciarApresentacaoVideoSplash = function() {
-    const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
-    const splashEl = document.getElementById('splash-screen-apresentacao');
-    const videoEl = document.getElementById('video-intro-splash');
-
-    if (!splashEl || !videoEl) return;
-
-    if (sessionStorage.getItem(CHAVE_SPLASH)) {
-        splashEl.remove();
-        return;
-    }
-
-    splashEl.classList.remove('oculto');
-
-    let finalizado = false;
-    const encerrarSplash = () => {
-        if (finalizado) return;
-        finalizado = true;
-        sessionStorage.setItem(CHAVE_SPLASH, 'true');
-        splashEl.classList.add('fade-out');
-        setTimeout(() => splashEl.remove(), 500);
-    };
-
-    videoEl.setAttribute('playsinline', 'true');
-    videoEl.setAttribute('webkit-playsinline', 'true');
-    videoEl.muted = true; 
-
-    const promessaPlay = videoEl.play();
-
-    if (promessaPlay !== undefined) {
-        promessaPlay.then(() => {
-            videoEl.playbackRate = 2.0;
-            videoEl.muted = false;
-        }).catch(() => {
-            console.warn("Autoplay restrito pelo navegador móvel. Reproduzindo mudo.");
-            videoEl.muted = true;
-            videoEl.play();
-            videoEl.playbackRate = 2.0;
-        });
-    }
-
-    videoEl.addEventListener('ended', encerrarSplash);
-    setTimeout(encerrarSplash, 5200);
-};
-
 window.solicitarPermissaoPush = async function() {
     if (!("Notification" in window)) {
         return window.mostrarToast("Este navegador não suporta notificações Push.", "erro");
@@ -407,7 +360,7 @@ window.solicitarPermissaoPush = async function() {
 };
 
 // =========================================================================
-// 4. AUTENTICAÇÃO REAL E CADASTRO DA FAMÍLIA COM NACIONALIDADE & GÊNERO
+// 3. AUTENTICAÇÃO REAL E CADASTRO DA FAMÍLIA COM NACIONALIDADE & GÊNERO
 // =========================================================================
 window.fazerLoginEmail = async function(email, senha) {
     if (!cliente) return window.mostrarToast("Configure a ligação ao Supabase no app-core.js!", "erro");
@@ -547,7 +500,7 @@ window.cadastrarNovaFamiliaADM = async function({ nomeFamilia, nomeAdm, emailAdm
 };
 
 // =========================================================================
-// 5. GESTÃO DE FOTO DE PERFIL (AVATAR) E FERRAMENTA DE CROP COM CANVAS
+// 4. GESTÃO DE FOTO DE PERFIL (AVATAR) E FERRAMENTA DE CROP COM CANVAS
 // =========================================================================
 let imagemOriginalCrop = null;
 let coordsCrop = { x: 0, y: 0, scale: 1, startX: 0, startY: 0, dragging: false };
@@ -744,6 +697,9 @@ window.guardarFotoPerfil = async function(base64Data) {
     }
 
     window.perfilAtual.avatar_url = base64Data;
+    try {
+        localStorage.setItem('suiri_perfil_ativo', JSON.stringify(window.perfilAtual));
+    } catch(e) {}
     
     const imgEl = document.getElementById('img-avatar-topo');
     if (imgEl) imgEl.src = base64Data;
@@ -755,11 +711,11 @@ window.guardarFotoPerfil = async function(base64Data) {
         window.renderizarMembrosFamiliaPainel();
     }
 
-    if(!error) window.mostrarToast("Foto de perfil cortada e atualizada!");
+    if (!error) window.mostrarToast("Foto de perfil cortada e atualizada!");
 };
 
 // =========================================================================
-// 6. TROCA DE PERFIL COM LOGIN OFICIAL VIA SUPABASE AUTH PARA ADULTOS
+// 5. TROCA DE PERFIL COM LOGIN OFICIAL VIA SUPABASE AUTH PARA ADULTOS
 // =========================================================================
 window.abrirModalSenhaAdulto = function(membro) {
     if (!membro) return;
@@ -818,7 +774,6 @@ window.abrirModalSenhaAdulto = function(membro) {
         btnConfirmar.textContent = "Validando...";
 
         try {
-            // Executa a autenticação oficial no Supabase Auth
             const { data, error } = await cli.auth.signInWithPassword({
                 email: emailMembro,
                 password: senha
@@ -833,7 +788,6 @@ window.abrirModalSenhaAdulto = function(membro) {
                 return window.mostrarToast("Senha incorreta. Acesso não permitido.", "erro");
             }
 
-            // Sucesso: atualiza a referência da sessão e o perfil atual
             window.usuarioAtual = data.user;
             window.perfilAtual = membro;
             localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
@@ -871,7 +825,7 @@ window.abrirModalSenhaAdulto = function(membro) {
 };
 
 // =========================================================================
-// 7. MOTOR "TROCAR MEMBRO & LOGOUT" COM SEPARAÇÃO ADULTOS / KIDS
+// 6. MOTOR "TROCAR MEMBRO & LOGOUT" COM SEPARAÇÃO ADULTOS / KIDS
 // =========================================================================
 window.atualizarIconeBotaoSessao = function() {
     const btnSair = document.getElementById('btn-sair-topo-app');
@@ -1190,16 +1144,20 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         window.navegarParaTela(window.telaAtualVisivel || 'inicio');
     }
     
-    // Atualiza imediatamente o ícone de sessão
     window.atualizarIconeBotaoSessao();
 };
 
 // =========================================================================
-// 8. INICIALIZAÇÃO DA SESSÃO E DADOS FAMILIARES
+// 7. INICIALIZAÇÃO DA SESSÃO E DADOS FAMILIARES (ASSÍNCRONO OTIMIZADO)
 // =========================================================================
 window.iniciarAppFamilia = async function() {
     if (!window.usuarioAtual || !cliente) return;
 
+    // 1. Liberação visual imediata: oculta login e exibe o app de pronto
+    document.getElementById('tela-login')?.classList.add('oculto');
+    document.getElementById('tela-app')?.classList.remove('oculto');
+
+    // 2. Busca do membro atual
     const { data: membro, error: errMembro } = await cliente.from('membros')
         .select('*')
         .eq('id', window.usuarioAtual.id)
@@ -1216,19 +1174,29 @@ window.iniciarAppFamilia = async function() {
 
     window.perfilAtual = membro;
     window.familiaAtualId = membro.familia_id;
-    localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
+    try {
+        localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
+    } catch(e) {}
 
-    const { data: familia } = await cliente.from('familias')
-        .select('*')
-        .eq('id', window.familiaAtualId)
-        .single();
-    window.dadosFamiliaAtual = familia;
+    window.aplicarRegrasPerfilKidsOuAdulto();
 
-    const { data: membros } = await cliente.from('membros')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .order('nome');
-    window.listaMembrosFamilia = membros || [];
+    // 3. Consultas da família e dos membros em paralelo
+    const [resFamilia, resMembros] = await Promise.all([
+        cliente.from('familias').select('*').eq('id', window.familiaAtualId).single(),
+        cliente.from('membros').select('*').eq('familia_id', window.familiaAtualId).order('nome')
+    ]);
+
+    window.dadosFamiliaAtual = resFamilia?.data || null;
+    window.listaMembrosFamilia = resMembros?.data || [];
+
+    try {
+        if (window.dadosFamiliaAtual) {
+            localStorage.setItem('suiri_familia_ativa', JSON.stringify(window.dadosFamiliaAtual));
+        }
+        if (window.listaMembrosFamilia.length > 0) {
+            localStorage.setItem('suiri_membros_ativos', JSON.stringify(window.listaMembrosFamilia));
+        }
+    } catch(e) {}
 
     const selRelatorio = document.getElementById('filtro-membro-relatorio');
     if (selRelatorio) {
@@ -1243,40 +1211,40 @@ window.iniciarAppFamilia = async function() {
     const elNomeFamilia = document.getElementById('nome-familia-topo');
     if (elNomeFamilia) elNomeFamilia.textContent = window.dadosFamiliaAtual?.nome_familia || 'Suiri Gestão Familiar';
 
-    document.getElementById('tela-login')?.classList.add('oculto');
-    document.getElementById('tela-app')?.classList.remove('oculto');
-
-    window.aplicarRegrasPerfilKidsOuAdulto();
     window.atualizarIconeBotaoSessao();
 
+    // 4. Inicializações assíncronas dos submódulos em background
     if (typeof window.carregarListaMembrosPainel === 'function') {
-        await window.carregarListaMembrosPainel();
+        window.carregarListaMembrosPainel();
     } else if (typeof window.atualizarTodosSeletoresMembros === 'function') {
         window.atualizarTodosSeletoresMembros();
     }
 
-    if (typeof window.iniciarModuloMissoes === 'function') await window.iniciarModuloMissoes();
-    
-    if (typeof window.carregarMetasAnuais === 'function') {
-        await window.carregarMetasAnuais();
-    }
-
-    if (typeof window.carregarItensMercado === 'function') await window.carregarItensMercado();
-    if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
-    if (typeof window.carregarCofresCompartilhados === 'function') await window.carregarCofresCompartilhados();
-    if (typeof window.carregarDadosCalendarioMes === 'function') await window.carregarDadosCalendarioMes();
+    if (typeof window.iniciarModuloMissoes === 'function') window.iniciarModuloMissoes();
+    if (typeof window.carregarMetasAnuais === 'function') window.carregarMetasAnuais();
+    if (typeof window.carregarItensMercado === 'function') window.carregarItensMercado();
+    if (typeof window.carregarCarteiraIndividual === 'function') window.carregarCarteiraIndividual();
+    if (typeof window.carregarCofresCompartilhados === 'function') window.carregarCofresCompartilhados();
+    if (typeof window.carregarDadosCalendarioMes === 'function') window.carregarDadosCalendarioMes();
     if (typeof window.iniciarEscutaRealtimeFamilia === 'function') window.iniciarEscutaRealtimeFamilia();
 };
 
 window.fazerLogoff = async function() {
     if (cliente) await cliente.auth.signOut();
-    localStorage.removeItem('suiri_perfil_ativo');
+    try {
+        localStorage.removeItem('suiri_perfil_ativo');
+        localStorage.removeItem('suiri_familia_ativa');
+        localStorage.removeItem('suiri_membros_ativos');
+    } catch(e) {}
     window.usuarioAtual = null;
     window.perfilAtual = null;
     window.familiaAtualId = null;
     window.location.reload();
 };
 
+// =========================================================================
+// 8. VERIFICAÇÃO ULTRA-RÁPIDA (FAST-PATH LOCALSTORAGE)
+// =========================================================================
 window.verificarSessao = async function() {
     if (!cliente) {
         document.getElementById('tela-app')?.classList.add('oculto');
@@ -1284,14 +1252,68 @@ window.verificarSessao = async function() {
         document.getElementById('tela-login')?.classList.remove('oculto');
         return;
     }
-    const { data: { session } } = await cliente.auth.getSession();
-    if (session && session.user) {
-        window.usuarioAtual = session.user;
-        await window.iniciarAppFamilia();
-    } else {
-        document.getElementById('tela-app')?.classList.add('oculto');
-        document.getElementById('barra-navegacao-principal')?.classList.add('oculto');
-        document.getElementById('tela-login')?.classList.remove('oculto');
+
+    let temSessaoLocal = false;
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) {
+                temSessaoLocal = true;
+                break;
+            }
+        }
+    } catch(e) {}
+
+    const perfilCache = localStorage.getItem('suiri_perfil_ativo');
+
+    if (temSessaoLocal && perfilCache) {
+        try {
+            const perfil = JSON.parse(perfilCache);
+            window.perfilAtual = perfil;
+            window.familiaAtualId = perfil.familia_id;
+
+            const familiaCache = localStorage.getItem('suiri_familia_ativa');
+            if (familiaCache) window.dadosFamiliaAtual = JSON.parse(familiaCache);
+
+            const membrosCache = localStorage.getItem('suiri_membros_ativos');
+            if (membrosCache) window.listaMembrosFamilia = JSON.parse(membrosCache);
+
+            document.getElementById('tela-login')?.classList.add('oculto');
+            document.getElementById('tela-app')?.classList.remove('oculto');
+
+            const elNomeFamilia = document.getElementById('nome-familia-topo');
+            if (elNomeFamilia && window.dadosFamiliaAtual?.nome_familia) {
+                elNomeFamilia.textContent = window.dadosFamiliaAtual.nome_familia;
+            }
+
+            window.aplicarRegrasPerfilKidsOuAdulto();
+            window.atualizarIconeBotaoSessao();
+        } catch (e) {
+            console.warn("Aviso ao ler cache local rápido:", e);
+        }
+    }
+
+    try {
+        const { data: { session }, error } = await cliente.auth.getSession();
+        if (session && session.user && !error) {
+            window.usuarioAtual = session.user;
+            await window.iniciarAppFamilia();
+        } else {
+            try {
+                localStorage.removeItem('suiri_perfil_ativo');
+                localStorage.removeItem('suiri_familia_ativa');
+                localStorage.removeItem('suiri_membros_ativos');
+            } catch(e) {}
+            document.getElementById('tela-app')?.classList.add('oculto');
+            document.getElementById('barra-navegacao-principal')?.classList.add('oculto');
+            document.getElementById('tela-login')?.classList.remove('oculto');
+        }
+    } catch (err) {
+        if (!window.perfilAtual) {
+            document.getElementById('tela-app')?.classList.add('oculto');
+            document.getElementById('barra-navegacao-principal')?.classList.add('oculto');
+            document.getElementById('tela-login')?.classList.remove('oculto');
+        }
     }
 };
 
@@ -1482,6 +1504,5 @@ window.processarFilaOffline = async function() {
 window.addEventListener('online', () => window.processarFilaOffline());
 
 document.addEventListener("DOMContentLoaded", () => {
-    window.gerenciarApresentacaoVideoSplash();
     window.verificarSessao();
 });

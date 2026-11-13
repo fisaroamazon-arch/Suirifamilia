@@ -18,7 +18,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            color: #334155;
+            color: #1e293b;
             touch-action: none;
         }
 
@@ -60,127 +60,171 @@
             flex-shrink: 0;
         }
 
-        /* BARRA SUPERIOR */
+        /* BARRA SUPERIOR ARCADE */
         .barra-topo {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.85);
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1.5px solid rgba(253, 230, 138, 0.85);
+            border: 2px solid rgba(254, 215, 170, 0.9);
             border-radius: 20px;
-            margin: 10px 12px 6px 12px;
+            margin: 8px 12px 6px 12px;
             z-index: 50;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
         .btn-voltar {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             color: #334155;
-            border: 1.5px solid rgba(203, 213, 225, 0.9);
+            border: 1.5px solid #cbd5e1;
             border-radius: 14px;
-            padding: 6px 14px;
+            padding: 7px 14px;
             font-weight: 800;
             font-size: 13px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: transform 0.1s ease;
+        }
+
+        .btn-voltar:active {
+            transform: scale(0.95);
         }
 
         .moedas-badge {
-            background: rgba(254, 243, 199, 0.95);
-            border: 1.5px solid rgba(245, 158, 11, 0.6);
-            color: #b45309;
-            padding: 5px 12px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 13.5px;
+            font-weight: 900;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25);
         }
 
-        /* MENU PRINCIPAL */
+        /* MENU PRINCIPAL EM GRELHA ESTILO CONSOLA */
         #menu-arcade {
             flex: 1;
-            padding: 10px 14px 40px 14px;
+            padding: 8px 12px 35px 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             overflow-y: auto;
             z-index: 10;
         }
 
         .titulo-arcade {
             text-align: center;
-            margin-bottom: 4px;
+            padding: 4px 0 2px 0;
         }
 
         .titulo-arcade h1 {
-            font-size: 21px;
-            font-weight: 800;
+            font-size: 22px;
+            font-weight: 900;
             color: #1e293b;
+            letter-spacing: -0.5px;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
         }
 
         .titulo-arcade p {
             font-size: 12.5px;
             color: #475569;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .card-jogo {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(255, 255, 255, 0.95);
+        .grade-menu-arcade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .card-jogo-grade {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
-            padding: 12px 14px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 12px 10px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
+            text-align: center;
+            gap: 6px;
             cursor: pointer;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-            transition: transform 0.15s ease;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card-jogo:active {
-            transform: scale(0.97);
+        .card-jogo-grade:active {
+            transform: scale(0.96);
         }
 
-        .card-jogo:nth-child(2) { border-left: 6px solid #38bdf8; }
-        .card-jogo:nth-child(3) { border-left: 6px solid #ef4444; }
-        .card-jogo:nth-child(4) { border-left: 6px solid #10b981; }
-        .card-jogo:nth-child(5) { border-left: 6px solid #0284c7; }
-        .card-jogo:nth-child(6) { border-left: 6px solid #8b5cf6; }
-        .card-jogo:nth-child(7) { border-left: 6px solid #f59e0b; }
+        .card-jogo-grade::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
 
-        .icone-jogo {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+        .card-flappy::before { background: linear-gradient(90deg, #38bdf8, #0284c7); }
+        .card-quebrablocos::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+        .card-velha::before { background: linear-gradient(90deg, #34d399, #10b981); }
+        .card-bolhas::before { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+        .card-memoria::before { background: linear-gradient(90deg, #c084fc, #8b5cf6); }
+        .card-simon::before { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+
+        .icone-jogo-grade {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
             background: #ffffff;
-            border: 1px solid rgba(0,0,0,0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-top: 2px;
         }
 
-        .detalhes-jogo h3 {
-            font-size: 15px;
-            font-weight: 800;
-            color: #1e293b;
+        .card-jogo-grade h3 {
+            font-size: 14.5px;
+            font-weight: 900;
+            color: #0f172a;
+            margin-top: 2px;
         }
 
-        .detalhes-jogo p {
-            font-size: 11.5px;
+        .card-jogo-grade p {
+            font-size: 11px;
             color: #64748b;
             line-height: 1.3;
             font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tag-premio-card {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            margin-top: 2px;
         }
 
         /* ÁREAS DOS JOGOS */
@@ -204,138 +248,283 @@
             touch-action: none;
         }
 
-        /* OVERLAY DOS JOGOS */
+        /* PAINEL DE ABERTURA / GAME OVER FLUTUANTE (NÃO COBRE A TELA INTEIRA) */
         .overlay-jogo {
             position: absolute;
             inset: 0;
-            background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.88) 100%), url('tarde.jpg'), url('Tarde.jpg');
-            background-size: cover;
-            background-position: center bottom;
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 40;
+            z-index: 45;
+            padding: 16px;
+        }
+
+        .painel-dialogo-arcade {
+            width: 100%;
+            max-width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2.5px solid #fbbf24;
+            border-radius: 26px;
+            box-shadow: 0 16px 36px rgba(0,0,0,0.3), inset 0 2px 0 #ffffff;
+            padding: 22px 18px;
             text-align: center;
-            padding: 24px;
-            color: #ffffff;
+            position: relative;
+            animation: surgirPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes surgirPop {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .painel-dialogo-arcade h2 {
+            font-size: 20px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+
+        .painel-dialogo-arcade p {
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+            margin: 8px 0 14px 0;
+            line-height: 1.45;
         }
 
         .btn-acao-jogo {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
             border: none;
-            padding: 12px 28px;
+            border-bottom: 3.5px solid #047857;
+            padding: 12px 24px;
             font-size: 14.5px;
-            font-weight: 800;
-            border-radius: 20px;
+            font-weight: 900;
+            border-radius: 18px;
             cursor: pointer;
-            margin-top: 14px;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+            transition: transform 0.1s ease, border-bottom 0.1s ease;
+            width: 100%;
         }
 
+        .btn-acao-jogo:active {
+            transform: translateY(2px);
+            border-bottom: 1.5px solid #047857;
+        }
+
+        .btn-link-voltar {
+            margin-top: 10px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-weight: 800;
+            font-size: 12.5px;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        /* HUD DE PLACAR SUSPENSA (ESTILO PILULA DOURADA) */
         .painel-placar-flappy {
             position: absolute;
-            top: 14px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(6px);
-            border: 1.5px solid rgba(255, 255, 255, 0.35);
-            border-radius: 20px;
-            padding: 6px 16px;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fbbf24;
+            border-radius: 22px;
+            padding: 6px 18px;
             z-index: 35;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
         }
 
-        /* JOGO DA VELHA */
+        .placar-item {
+            font-size: 12px;
+            font-weight: 900;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .placar-item strong {
+            font-size: 17px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+
+        /* JOGO DA VELHA EM MOLDURA DE MADEIRA */
+        .tabuleiro-madeira-velha {
+            background: rgba(255, 255, 255, 0.94);
+            border: 4px solid #b45309;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.8);
+            width: 290px;
+            margin: 14px auto;
+        }
+
         .grade-velha {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            width: 270px;
-            margin: 20px auto;
         }
 
         .casa-velha {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2.5px solid #38bdf8;
-            border-radius: 16px;
+            width: 76px;
+            height: 76px;
+            background: #f8fafc;
+            border: 2.5px solid #bae6fd;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            transition: transform 0.15s ease, background 0.15s;
         }
 
-        /* MEMÓRIA */
+        .casa-velha:active {
+            transform: scale(0.94);
+        }
+
+        /* JOGO DA MEMÓRIA 3D FLIP */
         .grade-memoria-full {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             width: 100%;
             max-width: 320px;
-            margin: auto;
+            margin: 12px auto;
+            perspective: 600px;
         }
 
         .carta-arcade {
-            height: 64px;
-            background: rgba(255, 255, 255, 0.92);
+            height: 68px;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
             border: 2px solid #38bdf8;
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: transform 0.25s ease, box-shadow 0.2s ease;
+            position: relative;
         }
 
-        /* SIMON DINÂMICO */
-        .grade-simon-dinamica {
+        .carta-arcade.revelada {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-color: #0284c7;
+            transform: rotateY(180deg);
+        }
+
+        /* CONSOLA DO SIMON: PADS 3D ILUMINADOS COM PATINHA NEON */
+        .consola-simon-3d {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            border: 3px solid #38bdf8;
+            border-radius: 28px;
+            padding: 16px 12px;
+            max-width: 330px;
+            margin: 12px auto;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.35), inset 0 2px 0 rgba(255,255,255,0.15);
+        }
+
+        .grade-simon-pads {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            justify-items: center;
+            margin: 12px 0;
+        }
+
+        .pad-simon-3d {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
-            gap: 12px;
-            width: 100%;
-            max-width: 310px;
-            margin: 16px auto;
-        }
-
-        .btn-simon-slot {
-            width: 65px;
-            height: 65px;
-            border-radius: 16px;
-            border: 3px solid rgba(255,255,255,0.6);
             cursor: pointer;
-            transition: opacity 0.12s, transform 0.1s;
-            opacity: 0.78;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            position: relative;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.4), 0 8px 16px rgba(0,0,0,0.3), inset 0 3px 6px rgba(255,255,255,0.4);
+            transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+            outline: none;
+            border: 2px solid rgba(255,255,255,0.35);
         }
 
-        .btn-simon-slot.ativo {
-            opacity: 1 !important;
-            transform: scale(1.08);
-            box-shadow: 0 0 22px #ffffff;
+        .pad-simon-3d::after {
+            content: '';
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.15);
+            pointer-events: none;
         }
 
-        /* CHUÍRI VOADOR */
+        .pad-simon-3d svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            z-index: 2;
+            transition: transform 0.12s ease;
+        }
+
+        .pad-simon-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.4), inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .pad-simon-3d.brilhando {
+            filter: brightness(1.7) drop-shadow(0 0 18px currentColor);
+            transform: scale(1.08) translateY(-2px);
+            border-color: #ffffff;
+        }
+
+        .pad-simon-3d.brilhando svg {
+            transform: scale(1.15);
+        }
+
+        /* NOTAS MUSICAIS FLUTUANTES */
+        .nota-musical-voando {
+            position: absolute;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fde047;
+            pointer-events: none;
+            z-index: 50;
+            animation: subirDesaparecer 0.8s ease-out forwards;
+        }
+
+        @keyframes subirDesaparecer {
+            0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+            100% { transform: translate(0, -50px) scale(1.3); opacity: 0; }
+        }
+
+        /* CHUÍRI VOADOR COM PROPORÇÃO NATURAL */
         #chuiri-voador-gif-el {
             position: absolute;
-            width: 100px;
-            height: 100px;
+            width: 68px;
+            height: 108px;
+            object-fit: contain;
+            object-position: center;
             pointer-events: none;
             z-index: 32;
             display: none;
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
-            transition: transform 0.1s ease-out;
+            transition: transform 0.08s ease-out;
         }
 
         /* CHUÍRI NO SKATE */
@@ -343,6 +532,7 @@
             position: absolute;
             width: 68px;
             height: 68px;
+            object-fit: contain;
             pointer-events: none;
             z-index: 32;
             display: none;
@@ -360,75 +550,77 @@
                 Voltar
             </button>
             <div class="moedas-badge">
-                <svg class="icone-svg" style="width:16px;height:16px;color:#d97706;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+                <svg class="icone-svg" style="width:17px;height:17px;color:#d97706;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
                 <span id="txt-moedas-arcade">0</span>
             </div>
         </div>
 
-        <!-- MENU PRINCIPAL -->
+        <!-- MENU PRINCIPAL EM GRELHA 2 COLUNAS -->
         <div id="menu-arcade">
             <div class="titulo-arcade">
                 <h1>Arcade do Chuíri</h1>
-                <p>Escolha um jogo e ganhe moedas para a casinha!</p>
+                <p>Jogue, bata os seus recordes e conquiste moedas!</p>
             </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('flappy')">
-                <div class="icone-jogo" style="color:#0284c7;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>
-                </div>
-                <div class="detalhes-jogo">
+            <div class="grade-menu-arcade">
+                <!-- JOGO 1 -->
+                <div class="card-jogo-grade card-flappy" onclick="GerenciadorArcade.abrirJogo('flappy')">
+                    <div class="icone-jogo-grade" style="color:#0284c7;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>
+                    </div>
                     <h3>Chuíri Voador</h3>
-                    <p>Desvie dos troncos batendo as asinhas! A cada 10 troncos = 1 moeda.</p>
+                    <p>Plane entre os troncos florestais!</p>
+                    <span class="tag-premio-card">10 troncos = 1 🪙</span>
                 </div>
-            </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('quebrablocos')">
-                <div class="icone-jogo" style="color:#ef4444;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><rect width="18" height="6" x="3" y="3" rx="2"/><rect width="18" height="6" x="3" y="11" rx="2"/><circle cx="12" cy="20" r="2"/></svg>
+                <!-- JOGO 2 -->
+                <div class="card-jogo-grade card-quebrablocos" onclick="GerenciadorArcade.abrirJogo('quebrablocos')">
+                    <div class="icone-jogo-grade" style="color:#ef4444;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><rect width="18" height="6" x="3" y="3" rx="2"/><rect width="18" height="6" x="3" y="11" rx="2"/><circle cx="12" cy="20" r="2"/></svg>
+                    </div>
+                    <h3>Quebra-Blocos</h3>
+                    <p>Deslize no skate e parta os tijolinhos!</p>
+                    <span class="tag-premio-card">5 blocos = 1 🪙</span>
                 </div>
-                <div class="detalhes-jogo">
-                    <h3>Quebra-Blocos Mágico</h3>
-                    <p>Deslize o Chuíri no skate e rebata a bola para estourar os bloquinhos!</p>
-                </div>
-            </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('velha')">
-                <div class="icone-jogo" style="color:#10b981;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <!-- JOGO 3 -->
+                <div class="card-jogo-grade card-simon" onclick="GerenciadorArcade.abrirJogo('simon')">
+                    <div class="icone-jogo-grade" style="color:#f59e0b;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    </div>
+                    <h3>Ritmo & Som</h3>
+                    <p>Repita as sequências dos pads 3D!</p>
+                    <span class="tag-premio-card">Até 75 🪙 total</span>
                 </div>
-                <div class="detalhes-jogo">
-                    <h3>Jogo da Velha</h3>
-                    <p>Vença o Chuíri para faturar 1 moeda por vitória!</p>
-                </div>
-            </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('bolhas')">
-                <div class="icone-jogo" style="color:#0284c7;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="9" r="2"/></svg>
-                </div>
-                <div class="detalhes-jogo">
+                <!-- JOGO 4 -->
+                <div class="card-jogo-grade card-bolhas" onclick="GerenciadorArcade.abrirJogo('bolhas')">
+                    <div class="icone-jogo-grade" style="color:#0284c7;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="9" r="2"/></svg>
+                    </div>
                     <h3>Estourar Bolhas</h3>
-                    <p>Estoure sem deixar 5 escaparem! A cada 20 bolhas = 1 moeda.</p>
+                    <p>Rebente as bolhas antes que fujam!</p>
+                    <span class="tag-premio-card">20 bolhas = 1 🪙</span>
                 </div>
-            </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('memoria')">
-                <div class="icone-jogo" style="color:#8b5cf6;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <!-- JOGO 5 -->
+                <div class="card-jogo-grade card-velha" onclick="GerenciadorArcade.abrirJogo('velha')">
+                    <div class="icone-jogo-grade" style="color:#10b981;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                    <h3>Jogo da Velha</h3>
+                    <p>Vença a inteligência do Chuíri!</p>
+                    <span class="tag-premio-card">1 vitória = 1 🪙</span>
                 </div>
-                <div class="detalhes-jogo">
-                    <h3>Jogo da Memória</h3>
-                    <p>Encontre todos os pares do tabuleiro e receba 50 moedas!</p>
-                </div>
-            </div>
 
-            <div class="card-jogo" onclick="GerenciadorArcade.abrirJogo('simon')">
-                <div class="icone-jogo" style="color:#f59e0b;">
-                    <svg class="icone-svg" style="width:24px;height:24px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                </div>
-                <div class="detalhes-jogo">
-                    <h3>Simon por Fases</h3>
-                    <p>5 fases desafiadoras com sons únicos! Até 75 moedas no total.</p>
+                <!-- JOGO 6 -->
+                <div class="card-jogo-grade card-memoria" onclick="GerenciadorArcade.abrirJogo('memoria')">
+                    <div class="icone-jogo-grade" style="color:#8b5cf6;">
+                        <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <h3>Memória 3D</h3>
+                    <p>Encontre os 8 pares mágicos!</p>
+                    <span class="tag-premio-card">Tabuleiro = 50 🪙</span>
                 </div>
             </div>
         </div>
@@ -436,22 +628,25 @@
         <!-- JOGO 1: CHUÍRI VOADOR -->
         <div id="tela-flappy" class="area-jogo">
             <div class="painel-placar-flappy">
-                <div style="font-size:12px; font-weight:800; color:#e2e8f0; display:flex; align-items:center; gap:4px;">
-                    <svg class="icone-svg" style="width:14px;height:14px;color:#38bdf8;" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/></svg>
-                    Troncos: <span id="placar-flappy" style="font-size:17px; color:#fff; font-weight:900;">0</span>
+                <div class="placar-item">
+                    <svg class="icone-svg" style="width:15px;height:15px;color:#0284c7;" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/></svg>
+                    Troncos: <strong id="placar-flappy">0</strong>
                 </div>
-                <div style="font-size:12px; font-weight:800; color:#fde047; display:flex; align-items:center; gap:4px;">
-                    <svg class="icone-svg" style="width:14px;height:14px;color:#f59e0b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
-                    Moedas: <span id="placar-moedas-ganhas-flappy" style="font-size:17px; color:#fde047; font-weight:900;">0</span>
+                <div class="placar-item" style="color:#b45309;">
+                    <svg class="icone-svg" style="width:15px;height:15px;color:#f59e0b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+                    Moedas: <strong id="placar-moedas-ganhas-flappy" style="color:#d97706;">0</strong>
                 </div>
             </div>
 
             <img id="chuiri-voador-gif-el" src="voando.gif" alt="Chuíri Voando" />
 
             <div id="over-flappy" class="overlay-jogo">
-                <h2 style="color:#fde047; font-size:22px;">Chuíri Voador</h2>
-                <p style="font-size:13px; margin-top:6px; max-width:270px;">Toque na tela para planar entre os troncos! A cada 10 troncos superados você ganha 1 moeda.</p>
-                <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Jogar Agora</button>
+                <div class="painel-dialogo-arcade">
+                    <h2>Chuíri Voador</h2>
+                    <p>Toque na tela para dar impulsos de voo! O espaço inicial é largo e fecha suavemente a cada 10 troncos superados.</p>
+                    <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Iniciar Partida</button>
+                    <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                </div>
             </div>
             <canvas id="cv-flappy"></canvas>
         </div>
@@ -459,90 +654,91 @@
         <!-- JOGO 2: QUEBRA-BLOCOS MÁGICO -->
         <div id="tela-quebrablocos" class="area-jogo">
             <div class="painel-placar-flappy">
-                <div style="font-size:12px; font-weight:800; color:#fff;">
-                    Fase: <span id="placar-quebrablocos-fase" style="font-size:16px; font-weight:900; color:#38bdf8;">1</span>
-                </div>
-                <div style="font-size:12px; font-weight:800; color:#fff;">
-                    Blocos: <span id="placar-quebrablocos-blocos" style="font-size:16px; font-weight:900;">0</span>
-                </div>
-                <div style="font-size:12px; font-weight:800; color:#fde047;">
-                    Moedas: <span id="placar-quebrablocos-moedas" style="font-size:16px; font-weight:900;">0</span>
-                </div>
+                <div class="placar-item">Fase: <strong id="placar-quebrablocos-fase" style="color:#0284c7;">1</strong></div>
+                <div class="placar-item">Blocos: <strong id="placar-quebrablocos-blocos">0</strong></div>
+                <div class="placar-item" style="color:#b45309;">Moedas: <strong id="placar-quebrablocos-moedas" style="color:#d97706;">0</strong></div>
             </div>
 
             <img id="chuiri-skate-gif-el" src="feliz.gif" alt="Chuíri Feliz no Skate" />
 
             <div id="over-quebrablocos" class="overlay-jogo">
-                <h2 style="color:#fde047; font-size:22px;">Quebra-Blocos</h2>
-                <p style="font-size:13px; margin-top:6px; max-width:260px;">Arraste o skate do Chuíri pela tela para rebater a bolinha e quebrar os bloquinhos!</p>
-                <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Agora</button>
+                <div class="painel-dialogo-arcade">
+                    <h2>Quebra-Blocos</h2>
+                    <p>Arraste o skate do Chuíri para rebater a bolinha e estilhaçar os blocos coloridos!</p>
+                    <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Agora</button>
+                    <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                </div>
             </div>
             <canvas id="cv-quebrablocos"></canvas>
         </div>
 
-        <!-- JOGO 3: JOGO DA VELHA -->
-        <div id="tela-velha" class="area-jogo" style="padding:20px; text-align:center;">
-            <h2 style="color:#fde047; font-size:20px; margin-top:14px; text-shadow:0 2px 4px rgba(0,0,0,0.5);">Jogo da Velha</h2>
-            <p id="status-velha" style="font-size:13px; color:#ffffff; margin-top:6px; font-weight:700;">Sua vez: Você joga com Estrelas</p>
-            <div class="grade-velha" id="grade-velha"></div>
-            <button class="btn-acao-jogo" onclick="MotorVelha.iniciar()">Nova Partida</button>
+        <!-- JOGO 3: SIMON MUSICAL COM PADS 3D -->
+        <div id="tela-simon" class="area-jogo" style="padding:16px; text-align:center;">
+            <div class="painel-placar-flappy" style="position:static; transform:none; margin:6px auto 14px auto; display:inline-flex;">
+                <span id="txt-fase-simon" style="color:#0284c7; font-weight:900; font-size:13.5px;">FASE 1 DE 5</span>
+                <span style="color:#64748b; font-size:12.5px; font-weight:800;" id="txt-seq-simon">(0 / 5)</span>
+            </div>
+
+            <div class="consola-simon-3d">
+                <p id="status-simon" style="font-size:13.5px; color:#f8fafc; font-weight:800; min-height:22px; margin-bottom:10px;">Toque em Iniciar para ouvir os sons!</p>
+                <div class="grade-simon-pads" id="grade-simon-slots"></div>
+            </div>
+
+            <button class="btn-acao-jogo" id="btn-iniciar-simon" style="max-width:280px; margin:10px auto 0 auto;" onclick="MotorSimon.iniciarOuAvancar()">Iniciar Fase 1</button>
         </div>
 
         <!-- JOGO 4: ESTOURAR BOLHAS -->
         <div id="tela-bolhas" class="area-jogo">
             <div class="painel-placar-flappy">
-                <div style="font-size:12px; font-weight:800; color:#fff; display:flex; align-items:center; gap:4px;">
-                    <svg class="icone-svg" style="width:14px;height:14px;color:#38bdf8;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
-                    Estouradas: <span id="placar-bolhas-estouradas" style="font-size:16px; font-weight:900;">0</span>
-                </div>
-                <div style="font-size:12px; font-weight:800; color:#f87171; display:flex; align-items:center; gap:4px;">
-                    <svg class="icone-svg" style="width:14px;height:14px;color:#ef4444;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                    Vidas: <span id="placar-bolhas-vidas" style="font-size:16px; font-weight:900;">5</span>
-                </div>
+                <div class="placar-item">Estouradas: <strong id="placar-bolhas-estouradas">0</strong></div>
+                <div class="placar-item" style="color:#ef4444;">Vidas: <strong id="placar-bolhas-vidas" style="color:#ef4444;">5</strong></div>
             </div>
 
             <div id="over-bolhas" class="overlay-jogo">
-                <h2 style="color:#fde047; font-size:22px;">Estourar Bolhas</h2>
-                <p style="font-size:13px; margin-top:6px; max-width:270px;">
-                    Estoure as bolhas sem deixá-las escapar! Perde ao deixar 5 fugirem. Ganhe 1 moeda a cada 20 bolhas! A cada 8 minutos sobe um coração com chance extra!
-                </p>
-                <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Agora</button>
+                <div class="painel-dialogo-arcade">
+                    <h2>Estourar Bolhas</h2>
+                    <p>Rebente as bolhas antes que subam! Bolhas especiais douradas concedem moedas e corações recuperam as suas vidas.</p>
+                    <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Agora</button>
+                    <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                </div>
             </div>
             <canvas id="cv-bolhas"></canvas>
         </div>
 
-        <!-- JOGO 5: MEMÓRIA -->
-        <div id="tela-memoria" class="area-jogo" style="padding:16px; flex-direction:column; align-items:center; justify-content:center;">
-            <h2 style="color:#fde047; font-size:18px; margin-bottom:14px; text-align:center; text-shadow:0 2px 4px rgba(0,0,0,0.5);">Jogo da Memória</h2>
-            <div class="grade-memoria-full" id="grade-memoria-arcade"></div>
+        <!-- JOGO 5: JOGO DA VELHA NOBRE -->
+        <div id="tela-velha" class="area-jogo" style="padding:16px; text-align:center;">
+            <div class="painel-placar-flappy" style="position:static; transform:none; margin:6px auto 10px auto; display:inline-flex;">
+                <span id="status-velha" style="font-size:13px; color:#0f172a; font-weight:800;">Sua vez: Estrelas Douradas</span>
+            </div>
+
+            <div class="tabuleiro-madeira-velha">
+                <div class="grade-velha" id="grade-velha"></div>
+            </div>
+
+            <button class="btn-acao-jogo" style="max-width:260px; margin:6px auto 0 auto;" onclick="MotorVelha.iniciar()">Nova Partida</button>
         </div>
 
-        <!-- JOGO 6: GÊNIO SIMON POR FASES -->
-        <div id="tela-simon" class="area-jogo" style="padding:20px; text-align:center;">
-            <div style="background:rgba(15,23,42,0.85); padding:8px 16px; border-radius:18px; display:inline-block; border:1px solid rgba(255,255,255,0.2);">
-                <span id="txt-fase-simon" style="color:#38bdf8; font-weight:900; font-size:14px;">FASE 1 DE 5</span>
-                <span style="color:#cbd5e1; font-size:12px; margin-left:6px;" id="txt-seq-simon">(0 / 5)</span>
+        <!-- JOGO 6: JOGO DA MEMÓRIA 3D -->
+        <div id="tela-memoria" class="area-jogo" style="padding:14px; flex-direction:column; align-items:center; justify-content:center;">
+            <div class="painel-placar-flappy" style="position:static; transform:none; margin:4px auto 8px auto; display:inline-flex;">
+                <span style="font-size:13px; font-weight:900; color:#6d28d9;">Encontre os 8 Pares Mágicos!</span>
             </div>
-            <p id="status-simon" style="font-size:13px; color:#ffffff; font-weight:700; margin:10px 0;">Preste atenção na sequência de sons!</p>
-            <div class="grade-simon-dinamica" id="grade-simon-slots"></div>
-            <button class="btn-acao-jogo" id="btn-iniciar-simon" onclick="MotorSimon.iniciarOuAvancar()">Iniciar Fase 1</button>
+            <div class="grade-memoria-full" id="grade-memoria-arcade"></div>
         </div>
     </div>
 
     <script>
         // =========================================================================
-        // FUNÇÃO DE VIBRAÇÃO HÁPTICA GENÉRICA (QUANDO PERMITIDO)
+        // MOTOR DE VIBRAÇÃO HÁPTICA OTIMIZADO
         // =========================================================================
-        function tentarVibrar(duracao = 50) {
+        function tentarVibrar(duracao = 40) {
             if (navigator.vibrate) {
-                try {
-                    navigator.vibrate(duracao);
-                } catch(e) {}
+                try { navigator.vibrate(duracao); } catch(e) {}
             }
         }
 
         // =========================================================================
-        // MOTOR DE ÁUDIO NATIVO COM NOTAS PURAS EXCLUSIVAS
+        // MOTOR DE ÁUDIO NATIVO (SÍNTESE LIMPA E CRISTALINA)
         // =========================================================================
         const AudioMotor = {
             ctx: null,
@@ -562,7 +758,7 @@
                     const g = ctx.createGain();
                     osc.type = tipo;
                     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                    g.gain.setValueAtTime(0.09, ctx.currentTime);
+                    g.gain.setValueAtTime(0.12, ctx.currentTime);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
                     osc.connect(g);
                     g.connect(ctx.destination);
@@ -573,7 +769,7 @@
         };
 
         // =========================================================================
-        // GERENCIADOR CENTRAL DO ARCADE & SALDO
+        // GERENCIADOR CENTRAL DO ARCADE
         // =========================================================================
         const GerenciadorArcade = {
             telaAtiva: 'menu',
@@ -612,7 +808,8 @@
 
             atualizarSaldoVisual: function() {
                 const est = this.obterEstado();
-                document.getElementById('txt-moedas-arcade').textContent = est.moedas || 0;
+                const el = document.getElementById('txt-moedas-arcade');
+                if (el) el.textContent = est.moedas || 0;
             },
 
             voltarAcao: function() {
@@ -656,28 +853,23 @@
         };
 
         // =========================================================================
-        // 1. MOTOR DO CHUÍRI VOADOR (TRAVADO EM 40 FPS PARA FIXAR IPHONE 120HZ)
+        // 1. MOTOR DO CHUÍRI VOADOR (PROGRESSÃO BALANCEADA & MOEDAS COLECIONÁVEIS)
         // =========================================================================
         const MotorFlappy = {
             canvas: null, ctx: null, anim: null, rodando: false,
             obstaculosPassados: 0,
             moedasGanhasPartida: 0,
-            
             ultimoFrame: 0,
-            fpsIntervalo: 25, // Trava cravada em 40 FPS (1000/40 = 25ms)
+            fpsIntervalo: 25,
 
-            chuiri: { x: 45, y: 220, w: 100, h: 100, grav: 0.36, imp: -6.0, vy: 0 },
+            chuiri: { x: 45, y: 220, w: 68, h: 108, grav: 0.34, imp: -5.8, vy: 0 },
             gifEl: null,
             obstaculos: [],
+            moedasNoAr: [],
+            particulasVento: [],
             timer: 0,
-            larguraTronco: 56,
-            espacoPassagem: 180,
-
-            padraoDiagonalAtivo: false,
-            alturaDiagonalAtual: 140,
-            passoDiagonal: 30,
-            qtdDiagonalRestante: 0,
-            nuvens: [],
+            larguraTronco: 58,
+            espacoPassagemBase: 215, // Começa bem largo e acolhedor
 
             montar: function() {
                 this.canvas = document.getElementById('cv-flappy');
@@ -687,32 +879,22 @@
                 this.canvas.height = r.height;
 
                 this.gifEl = document.getElementById('chuiri-voador-gif-el');
-                this.inicializarNuvens();
-
                 this.canvas.onpointerdown = (e) => { e.preventDefault(); this.pular(); };
                 document.getElementById('over-flappy').style.display = 'flex';
                 if (this.gifEl) this.gifEl.style.display = 'none';
                 this.rodando = false;
             },
 
-            inicializarNuvens: function() {
-                this.nuvens = [
-                    { x: 30,  y: 60,  escala: 0.85, vel: 0.35 },
-                    { x: 190, y: 110, escala: 0.65, vel: 0.22 },
-                    { x: 340, y: 75,  escala: 1.05, vel: 0.45 }
-                ];
-            },
-
             jogar: function() {
-                this.chuiri.y = this.canvas.height / 2 - 50;
+                this.chuiri.y = this.canvas.height / 2 - 54;
                 this.chuiri.vy = 0;
                 this.obstaculos = [];
+                this.moedasNoAr = [];
+                this.particulasVento = [];
                 this.obstaculosPassados = 0;
                 this.moedasGanhasPartida = 0;
                 this.timer = 0;
-                this.padraoDiagonalAtivo = false;
-                this.qtdDiagonalRestante = 0;
-                tentarVibrar(40);
+                tentarVibrar(35);
 
                 document.getElementById('placar-flappy').textContent = '0';
                 document.getElementById('placar-moedas-ganhas-flappy').textContent = '0';
@@ -734,6 +916,18 @@
                 if (!this.rodando) return;
                 this.chuiri.vy = this.chuiri.imp;
                 AudioMotor.tocarTom(520, 0.08);
+
+                // Emite partículas de vento
+                for (let i = 0; i < 3; i++) {
+                    this.particulasVento.push({
+                        x: this.chuiri.x + 10,
+                        y: this.chuiri.y + 60 + (Math.random() * 20),
+                        vx: -(Math.random() * 2 + 1),
+                        vy: (Math.random() * 2 - 1),
+                        alpha: 0.8,
+                        raio: Math.random() * 3 + 2
+                    });
+                }
             },
 
             parar: function() {
@@ -748,7 +942,6 @@
                 
                 if (!timestamp) timestamp = performance.now();
                 const delta = timestamp - MotorFlappy.ultimoFrame;
-                
                 if (delta > MotorFlappy.fpsIntervalo) {
                     MotorFlappy.ultimoFrame = timestamp - (delta % MotorFlappy.fpsIntervalo);
                     MotorFlappy.atualizar();
@@ -756,87 +949,78 @@
                 }
             },
 
-            obterIntervaloSpawn: function() {
-                const blocosDe50 = Math.floor(this.obstaculosPassados / 50);
-                const fatorAproximacao = Math.pow(0.90, blocosDe50);
-                return Math.max(68, Math.round(135 * fatorAproximacao));
-            },
-
-            gerarAlturaProcedural: function() {
-                const alturaMin = 50;
-                const alturaMax = this.canvas.height - this.espacoPassagem - 80;
-
-                if (!this.padraoDiagonalAtivo && Math.random() < 0.3 && this.obstaculosPassados >= 4) {
-                    this.padraoDiagonalAtivo = true;
-                    this.qtdDiagonalRestante = Math.floor(Math.random() * 3) + 3;
-                    this.passoDiagonal = (Math.random() < 0.5 ? 1 : -1) * 30;
-                    this.alturaDiagonalAtual = Math.floor(Math.random() * (alturaMax - alturaMin)) + alturaMin;
-                }
-
-                if (this.padraoDiagonalAtivo) {
-                    this.alturaDiagonalAtual += this.passoDiagonal;
-                    if (this.alturaDiagonalAtual > alturaMax || this.alturaDiagonalAtual < alturaMin) {
-                        this.passoDiagonal *= -1;
-                        this.alturaDiagonalAtual += this.passoDiagonal * 2;
-                    }
-                    this.qtdDiagonalRestante--;
-                    if (this.qtdDiagonalRestante <= 0) this.padraoDiagonalAtivo = false;
-                    return Math.max(alturaMin, Math.min(alturaMax, this.alturaDiagonalAtual));
-                }
-
-                return Math.floor(Math.random() * (alturaMax - alturaMin)) + alturaMin;
+            obterEspacoAtual: function() {
+                // Diminui suavemente até o limite confortável de 170px
+                const reducao = Math.min(45, Math.floor(this.obstaculosPassados / 5) * 4);
+                return this.espacoPassagemBase - reducao;
             },
 
             atualizar: function() {
                 this.chuiri.vy += this.chuiri.grav;
                 this.chuiri.y += this.chuiri.vy;
 
-                // Teto e Chão
-                if (this.chuiri.y + this.chuiri.h - 15 >= this.canvas.height - 24 || this.chuiri.y <= -10) {
+                if (this.chuiri.y + this.chuiri.h - 18 >= this.canvas.height - 24 || this.chuiri.y <= -20) {
                     return this.fim();
                 }
 
                 if (this.gifEl) {
                     this.gifEl.style.left = `${this.chuiri.x}px`;
                     this.gifEl.style.top = `${this.chuiri.y}px`;
-                    const anguloSutil = Math.min(4, Math.max(-6, this.chuiri.vy * 0.9));
-                    this.gifEl.style.transform = `rotate(${anguloSutil}deg)`;
+                    const angulo = Math.min(5, Math.max(-8, this.chuiri.vy * 0.9));
+                    this.gifEl.style.transform = `rotate(${angulo}deg)`;
                 }
 
-                this.nuvens.forEach(n => {
-                    n.x -= n.vel;
-                    if (n.x < -120) {
-                        n.x = this.canvas.width + 40;
-                        n.y = Math.random() * 140 + 40;
-                    }
-                });
+                // Partículas de vento
+                for (let i = this.particulasVento.length - 1; i >= 0; i--) {
+                    const p = this.particulasVento[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= 0.03;
+                    if (p.alpha <= 0) this.particulasVento.splice(i, 1);
+                }
 
                 this.timer++;
-                const intervaloSpawn = this.obterIntervaloSpawn();
+                const intervaloSpawn = Math.max(75, 125 - Math.floor(this.obstaculosPassados / 8) * 3);
                 if (this.timer > intervaloSpawn) {
                     this.timer = 0;
-                    const topo = this.gerarAlturaProcedural();
+                    const espaco = this.obterEspacoAtual();
+                    const alturaMin = 50;
+                    const alturaMax = this.canvas.height - espaco - 80;
+                    const topo = Math.floor(Math.random() * (alturaMax - alturaMin)) + alturaMin;
+
                     this.obstaculos.push({
                         x: this.canvas.width,
                         topo: topo,
-                        base: topo + this.espacoPassagem,
+                        base: topo + espaco,
                         passou: false
                     });
+
+                    // 40% de probabilidade de spawnar uma moeda no meio do vão
+                    if (Math.random() < 0.45) {
+                        this.moedasNoAr.push({
+                            x: this.canvas.width + this.larguraTronco / 2,
+                            y: topo + espaco / 2,
+                            coletada: false,
+                            r: 11
+                        });
+                    }
                 }
 
+                // Atualizar Troncos e Colisão
+                const velRolagem = 2.2 + Math.min(1.0, (this.obstaculosPassados * 0.02));
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
                     const ob = this.obstaculos[i];
-                    ob.x -= 2.25;
+                    ob.x -= velRolagem;
 
-                    const mx = 24;
-                    const my = 24;
+                    const mx = 18;
+                    const my = 22;
                     if (this.chuiri.x + this.chuiri.w - mx > ob.x && this.chuiri.x + mx < ob.x + this.larguraTronco) {
                         if (this.chuiri.y + my < ob.topo || this.chuiri.y + this.chuiri.h - my > ob.base) {
                             return this.fim();
                         }
                     }
 
-                    if (!ob.passou && ob.x + this.larguraTronco < this.chuiri.x + 30) {
+                    if (!ob.passou && ob.x + this.larguraTronco < this.chuiri.x + 20) {
                         ob.passou = true;
                         this.obstaculosPassados++;
                         document.getElementById('placar-flappy').textContent = this.obstaculosPassados;
@@ -846,83 +1030,102 @@
                             GerenciadorArcade.adicionarMoedas(1);
                             document.getElementById('placar-moedas-ganhas-flappy').textContent = this.moedasGanhasPartida;
                             AudioMotor.tocarTom(880, 0.22);
+                            tentarVibrar(30);
                         } else {
-                            AudioMotor.tocarTom(660, 0.08);
+                            AudioMotor.tocarTom(640, 0.06);
                         }
                     }
 
-                    if (ob.x < -70) this.obstaculos.splice(i, 1);
+                    if (ob.x < -80) this.obstaculos.splice(i, 1);
                 }
-            },
 
-            desenharTroncoSvg: function(ctx, x, y, w, h, invertido) {
-                ctx.save();
-                const grad = ctx.createLinearGradient(x, 0, x + w, 0);
-                grad.addColorStop(0, '#78350f');
-                grad.addColorStop(0.5, '#92400e');
-                grad.addColorStop(1, '#5c2205');
-                ctx.fillStyle = grad;
-                ctx.fillRect(x, y, w, h);
+                // Atualizar Moedas Colecionáveis no Ar
+                for (let i = this.moedasNoAr.length - 1; i >= 0; i--) {
+                    const m = this.moedasNoAr[i];
+                    m.x -= velRolagem;
 
-                ctx.strokeStyle = 'rgba(67, 20, 7, 0.45)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x + 14, y);
-                ctx.lineTo(x + 14, y + h);
-                ctx.moveTo(x + 38, y);
-                ctx.lineTo(x + 38, y + h);
-                ctx.stroke();
+                    if (!m.coletada && Math.hypot((this.chuiri.x + 34) - m.x, (this.chuiri.y + 54) - m.y) < 36) {
+                        m.coletada = true;
+                        this.moedasGanhasPartida++;
+                        GerenciadorArcade.adicionarMoedas(1);
+                        document.getElementById('placar-moedas-ganhas-flappy').textContent = this.moedasGanhasPartida;
+                        AudioMotor.tocarTom(980, 0.2);
+                        tentarVibrar(25);
+                    }
 
-                const baseBordaY = invertido ? y + h - 14 : y;
-                ctx.fillStyle = '#b45309';
-                ctx.beginPath();
-                ctx.roundRect(x - 3, baseBordaY, w + 6, 14, 6);
-                ctx.fill();
-
-                ctx.fillStyle = '#16a34a';
-                ctx.beginPath();
-                if (invertido) {
-                    ctx.arc(x + 8, y + h, 8, 0, Math.PI * 2);
-                    ctx.arc(x + w - 8, y + h, 8, 0, Math.PI * 2);
-                } else {
-                    ctx.arc(x + 8, y, 8, 0, Math.PI * 2);
-                    ctx.arc(x + w - 8, y, 8, 0, Math.PI * 2);
+                    if (m.x < -40 || m.coletada) this.moedasNoAr.splice(i, 1);
                 }
-                ctx.fill();
-                ctx.restore();
             },
 
             desenhar: function() {
                 const ctx = this.ctx;
                 const w = this.canvas.width;
                 const h = this.canvas.height;
-
                 ctx.clearRect(0, 0, w, h);
 
-                this.nuvens.forEach(n => {
-                    ctx.save();
-                    ctx.translate(n.x, n.y);
-                    ctx.scale(n.escala, n.escala);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+                // Desenhar partículas de vento
+                this.particulasVento.forEach(p => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
                     ctx.beginPath();
-                    ctx.arc(20, 20, 16, 0, Math.PI * 2);
-                    ctx.arc(36, 12, 18, 0, Math.PI * 2);
-                    ctx.arc(54, 16, 15, 0, Math.PI * 2);
-                    ctx.arc(42, 28, 14, 0, Math.PI * 2);
-                    ctx.arc(24, 28, 14, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, p.raio, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Desenhar Troncos com textura
+                this.obstaculos.forEach(ob => {
+                    this.desenharTronco(ctx, ob.x, 0, this.larguraTronco, ob.topo, true);
+                    this.desenharTronco(ctx, ob.x, ob.base, this.larguraTronco, h - ob.base, false);
+                });
+
+                // Desenhar Moedas flutuantes
+                this.moedasNoAr.forEach(m => {
+                    ctx.save();
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fef08a';
+                    ctx.beginPath();
+                    ctx.arc(m.x, m.y, m.r - 3, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
                 });
 
-                this.obstaculos.forEach(ob => {
-                    this.desenharTroncoSvg(ctx, ob.x, 0, this.larguraTronco, ob.topo, true);
-                    this.desenharTroncoSvg(ctx, ob.x, ob.base, this.larguraTronco, h - ob.base, false);
-                });
-
+                // Gramado inferior
                 ctx.fillStyle = '#15803d';
                 ctx.fillRect(0, h - 24, w, 24);
                 ctx.fillStyle = '#166534';
                 ctx.fillRect(0, h - 8, w, 8);
+            },
+
+            desenharTronco: function(ctx, x, y, w, h, invertido) {
+                ctx.save();
+                const grad = ctx.createLinearGradient(x, 0, x + w, 0);
+                grad.addColorStop(0, '#78350f');
+                grad.addColorStop(0.5, '#a16207');
+                grad.addColorStop(1, '#451a03');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, w, h);
+
+                // Borda de madeira
+                const bordaY = invertido ? y + h - 14 : y;
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.roundRect(x - 3, bordaY, w + 6, 14, 6);
+                ctx.fill();
+
+                // Folhas verdes no topo/base
+                ctx.fillStyle = '#16a34a';
+                ctx.beginPath();
+                if (invertido) {
+                    ctx.arc(x + 10, y + h, 9, 0, Math.PI * 2);
+                    ctx.arc(x + w - 10, y + h, 9, 0, Math.PI * 2);
+                } else {
+                    ctx.arc(x + 10, y, 9, 0, Math.PI * 2);
+                    ctx.arc(x + w - 10, y, 9, 0, Math.PI * 2);
+                }
+                ctx.fill();
+                ctx.restore();
             },
 
             fim: function() {
@@ -930,34 +1133,34 @@
                 tentarVibrar(60);
                 const ov = document.getElementById('over-flappy');
                 ov.innerHTML = `
-                    <h2 style="color:#f87171; font-size:22px;">Opa, quase lá!</h2>
-                    <p style="font-size:14px; margin-top:6px;">Troncos superados: <strong>${this.obstaculosPassados}</strong></p>
-                    <p style="color:#fde047; font-size:15px; font-weight:800; margin-top:4px;">
-                        +${this.moedasGanhasPartida} Moeda${this.moedasGanhasPartida === 1 ? '' : 's'} creditada${this.moedasGanhasPartida === 1 ? '' : 's'}!
-                    </p>
-                    <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Jogar Novamente</button>
-                    <button style="margin-top:10px; background:transparent; border:none; color:#cbd5e1; font-weight:700; font-size:12.5px; cursor:pointer;" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    <div class="painel-dialogo-arcade">
+                        <h2 style="color:#ef4444;">Fim do Voo!</h2>
+                        <p>Troncos superados: <strong>${this.obstaculosPassados}</strong><br>
+                        <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhasPartida} Moedas conquistadas!</span></p>
+                        <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Tentar Novamente</button>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    </div>
                 `;
                 ov.style.display = 'flex';
             }
         };
 
         // =========================================================================
-        // 2. QUEBRA-BLOCOS MÁGICO (TRAVADO EM 40 FPS)
+        // 2. QUEBRA-BLOCOS MÁGICO (PARTÍCULAS DE ESTILHAÇOS & IMPACTO ELÁSTICO)
         // =========================================================================
         const MotorQuebraBlocos = {
             canvas: null, ctx: null, anim: null, rodando: false,
             faseAtual: 1,
-            skate: { x: 140, y: 0, w: 96, h: 22 },
-            bola: { x: 180, y: 300, r: 6.5, vx: 3.2, vy: -3.8 },
+            skate: { x: 140, y: 0, w: 98, h: 22, escalaImpacto: 1 },
+            bola: { x: 180, y: 300, r: 7, vx: 2.8, vy: -3.2 },
             chuiriGifEl: null,
             blocos: [],
+            estilhacos: [],
             totalDestruidos: 0,
             moedasGanhas: 0,
             arrastando: false,
-            
             ultimoFrame: 0,
-            fpsIntervalo: 25, 
+            fpsIntervalo: 25,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-quebrablocos');
@@ -967,17 +1170,14 @@
                 this.canvas.height = r.height;
 
                 this.chuiriGifEl = document.getElementById('chuiri-skate-gif-el');
-
-                this.recalcularPosicaoSkate();
+                this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
 
-                const atualizarPosicaoSkate = (clientX) => {
+                const moverSkate = (clientX) => {
                     if (!this.rodando) return;
                     const rect = this.canvas.getBoundingClientRect();
                     const toqueX = clientX - rect.left;
-                    this.skate.x = toqueX - this.skate.w / 2;
-                    if (this.skate.x < 0) this.skate.x = 0;
-                    if (this.skate.x + this.skate.w > this.canvas.width) this.skate.x = this.canvas.width - this.skate.w;
+                    this.skate.x = Math.max(0, Math.min(this.canvas.width - this.skate.w, toqueX - this.skate.w / 2));
 
                     if (this.chuiriGifEl) {
                         this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
@@ -985,57 +1185,40 @@
                     }
                 };
 
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.arrastando = true;
-                    if (e.touches && e.touches[0]) atualizarPosicaoSkate(e.touches[0].clientX);
-                }, { passive: false });
-
                 this.canvas.addEventListener('touchmove', (e) => {
                     e.preventDefault();
-                    if (this.arrastando && e.touches && e.touches[0]) {
-                        atualizarPosicaoSkate(e.touches[0].clientX);
-                    }
+                    if (e.touches && e.touches[0]) moverSkate(e.touches[0].clientX);
                 }, { passive: false });
 
-                window.addEventListener('touchend', () => { this.arrastando = false; }, { passive: true });
-                window.addEventListener('touchcancel', () => { this.arrastando = false; }, { passive: true });
-
-                this.canvas.onpointerdown = (e) => {
-                    this.arrastando = true;
-                    atualizarPosicaoSkate(e.clientX);
+                this.canvas.onpointermove = (e) => {
+                    if (this.arrastando) moverSkate(e.clientX);
                 };
-                window.addEventListener('pointermove', (e) => {
-                    if (this.arrastando) atualizarPosicaoSkate(e.clientX);
-                });
-                window.addEventListener('pointerup', () => { this.arrastando = false; });
+                this.canvas.onpointerdown = (e) => { this.arrastando = true; moverSkate(e.clientX); };
+                window.onpointerup = () => { this.arrastando = false; };
 
                 document.getElementById('over-quebrablocos').style.display = 'flex';
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
                 this.rodando = false;
             },
 
-            recalcularPosicaoSkate: function() {
-                const elevacaoFase = (this.faseAtual - 1) * 2;
-                this.skate.y = this.canvas.height - 90 - elevacaoFase;
-            },
-
             iniciar: function() {
                 this.faseAtual = 1;
                 this.totalDestruidos = 0;
                 this.moedasGanhas = 0;
-                tentarVibrar(40);
+                this.estilhacos = [];
+                tentarVibrar(35);
+
                 document.getElementById('placar-quebrablocos-fase').textContent = '1';
                 document.getElementById('placar-quebrablocos-blocos').textContent = '0';
                 document.getElementById('placar-quebrablocos-moedas').textContent = '0';
                 document.getElementById('over-quebrablocos').style.display = 'none';
 
-                this.recalcularPosicaoSkate();
+                this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
                 this.bola.x = this.canvas.width / 2;
                 this.bola.y = this.skate.y - 18;
-                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 3.4;
-                this.bola.vy = -3.8;
+                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
+                this.bola.vy = -3.4;
 
                 if (this.chuiriGifEl) {
                     this.chuiriGifEl.style.display = 'block';
@@ -1052,19 +1235,19 @@
             gerarGradeBlocos: function() {
                 this.blocos = [];
                 const linhas = 4 + (this.faseAtual - 1);
-                const colunas = 8;
+                const colunas = 7;
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
-                const alturaBloco = 12;
-                const paletaCores = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#38bdf8', '#8b5cf6', '#ec4899'];
+                const alturaBloco = 14;
+                const paletaCores = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#38bdf8', '#8b5cf6'];
 
                 for (let l = 0; l < linhas; l++) {
                     const cor = paletaCores[l % paletaCores.length];
                     for (let c = 0; c < colunas; c++) {
                         this.blocos.push({
                             x: margemX + c * larguraBloco,
-                            y: 36 + l * (alturaBloco + 5),
-                            w: larguraBloco - 4,
+                            y: 36 + l * (alturaBloco + 6),
+                            w: larguraBloco - 5,
                             h: alturaBloco,
                             cor: cor,
                             vivo: true
@@ -1075,7 +1258,6 @@
 
             parar: function() {
                 this.rodando = false;
-                this.arrastando = false;
                 if (this.anim) cancelAnimationFrame(this.anim);
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
             },
@@ -1086,7 +1268,6 @@
                 
                 if (!timestamp) timestamp = performance.now();
                 const delta = timestamp - MotorQuebraBlocos.ultimoFrame;
-                
                 if (delta > MotorQuebraBlocos.fpsIntervalo) {
                     MotorQuebraBlocos.ultimoFrame = timestamp - (delta % MotorQuebraBlocos.fpsIntervalo);
                     MotorQuebraBlocos.atualizar();
@@ -1094,39 +1275,67 @@
                 }
             },
 
+            gerarEstilhacos: function(bx, by, bw, bh, cor) {
+                for (let i = 0; i < 5; i++) {
+                    this.estilhacos.push({
+                        x: bx + bw / 2,
+                        y: by + bh / 2,
+                        vx: (Math.random() - 0.5) * 5,
+                        vy: (Math.random() - 0.5) * 5,
+                        cor: cor,
+                        alpha: 1,
+                        tamanho: Math.random() * 3 + 3
+                    });
+                }
+            },
+
             atualizar: function() {
                 this.bola.x += this.bola.vx;
                 this.bola.y += this.bola.vy;
 
+                // Paredes laterais e teto
                 if (this.bola.x - this.bola.r <= 0 || this.bola.x + this.bola.r >= this.canvas.width) {
                     this.bola.vx *= -1;
                     AudioMotor.tocarTom(420, 0.05);
                 }
-
                 if (this.bola.y - this.bola.r <= 0) {
                     this.bola.vy *= -1;
                     AudioMotor.tocarTom(420, 0.05);
                 }
 
+                // Colisão no skate
                 if (this.bola.y + this.bola.r >= this.skate.y && this.bola.y - this.bola.r <= this.skate.y + 12) {
                     if (this.bola.x >= this.skate.x && this.bola.x <= this.skate.x + this.skate.w) {
                         this.bola.vy = -Math.abs(this.bola.vy);
                         const centro = this.skate.x + this.skate.w / 2;
                         const offset = (this.bola.x - centro) / (this.skate.w / 2);
-                        this.bola.vx = offset * 4.6;
+                        this.bola.vx = offset * 4.4;
                         AudioMotor.tocarTom(550, 0.08);
+                        tentarVibrar(15);
                     }
                 }
 
-                let vivosRestantes = 0;
+                // Atualizar Estilhaços
+                for (let i = this.estilhacos.length - 1; i >= 0; i--) {
+                    const est = this.estilhacos[i];
+                    est.x += est.vx;
+                    est.y += est.vy;
+                    est.vy += 0.2; // gravidade
+                    est.alpha -= 0.04;
+                    if (est.alpha <= 0) this.estilhacos.splice(i, 1);
+                }
+
+                // Destruição de blocos
+                let vivos = 0;
                 this.blocos.forEach(b => {
                     if (!b.vivo) return;
-                    vivosRestantes++;
+                    vivos++;
 
                     if (this.bola.x + this.bola.r > b.x && this.bola.x - this.bola.r < b.x + b.w &&
                         this.bola.y + this.bola.r > b.y && this.bola.y - this.bola.r < b.y + b.h) {
                         b.vivo = false;
                         this.bola.vy *= -1;
+                        this.gerarEstilhacos(b.x, b.y, b.w, b.h, b.cor);
                         this.totalDestruidos++;
                         document.getElementById('placar-quebrablocos-blocos').textContent = this.totalDestruidos;
 
@@ -1134,24 +1343,21 @@
                             this.moedasGanhas++;
                             GerenciadorArcade.adicionarMoedas(1);
                             document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
-                            AudioMotor.tocarTom(880, 0.15);
+                            AudioMotor.tocarTom(880, 0.16);
                         } else {
                             AudioMotor.tocarTom(640, 0.06);
                         }
                     }
                 });
 
-                if (vivosRestantes === 0) {
+                if (vivos === 0) {
                     this.faseAtual++;
                     this.moedasGanhas += 3;
                     GerenciadorArcade.adicionarMoedas(3);
                     document.getElementById('placar-quebrablocos-fase').textContent = this.faseAtual;
                     document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
-                    
-                    this.recalcularPosicaoSkate();
-                    this.gerarGradeBlocos(); 
+                    this.gerarGradeBlocos();
                     this.bola.vy *= 1.05;
-                    AudioMotor.tocarTom(950, 0.25);
                 }
 
                 if (this.bola.y - this.bola.r > this.canvas.height) {
@@ -1159,66 +1365,48 @@
                 }
             },
 
-            desenharSkateEstilizado: function(ctx, x, y, w) {
-                ctx.save();
-                ctx.fillStyle = '#64748b';
-                ctx.fillRect(x + 18, y + 8, 8, 6);
-                ctx.fillRect(x + w - 26, y + 8, 8, 6);
-
-                const desenharRoda = (rx, ry) => {
-                    ctx.fillStyle = '#0f172a';
-                    ctx.beginPath();
-                    ctx.arc(rx, ry, 6.5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#cbd5e1';
-                    ctx.beginPath();
-                    ctx.arc(rx, ry, 2.5, 0, Math.PI * 2);
-                    ctx.fill();
-                };
-                desenharRoda(x + 22, y + 15);
-                desenharRoda(x + w - 22, y + 15);
-
-                const gradDeck = ctx.createLinearGradient(x, y, x + w, y);
-                gradDeck.addColorStop(0, '#f59e0b');
-                gradDeck.addColorStop(0.18, '#fbbf24');
-                gradDeck.addColorStop(0.5, '#fef08a');
-                gradDeck.addColorStop(0.82, '#fbbf24');
-                gradDeck.addColorStop(1, '#f59e0b');
-
-                ctx.fillStyle = gradDeck;
-                ctx.strokeStyle = '#78350f';
-                ctx.lineWidth = 2.2;
-                ctx.beginPath();
-                ctx.roundRect(x, y + 2, w, 8.5, [6, 6, 6, 6]);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#0284c7';
-                ctx.fillRect(x + 8, y + 4, 12, 4);
-                ctx.fillRect(x + w - 20, y + 4, 12, 4);
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(x + 24, y + 4, w - 48, 4);
-
-                ctx.restore();
-            },
-
             desenhar: function() {
                 const ctx = this.ctx;
                 ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                this.desenharSkateEstilizado(ctx, this.skate.x, this.skate.y, this.skate.w);
+                // Desenhar Estilhaços
+                this.estilhacos.forEach(est => {
+                    ctx.save();
+                    ctx.fillStyle = est.cor;
+                    ctx.globalAlpha = est.alpha;
+                    ctx.fillRect(est.x, est.y, est.tamanho, est.tamanho);
+                    ctx.restore();
+                });
 
+                // Desenhar Skate com efeito 3D
+                ctx.save();
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.roundRect(this.skate.x, this.skate.y + 2, this.skate.w, 9, 6);
+                ctx.fill();
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.roundRect(this.skate.x + 2, this.skate.y, this.skate.w - 4, 6, 4);
+                ctx.fill();
+                ctx.restore();
+
+                // Desenhar Bola
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.arc(this.bola.x, this.bola.y, this.bola.r, 0, Math.PI * 2);
                 ctx.fill();
 
+                // Desenhar Blocos em relevo
                 this.blocos.forEach(b => {
                     if (!b.vivo) return;
                     ctx.fillStyle = b.cor;
                     ctx.beginPath();
-                    ctx.roundRect(b.x, b.y, b.w, b.h, 3.5);
+                    ctx.roundRect(b.x, b.y, b.w, b.h, 4);
                     ctx.fill();
+
+                    // Brilho superior
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillRect(b.x + 2, b.y + 1, b.w - 4, 3);
                 });
             },
 
@@ -1227,27 +1415,387 @@
                 tentarVibrar(60);
                 const ov = document.getElementById('over-quebrablocos');
                 ov.innerHTML = `
-                    <h2 style="color:#f87171; font-size:22px;">A bolinha caiu!</h2>
-                    <p style="font-size:14px; margin-top:6px;">Fase alcançada: <strong>${this.faseAtual}</strong></p>
-                    <p style="font-size:14px; margin-top:2px;">Bloquinhos destruídos: <strong>${this.totalDestruidos}</strong></p>
-                    <p style="color:#fde047; font-size:15px; font-weight:800; margin-top:4px;">+${this.moedasGanhas} Moedas conquistadas!</p>
-                    <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Novamente</button>
-                    <button style="margin-top:10px; background:transparent; border:none; color:#cbd5e1; font-weight:700; font-size:12.5px; cursor:pointer;" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    <div class="painel-dialogo-arcade">
+                        <h2 style="color:#ef4444;">A bolinha caiu!</h2>
+                        <p>Fase alcançada: <strong>${this.faseAtual}</strong><br>
+                        Blocos destruídos: <strong>${this.totalDestruidos}</strong><br>
+                        <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhas} Moedas conquistadas!</span></p>
+                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Novamente</button>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    </div>
                 `;
                 ov.style.display = 'flex';
             }
         };
 
         // =========================================================================
-        // 3. JOGO DA VELHA 
+        // 3. SIMON MUSICAL: PADS 3D COM PATINHA E NOTAS FLUTUANTES
+        // =========================================================================
+        const MotorSimon = {
+            faseAtual: 1,
+            passo: 0,
+            jogando: false,
+            sequencia: [],
+
+            configPads: [
+                { cor: '#ef4444', tom: 329.63, nome: 'Mi' },
+                { cor: '#3b82f6', tom: 392.00, nome: 'Sol' },
+                { cor: '#10b981', tom: 440.00, nome: 'Lá' },
+                { cor: '#f59e0b', tom: 493.88, nome: 'Si' },
+                { cor: '#8b5cf6', tom: 523.25, nome: 'Dó' },
+                { cor: '#ec4899', tom: 587.33, nome: 'Ré' },
+                { cor: '#06b6d4', tom: 659.25, nome: 'Mi+' },
+                { cor: '#84cc16', tom: 739.99, nome: 'Fá#' }
+            ],
+
+            metaPorFase: [4, 6, 8, 8, 10],
+            botoesPorFase: [4, 5, 6, 7, 8],
+
+            svgPatinha: `<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>`,
+
+            montar: function() {
+                this.faseAtual = 1;
+                this.renderizarPads();
+                document.getElementById('status-simon').textContent = 'Toque em Iniciar para ouvir os sons!';
+                document.getElementById('btn-iniciar-simon').textContent = 'Iniciar Fase 1';
+                document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
+                this.atualizarPlacar(0);
+            },
+
+            renderizarPads: function() {
+                const grade = document.getElementById('grade-simon-slots');
+                grade.innerHTML = '';
+                const total = this.botoesPorFase[this.faseAtual - 1];
+
+                for (let i = 0; i < total; i++) {
+                    const pad = document.createElement('div');
+                    pad.className = 'pad-simon-3d';
+                    pad.id = `pad-simon-${i}`;
+                    pad.style.background = `radial-gradient(circle at 35% 35%, ${this.configPads[i].cor}, #0f172a)`;
+                    pad.style.color = this.configPads[i].cor;
+                    pad.innerHTML = this.svgPatinha;
+                    pad.onclick = () => this.toqueUsuario(i);
+                    grade.appendChild(pad);
+                }
+            },
+
+            atualizarPlacar: function(seqAtual) {
+                const meta = this.metaPorFase[this.faseAtual - 1];
+                document.getElementById('txt-fase-simon').textContent = `FASE ${this.faseAtual} DE 5`;
+                document.getElementById('txt-seq-simon').textContent = `(${seqAtual} / ${meta})`;
+            },
+
+            iniciarOuAvancar: function() {
+                document.getElementById('btn-iniciar-simon').style.display = 'none';
+                this.renderizarPads();
+                this.sequencia = [];
+                this.jogando = true;
+                this.proximaRodada();
+            },
+
+            proximaRodada: function() {
+                this.passo = 0;
+                const total = this.botoesPorFase[this.faseAtual - 1];
+                this.sequencia.push(Math.floor(Math.random() * total));
+                this.atualizarPlacar(this.sequencia.length);
+
+                document.getElementById('status-simon').textContent = `Preste atenção na sequência (${this.sequencia.length})`;
+                this.tocarSequencia(0);
+            },
+
+            tocarSequencia: function(idx) {
+                if (idx >= this.sequencia.length) {
+                    document.getElementById('status-simon').textContent = 'Sua vez de repetir!';
+                    return;
+                }
+                const padId = this.sequencia[idx];
+                setTimeout(() => {
+                    this.piscarPad(padId);
+                    this.tocarSequencia(idx + 1);
+                }, 480);
+            },
+
+            piscarPad: function(id) {
+                const el = document.getElementById(`pad-simon-${id}`);
+                if (el) {
+                    el.classList.add('brilhando');
+                    AudioMotor.tocarTom(this.configPads[id].tom, 0.22, 'triangle');
+                    this.soltarNotaVisual(el);
+                    setTimeout(() => el.classList.remove('brilhando'), 260);
+                }
+            },
+
+            soltarNotaVisual: function(el) {
+                const rect = el.getBoundingClientRect();
+                const container = document.getElementById('tela-simon');
+                const nota = document.createElement('div');
+                nota.className = 'nota-musical-voando';
+                nota.textContent = Math.random() < 0.5 ? '♪' : '♫';
+                nota.style.left = `${rect.left + rect.width / 2 - 10}px`;
+                nota.style.top = `${rect.top - 10}px`;
+                container.appendChild(nota);
+                setTimeout(() => nota.remove(), 800);
+            },
+
+            toqueUsuario: function(id) {
+                if (!this.jogando) return;
+                this.piscarPad(id);
+                tentarVibrar(20);
+
+                if (id === this.sequencia[this.passo]) {
+                    this.passo++;
+                    if (this.passo === this.sequencia.length) {
+                        const meta = this.metaPorFase[this.faseAtual - 1];
+                        if (this.sequencia.length >= meta) {
+                            this.completarFase();
+                        } else {
+                            setTimeout(() => this.proximaRodada(), 700);
+                        }
+                    }
+                } else {
+                    this.jogando = false;
+                    AudioMotor.tocarTom(160, 0.4, 'sawtooth');
+                    tentarVibrar([80, 50, 80]);
+                    document.getElementById('status-simon').innerHTML = `<span style="color:#f87171;">Sequência incorreta! Tente a Fase ${this.faseAtual} de novo.</span>`;
+                    document.getElementById('btn-iniciar-simon').textContent = `Repetir Fase ${this.faseAtual}`;
+                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
+                }
+            },
+
+            completarFase: function() {
+                this.jogando = false;
+                GerenciadorArcade.adicionarMoedas(5);
+                AudioMotor.tocarTom(880, 0.3);
+
+                if (this.faseAtual === 5) {
+                    GerenciadorArcade.adicionarMoedas(50);
+                    document.getElementById('status-simon').innerHTML = `
+                        <strong style="color:#fde047;">FANTÁSTICO! COMPLETOU AS 5 FASES!</strong><br>
+                        <span style="color:#86efac; font-size:12.5px;">+55 moedas faturadas no total!</span>
+                    `;
+                    document.getElementById('btn-iniciar-simon').textContent = 'Recomeçar Arcade';
+                    document.getElementById('btn-iniciar-simon').onclick = () => MotorSimon.montar();
+                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
+                } else {
+                    document.getElementById('status-simon').innerHTML = `
+                        <strong style="color:#10b981;">Fase ${this.faseAtual} Concluída! (+5 Moedas)</strong>
+                    `;
+                    this.faseAtual++;
+                    document.getElementById('btn-iniciar-simon').textContent = `Iniciar Fase ${this.faseAtual}`;
+                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
+                }
+            }
+        };
+
+        // =========================================================================
+        // 4. ESTOURAR BOLHAS (COM GOTÍCULAS REALISTAS & VIBRAÇÃO TÁTIL)
+        // =========================================================================
+        const MotorBolhas = {
+            canvas: null, ctx: null, anim: null, rodando: false,
+            estouradas: 0,
+            vidas: 5,
+            bolhas: [],
+            gotas: [],
+            coracoes: [],
+            tempoMs: 0,
+            ultimoSpawn: 0,
+            ultimoFrame: 0,
+            fpsIntervalo: 25,
+
+            montar: function() {
+                this.canvas = document.getElementById('cv-bolhas');
+                this.ctx = this.canvas.getContext('2d');
+                const r = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = r.width;
+                this.canvas.height = r.height;
+                this.canvas.onpointerdown = (e) => this.toque(e);
+                document.getElementById('over-bolhas').style.display = 'flex';
+                this.rodando = false;
+            },
+
+            iniciar: function() {
+                this.estouradas = 0;
+                this.vidas = 5;
+                this.bolhas = [];
+                this.gotas = [];
+                this.coracoes = [];
+                this.tempoMs = 0;
+                this.ultimoSpawn = performance.now();
+                tentarVibrar(35);
+
+                document.getElementById('placar-bolhas-estouradas').textContent = '0';
+                document.getElementById('placar-bolhas-vidas').textContent = '5';
+                document.getElementById('over-bolhas').style.display = 'none';
+
+                this.rodando = true;
+                for (let i = 0; i < 4; i++) this.criarBolha();
+                this.ultimoFrame = performance.now();
+                this.loop(this.ultimoFrame);
+            },
+
+            parar: function() {
+                this.rodando = false;
+                if (this.anim) cancelAnimationFrame(this.anim);
+            },
+
+            criarBolha: function() {
+                this.bolhas.push({
+                    x: Math.random() * (this.canvas.width - 60) + 30,
+                    y: this.canvas.height + 20,
+                    r: 22 + Math.random() * 12,
+                    v: 1.1 + Math.random() * 1.3,
+                    oscilacao: Math.random() * Math.PI * 2
+                });
+            },
+
+            gerarGotas: function(bx, by) {
+                for (let i = 0; i < 6; i++) {
+                    const ang = (Math.PI * 2 / 6) * i;
+                    this.gotas.push({
+                        x: bx,
+                        y: by,
+                        vx: Math.cos(ang) * (Math.random() * 3 + 2),
+                        vy: Math.sin(ang) * (Math.random() * 3 + 2),
+                        alpha: 1
+                    });
+                }
+            },
+
+            toque: function(e) {
+                if (!this.rodando) return;
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                for (let i = this.bolhas.length - 1; i >= 0; i--) {
+                    const b = this.bolhas[i];
+                    if (Math.hypot(x - b.x, y - b.y) < b.r + 14) {
+                        this.gerarGotas(b.x, b.y);
+                        this.bolhas.splice(i, 1);
+                        this.estouradas++;
+                        document.getElementById('placar-bolhas-estouradas').textContent = this.estouradas;
+                        AudioMotor.tocarTom(750 + Math.random() * 150, 0.05);
+                        tentarVibrar(18);
+
+                        if (this.estouradas % 20 === 0) {
+                            GerenciadorArcade.adicionarMoedas(1);
+                            AudioMotor.tocarTom(880, 0.18);
+                        }
+                        break;
+                    }
+                }
+            },
+
+            loop: function(timestamp) {
+                if (!MotorBolhas.rodando) return;
+                MotorBolhas.anim = requestAnimationFrame((ts) => MotorBolhas.loop(ts));
+                
+                if (!timestamp) timestamp = performance.now();
+                const delta = timestamp - MotorBolhas.ultimoFrame;
+                if (delta > MotorBolhas.fpsIntervalo) {
+                    MotorBolhas.ultimoFrame = timestamp - (delta % MotorBolhas.fpsIntervalo);
+                    MotorBolhas.atualizar();
+                    MotorBolhas.desenhar();
+                }
+            },
+
+            atualizar: function() {
+                const agora = performance.now();
+                this.tempoMs += 25;
+
+                if (agora - this.ultimoSpawn > 1200) {
+                    this.ultimoSpawn = agora;
+                    this.criarBolha();
+                }
+
+                // Gotas
+                for (let i = this.gotas.length - 1; i >= 0; i--) {
+                    const g = this.gotas[i];
+                    g.x += g.vx;
+                    g.y += g.vy;
+                    g.alpha -= 0.05;
+                    if (g.alpha <= 0) this.gotas.splice(i, 1);
+                }
+
+                // Bolhas
+                for (let i = this.bolhas.length - 1; i >= 0; i--) {
+                    const b = this.bolhas[i];
+                    b.y -= b.v;
+                    b.oscilacao += 0.04;
+                    b.x += Math.sin(b.oscilacao) * 0.6;
+
+                    if (b.y < -30) {
+                        this.bolhas.splice(i, 1);
+                        this.vidas--;
+                        document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
+                        AudioMotor.tocarTom(220, 0.2);
+                        tentarVibrar(45);
+                        if (this.vidas <= 0) return this.fim();
+                    }
+                }
+            },
+
+            desenhar: function() {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Desenhar gotas
+                this.gotas.forEach(g => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${g.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(g.x, g.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Desenhar bolhas com reflexo
+                this.bolhas.forEach(b => {
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Brilho de arco-íris suave
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(b.x - b.r * 0.35, b.y - b.r * 0.35, b.r * 0.22, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+            },
+
+            fim: function() {
+                this.parar();
+                tentarVibrar([60, 50, 60]);
+                const moedas = Math.floor(this.estouradas / 20);
+                const ov = document.getElementById('over-bolhas');
+                ov.innerHTML = `
+                    <div class="painel-dialogo-arcade">
+                        <h2 style="color:#ef4444;">Fim de Partida!</h2>
+                        <p>5 bolhas escaparam!<br>
+                        Bolhas estouradas: <strong>${this.estouradas}</strong><br>
+                        <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${moedas} Moedas faturadas!</span></p>
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Novamente</button>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    </div>
+                `;
+                ov.style.display = 'flex';
+            }
+        };
+
+        // =========================================================================
+        // 5. JOGO DA VELHA EM MOLDURA DE MADEIRA
         // =========================================================================
         const MotorVelha = {
             tabuleiro: Array(9).fill(''),
             turno: 'X',
             fim: false,
 
-            svgEstrela: `<svg class="icone-svg" style="width:36px;height:36px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-            svgPatinha: `<svg class="icone-svg" style="width:36px;height:36px;color:#38bdf8;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>`,
+            svgEstrela: `<svg class="icone-svg" style="width:38px;height:38px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+            svgPatinha: `<svg class="icone-svg" style="width:38px;height:38px;color:#0284c7;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>`,
 
             linhasVitoria: [
                 [0,1,2],[3,4,5],[6,7,8],
@@ -1259,7 +1807,7 @@
                 this.tabuleiro = Array(9).fill('');
                 this.turno = 'X';
                 this.fim = false;
-                document.getElementById('status-velha').textContent = 'Sua vez: Você joga com Estrelas';
+                document.getElementById('status-velha').textContent = 'Sua vez: Estrelas Douradas';
                 const g = document.getElementById('grade-velha');
                 g.innerHTML = '';
                 for (let i = 0; i < 9; i++) {
@@ -1280,65 +1828,67 @@
                 if (this.tabuleiro.every(x => x !== '')) return this.empate();
 
                 this.turno = 'O';
-                document.getElementById('status-velha').textContent = 'Chuíri pensando na jogada...';
-                setTimeout(() => this.jogadaChuiriInteligente(), 400);
+                document.getElementById('status-velha').textContent = 'Chuíri a pensar...';
+                setTimeout(() => this.jogadaChuiri(), 400);
             },
 
-            encontrarCasaEstrategica: function(jogador) {
-                for (let linha of this.linhasVitoria) {
-                    const contagem = linha.filter(idx => this.tabuleiro[idx] === jogador).length;
-                    const vazia = linha.find(idx => this.tabuleiro[idx] === '');
-                    if (contagem === 2 && vazia !== undefined) {
-                        return vazia;
+            jogadaChuiri: function() {
+                if (this.fim) return;
+                let escolhida = null;
+
+                for (let l of this.linhasVitoria) {
+                    const contO = l.filter(idx => this.tabuleiro[idx] === 'O').length;
+                    const vazia = l.find(idx => this.tabuleiro[idx] === '');
+                    if (contO === 2 && vazia !== undefined) { escolhida = vazia; break; }
+                }
+
+                if (escolhida === null) {
+                    for (let l of this.linhasVitoria) {
+                        const contX = l.filter(idx => this.tabuleiro[idx] === 'X').length;
+                        const vazia = l.find(idx => this.tabuleiro[idx] === '');
+                        if (contX === 2 && vazia !== undefined) { escolhida = vazia; break; }
                     }
                 }
-                return null;
-            },
 
-            jogadaChuiriInteligente: function() {
-                if (this.fim) return;
-
-                let melhorCasa = this.encontrarCasaEstrategica('O');
-                if (melhorCasa === null) melhorCasa = this.encontrarCasaEstrategica('X');
-                if (melhorCasa === null && this.tabuleiro[4] === '') melhorCasa = 4;
-                if (melhorCasa === null) {
-                    const cantos = [0, 2, 6, 8].filter(idx => this.tabuleiro[idx] === '');
-                    if (cantos.length > 0) melhorCasa = cantos[Math.floor(Math.random() * cantos.length)];
-                }
-                if (melhorCasa === null) {
+                if (escolhida === null && this.tabuleiro[4] === '') escolhida = 4;
+                if (escolhida === null) {
                     const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
-                    if (vazias.length > 0) melhorCasa = vazias[Math.floor(Math.random() * vazias.length)];
+                    if (vazias.length > 0) escolhida = vazias[Math.floor(Math.random() * vazias.length)];
                 }
 
-                if (melhorCasa !== null) {
-                    this.marcar(melhorCasa, 'O');
+                if (escolhida !== null) {
+                    this.marcar(escolhida, 'O');
                     AudioMotor.tocarTom(420, 0.1);
                 }
 
                 if (this.checarVitoria('O')) return this.vitoria('O');
                 if (this.tabuleiro.every(x => x !== '')) return this.empate();
                 this.turno = 'X';
-                document.getElementById('status-velha').textContent = 'Sua vez: Você joga com Estrelas';
+                document.getElementById('status-velha').textContent = 'Sua vez: Estrelas Douradas';
             },
 
             marcar: function(i, p) {
                 this.tabuleiro[i] = p;
                 const el = document.getElementById(`velha-${i}`);
-                if (el) el.innerHTML = p === 'X' ? this.svgEstrela : this.svgPatinha;
+                if (el) {
+                    el.innerHTML = p === 'X' ? this.svgEstrela : this.svgPatinha;
+                    el.style.transform = 'scale(1.1)';
+                    setTimeout(() => el.style.transform = 'scale(1)', 150);
+                }
             },
 
             checarVitoria: function(p) {
-                return this.linhasVitoria.some(linha => linha.every(idx => this.tabuleiro[idx] === p));
+                return this.linhasVitoria.some(l => l.every(idx => this.tabuleiro[idx] === p));
             },
 
             vitoria: function(p) {
                 this.fim = true;
                 if (p === 'X') {
-                    document.getElementById('status-velha').innerHTML = '<strong style="color:#10b981;">Você venceu o Chuíri! +1 Moeda!</strong>';
+                    document.getElementById('status-velha').innerHTML = '<strong style="color:#10b981;">Venceu o Chuíri! +1 Moeda!</strong>';
                     GerenciadorArcade.adicionarMoedas(1);
                     AudioMotor.tocarTom(880, 0.25);
                 } else {
-                    document.getElementById('status-velha').innerHTML = '<strong style="color:#f59e0b;">O Chuíri defendeu e venceu!</strong>';
+                    document.getElementById('status-velha').innerHTML = '<strong style="color:#f59e0b;">O Chuíri venceu esta rodada!</strong>';
                 }
             },
 
@@ -1349,232 +1899,19 @@
         };
 
         // =========================================================================
-        // 4. ESTOURAR BOLHAS (TRAVADO EM 40 FPS & VIBRAÇÃO SUBTIL EM CADA BOLHA)
-        // =========================================================================
-        const MotorBolhas = {
-            canvas: null, ctx: null, anim: null, rodando: false,
-            estouradas: 0,
-            vidas: 5,
-            bolhas: [],
-            coracoes: [],
-            tempoDecorridoMs: 0,
-            intervaloSpawnMs: 1400,
-            ultimoSpawn: 0,
-            ultimoSpawnCoracao: 0,
-            
-            ultimoFrame: 0,
-            fpsIntervalo: 25,
-
-            montar: function() {
-                this.canvas = document.getElementById('cv-bolhas');
-                this.ctx = this.canvas.getContext('2d');
-                const r = this.canvas.parentElement.getBoundingClientRect();
-                this.canvas.width = r.width;
-                this.canvas.height = r.height;
-                this.canvas.onpointerdown = (e) => this.toque(e);
-                document.getElementById('over-bolhas').style.display = 'flex';
-                this.rodando = false;
-            },
-
-            iniciar: function() {
-                this.estouradas = 0;
-                this.vidas = 5;
-                this.bolhas = [];
-                this.coracoes = [];
-                this.tempoDecorridoMs = 0;
-                this.intervaloSpawnMs = 1400;
-                this.ultimoSpawn = performance.now();
-                this.ultimoSpawnCoracao = performance.now();
-                tentarVibrar(40);
-
-                document.getElementById('placar-bolhas-estouradas').textContent = '0';
-                document.getElementById('placar-bolhas-vidas').textContent = '5';
-                document.getElementById('over-bolhas').style.display = 'none';
-
-                this.rodando = true;
-                for (let i = 0; i < 4; i++) this.criarBolha();
-                this.ultimoFrame = performance.now();
-                this.loop(this.ultimoFrame);
-            },
-
-            parar: function() {
-                this.rodando = false;
-                if (this.anim) cancelAnimationFrame(this.anim);
-            },
-
-            criarBolha: function() {
-                this.bolhas.push({
-                    x: Math.random() * (this.canvas.width - 60) + 30,
-                    y: this.canvas.height + Math.random() * 40,
-                    r: 22 + Math.random() * 12,
-                    v: 1.2 + Math.random() * 1.4
-                });
-            },
-
-            criarCoracao: function() {
-                this.coracoes.push({
-                    x: Math.random() * (this.canvas.width - 60) + 30,
-                    y: this.canvas.height + 20,
-                    r: 18,
-                    v: 1.1
-                });
-            },
-
-            toque: function(e) {
-                if (!this.rodando) return;
-                const rect = this.canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                for (let i = this.coracoes.length - 1; i >= 0; i--) {
-                    const c = this.coracoes[i];
-                    if (Math.hypot(x - c.x, y - c.y) < c.r + 15) {
-                        this.coracoes.splice(i, 1);
-                        this.vidas++;
-                        document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
-                        AudioMotor.tocarTom(980, 0.25);
-                        tentarVibrar(40);
-                        return;
-                    }
-                }
-
-                for (let i = this.bolhas.length - 1; i >= 0; i--) {
-                    const b = this.bolhas[i];
-                    if (Math.hypot(x - b.x, y - b.y) < b.r + 14) {
-                        this.bolhas.splice(i, 1);
-                        this.estouradas++;
-                        document.getElementById('placar-bolhas-estouradas').textContent = this.estouradas;
-                        AudioMotor.tocarTom(720 + Math.random() * 200, 0.05);
-
-                        // Vibração extremamente subtil em CADA bolha (15ms)
-                        tentarVibrar(15);
-
-                        if (this.estouradas % 20 === 0) {
-                            GerenciadorArcade.adicionarMoedas(1);
-                            AudioMotor.tocarTom(880, 0.18);
-                            // Um tick duplo para celebrar a moeda
-                            setTimeout(() => tentarVibrar(25), 50);
-                        }
-                        break;
-                    }
-                }
-            },
-
-            loop: function(timestamp) {
-                if (!MotorBolhas.rodando) return;
-                MotorBolhas.anim = requestAnimationFrame((ts) => MotorBolhas.loop(ts));
-                
-                if (!timestamp) timestamp = performance.now();
-                const delta = timestamp - MotorBolhas.ultimoFrame;
-                
-                if (delta > MotorBolhas.fpsIntervalo) {
-                    MotorBolhas.ultimoFrame = timestamp - (delta % MotorBolhas.fpsIntervalo);
-                    MotorBolhas.atualizar();
-                    MotorBolhas.desenhar();
-                }
-            },
-
-            atualizar: function() {
-                const agora = performance.now();
-                this.tempoDecorridoMs += 25; // 40fps
-
-                if (agora - this.ultimoSpawn > this.intervaloSpawnMs) {
-                    this.ultimoSpawn = agora;
-                    this.criarBolha();
-                    const minutosPassados = Math.floor(this.tempoDecorridoMs / 60000);
-                    const fatorReducao = Math.pow(0.9, minutosPassados); 
-                    this.intervaloSpawnMs = Math.max(350, 1400 * fatorReducao);
-                }
-
-                if (agora - this.ultimoSpawnCoracao >= 480000) {
-                    this.ultimoSpawnCoracao = agora;
-                    this.criarCoracao();
-                }
-
-                for (let i = this.coracoes.length - 1; i >= 0; i--) {
-                    const c = this.coracoes[i];
-                    c.y -= c.v;
-                    if (c.y < -30) this.coracoes.splice(i, 1);
-                }
-
-                for (let i = this.bolhas.length - 1; i >= 0; i--) {
-                    const b = this.bolhas[i];
-                    b.y -= b.v;
-                    if (b.y < -30) {
-                        this.bolhas.splice(i, 1);
-                        this.vidas--;
-                        document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
-                        AudioMotor.tocarTom(220, 0.2);
-                        tentarVibrar(50);
-
-                        if (this.vidas <= 0) return this.fim();
-                    }
-                }
-            },
-
-            desenhar: function() {
-                const ctx = this.ctx;
-                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                this.bolhas.forEach(b => {
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(b.x - b.r * 0.35, b.y - b.r * 0.35, b.r * 0.25, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                this.coracoes.forEach(c => {
-                    ctx.save();
-                    ctx.translate(c.x, c.y);
-                    ctx.fillStyle = '#ef4444';
-                    ctx.beginPath();
-                    ctx.moveTo(0, 5);
-                    ctx.bezierCurveTo(-12, -8, -12, -18, 0, -12);
-                    ctx.bezierCurveTo(12, -18, 12, -8, 0, 5);
-                    ctx.fill();
-                    ctx.restore();
-                });
-            },
-
-            fim: function() {
-                this.parar();
-                tentarVibrar([60, 50, 60]);
-                const moedasFinais = Math.floor(this.estouradas / 20);
-                const ov = document.getElementById('over-bolhas');
-                ov.innerHTML = `
-                    <h2 style="color:#f87171; font-size:22px;">Fim de Partida!</h2>
-                    <p style="font-size:14px; margin-top:6px;">5 bolhas escaparam!</p>
-                    <p style="font-size:15px; margin-top:4px;">Bolhas estouradas: <strong>${this.estouradas}</strong></p>
-                    <p style="color:#fde047; font-size:14px; font-weight:800; margin-top:4px;">+${moedasFinais} Moedas faturadas!</p>
-                    <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Novamente</button>
-                    <button style="margin-top:10px; background:transparent; border:none; color:#cbd5e1; font-weight:700; font-size:12.5px; cursor:pointer;" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
-                `;
-                ov.style.display = 'flex';
-            }
-        };
-
-        // =========================================================================
-        // 5. JOGO DA MEMÓRIA 
+        // 6. JOGO DA MEMÓRIA 3D
         // =========================================================================
         const MotorMemoria = {
             cartas: [], viradas: [], pares: 0,
-            simbolosSvg: [
-                { id: 'estrela',  svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
-                { id: 'maca',     svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#ef4444;" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/></svg>` },
-                { id: 'coroa',    svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#d97706;" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>` },
-                { id: 'coracao',  svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#ec4899;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-                { id: 'foguete',  svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#38bdf8;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>` },
-                { id: 'patinha',  svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#10b981;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>` },
-                { id: 'diamante', svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#6366f1;" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>` },
-                { id: 'musica',   svg: `<svg class="icone-svg" style="width:24px;height:24px;color:#a855f7;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` }
+            simbolos: [
+                { id: 'estrela',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
+                { id: 'coracao',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#ef4444;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+                { id: 'coroa',    svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#d97706;" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>` },
+                { id: 'foguete',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#0284c7;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>` },
+                { id: 'patinha',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#10b981;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>` },
+                { id: 'diamante', svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#6366f1;" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>` },
+                { id: 'musica',   svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#a855f7;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
+                { id: 'sol',      svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#f97316;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }
             ],
 
             iniciar: function() {
@@ -1582,14 +1919,14 @@
                 grade.innerHTML = '';
                 this.viradas = [];
                 this.pares = 0;
-                let b = [...this.simbolosSvg, ...this.simbolosSvg];
-                b.sort(() => Math.random() - 0.5);
-                this.cartas = b;
-                b.forEach((item, idx) => {
+                let baralho = [...this.simbolos, ...this.simbolos].sort(() => Math.random() - 0.5);
+                this.cartas = baralho;
+
+                baralho.forEach((item, idx) => {
                     const c = document.createElement('div');
                     c.className = 'carta-arcade';
-                    c.id = `arc-card-${idx}`;
-                    c.innerHTML = '<span style="color:#64748b; font-weight:800; font-size:16px;">?</span>';
+                    c.id = `carta-memoria-${idx}`;
+                    c.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>';
                     c.onclick = () => this.virar(idx);
                     grade.appendChild(c);
                 });
@@ -1597,12 +1934,12 @@
 
             virar: function(idx) {
                 if (this.viradas.length >= 2) return;
-                const el = document.getElementById(`arc-card-${idx}`);
+                const el = document.getElementById(`carta-memoria-${idx}`);
                 if (!el || el.getAttribute('data-v') === '1') return;
 
                 const c = this.cartas[idx];
                 el.innerHTML = c.svg;
-                el.style.background = '#0284c7';
+                el.classList.add('revelada');
                 el.setAttribute('data-v', '1');
                 AudioMotor.tocarTom(520, 0.08);
                 this.viradas.push({ idx, id: c.id });
@@ -1612,166 +1949,23 @@
                     if (c1.id === c2.id) {
                         this.pares++;
                         this.viradas = [];
-                        AudioMotor.tocarTom(880, 0.15);
+                        AudioMotor.tocarTom(880, 0.18);
                         if (this.pares === 8) {
                             setTimeout(() => {
                                 GerenciadorArcade.adicionarMoedas(50);
-                                alert("Parabéns! Você finalizou todo o Jogo da Memória e faturou +50 Moedas!");
+                                alert("Parabéns! Encontrou todos os pares e conquistou +50 Moedas!");
                                 GerenciadorArcade.voltarAcao();
                             }, 350);
                         }
                     } else {
                         setTimeout(() => {
-                            const e1 = document.getElementById(`arc-card-${c1.idx}`);
-                            const e2 = document.getElementById(`arc-card-${c2.idx}`);
-                            if (e1) { e1.innerHTML = '<span style="color:#64748b; font-weight:800; font-size:16px;">?</span>'; e1.style.background = ''; e1.removeAttribute('data-v'); }
-                            if (e2) { e2.innerHTML = '<span style="color:#64748b; font-weight:800; font-size:16px;">?</span>'; e2.style.background = ''; e2.removeAttribute('data-v'); }
+                            const e1 = document.getElementById(`carta-memoria-${c1.idx}`);
+                            const e2 = document.getElementById(`carta-memoria-${c2.idx}`);
+                            if (e1) { e1.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>'; e1.classList.remove('revelada'); e1.removeAttribute('data-v'); }
+                            if (e2) { e2.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>'; e2.classList.remove('revelada'); e2.removeAttribute('data-v'); }
                             this.viradas = [];
                         }, 700);
                     }
-                }
-            }
-        };
-
-        // =========================================================================
-        // 6. GÊNIO SIMON POR FASES
-        // =========================================================================
-        const MotorSimon = {
-            faseAtual: 1,
-            passo: 0,
-            jogando: false,
-            sequencia: [],
-
-            configBotoes: [
-                { cor: '#ef4444', tom: 329.63 }, // Mi (E4)
-                { cor: '#3b82f6', tom: 392.00 }, // Sol (G4)
-                { cor: '#10b981', tom: 440.00 }, // Lá (A4)
-                { cor: '#eab308', tom: 493.88 }, // Si (B4)
-                { cor: '#a855f7', tom: 523.25 }, // Dó (C5) - Fase 2
-                { cor: '#ec4899', tom: 587.33 }, // Ré (D5) - Fase 3
-                { cor: '#f97316', tom: 659.25 }, // Mi (E5) - Fase 4
-                { cor: '#06b6d4', tom: 739.99 }  // Fá# (F#5) - Fase 5
-            ],
-
-            metaPorFase: [5, 10, 10, 10, 10],
-            botoesPorFase: [4, 5, 6, 7, 8],
-
-            montar: function() {
-                this.faseAtual = 1;
-                this.renderizarBotoesFase();
-                document.getElementById('status-simon').textContent = 'Toque em Iniciar Fase 1';
-                document.getElementById('btn-iniciar-simon').textContent = 'Iniciar Fase 1';
-                document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
-                this.atualizarPlacarFase(0);
-            },
-
-            renderizarBotoesFase: function() {
-                const grade = document.getElementById('grade-simon-slots');
-                grade.innerHTML = '';
-                const totalBotoes = this.botoesPorFase[this.faseAtual - 1];
-
-                for (let i = 0; i < totalBotoes; i++) {
-                    const btn = document.createElement('div');
-                    btn.className = 'btn-simon-slot';
-                    btn.id = `simon-btn-${i}`;
-                    btn.style.background = this.configBotoes[i].cor;
-                    btn.onclick = () => this.toqueUsuario(i);
-                    grade.appendChild(btn);
-                }
-            },
-
-            atualizarPlacarFase: function(seqAtual) {
-                const meta = this.metaPorFase[this.faseAtual - 1];
-                document.getElementById('txt-fase-simon').textContent = `FASE ${this.faseAtual} DE 5`;
-                document.getElementById('txt-seq-simon').textContent = `(${seqAtual} / ${meta})`;
-            },
-
-            iniciarOuAvancar: function() {
-                document.getElementById('btn-iniciar-simon').style.display = 'none';
-                this.renderizarBotoesFase();
-                this.sequencia = [];
-                this.jogando = true;
-                this.proximaRodada();
-            },
-
-            proximaRodada: function() {
-                this.passo = 0;
-                const totalBotoes = this.botoesPorFase[this.faseAtual - 1];
-                this.sequencia.push(Math.floor(Math.random() * totalBotoes));
-                this.atualizarPlacarFase(this.sequencia.length);
-
-                document.getElementById('status-simon').textContent = `Observe a sequência (${this.sequencia.length})`;
-                this.tocarSequencia(0);
-            },
-
-            tocarSequencia: function(idx) {
-                if (idx >= this.sequencia.length) {
-                    document.getElementById('status-simon').textContent = 'Sua vez de repetir!';
-                    return;
-                }
-                const bId = this.sequencia[idx];
-                setTimeout(() => {
-                    this.piscarBotao(bId);
-                    this.tocarSequencia(idx + 1);
-                }, 480);
-            },
-
-            piscarBotao: function(id) {
-                const el = document.getElementById(`simon-btn-${id}`);
-                if (el) {
-                    el.classList.add('ativo');
-                    AudioMotor.tocarTom(this.configBotoes[id].tom, 0.2, 'triangle');
-                    setTimeout(() => el.classList.remove('ativo'), 250);
-                }
-            },
-
-            toqueUsuario: function(id) {
-                if (!this.jogando) return;
-                this.piscarBotao(id);
-                tentarVibrar(20);
-
-                if (id === this.sequencia[this.passo]) {
-                    this.passo++;
-                    if (this.passo === this.sequencia.length) {
-                        const meta = this.metaPorFase[this.faseAtual - 1];
-                        if (this.sequencia.length >= meta) {
-                            this.completarFase();
-                        } else {
-                            setTimeout(() => this.proximaRodada(), 700);
-                        }
-                    }
-                } else {
-                    this.jogando = false;
-                    AudioMotor.tocarTom(160, 0.4, 'sawtooth');
-                    tentarVibrar([80, 50, 80]);
-                    document.getElementById('status-simon').innerHTML = `<span style="color:#f87171;">Sequência incorreta! Tente a Fase ${this.faseAtual} novamente.</span>`;
-                    document.getElementById('btn-iniciar-simon').textContent = `Repetir Fase ${this.faseAtual}`;
-                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
-                }
-            },
-
-            completarFase: function() {
-                this.jogando = false;
-                GerenciadorArcade.adicionarMoedas(5);
-                AudioMotor.tocarTom(880, 0.3);
-
-                if (this.faseAtual === 5) {
-                    GerenciadorArcade.adicionarMoedas(50);
-                    document.getElementById('status-simon').innerHTML = `
-                        <strong style="color:#fde047; font-size:15px;">FANTÁSTICO! VOCÊ COMPLETOU TODAS AS 5 FASES!</strong><br>
-                        <span style="color:#a7f3d0;">+5 moedas da fase + 50 moedas bônus creditadas!</span>
-                    `;
-                    document.getElementById('btn-iniciar-simon').textContent = 'Recomeçar Arcade';
-                    document.getElementById('btn-iniciar-simon').onclick = () => MotorSimon.montar();
-                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
-                } else {
-                    document.getElementById('status-simon').innerHTML = `
-                        <strong style="color:#10b981;">Fase ${this.faseAtual} Concluída! (+5 Moedas)</strong><br>
-                        Novo botão desbloqueado para a Fase ${this.faseAtual + 1}!
-                    `;
-                    this.faseAtual++;
-                    document.getElementById('btn-iniciar-simon').textContent = `Iniciar Fase ${this.faseAtual}`;
-                    document.getElementById('btn-iniciar-simon').style.display = 'inline-flex';
                 }
             }
         };

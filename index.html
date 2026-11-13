@@ -30,66 +30,6 @@
             display: none !important;
         }
 
-        #splash-screen-apresentacao {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: #000000 !important;
-            z-index: 99999999 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-sizing: border-box !important;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-            -webkit-transform: translate3d(0,0,0);
-            transform: translate3d(0,0,0);
-        }
-
-        #splash-screen-apresentacao.fade-out {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-
-        #video-intro-splash {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            display: block !important;
-            -webkit-transform: translate3d(0,0,0);
-            transform: translate3d(0,0,0);
-        }
-
-        #btn-ativar-som-splash {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.85);
-            color: #ffffff;
-            border: 1.5px solid #f97316;
-            padding: 10px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            font-weight: 800;
-            z-index: 100000000;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-
         body { top: 0 !important; }
         .skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
         #google_translate_element { display: none !important; }
@@ -420,9 +360,7 @@
             border: none !important;
         }
 
-        /* =========================================================================
-           BANNERS 100% PUROS E SOLTOS (SEM QUADRO / SEM BORDA / COM MENSAGEM DIÁRIA)
-           ========================================================================= */
+        /* BANNERS PUROS E SOLTOS */
         .banner-acesso-puro-solto {
             position: relative;
             width: 100%;
@@ -453,7 +391,6 @@
             box-shadow: none !important;
         }
 
-        /* Camada de texto sobre o pergaminho masculino */
         .camada-texto-banner-masculino {
             position: absolute;
             top: 25%;
@@ -512,7 +449,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Camada de texto sobre a área rosa feminina */
         .camada-texto-banner-feminino {
             position: absolute;
             top: 25%;
@@ -576,12 +512,6 @@
 
     <div id="google_translate_element" style="display:none;"></div>
 
-    <div id="splash-screen-apresentacao" class="oculto">
-        <video id="video-intro-splash" muted autoplay playsinline webkit-playsinline preload="auto">
-            <source src="intro.mp4" type="video/mp4">
-        </video>
-    </div>
-
     <div id="toast-container"></div>
 
     <div id="banner-instalacao-pwa" class="oculto">
@@ -602,8 +532,8 @@
 
     <main class="container">
 
-        <!-- TELA 0: AUTENTICAÇÃO REAL -->
-        <section id="tela-login" class="secao-conteudo-app" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 14px 40px 14px;">
+        <!-- TELA 0: AUTENTICAÇÃO REAL (OCULTA POR PADRÃO PARA EVITAR QUALQUER FLASH) -->
+        <section id="tela-login" class="secao-conteudo-app oculto" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 14px 40px 14px;">
             <div class="cartao-geral" style="width: 100%; max-width: 410px; text-align: center; margin: 10px auto 16px auto; padding: 26px 20px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 26px; border: 1.5px solid rgba(226, 232, 240, 0.9); box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);">
                 <div style="margin-bottom: 20px;">
                     <div style="width: 50px; height: 50px; margin: 0 auto 10px auto; border-radius: 16px; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(249, 115, 22, 0.16);">
@@ -701,8 +631,8 @@
             </div>
         </section>
 
-        <!-- APLICAÇÃO PRINCIPAL LOGADA -->
-        <div id="tela-app" class="oculto">
+        <!-- APLICAÇÃO PRINCIPAL: VISÍVEL POR PADRÃO (ZERO ESPERA) -->
+        <div id="tela-app">
 
             <!-- 1º ITEM FIXO: APOIAR O PROJETO -->
             <button type="button" class="btn-barra-apoiar-projeto" onclick="window.abrirModalApoioPix()" style="width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; margin-top: 4px; margin-bottom: 12px; background: rgba(255, 247, 237, 0.95); border: 1.5px solid rgba(249, 115, 22, 0.25); border-radius: 14px; color: #ea580c; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08); backdrop-filter: blur(8px); transition: transform 0.15s ease, background 0.2s ease;">
@@ -810,7 +740,7 @@
                 <!-- MÓDULO 0: MEU ESPAÇO -->
                 <section id="secao-meuespaco" class="secao-conteudo-app oculto">
                     
-                    <!-- BANNER 100% PURO E SOLTO: ESPAÇO MULHER (958x400 PNG COM MENSAGEM DO APP-SAUDE-DICAS.JS) -->
+                    <!-- BANNER: ESPAÇO MULHER -->
                     <div id="card-acesso-espaco-mulher" class="banner-acesso-puro-solto oculto" onclick="window.acessarModuloMulherHTML()">
                         <img src="espacomulher.png" onerror="this.src='espacomulher.jpg'" alt="Espaço Mulher" class="img-banner-pura">
                         
@@ -828,7 +758,7 @@
                         </button>
                     </div>
 
-                    <!-- BANNER 100% PURO E SOLTO: ESPAÇO MASCULINO (958x400 PNG COM MENSAGEM ESTOICA OFICIAL) -->
+                    <!-- BANNER: ESPAÇO MASCULINO -->
                     <div id="card-acesso-espaco-masculino" class="banner-acesso-puro-solto oculto" onclick="window.acessarModuloHomemHTML()">
                         <img src="espacomasculino.png" onerror="this.src='espacomasculino.jpg'" alt="Espaço Masculino" class="img-banner-pura">
                         
@@ -892,10 +822,9 @@
                         </button>
                     </div>
 
-                    <!-- Contentor Limpo de Missões (Unificado com separadores suaves) -->
                     <div id="lista-missoes-dia" class="painel-missoes-unificado"></div>
 
-                    <!-- HISTÓRICO KIDS ADM RETRÁTIL (COM SANFONA) -->
+                    <!-- HISTÓRICO KIDS ADM RETRÁTIL -->
                     <div id="painel-historico-missoes-kids-adm" class="cartao-geral oculto" style="padding: 12px 14px; margin-top: 16px; border-left: 4px solid #38bdf8;">
                         <div onclick="window.alternarSecaoRetratil('corpo-historico-kids-adm', 'seta-historico-kids-adm')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
                             <div style="display:flex; align-items:center; gap:8px;">
@@ -1049,7 +978,6 @@
                     <div id="card-registro-rapido-financas" class="cartao-geral" style="margin-bottom: 12px; border-left: 4px solid var(--cor-primaria, #f97316);">
                         <h3 style="font-size: 14px; margin-bottom: 8px;">Registo Rápido de Movimentação</h3>
                         
-                        <!-- Barra de Texto Integrada com Microfone e Botão de Câmara ao lado -->
                         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
                             <div class="campo-com-voz" style="flex: 1; position: relative; margin-bottom: 0;">
                                 <input type="text" id="input-fin-descricao" placeholder="Descrição ou fale tocando no microfone..." style="padding-right: 38px;">
@@ -1311,8 +1239,8 @@
         </div>
     </main>
 
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (CONFIGURADA COM SUPORTE DINÂMICO ESCUDO / MEDITA) -->
-    <nav class="bottom-nav-fixa-inferior oculto" id="barra-navegacao-principal">
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (VISÍVEL POR PADRÃO) -->
+    <nav class="bottom-nav-fixa-inferior" id="barra-navegacao-principal">
         <ul class="bottom-nav-list">
             <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
                 <img id="img-avatar-nav" src="./icone/icone-escudo.png" alt="Meu Espaço" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; border: 1.5px solid transparent; transition: border-color 0.15s ease, transform 0.15s ease;">
@@ -2371,72 +2299,6 @@
             }
         });
 
-        // =========================================================================
-        // SPLASH SCREEN VÍDEO (ROBUSTO, SUAVE E SEM TRAVAS)
-        // =========================================================================
-        window.gerenciarApresentacaoVideoSplash = function() {
-            const splashEl = document.getElementById('splash-screen-apresentacao');
-            const videoEl = document.getElementById('video-intro-splash');
-
-            if (!splashEl || !videoEl) return;
-
-            splashEl.classList.remove('oculto');
-
-            let finalizado = false;
-            const encerrarSplash = () => {
-                if (finalizado) return;
-                finalizado = true;
-                splashEl.classList.add('fade-out');
-                setTimeout(() => {
-                    try { splashEl.remove(); } catch(e) {}
-                }, 450);
-            };
-
-            // Watchdog de segurança máxima: fecha sempre em 4.5 segundos se o vídeo não rodar
-            setTimeout(encerrarSplash, 4500);
-
-            videoEl.muted = true;
-            videoEl.defaultMuted = true;
-            videoEl.setAttribute('muted', '');
-            videoEl.setAttribute('playsinline', '');
-            videoEl.setAttribute('webkit-playsinline', '');
-            videoEl.playbackRate = 2.0;
-
-            videoEl.load();
-            const promessaPlay = videoEl.play();
-
-            if (promessaPlay !== undefined) {
-                promessaPlay.then(() => {
-                    let btnSom = document.getElementById('btn-ativar-som-splash');
-                    if (!btnSom) {
-                        btnSom = document.createElement('button');
-                        btnSom.id = 'btn-ativar-som-splash';
-                        btnSom.type = 'button';
-                        btnSom.innerHTML = `
-                            <img src="./icone/icone-energia.png" alt="Som" style="width:16px; height:16px; object-fit:contain;">
-                            <span>Ativar Som</span>
-                        `;
-                        
-                        btnSom.onclick = (e) => {
-                            e.stopPropagation();
-                            videoEl.muted = false;
-                            videoEl.currentTime = 0;
-                            if (window.SonsSuiri && typeof window.SonsSuiri.desbloquearAudioGlobal === 'function') {
-                                window.SonsSuiri.desbloquearAudioGlobal();
-                            }
-                            btnSom.remove();
-                        };
-                        splashEl.appendChild(btnSom);
-                    }
-                }).catch(() => {
-                    videoEl.muted = true;
-                    videoEl.play().catch(() => {});
-                });
-            }
-
-            videoEl.addEventListener('ended', encerrarSplash);
-        };
-
         window.abrirModalOpcoesCupomIA = function() {
             document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
         };
@@ -2761,9 +2623,6 @@
             }
         }
 
-        // =========================================================================
-        // REDIRECIONAMENTOS DIRETOS PARA OS MÓDULOS HOMEM E MULHER
-        // =========================================================================
         window.acessarModuloHomemHTML = function() {
             window.location.href = 'homem.html';
         };
@@ -2772,9 +2631,6 @@
             window.location.href = 'mulher.html';
         };
 
-        // =========================================================================
-        // CARREGAMENTO DAS FRASES DIÁRIAS (CALCULADAS PELO DIA DO ANO)
-        // =========================================================================
         window.carregarMensagensDiariasBanners = function() {
             const agora = new Date();
             const inicioAno = new Date(agora.getFullYear(), 0, 0);
@@ -2782,7 +2638,6 @@
             const umDia = 1000 * 60 * 60 * 24;
             const diaDoAno = Math.floor(diff / umDia);
 
-            // 1. Frase Masculina Diária (Acervo 365 Estoicas de app-dicas-masculinas.js)
             const elTextoMasc = document.getElementById('txt-frase-estoica-quadro');
             const elAutorMasc = document.getElementById('txt-autor-estoico-quadro');
             if (elTextoMasc && elAutorMasc) {
@@ -2797,7 +2652,6 @@
                 }
             }
 
-            // 2. Frase Feminina Diária (Acervo Bem-Estar Mulher de app-saude-dicas.js)
             const elTextoFem = document.getElementById('txt-frase-feminina-quadro');
             const elAutorFem = document.getElementById('txt-autor-feminino-quadro');
             if (elTextoFem && elAutorFem) {
@@ -2809,7 +2663,7 @@
                 }
                 if (itemFem) {
                     elTextoFem.textContent = `“${itemFem.poesia || itemFem.texto || itemFem.dica || itemFem.frase || itemFem}”`;
-                    elAutorFem.textContent = `— ${itemFem.autora || itemFem.autor || 'Sabedoria & Bem-Estar'}`;
+                    elAutorFem.textContent = `— ${itemFem.autora || itemFem.autor || 'Sabedoria & Bem-EStar'}`;
                 }
             }
         };
@@ -2824,7 +2678,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             restaurarBandeiraAtivaInicial();
-            window.gerenciarApresentacaoVideoSplash();
             window.carregarMensagensDiariasBanners();
             setTimeout(verificarGatilhoPenseSeteManha, 1500);
             setTimeout(verificarSugestaoPwaIos, 2000);
@@ -2839,3 +2692,7 @@
     </script>
 </body>
 </html>
+```<ElicitationsGroup message="Deseja testar a abertura imediata agora?">
+  <Elicitation label="Já colei no TrebEdit" query="Já salvei o index.html atualizado no TrebEdit. Como faço para testar se a tela de login sumiu?"/>
+  <Elicitation label="E se deslogar?" query="Se eu clicar em Sair da Conta, a tela de login volta a aparecer normalmente?"/>
+</ElicitationsGroup>
