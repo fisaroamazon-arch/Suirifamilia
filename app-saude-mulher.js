@@ -2,7 +2,8 @@
 // SUIRI GESTÃO FAMILIAR - APP-SAUDE-MULHER.JS (100% COMPLETO E INTEGRAL)
 // Topo Nobre Redesenhado: Diário & Ciclo em Coluna Dupla, Ícones Preservados,
 // Botão de Voltar Elegante, Título Ampliado e Diário Rústico Paginado
-// Ícones Atualizados: 1 Minuto Zen (zen.png), Modo Alívio (alivio.png)
+// Minuto Zen com zen.mp4 em Tela Cheia, Som Ativo, Loop e Botão Fechar no Topo
+// Ícones Atualizados: Minuto Zen (zen.png), Modo Alívio (alivio.png)
 // e Radar de Feminilidade / Afeto com love.png
 // Curadoria Dinâmica: Sorteio Aleatório Diário, "Quero Assistir" e 2 Gavetas
 // =========================================================================
@@ -219,11 +220,11 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </button>
             </div>
 
-            <!-- BOTÕES DE BEM-ESTAR: 1 MINUTO ZEN (zen.png) & MODO ALÍVIO (alivio.png) -->
+            <!-- BOTÕES DE BEM-ESTAR: MINUTO ZEN (zen.png) & MODO ALÍVIO (alivio.png) -->
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
-                <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #c084fc; background:#ffffff; color:#581c87; box-shadow:0 2px 8px rgba(124,58,237,0.08); display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="window.abrirModalRespiracaoGuiada()">
+                <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #c084fc; background:#ffffff; color:#581c87; box-shadow:0 2px 8px rgba(124,58,237,0.08); display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="window.abrirModalMinutoZen()">
                     <img src="./icone/zen.png" onerror="this.onerror=null; this.src='./icone/icone-ioga.png';" alt="Zen" style="width:40px; height:40px; object-fit:contain;">
-                    <span>1 Minuto Zen</span>
+                    <span>Minuto Zen</span>
                 </button>
                 <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #a855f7; background:#faf5ff; color:#6b21a8; box-shadow:0 2px 8px rgba(168,85,247,0.08); display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="window.abrirModoAcolhimentoEmergencia()">
                     <img src="./icone/alivio.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Alívio" style="width:40px; height:40px; object-fit:contain;">
@@ -1040,7 +1041,6 @@ window.salvarNovasMetasConfiguradasMulher = function() {
 // 5. CURADORIA DE FILMES & SÉRIES (SORTEIO DIÁRIO, QUERO ASSISTIR & AVALIADOS)
 // =========================================================================
 
-// Função geradora de número pseudo-aleatório baseado na data do dia (semente determinística)
 function obterSementeDataHoje() {
     const hoje = new Date();
     const str = `${hoje.getFullYear()}-${hoje.getMonth() + 1}-${hoje.getDate()}`;
@@ -1052,7 +1052,6 @@ function obterSementeDataHoje() {
     return Math.abs(hash);
 }
 
-// Embaralhamento determinístico diário
 window.obterCatalogoDiarioMulher = function(tipo) {
     const base = tipo === 'filmes'
         ? (window.CatalogoFilmesMulher || [])
@@ -1063,7 +1062,6 @@ window.obterCatalogoDiarioMulher = function(tipo) {
     let seed = obterSementeDataHoje();
     const copia = [...base];
     
-    // Algoritmo Fisher-Yates com semente diária
     for (let i = copia.length - 1; i > 0; i--) {
         seed = (seed * 9301 + 49297) % 233280;
         const rnd = seed / 233280;
@@ -1126,7 +1124,6 @@ window.atualizarVisualizacaoMidiaMulher = function() {
     if (elTitulo) elTitulo.textContent = item.titulo || '';
     if (elDesc) elDesc.textContent = item.desc || '';
 
-    // Verifica se já está na lista "Quero Assistir"
     const naListaQueroVer = window.dadosMidiaMulherQueroVer.some(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnQueroVer) {
         if (naListaQueroVer) {
@@ -1142,7 +1139,6 @@ window.atualizarVisualizacaoMidiaMulher = function() {
         }
     }
 
-    // Verifica se já foi avaliado
     const jaVisto = window.dadosMidiaMulherAssistida.find(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnAcao) {
         if (jaVisto) {
@@ -1155,7 +1151,6 @@ window.atualizarVisualizacaoMidiaMulher = function() {
     }
 };
 
-// Alternar status "Quero Assistir"
 window.alternarQueroAssistirMulher = function(itemDireto = null) {
     const lista = window.obterListaMidiaMulherAtual();
     const item = itemDireto || lista[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
@@ -1198,11 +1193,9 @@ window.confirmarAvaliacaoMidiaMulher = function(estrelas, itemParam = null) {
     const item = itemParam || lista[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
     if (!item) return;
 
-    // Se estiver na lista "Quero Assistir", remove automaticamente
     window.dadosMidiaMulherQueroVer = window.dadosMidiaMulherQueroVer.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     localStorage.setItem('suiri_midia_mulher_quero_ver', JSON.stringify(window.dadosMidiaMulherQueroVer));
 
-    // Grava na lista de assistidos
     window.dadosMidiaMulherAssistida = window.dadosMidiaMulherAssistida.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     window.dadosMidiaMulherAssistida.push({
         id: item.id || ('mid_fem_' + Date.now()),
@@ -1225,7 +1218,6 @@ window.confirmarAvaliacaoMidiaMulher = function(estrelas, itemParam = null) {
     }
 };
 
-// Renderização da Gaveta 1: Quero Assistir
 window.renderizarHistoricoQueroVerMulher = function() {
     const cont = document.getElementById('bloco-quero-ver-mulher');
     const elContador = document.getElementById('contador-quero-ver-mulher');
@@ -1264,7 +1256,6 @@ window.removerMidiaQueroVerMulher = function(id) {
     window.atualizarVisualizacaoMidiaMulher();
 };
 
-// Renderização da Gaveta 2: Obras Assistidas e Avaliadas
 window.renderizarHistoricoAssistidosMulher = function() {
     const cont = document.getElementById('bloco-assistidos-mulher');
     const elContador = document.getElementById('contador-assistidos-mulher');
@@ -1750,63 +1741,79 @@ window.excluirPaginaDiario = async function(idDiario) {
 };
 
 // =========================================================================
-// 8. FERRAMENTAS DE BEM-ESTAR (RESPIRAÇÃO E MODO ALÍVIO BOUTIQUE)
+// 8. MINUTO ZEN (VÍDEO ZEN.MP4 TELA CHEIA COM SOM E LOOP) E MODO ALÍVIO
 // =========================================================================
 
-window.abrirModalRespiracaoGuiada = function() {
-    let modal = document.getElementById('modal-respiracao-guiada');
+window.abrirModalMinutoZen = function() {
+    let modal = document.getElementById('modal-video-minuto-zen');
     if (!modal) {
         modal = document.createElement('div');
-        modal.id = 'modal-respiracao-guiada';
-        modal.className = 'modal-overlay';
-        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000100; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
+        modal.id = 'modal-video-minuto-zen';
+        modal.style.cssText = 'position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:#000000 !important; z-index:9999999 !important; overflow:hidden !important; margin:0 !important; padding:0 !important; display:flex; align-items:center; justify-content:center;';
         modal.innerHTML = `
-            <div style="background:#ffffff; width:100%; max-width:360px; padding:30px 24px; border-radius:30px; border:1.5px solid #e9d5ff; text-align:center; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
-                <h3 style="margin:0 0 6px 0; font-size:20px; font-weight:900; color:#3b0764;">Respiração Consciente</h3>
-                <p id="txt-instrucao-respiracao" style="font-size:13.5px; color:#581c87; margin:0 0 24px 0; font-weight:700;"> Inspire fundo pelo nariz... </p>
-                
-                <div style="display:flex; align-items:center; justify-content:center; height:180px; margin-bottom:24px;">
-                    <div id="circulo-respiracao" style="width:110px; height:110px; background:linear-gradient(135deg, #a855f7, #6b21a8); border-radius:50%; box-shadow:0 0 35px rgba(124,58,237,0.35); transition: transform 4s ease-in-out;"></div>
-                </div>
-
-                <p style="font-size:11.5px; color:#6b21a8; margin:0 0 20px 0; font-weight:500;">Deixe o corpo relaxar e solte a tensão dos ombros.</p>
-                <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModalRespiracao()">Encerrar Pausa</button>
-            </div>
+            <video id="video-zen-reprodutor" loop playsinline webkit-playsinline preload="auto" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; pointer-events:auto;"></video>
+            
+            <!-- Botão de Fechar no Topo Elegante -->
+            <button type="button" onclick="window.fecharModalMinutoZen()" 
+                    style="position:absolute; top:24px; right:20px; z-index:10; width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,0.55); border:1.5px solid rgba(255,255,255,0.7); color:#ffffff; font-size:20px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,0.4); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);">
+                ✕
+            </button>
         `;
         document.body.appendChild(modal);
     }
+
     modal.classList.remove('oculto');
-    iniciarCicloRespiracao();
-};
+    modal.style.display = 'flex';
 
-let intervaloRespiracao = null;
-function iniciarCicloRespiracao() {
-    const circulo = document.getElementById('circulo-respiracao');
-    const txt = document.getElementById('txt-instrucao-respiracao');
-    if (!circulo || !txt) return;
-
-    let inspirar = true;
-    const alternar = () => {
-        const m = document.getElementById('modal-respiracao-guiada');
-        if (!m || m.classList.contains('oculto')) return;
-        if (inspirar) {
-            circulo.style.transform = 'scale(1.45)';
-            txt.textContent = 'Inspire lentamente... (4s)';
-        } else {
-            circulo.style.transform = 'scale(1.0)';
-            txt.textContent = 'Expire devagar, esvaziando... (4s)';
+    const vid = document.getElementById('video-zen-reprodutor');
+    if (vid) {
+        // Vinculação de src do vídeo
+        if (!vid.src || !vid.src.includes('zen.mp4')) {
+            vid.src = 'zen.mp4';
         }
-        inspirar = !inspirar;
-    };
-    alternar();
-    intervaloRespiracao = setInterval(alternar, 4000);
-}
 
-window.fecharModalRespiracao = function() {
-    if (intervaloRespiracao) clearInterval(intervaloRespiracao);
-    const modal = document.getElementById('modal-respiracao-guiada');
-    if (modal) modal.classList.add('oculto');
+        // Atributos de compatibilidade iOS WebKit (Safari no iPhone)
+        vid.setAttribute('playsinline', '');
+        vid.setAttribute('webkit-playsinline', '');
+        vid.loop = true;
+
+        // Ativação do áudio permitida pelo toque físico do usuário no botão
+        vid.muted = false;
+        vid.defaultMuted = false;
+        vid.volume = 1.0;
+
+        vid.currentTime = 0;
+        vid.load();
+        
+        const promessa = vid.play();
+        if (promessa !== undefined) {
+            promessa.catch(() => {
+                // Se a restrição do iPhone bloquear áudio sem toque prévio, reproduz com som destravado via touch
+                vid.play().catch(() => {});
+            });
+        }
+    }
 };
+
+window.fecharModalMinutoZen = function() {
+    const modal = document.getElementById('modal-video-minuto-zen');
+    const vid = document.getElementById('video-zen-reprodutor');
+
+    if (vid) {
+        vid.pause();
+        vid.currentTime = 0;
+        vid.muted = true;
+    }
+
+    if (modal) {
+        modal.classList.add('oculto');
+        modal.style.display = 'none';
+    }
+};
+
+// Aliases para retrocompatibilidade
+window.abrirModalRespiracaoGuiada = window.abrirModalMinutoZen;
+window.fecharModalRespiracao = window.fecharModalMinutoZen;
 
 window.abrirModoAcolhimentoEmergencia = function() {
     let modal = document.getElementById('modal-modo-acolhimento');
@@ -1856,7 +1863,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                 </div>
 
                 <div style="margin-top:18px;">
-                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalRespiracaoGuiada();">Iniciar 1 Minuto de Respiração Guiada</button>
+                    <button type="button" class="btn-principal" style="width:100%; padding:13px; border-radius:16px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModoAcolhimento(); window.abrirModalMinutoZen();">Iniciar Minuto Zen</button>
                 </div>
             </div>
         `;
