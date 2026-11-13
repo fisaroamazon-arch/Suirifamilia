@@ -419,6 +419,157 @@
         .item-cruz-topo.cruz-bottom-right {
             border: none !important;
         }
+
+        /* =========================================================================
+           BANNERS 100% PUROS E SOLTOS (SEM QUADRO / SEM BORDA / COM MENSAGEM DIÁRIA)
+           ========================================================================= */
+        .banner-acesso-puro-solto {
+            position: relative;
+            width: 100%;
+            margin: 0 auto 16px auto;
+            cursor: pointer;
+            user-select: none;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            display: block;
+            transition: transform 0.15s ease;
+        }
+
+        .banner-acesso-puro-solto:active {
+            transform: scale(0.985);
+        }
+
+        .banner-acesso-puro-solto .img-banner-pura {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        /* Camada de texto sobre o pergaminho masculino */
+        .camada-texto-banner-masculino {
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            right: 25%;
+            bottom: 22%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 4px;
+            pointer-events: none;
+        }
+
+        .texto-frase-masculina {
+            font-size: 11px;
+            font-weight: 800;
+            color: #27170a;
+            line-height: 1.35;
+            font-style: italic;
+            display: block;
+            margin-bottom: 3px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .autor-frase-masculina {
+            font-size: 9px;
+            font-weight: 900;
+            color: #78350f;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: block;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-rodape-banner-masculino {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #292524 0%, #1c1917 100%);
+            border: 1px solid #d97706;
+            color: #fef08a;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Camada de texto sobre a área rosa feminina */
+        .camada-texto-banner-feminino {
+            position: absolute;
+            top: 25%;
+            left: 18%;
+            right: 18%;
+            bottom: 20%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 6px;
+            pointer-events: none;
+        }
+
+        .texto-frase-feminina {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #701a75;
+            line-height: 1.4;
+            font-style: italic;
+            display: block;
+            margin-bottom: 3px;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.85);
+        }
+
+        .autor-frase-feminina {
+            font-size: 9.5px;
+            font-weight: 900;
+            color: #a21caf;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            display: block;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.85);
+        }
+
+        .btn-rodape-banner-feminino {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 1.5px solid #f472b6;
+            color: #9d174d;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 3px 10px rgba(244, 114, 182, 0.25);
+            pointer-events: auto;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -659,42 +810,40 @@
                 <!-- MÓDULO 0: MEU ESPAÇO -->
                 <section id="secao-meuespaco" class="secao-conteudo-app oculto">
                     
-                    <!-- CARTÃO VIP: ESPAÇO MULHER COM NOVO ÍCONE MEDITA.PNG -->
-                    <div id="card-acesso-espaco-mulher" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #fff5f8 0%, #fdf2f8 100%); border: 2px solid #f472b6; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.18); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMulher === 'function') window.abrirEspacoMulher();">
-                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
-                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #fce7f3; border: 1.5px solid #fbcfe8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.12);">
-                                <img src="./icone/medita.png" alt="Espaço Mulher" style="width: 44px; height: 44px; object-fit: contain;">
-                            </div>
-                            <div style="min-width: 0; flex: 1;">
-                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-                                    <strong style="font-size: 16px; color: #9d174d; font-weight: 900; letter-spacing: -0.3px;">Espaço Mulher</strong>
-                                    <span style="font-size: 9.5px; font-weight: 800; background: #fbcfe8; color: #831843; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Exclusivo</span>
-                                </div>
-                                <span style="font-size: 11.5px; color: #be185d; font-weight: 600; display: block; line-height: 1.35; font-style: italic;">
-                                    "Honra os teus ciclos e a tua essência; a tua calma é fortaleza e guia do lar."
-                                </span>
-                            </div>
+                    <!-- BANNER 100% PURO E SOLTO: ESPAÇO MULHER (958x400 PNG COM MENSAGEM DO APP-SAUDE-DICAS.JS) -->
+                    <div id="card-acesso-espaco-mulher" class="banner-acesso-puro-solto oculto" onclick="window.acessarModuloMulherHTML()">
+                        <img src="espacomulher.png" onerror="this.src='espacomulher.jpg'" alt="Espaço Mulher" class="img-banner-pura">
+                        
+                        <div class="camada-texto-banner-feminino">
+                            <span id="txt-frase-feminina-quadro" class="texto-frase-feminina">
+                                "Honra os teus ciclos e a tua essência; a tua calma é fortaleza e guia do lar."
+                            </span>
+                            <span id="txt-autor-feminino-quadro" class="autor-frase-feminina">
+                                — Sabedoria Feminina
+                            </span>
                         </div>
-                        <span style="font-size: 15px; color: #db2777; font-weight: 900; margin-left: 8px;">Entrar →</span>
+
+                        <button type="button" class="btn-rodape-banner-feminino" onclick="event.stopPropagation(); window.acessarModuloMulherHTML();">
+                            🌸 Acessar Santuário →
+                        </button>
                     </div>
 
-                    <!-- CARTÃO VIP: ESPAÇO MASCULINO COM ÍCONE-ESCUDO.PNG -->
-                    <div id="card-acesso-espaco-masculino" class="cartao-geral oculto" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 16px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #38bdf8; border-radius: 22px; cursor: pointer; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.18); transition: transform 0.15s ease;" onclick="if(typeof window.abrirEspacoMasculino === 'function') window.abrirEspacoMasculino();">
-                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
-                            <div style="width: 58px; height: 58px; border-radius: 18px; background: #e0f2fe; border: 1.5px solid #bae6fd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);">
-                                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width: 44px; height: 44px; object-fit: contain;">
-                            </div>
-                            <div style="min-width: 0; flex: 1;">
-                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-                                    <strong style="font-size: 16px; color: #075985; font-weight: 900; letter-spacing: -0.3px;">Espaço Masculino</strong>
-                                    <span style="font-size: 9.5px; font-weight: 800; background: #bae6fd; color: #0369a1; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Blindagem</span>
-                                </div>
-                                <span style="font-size: 11.5px; color: #0284c7; font-weight: 600; display: block; line-height: 1.35; font-style: italic;">
-                                    "Forja o caráter no dever diário; a honra do homem é proteger e liderar com retidão."
-                                </span>
-                            </div>
+                    <!-- BANNER 100% PURO E SOLTO: ESPAÇO MASCULINO (958x400 PNG COM MENSAGEM ESTOICA OFICIAL) -->
+                    <div id="card-acesso-espaco-masculino" class="banner-acesso-puro-solto oculto" onclick="window.acessarModuloHomemHTML()">
+                        <img src="espacomasculino.png" onerror="this.src='espacomasculino.jpg'" alt="Espaço Masculino" class="img-banner-pura">
+                        
+                        <div class="camada-texto-banner-masculino">
+                            <span id="txt-frase-estoica-quadro" class="texto-frase-masculina">
+                                "Forja o caráter no dever diário; a honra do homem é proteger e liderar com retidão."
+                            </span>
+                            <span id="txt-autor-estoico-quadro" class="autor-frase-masculina">
+                                — Marco Aurélio
+                            </span>
                         </div>
-                        <span style="font-size: 15px; color: #0284c7; font-weight: 900; margin-left: 8px;">Entrar →</span>
+
+                        <button type="button" class="btn-rodape-banner-masculino" onclick="event.stopPropagation(); window.acessarModuloHomemHTML();">
+                            ⚔️ Acessar Forja →
+                        </button>
                     </div>
 
                     <!-- QUADRO INDEPENDENTE: PAINÉIS FIXADOS -->
@@ -2159,6 +2308,7 @@
     <script src="app-sugestoes.js"></script>
     <script src="app-saude-dicas.js"></script>
     <script src="app-saude-mulher.js"></script>
+    <script src="app-dicas-masculinas.js"></script>
     <script src="app-espaco-masculino.js"></script>
 
     <script type="text/javascript">
@@ -2221,44 +2371,42 @@
             }
         });
 
+        // =========================================================================
+        // SPLASH SCREEN VÍDEO (ROBUSTO, SUAVE E SEM TRAVAS)
+        // =========================================================================
         window.gerenciarApresentacaoVideoSplash = function() {
-            const CHAVE_SPLASH = 'suiri_splash_visto_sessao';
             const splashEl = document.getElementById('splash-screen-apresentacao');
             const videoEl = document.getElementById('video-intro-splash');
 
             if (!splashEl || !videoEl) return;
 
-            if (sessionStorage.getItem(CHAVE_SPLASH)) {
-                splashEl.remove();
-                return;
-            }
-
             splashEl.classList.remove('oculto');
 
+            let finalizado = false;
             const encerrarSplash = () => {
-                sessionStorage.setItem(CHAVE_SPLASH, 'true');
+                if (finalizado) return;
+                finalizado = true;
                 splashEl.classList.add('fade-out');
-                setTimeout(() => splashEl.remove(), 500);
+                setTimeout(() => {
+                    try { splashEl.remove(); } catch(e) {}
+                }, 450);
             };
 
-            // Requisitos estritos para iOS / Safari (iPhone)
+            // Watchdog de segurança máxima: fecha sempre em 4.5 segundos se o vídeo não rodar
+            setTimeout(encerrarSplash, 4500);
+
             videoEl.muted = true;
             videoEl.defaultMuted = true;
             videoEl.setAttribute('muted', '');
             videoEl.setAttribute('playsinline', '');
             videoEl.setAttribute('webkit-playsinline', '');
-
             videoEl.playbackRate = 2.0;
 
-            // Carrega o elemento no motor WebKit antes do disparo
             videoEl.load();
-
             const promessaPlay = videoEl.play();
 
             if (promessaPlay !== undefined) {
                 promessaPlay.then(() => {
-                    videoEl.playbackRate = 2.0;
-
                     let btnSom = document.getElementById('btn-ativar-som-splash');
                     if (!btnSom) {
                         btnSom = document.createElement('button');
@@ -2273,21 +2421,20 @@
                             e.stopPropagation();
                             videoEl.muted = false;
                             videoEl.currentTime = 0;
-                            if (window.SonsSuiri) window.SonsSuiri.desbloquearAudioGlobal();
+                            if (window.SonsSuiri && typeof window.SonsSuiri.desbloquearAudioGlobal === 'function') {
+                                window.SonsSuiri.desbloquearAudioGlobal();
+                            }
                             btnSom.remove();
                         };
                         splashEl.appendChild(btnSom);
                     }
                 }).catch(() => {
                     videoEl.muted = true;
-                    videoEl.load();
                     videoEl.play().catch(() => {});
-                    videoEl.playbackRate = 2.0;
                 });
             }
 
             videoEl.addEventListener('ended', encerrarSplash);
-            setTimeout(encerrarSplash, 5200);
         };
 
         window.abrirModalOpcoesCupomIA = function() {
@@ -2614,6 +2761,59 @@
             }
         }
 
+        // =========================================================================
+        // REDIRECIONAMENTOS DIRETOS PARA OS MÓDULOS HOMEM E MULHER
+        // =========================================================================
+        window.acessarModuloHomemHTML = function() {
+            window.location.href = 'homem.html';
+        };
+
+        window.acessarModuloMulherHTML = function() {
+            window.location.href = 'mulher.html';
+        };
+
+        // =========================================================================
+        // CARREGAMENTO DAS FRASES DIÁRIAS (CALCULADAS PELO DIA DO ANO)
+        // =========================================================================
+        window.carregarMensagensDiariasBanners = function() {
+            const agora = new Date();
+            const inicioAno = new Date(agora.getFullYear(), 0, 0);
+            const diff = agora - inicioAno;
+            const umDia = 1000 * 60 * 60 * 24;
+            const diaDoAno = Math.floor(diff / umDia);
+
+            // 1. Frase Masculina Diária (Acervo 365 Estoicas de app-dicas-masculinas.js)
+            const elTextoMasc = document.getElementById('txt-frase-estoica-quadro');
+            const elAutorMasc = document.getElementById('txt-autor-estoico-quadro');
+            if (elTextoMasc && elAutorMasc) {
+                let itemMasc = null;
+                if (window.AcervoReflexoesEstoicas365 && window.AcervoReflexoesEstoicas365.length > 0) {
+                    const idxM = (diaDoAno - 1) % window.AcervoReflexoesEstoicas365.length;
+                    itemMasc = window.AcervoReflexoesEstoicas365[idxM >= 0 ? idxM : 0];
+                }
+                if (itemMasc) {
+                    elTextoMasc.textContent = `“${itemMasc.texto || itemMasc.frase}”`;
+                    elAutorMasc.textContent = `— ${itemMasc.autor || 'Filosofia Estoica'}`;
+                }
+            }
+
+            // 2. Frase Feminina Diária (Acervo Bem-Estar Mulher de app-saude-dicas.js)
+            const elTextoFem = document.getElementById('txt-frase-feminina-quadro');
+            const elAutorFem = document.getElementById('txt-autor-feminino-quadro');
+            if (elTextoFem && elAutorFem) {
+                let itemFem = null;
+                const acervoMulher = window.AcervoBemEstarMulher || window.AcervoDicasMulher || [];
+                if (acervoMulher && acervoMulher.length > 0) {
+                    const idxF = (diaDoAno - 1) % acervoMulher.length;
+                    itemFem = acervoMulher[idxF >= 0 ? idxF : 0];
+                }
+                if (itemFem) {
+                    elTextoFem.textContent = `“${itemFem.poesia || itemFem.texto || itemFem.dica || itemFem.frase || itemFem}”`;
+                    elAutorFem.textContent = `— ${itemFem.autora || itemFem.autor || 'Sabedoria & Bem-Estar'}`;
+                }
+            }
+        };
+
         if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -2625,6 +2825,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             restaurarBandeiraAtivaInicial();
             window.gerenciarApresentacaoVideoSplash();
+            window.carregarMensagensDiariasBanners();
             setTimeout(verificarGatilhoPenseSeteManha, 1500);
             setTimeout(verificarSugestaoPwaIos, 2000);
         });
@@ -2632,6 +2833,7 @@
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 verificarGatilhoPenseSeteManha();
+                window.carregarMensagensDiariasBanners();
             }
         });
     </script>

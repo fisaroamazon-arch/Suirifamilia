@@ -1,8 +1,8 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-CORE.JS (100% COMPLETO E INTEGRAL)
 // Núcleo de Sessão, Autenticação, Trocar Membro (Tela Cheia & Avatares Grandes),
-// PIN Real Individual para Adultos, Modal Nativo "Concordo / Cancelar",
-// Transições Direcionais Inteligentes (Direita/Esquerda),
+// Login Real Oficial para Troca de Adultos com Senha de Acesso,
+// Modal Nativo "Concordo / Cancelar", Transições Direcionais Inteligentes,
 // Modo Kids Isolado, Ciclo Horário Automático do Cenário (Manhã / Tarde / Noite),
 // Integração Mascote Tamagotchi, Gestão de Avatar, Fila Offline (IndexedDB)
 // SVGs Coloridos Ilustrados com Preenchimento e Catálogo com Busca Semântica
@@ -316,7 +316,7 @@ window.mostrarToast = function(msg, tipo = 'sucesso') {
     t.className = `toast-msg toast-${tipo}`;
     t.innerHTML = `
         <span style="display:flex;align-items:center;gap:6px;">
-            ${tipo === 'sucesso' ? (window.IconesSuiri?.check || '✓') : ''}
+            ${tipo === 'sucesso' ? '✓' : ''}
             ${esc(msg)}
         </span>
         <span style="cursor:pointer;opacity:0.8;padding:2px 6px;" onclick="this.parentElement.remove()">✕</span>
@@ -759,128 +759,110 @@ window.guardarFotoPerfil = async function(base64Data) {
 };
 
 // =========================================================================
-// 6. MODAL DE PIN REAL E INDIVIDUAL DE ADULTO (BLINDADO CONTRA CRIANÇAS)
+// 6. TROCA DE PERFIL COM LOGIN OFICIAL VIA SUPABASE AUTH PARA ADULTOS
 // =========================================================================
 window.abrirModalSenhaAdulto = function(membro) {
     if (!membro) return;
 
-    let modal = document.getElementById('modal-pin-acesso-adulto');
+    let modal = document.getElementById('modal-senha-adulto-suiri');
     if (!modal) {
         modal = document.createElement('div');
-        modal.id = 'modal-pin-acesso-adulto';
+        modal.id = 'modal-senha-adulto-suiri';
         modal.className = 'modal-overlay';
         modal.style.zIndex = '1000002';
         modal.innerHTML = `
-            <div class="modal-conteudo" style="max-width: 330px; text-align: center; padding: 22px 18px; border-radius: 22px; border: 1.5px solid var(--borda-delicada, rgba(217, 119, 6, 0.25)); background: #ffffff;">
-                <div style="width: 46px; height: 46px; border-radius: 50%; background: #fef3c7; color: var(--cor-primaria, #d97706); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                    ${window.IconesSuiri?.escudo || ''}
+            <div class="modal-conteudo" style="max-width: 320px; text-align: center; padding: 22px 18px; border-radius: 20px; border: 1.5px solid rgba(217, 119, 6, 0.25); background: #ffffff;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                    <svg class="icone-svg" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
-                <h3 id="titulo-pin-adulto" style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal); font-weight: 800;">Acesso Restrito</h3>
-                <p id="subtitulo-pin-adulto" style="font-size: 12.5px; color: var(--texto-suave); line-height: 1.4; margin: 0 0 14px 0;"></p>
-                <input type="password" inputmode="numeric" maxlength="8" id="input-pin-acesso-adulto" placeholder="PIN de 4 dígitos" style="text-align: center; font-size: 17px; font-weight: 800; letter-spacing: 4px; margin-bottom: 12px;">
-                <div id="box-redefinir-pin-cpf" class="oculto" style="margin-bottom: 12px; text-align: left; background: #fef9ea; padding: 10px; border-radius: 12px; border: 1px dashed rgba(217,119,6,0.3);">
-                    <label style="font-size: 11px; font-weight: 700; color: #92400e; display: block; margin-bottom: 4px;">Confirme os 4 primeiros dígitos do CPF do titular para redefinir o PIN:</label>
-                    <input type="text" inputmode="numeric" maxlength="4" id="input-cpf-recuperar-pin" placeholder="Ex: 1234" style="text-align: center; font-size: 14px; font-weight: 700;">
-                </div>
+                <h3 id="titulo-modal-senha-membro" style="margin: 0 0 4px 0; font-size: 16px; color: var(--texto-principal, #1e293b); font-weight: 800;">Acesso Restrito</h3>
+                <p id="subtitulo-modal-senha-membro" style="font-size: 12.5px; color: var(--texto-suave, #64748b); line-height: 1.4; margin: 0 0 14px 0;"></p>
+                <input type="password" id="input-senha-membro-quiosque" placeholder="Digite sua senha de login" style="text-align: center; font-size: 15px; margin-bottom: 14px; width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
                 <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn-secundario" style="flex: 1;" onclick="document.getElementById('modal-pin-acesso-adulto').classList.add('oculto')">Cancelar</button>
-                    <button type="button" id="btn-confirmar-pin-adulto" class="btn-principal" style="flex: 1;">Concordo</button>
+                    <button type="button" class="btn-secundario" style="flex: 1; padding: 10px;" onclick="document.getElementById('modal-senha-adulto-suiri').classList.add('oculto')">Cancelar</button>
+                    <button type="button" id="btn-confirmar-senha-membro" class="btn-principal" style="flex: 1; padding: 10px;">Entrar</button>
                 </div>
-                <button type="button" id="btn-esqueci-pin-adulto" style="background:none; border:none; color:var(--texto-suave); font-size:11px; font-weight:700; margin-top:12px; cursor:pointer; text-decoration:underline;">Esqueci ou quero trocar meu PIN</button>
             </div>
         `;
         document.body.appendChild(modal);
     }
 
-    const primeiroNome = String(membro.nome || 'Utilizador').split(' ')[0];
-    const chavePinLocal = `suiri_pin_adulto_${membro.id}`;
-    const pinSalvo = (membro.permissoes && membro.permissoes.pin_acesso) || localStorage.getItem(chavePinLocal) || '';
+    const sub = document.getElementById('subtitulo-modal-senha-membro');
+    const input = document.getElementById('input-senha-membro-quiosque');
+    const btnConfirmar = document.getElementById('btn-confirmar-senha-membro');
 
-    const tituloEl = document.getElementById('titulo-pin-adulto');
-    const sub = document.getElementById('subtitulo-pin-adulto');
-    const input = document.getElementById('input-pin-acesso-adulto');
-    const btnConfirmar = document.getElementById('btn-confirmar-pin-adulto');
-    const btnEsqueci = document.getElementById('btn-esqueci-pin-adulto');
-    const boxCpf = document.getElementById('box-redefinir-pin-cpf');
-    const inputCpf = document.getElementById('input-cpf-recuperar-pin');
+    const primeiroNome = (membro.nome || 'Adulto').split(' ')[0];
+    if (sub) sub.textContent = `Acesso para ${primeiroNome}. Digite sua senha de acesso:`;
+    if (input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 200);
+    }
 
-    if (boxCpf) boxCpf.classList.add('oculto');
-    if (inputCpf) inputCpf.value = '';
+    const submeterLogin = async () => {
+        const senha = input.value.trim();
+        if (!senha) {
+            return window.mostrarToast("Digite a sua senha de acesso.", "erro");
+        }
 
-    let modoDefinirNovoPin = !pinSalvo;
+        const emailMembro = membro.email ? membro.email.toLowerCase().trim() : '';
+        if (!emailMembro) {
+            return window.mostrarToast("Este perfil não possui e-mail de login cadastrado.", "erro");
+        }
 
-    const atualizarTextosModalPin = () => {
-        if (modoDefinirNovoPin) {
-            if (tituloEl) tituloEl.textContent = `Criar PIN de ${primeiroNome}`;
-            if (sub) sub.textContent = `Crie um PIN numérico de 4 dígitos para proteger o perfil de ${primeiroNome} das crianças:`;
-            if (input) input.placeholder = "Novo PIN (4 dígitos)";
-            if (btnEsqueci) btnEsqueci.style.display = 'none';
-        } else {
-            if (tituloEl) tituloEl.textContent = `Olá, ${primeiroNome}`;
-            if (sub) sub.textContent = `Digite o seu PIN de acesso para entrar no seu perfil adulto:`;
-            if (input) input.placeholder = "Digite seu PIN";
-            if (btnEsqueci) btnEsqueci.style.display = 'inline-block';
+        const cli = window.cliente || window.clienteSupabase;
+        if (!cli) {
+            return window.mostrarToast("Erro de conexão com o banco.", "erro");
+        }
+
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = "Validando...";
+
+        try {
+            // Executa a autenticação oficial no Supabase Auth
+            const { data, error } = await cli.auth.signInWithPassword({
+                email: emailMembro,
+                password: senha
+            });
+
+            if (error) {
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = "Entrar";
+                if (window.SonsSuiri && typeof window.SonsSuiri.somFalhaAcolhedor === 'function') {
+                    window.SonsSuiri.somFalhaAcolhedor();
+                }
+                return window.mostrarToast("Senha incorreta. Acesso não permitido.", "erro");
+            }
+
+            // Sucesso: atualiza a referência da sessão e o perfil atual
+            window.usuarioAtual = data.user;
+            window.perfilAtual = membro;
+            localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
+
+            modal.classList.add('oculto');
+            window.fecharJanelaPrincipalQuiosque();
+            window.aplicarRegrasPerfilKidsOuAdulto();
+
+            if (typeof window.atualizarIconeBotaoSessao === 'function') {
+                window.atualizarIconeBotaoSessao();
+            }
+
+            window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
+        } catch (e) {
+            console.error("Erro na autenticação de troca de adulto:", e);
+            window.mostrarToast("Falha na autenticação do usuário.", "erro");
+        } finally {
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = "Entrar";
         }
     };
 
-    atualizarTextosModalPin();
+    btnConfirmar.onclick = submeterLogin;
 
     if (input) {
-        input.value = '';
-        setTimeout(() => input.focus(), 180);
-    }
-
-    if (btnEsqueci) {
-        btnEsqueci.onclick = () => {
-            boxCpf?.classList.remove('oculto');
-            modoDefinirNovoPin = true;
-            if (tituloEl) tituloEl.textContent = `Redefinir PIN de ${primeiroNome}`;
-            if (sub) sub.textContent = `Digite um novo PIN acima e confirme os 4 primeiros dígitos do CPF abaixo:`;
-        };
-    }
-
-    if (btnConfirmar) {
-        btnConfirmar.onclick = async () => {
-            const pinDigitado = input?.value ? input.value.trim() : '';
-            if (pinDigitado.length < 4) {
-                return window.mostrarToast("O PIN deve ter pelo menos 4 dígitos.", "erro");
-            }
-
-            if (modoDefinirNovoPin) {
-                if (pinSalvo) {
-                    const cpfRef = window.limparCPF(membro.cpf || window.dadosFamiliaAtual?.cpf_adm_principal || '');
-                    const cpfDigitado = (inputCpf?.value || '').replace(/\D/g, '');
-                    if (cpfRef.length >= 4 && cpfDigitado !== cpfRef.slice(0, 4)) {
-                        return window.mostrarToast("Os 4 primeiros dígitos do CPF não conferem.", "erro");
-                    }
-                }
-
-                localStorage.setItem(chavePinLocal, pinDigitado);
-                const novasPerms = { ...(membro.permissoes || {}), pin_acesso: pinDigitado };
-                membro.permissoes = novasPerms;
-
-                if (cliente) {
-                    await cliente.from('membros').update({ permissoes: novasPerms }).eq('id', membro.id);
-                }
-
-                modal.classList.add('oculto');
-                window.perfilAtual = membro;
-                window.fecharJanelaPrincipalQuiosque();
-                window.aplicarRegrasPerfilKidsOuAdulto();
-                window.mostrarToast(`PIN guardado! Sessão ativa para ${primeiroNome}.`);
-            } else {
-                if (pinDigitado !== String(pinSalvo)) {
-                    if (window.SonsSuiri && typeof window.SonsSuiri.somFalhaAcolhedor === 'function') {
-                        window.SonsSuiri.somFalhaAcolhedor();
-                    }
-                    return window.mostrarToast("PIN incorreto! Tente novamente.", "erro");
-                }
-
-                modal.classList.add('oculto');
-                window.perfilAtual = membro;
-                window.fecharJanelaPrincipalQuiosque();
-                window.aplicarRegrasPerfilKidsOuAdulto();
-                window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submeterLogin();
             }
         };
     }
@@ -1054,21 +1036,15 @@ window.selecionarUsuarioQuiosque = function(membroId) {
 
     if (ehKids) {
         window.perfilAtual = membro;
+        localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
         window.fecharJanelaPrincipalQuiosque();
         window.aplicarRegrasPerfilKidsOuAdulto();
         if (window.SonsSuiri && typeof window.SonsSuiri.sucessoMissao === 'function') {
             window.SonsSuiri.sucessoMissao();
         }
-        window.mostrarToast(`Olá, ${primeiroNome}! As tuas missões estão prontas!`);
+        window.mostrarToast(`Olá, ${primeiroNome}! Suas missões estão prontas!`);
     } else {
-        if (typeof window.abrirModalSenhaAdulto === 'function') {
-            window.abrirModalSenhaAdulto(membro);
-        } else {
-            window.perfilAtual = membro;
-            window.fecharJanelaPrincipalQuiosque();
-            window.aplicarRegrasPerfilKidsOuAdulto();
-            window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
-        }
+        window.abrirModalSenhaAdulto(membro);
     }
 };
 
@@ -1240,6 +1216,7 @@ window.iniciarAppFamilia = async function() {
 
     window.perfilAtual = membro;
     window.familiaAtualId = membro.familia_id;
+    localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
 
     const { data: familia } = await cliente.from('familias')
         .select('*')
@@ -1293,6 +1270,7 @@ window.iniciarAppFamilia = async function() {
 
 window.fazerLogoff = async function() {
     if (cliente) await cliente.auth.signOut();
+    localStorage.removeItem('suiri_perfil_ativo');
     window.usuarioAtual = null;
     window.perfilAtual = null;
     window.familiaAtualId = null;
