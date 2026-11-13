@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
@@ -372,7 +373,6 @@
             margin: 25px auto 16px auto;
         }
 
-        /* As 4 linhas de caneta traçadas a mão livre */
         .linha-caneta {
             position: absolute;
             background: #334155;
@@ -402,7 +402,6 @@
             position: relative;
         }
 
-        /* SVG orgânico de X e O */
         .traco-x {
             stroke: #1d4ed8;
             stroke-width: 7;
@@ -430,7 +429,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Risco animado de vitória com caneta */
         #linha-vitoria-caneta {
             position: absolute;
             background: #b91c1c;
@@ -521,7 +519,7 @@
             transform: scale(1.35);
         }
 
-        /* CONSOLA DO PIANO ACÚSTICO COMPLETO (12 NOTAS REAIS) */
+        /* CONSOLA DO PIANO ACÚSTICO COMPLETO */
         .teclado-container-piano {
             position: relative;
             width: 100%;
@@ -533,6 +531,9 @@
             padding: 4px 4px 0 4px;
             border-radius: 14px 14px 18px 18px;
             box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .tecla-branca-piano {
@@ -548,15 +549,16 @@
             padding-bottom: 8px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.12), inset 0 2px 0 #ffffff;
-            transition: background 0.08s, transform 0.08s;
+            transition: background 0.05s, transform 0.05s;
             position: relative;
             z-index: 1;
+            touch-action: none;
         }
 
-        .tecla-branca-piano:active, .tecla-branca-piano.tocando {
-            background: #bae6fd !important;
+        .tecla-branca-piano.tocando {
+            background: #7dd3fc !important;
             transform: translateY(3px);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 0 10px rgba(2, 132, 199, 0.4);
         }
 
         .tecla-branca-piano.alvo-brilhando {
@@ -586,12 +588,14 @@
             align-items: flex-end;
             justify-content: center;
             padding-bottom: 6px;
-            transition: background 0.08s, transform 0.08s;
+            transition: background 0.05s, transform 0.05s;
+            touch-action: none;
         }
 
-        .tecla-preta-piano:active, .tecla-preta-piano.tocando {
+        .tecla-preta-piano.tocando {
             background: #0284c7 !important;
             transform: translateY(3px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.7), 0 0 12px #38bdf8;
         }
 
         .tecla-preta-piano.alvo-brilhando {
@@ -655,7 +659,7 @@
             100% { transform: translate(0, -50px) scale(1.3); opacity: 0; }
         }
 
-        /* CHUÍRI VOADOR (PROPORÇÃO PERFEITA) */
+        /* CHUÍRI VOADOR */
         #chuiri-voador-gif-el {
             position: absolute;
             width: 68px;
@@ -814,7 +818,7 @@
             <canvas id="cv-quebrablocos"></canvas>
         </div>
 
-        <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (APRENDIZADO & LIVRE) -->
+        <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (APRENDIZADO & LIVRE POLIFÓNICO) -->
         <div id="tela-simon" class="area-jogo" style="padding:12px; text-align:center;">
             <div class="alternador-modos-som">
                 <button type="button" class="btn-modo-som-tab ativo" id="tab-modo-musicas" onclick="MotorMusica.trocarModo('aprendizado')">🎵 Modo Aprender Músicas</button>
@@ -829,11 +833,11 @@
                     <option value="2">3. Brilha, Brilha, Estrelinha</option>
                     <option value="3">4. Cai, Cai, Balão</option>
                     <option value="4">5. Marcha Soldado</option>
-                    <option value="5">6. O Cravo Brigou com a Rosa</option>
-                    <option value="6">7. Peixe Vivo</option>
-                    <option value="7">8. Dona Aranha</option>
-                    <option value="8">9. Atirei o Pau no Gato</option>
-                    <option value="9">10. Batatinha Quando Nasce</option>
+                    <option value="6">6. O Cravo Brigou com a Rosa</option>
+                    <option value="7">7. Peixe Vivo</option>
+                    <option value="8">8. Dona Aranha</option>
+                    <option value="9">9. Atirei o Pau no Gato</option>
+                    <option value="10">10. Batatinha Quando Nasce</option>
                 </select>
 
                 <div class="estrelinha-alvo-box">
@@ -847,29 +851,40 @@
 
             <!-- Banner do Modo Livre -->
             <div class="painel-aprendizado-musica" id="painel-livre-box" style="display:none;">
-                <span style="font-size:15px; font-weight:900; color:#0284c7;">🎹 Modo Livre</span>
-                <p style="font-size:12px; color:#64748b; font-weight:700; margin-top:2px;">Toque qualquer nota ou sustenido livremente para criar as suas próprias melodias!</p>
+                <span style="font-size:15px; font-weight:900; color:#0284c7;">🎹 Modo Livre Polifónico</span>
+                <p style="font-size:12px; color:#64748b; font-weight:700; margin-top:2px;">Toque várias notas e acordes! Segure a tecla na tela para sustentar a nota do piano.</p>
             </div>
 
-            <!-- Teclado com 12 notas reais em frequências de piano -->
+            <!-- Teclado com 13 notas reais em frequências de piano -->
             <div class="teclado-container-piano" id="teclado-piano-completo">
                 <!-- 8 Teclas Brancas (Dó a Dó+) -->
-                <div class="tecla-branca-piano" data-nota="C4" onclick="MotorMusica.tocarNota('C4')"><span class="rotulo-nota-branca">DÓ</span></div>
-                <div class="tecla-branca-piano" data-nota="D4" onclick="MotorMusica.tocarNota('D4')"><span class="rotulo-nota-branca">RÉ</span></div>
-                <div class="tecla-branca-piano" data-nota="E4" onclick="MotorMusica.tocarNota('E4')"><span class="rotulo-nota-branca">MI</span></div>
-                <div class="tecla-branca-piano" data-nota="F4" onclick="MotorMusica.tocarNota('F4')"><span class="rotulo-nota-branca">FÁ</span></div>
-                <div class="tecla-branca-piano" data-nota="G4" onclick="MotorMusica.tocarNota('G4')"><span class="rotulo-nota-branca">SOL</span></div>
-                <div class="tecla-branca-piano" data-nota="A4" onclick="MotorMusica.tocarNota('A4')"><span class="rotulo-nota-branca">LÁ</span></div>
-                <div class="tecla-branca-piano" data-nota="B4" onclick="MotorMusica.tocarNota('B4')"><span class="rotulo-nota-branca">SI</span></div>
-                <div class="tecla-branca-piano" data-nota="C5" onclick="MotorMusica.tocarNota('C5')"><span class="rotulo-nota-branca">DÓ+</span></div>
+                <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
+                <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
+                <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
+                <div class="tecla-branca-piano" data-nota="F4"><span class="rotulo-nota-branca">FÁ</span></div>
+                <div class="tecla-branca-piano" data-nota="G4"><span class="rotulo-nota-branca">SOL</span></div>
+                <div class="tecla-branca-piano" data-nota="A4"><span class="rotulo-nota-branca">LÁ</span></div>
+                <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
+                <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
 
-                <!-- 5 Teclas Pretas / Sustenidos posicionados realisticamente -->
-                <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4" onclick="MotorMusica.tocarNota('C#4')"><span class="rotulo-nota-preta">DÓ#</span></div>
-                <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4" onclick="MotorMusica.tocarNota('D#4')"><span class="rotulo-nota-preta">RÉ#</span></div>
-                <!-- Entre Mi e Fá não há sustenido natural -->
-                <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4" onclick="MotorMusica.tocarNota('F#4')"><span class="rotulo-nota-preta">FÁ#</span></div>
-                <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4" onclick="MotorMusica.tocarNota('G#4')"><span class="rotulo-nota-preta">SOL#</span></div>
-                <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4" onclick="MotorMusica.tocarNota('A#4')"><span class="rotulo-nota-preta">LÁ#</span></div>
+                <!-- 5 Teclas Pretas / Sustenidos -->
+                <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
+                <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
+                <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
+                <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4"><span class="rotulo-nota-preta">SOL#</span></div>
+                <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
+            </div>
+
+            <!-- MODAL NATIVO INTERNO DE CONCLUSÃO (NÃO TRAVA NENHUM BOTÃO) -->
+            <div id="over-simon" class="overlay-jogo" style="display:none;">
+                <div class="painel-dialogo-arcade">
+                    <h2 style="color:#10b981;">🎉 Parabéns!</h2>
+                    <p id="txt-msg-conclusao-musica" style="font-size:13.5px; color:#334155; margin:10px 0 16px 0; line-height:1.45;">
+                        Incrível! Concluiu a canção e faturou +5 Moedas! 🪙
+                    </p>
+                    <button class="btn-acao-jogo" onclick="MotorMusica.avancarProximaMusica()">Próxima Canção</button>
+                    <button class="btn-link-voltar" onclick="MotorMusica.fecharModalConclusao()">Continuar nesta Canção</button>
+                </div>
             </div>
         </div>
 
@@ -898,16 +913,13 @@
             </div>
 
             <div class="area-velha-caderno">
-                <!-- 4 Linhas clássicas de caneta cruzadas -->
                 <div class="linha-caneta linha-caneta-h1"></div>
                 <div class="linha-caneta linha-caneta-h2"></div>
                 <div class="linha-caneta linha-caneta-v1"></div>
                 <div class="linha-caneta linha-caneta-v2"></div>
 
-                <!-- Risco de vitória contínuo -->
                 <div id="linha-vitoria-caneta"></div>
 
-                <!-- Grade com as 9 casas interativas -->
                 <div class="grade-velha-invisivel" id="grade-velha-invisivel"></div>
             </div>
 
@@ -934,20 +946,157 @@
         }
 
         // =========================================================================
-        // MOTOR DE ÁUDIO NATIVO (NOTAS DE PIANO & SOM DE CANETA RISCANDO PAPEL)
+        // MOTOR ACÚSTICO DE PIANO REAL, POLIFONIA & ALTO VOLUME (WEB AUDIO API)
         // =========================================================================
         const AudioMotor = {
             ctx: null,
+            masterGain: null,
+            compressor: null,
+            ondaPiano: null,
+            vozesPiano: {},
+
             obterCtx: function() {
                 if (!this.ctx) {
                     const AC = window.AudioContext || window.webkitAudioContext;
                     if (AC) this.ctx = new AC();
                 }
-                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
                 return this.ctx;
             },
 
-            // Toca nota cristalina (Piano / Teclado)
+            // Tabela acústica de harmónicos de corda de piano (síntese aditiva natural)
+            obterOndaPiano: function(ctx) {
+                if (this.ondaPiano) return this.ondaPiano;
+                const nHarmonics = 12;
+                const real = new Float32Array(nHarmonics);
+                const imag = new Float32Array(nHarmonics);
+                // Proporções espectrais reais das cordas de um piano
+                const coefs = [0, 1.0, 0.65, 0.38, 0.24, 0.15, 0.09, 0.05, 0.03, 0.02, 0.015, 0.01];
+                for (let i = 1; i < coefs.length; i++) {
+                    imag[i] = coefs[i];
+                }
+                this.ondaPiano = ctx.createPeriodicWave(real, imag, { disableNormalization: false });
+                return this.ondaPiano;
+            },
+
+            // Saída mestra de alto volume com compressor dinâmico (evita qualquer distorção)
+            obterSaida: function() {
+                const ctx = this.obterCtx();
+                if (!ctx) return null;
+
+                if (!this.masterGain) {
+                    this.masterGain = ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(1.5, ctx.currentTime); // Volume encorpado e alto
+
+                    this.compressor = ctx.createDynamicsCompressor();
+                    this.compressor.threshold.setValueAtTime(-14, ctx.currentTime);
+                    this.compressor.knee.setValueAtTime(20, ctx.currentTime);
+                    this.compressor.ratio.setValueAtTime(6, ctx.currentTime);
+                    this.compressor.attack.setValueAtTime(0.003, ctx.currentTime);
+                    this.compressor.release.setValueAtTime(0.15, ctx.currentTime);
+
+                    this.masterGain.connect(this.compressor);
+                    this.compressor.connect(ctx.destination);
+                }
+                return this.masterGain;
+            },
+
+            // INICIA NOTA COM SOM AUTÊNTICO DE PIANO ACÚSTICO & SUSTAIN LONGO
+            iniciarVozPiano: function(chave, freq) {
+                try {
+                    const ctx = this.obterCtx();
+                    if (!ctx) return;
+                    this.soltarVozPiano(chave);
+
+                    const saida = this.obterSaida();
+                    const now = ctx.currentTime;
+                    const onda = this.obterOndaPiano(ctx);
+
+                    // 1. Ganho individual da nota com Envelope ADSR de Piano
+                    const gNota = ctx.createGain();
+                    gNota.gain.setValueAtTime(0.0001, now);
+                    // Ataque percussivo do martelo
+                    gNota.gain.linearRampToValueAtTime(0.78, now + 0.006);
+                    // Decaimento para sustentação de corda vibrando
+                    gNota.gain.exponentialRampToValueAtTime(0.42, now + 0.28);
+                    // Sustentação longa e viva mantida enquanto a tecla for segurada
+                    gNota.gain.exponentialRampToValueAtTime(0.025, now + 8.5);
+
+                    // 2. Filtro Passa-Baixa Dinâmico (Simula a caixa acústica de madeira e brilho do feltro)
+                    const filtro = ctx.createBiquadFilter();
+                    filtro.type = 'lowpass';
+                    filtro.Q.setValueAtTime(1.8, now);
+                    filtro.frequency.setValueAtTime(Math.min(7200, freq * 5.8), now);
+                    filtro.frequency.exponentialRampToValueAtTime(Math.max(480, freq * 1.9), now + 0.32);
+
+                    // 3. Corda Principal
+                    const osc1 = ctx.createOscillator();
+                    osc1.setPeriodicWave(onda);
+                    osc1.frequency.setValueAtTime(freq, now);
+
+                    // 4. Corda Vizinha em Uníssono (Microligeiro detune acústico que dá calor e vida ao piano)
+                    const osc2 = ctx.createOscillator();
+                    osc2.setPeriodicWave(onda);
+                    osc2.frequency.setValueAtTime(freq, now);
+                    osc2.detune.setValueAtTime(2.8, now); // +2.8 cents de ressonância natural
+
+                    // Conexões
+                    osc1.connect(filtro);
+                    osc2.connect(filtro);
+                    filtro.connect(gNota);
+                    gNota.connect(saida);
+
+                    osc1.start(now);
+                    osc2.start(now);
+
+                    this.vozesPiano[chave] = {
+                        osc1: osc1,
+                        osc2: osc2,
+                        filtro: filtro,
+                        gain: gNota
+                    };
+                } catch(e) {}
+            },
+
+            // SOLTA A NOTA COM O ABAFADOR DE FELTRO SUAVE DO PIANO
+            soltarVozPiano: function(chave) {
+                try {
+                    const voz = this.vozesPiano[chave];
+                    if (!voz) return;
+                    delete this.vozesPiano[chave];
+
+                    const ctx = this.obterCtx();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+
+                    const valAtual = Math.max(0.001, voz.gain.gain.value || 0.1);
+                    voz.gain.gain.cancelScheduledValues(now);
+                    voz.gain.gain.setValueAtTime(valAtual, now);
+                    // Abafador do feltro descendo suavemente sobre as cordas (120ms)
+                    voz.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+                    voz.osc1.stop(now + 0.14);
+                    voz.osc2.stop(now + 0.14);
+                    setTimeout(() => {
+                        try {
+                            voz.osc1.disconnect();
+                            voz.osc2.disconnect();
+                            voz.filtro.disconnect();
+                            voz.gain.disconnect();
+                        } catch(e) {}
+                    }, 160);
+                } catch(e) {}
+            },
+
+            soltarTodasVozesPiano: function() {
+                for (let k in this.vozesPiano) {
+                    this.soltarVozPiano(k);
+                }
+            },
+
+            // Toca tom rápido de interface (para outros jogos e avisos)
             tocarTom: function(freq, dur = 0.28, tipo = 'triangle') {
                 try {
                     const ctx = this.obterCtx();
@@ -956,16 +1105,16 @@
                     const g = ctx.createGain();
                     osc.type = tipo;
                     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                    g.gain.setValueAtTime(0.18, ctx.currentTime);
+                    g.gain.setValueAtTime(0.35, ctx.currentTime);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
                     osc.connect(g);
-                    g.connect(ctx.destination);
+                    g.connect(this.obterSaida() || ctx.destination);
                     osc.start();
                     osc.stop(ctx.currentTime + dur);
                 } catch(e) {}
             },
 
-            // Síntese acústica autêntica de caneta riscando o papel
+            // Som de caneta riscando o papel
             tocarSomCaneta: function(duracao = 0.12) {
                 try {
                     const ctx = this.obterCtx();
@@ -985,12 +1134,12 @@
                     filter.Q.setValueAtTime(2.2, ctx.currentTime);
 
                     const gain = ctx.createGain();
-                    gain.gain.setValueAtTime(0.24, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.28, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duracao);
 
                     noise.connect(filter);
                     filter.connect(gain);
-                    gain.connect(ctx.destination);
+                    gain.connect(this.obterSaida() || ctx.destination);
 
                     noise.start();
                 } catch(e) {}
@@ -1047,6 +1196,7 @@
                 } else {
                     MotorFlappy.parar();
                     MotorQuebraBlocos.parar();
+                    MotorMusica.pararTodasNotas();
                     MotorBolhas.parar();
                     document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                     document.getElementById('menu-arcade').style.display = 'flex';
@@ -1055,6 +1205,7 @@
             },
 
             abrirJogo: function(idJogo) {
+                MotorMusica.pararTodasNotas();
                 document.getElementById('menu-arcade').style.display = 'none';
                 document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                 this.telaAtiva = idJogo;
@@ -1634,12 +1785,15 @@
         };
 
         // =========================================================================
-        // 3. NOVO TECLADO MÁGICO DO CHUÍRI (10 MÚSICAS & MODO LIVRE)
+        // 3. TECLADO MÁGICO DO CHUÍRI (POLIFONIA, MULTITOUCH & TIMBRE ACÚSTICO)
         // =========================================================================
         const MotorMusica = {
             modo: 'aprendizado', // 'aprendizado' ou 'livre'
             musicaIndex: 0,
             passoNota: 0,
+            eventosConfigurados: false,
+            teclasAtivasPorPointer: {},
+            contagemDedosPorNota: {},
 
             // Tabela real de frequências em Hertz (A4 = 440Hz)
             tabelaFrequencias: {
@@ -1673,11 +1827,140 @@
             ],
 
             montar: function() {
+                this.configurarEventosMultitoque();
                 this.trocarModo('aprendizado');
                 this.selecionarMusica(0);
             },
 
+            // Liga eventos de multitoque e ponteiro independentes
+            configurarEventosMultitoque: function() {
+                if (this.eventosConfigurados) return;
+                this.eventosConfigurados = true;
+
+                const teclado = document.getElementById('teclado-piano-completo');
+                if (!teclado) return;
+
+                const teclas = teclado.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano');
+                teclas.forEach(tecla => {
+                    const nota = tecla.getAttribute('data-nota');
+
+                    tecla.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        this.pressionarNota(nota, e.pointerId, tecla);
+                    }, { passive: false });
+
+                    tecla.addEventListener('pointerup', (e) => {
+                        e.preventDefault();
+                        this.soltarNota(nota, e.pointerId, tecla);
+                    }, { passive: false });
+
+                    tecla.addEventListener('pointercancel', (e) => {
+                        e.preventDefault();
+                        this.soltarNota(nota, e.pointerId, tecla);
+                    }, { passive: false });
+
+                    tecla.addEventListener('pointerleave', (e) => {
+                        if (this.teclasAtivasPorPointer[e.pointerId] === nota) {
+                            this.soltarNota(nota, e.pointerId, tecla);
+                        }
+                    }, { passive: false });
+                });
+
+                // Salvaguardas globais para garantir liberação e evitar notas presas
+                window.addEventListener('pointerup', (e) => {
+                    if (this.teclasAtivasPorPointer[e.pointerId]) {
+                        const nota = this.teclasAtivasPorPointer[e.pointerId];
+                        this.soltarNota(nota, e.pointerId);
+                    }
+                });
+
+                window.addEventListener('pointercancel', (e) => {
+                    if (this.teclasAtivasPorPointer[e.pointerId]) {
+                        const nota = this.teclasAtivasPorPointer[e.pointerId];
+                        this.soltarNota(nota, e.pointerId);
+                    }
+                });
+
+                window.addEventListener('touchend', (e) => {
+                    if (e.touches && e.touches.length === 0) {
+                        this.pararTodasNotas();
+                    }
+                }, { passive: true });
+
+                window.addEventListener('blur', () => {
+                    this.pararTodasNotas();
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) this.pararTodasNotas();
+                });
+            },
+
+            pressionarNota: function(codigoNota, pointerId, elTecla) {
+                const info = this.tabelaFrequencias[codigoNota];
+                if (!info) return;
+
+                const chaveVoz = `${codigoNota}_${pointerId}`;
+                this.teclasAtivasPorPointer[pointerId] = codigoNota;
+                this.contagemDedosPorNota[codigoNota] = (this.contagemDedosPorNota[codigoNota] || 0) + 1;
+
+                // Inicia nota sustentada de piano acústico
+                AudioMotor.iniciarVozPiano(chaveVoz, info.freq);
+                tentarVibrar(22);
+
+                if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
+                if (elTecla) {
+                    elTecla.classList.add('tocando');
+                    this.soltarNotaFlutuante(elTecla);
+                }
+
+                // Lógica de aprendizado
+                if (this.modo === 'aprendizado') {
+                    const mus = this.catalogoMusicas[this.musicaIndex];
+                    if (!mus) return;
+
+                    const notaEsperada = mus.notas[this.passoNota];
+                    if (codigoNota === notaEsperada) {
+                        this.passoNota++;
+                        if (this.passoNota >= mus.notas.length) {
+                            this.concluirMusica(mus.titulo);
+                        } else {
+                            this.atualizarInterfaceAprendizado();
+                        }
+                    }
+                }
+            },
+
+            soltarNota: function(codigoNota, pointerId, elTecla) {
+                const chaveVoz = `${codigoNota}_${pointerId}`;
+                AudioMotor.soltarVozPiano(chaveVoz);
+
+                delete this.teclasAtivasPorPointer[pointerId];
+
+                if (this.contagemDedosPorNota[codigoNota]) {
+                    this.contagemDedosPorNota[codigoNota]--;
+                    if (this.contagemDedosPorNota[codigoNota] <= 0) {
+                        delete this.contagemDedosPorNota[codigoNota];
+                        if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
+                        if (elTecla) elTecla.classList.remove('tocando');
+                    }
+                } else {
+                    if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
+                    if (elTecla) elTecla.classList.remove('tocando');
+                }
+            },
+
+            pararTodasNotas: function() {
+                AudioMotor.soltarTodasVozesPiano();
+                this.teclasAtivasPorPointer = {};
+                this.contagemDedosPorNota = {};
+                document.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano').forEach(el => {
+                    el.classList.remove('tocando');
+                });
+            },
+
             trocarModo: function(novoModo) {
+                this.pararTodasNotas();
                 this.modo = novoModo;
                 const tabMusicas = document.getElementById('tab-modo-musicas');
                 const tabLivre = document.getElementById('tab-modo-livre');
@@ -1747,37 +2030,6 @@
                 });
             },
 
-            tocarNota: function(codigoNota) {
-                const info = this.tabelaFrequencias[codigoNota];
-                if (!info) return;
-
-                AudioMotor.tocarTom(info.freq, 0.35, 'triangle');
-                tentarVibrar(22);
-
-                const elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
-                if (elTecla) {
-                    elTecla.classList.add('tocando');
-                    this.soltarNotaFlutuante(elTecla);
-                    setTimeout(() => elTecla.classList.remove('tocando'), 180);
-                }
-
-                // Lógica de aprendizado
-                if (this.modo === 'aprendizado') {
-                    const mus = this.catalogoMusicas[this.musicaIndex];
-                    if (!mus) return;
-
-                    const notaEsperada = mus.notas[this.passoNota];
-                    if (codigoNota === notaEsperada) {
-                        this.passoNota++;
-                        if (this.passoNota >= mus.notas.length) {
-                            this.concluirMusica(mus.titulo);
-                        } else {
-                            this.atualizarInterfaceAprendizado();
-                        }
-                    }
-                }
-            },
-
             soltarNotaFlutuante: function(el) {
                 const rect = el.getBoundingClientRect();
                 const container = document.getElementById('tela-simon');
@@ -1790,7 +2042,9 @@
                 setTimeout(() => nota.remove(), 800);
             },
 
+            // CONCLUSÃO SEM ALERT BLOQUEANTE (DESARMA TODAS AS TECLAS IMEDIATAMENTE)
             concluirMusica: function(nomeMusica) {
+                this.pararTodasNotas(); // Destrava as teclas imediatamente
                 GerenciadorArcade.adicionarMoedas(5);
                 AudioMotor.tocarTom(880, 0.3);
                 setTimeout(() => AudioMotor.tocarTom(1046.5, 0.4), 160);
@@ -1798,12 +2052,30 @@
                 const txtAlvo = document.getElementById('txt-nota-alvo-aprendizado');
                 if (txtAlvo) txtAlvo.innerHTML = "<span style='color:#10b981;'>PARABÉNS!</span>";
 
-                alert(`Incrível! Concluiu "${nomeMusica}" e faturou +5 Moedas! 🪙`);
+                const msgEl = document.getElementById('txt-msg-conclusao-musica');
+                if (msgEl) {
+                    msgEl.innerHTML = `Incrível! Concluiu <strong>"${nomeMusica}"</strong> e faturou <strong>+5 Moedas! 🪙</strong>`;
+                }
 
-                // Avança para a próxima música automaticamente
+                const overEl = document.getElementById('over-simon');
+                if (overEl) {
+                    overEl.style.display = 'flex';
+                }
+            },
+
+            avancarProximaMusica: function() {
+                this.fecharModalConclusao();
                 this.musicaIndex = (this.musicaIndex + 1) % this.catalogoMusicas.length;
                 this.passoNota = 0;
                 this.selecionarMusica(this.musicaIndex);
+            },
+
+            fecharModalConclusao: function() {
+                this.pararTodasNotas();
+                const overEl = document.getElementById('over-simon');
+                if (overEl) {
+                    overEl.style.display = 'none';
+                }
             }
         };
 
@@ -2007,7 +2279,6 @@
             turno: 'X',
             fim: false,
 
-            // SVGs de X e O com traço de caneta feito à mão
             obterSvgX: function() {
                 return `
                     <svg viewBox="0 0 50 50" style="width:52px; height:52px;">
@@ -2076,14 +2347,12 @@
                 if (this.fim) return;
                 let escolhida = null;
 
-                // Tenta vencer
                 for (let item of this.linhasVitoria) {
                     const contO = item.linha.filter(idx => this.tabuleiro[idx] === 'O').length;
                     const vazia = item.linha.find(idx => this.tabuleiro[idx] === '');
                     if (contO === 2 && vazia !== undefined) { escolhida = vazia; break; }
                 }
 
-                // Tenta bloquear
                 if (escolhida === null) {
                     for (let item of this.linhasVitoria) {
                         const contX = item.linha.filter(idx => this.tabuleiro[idx] === 'X').length;
@@ -2095,7 +2364,7 @@
                 if (escolhida === null && this.tabuleiro[4] === '') escolhida = 4;
                 if (escolhida === null) {
                     const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
-                    if (vazias.length > 0) escolhida = vazias[Math.floor(Math.random() * vazias.length)];
+                    if (vazias.length > 0)之旅 = vazias[Math.floor(Math.random() * vazias.length)];
                 }
 
                 if (escolhida !== null) {
@@ -2127,7 +2396,7 @@
                 const linha = document.getElementById('linha-vitoria-caneta');
                 if (!linha) return;
 
-                AudioMotor.tocarSomCaneta(0.35); // Som contínuo de caneta riscando
+                AudioMotor.tocarSomCaneta(0.35);
                 linha.style.display = 'block';
 
                 if (vInfo.tipo === 'h') {
