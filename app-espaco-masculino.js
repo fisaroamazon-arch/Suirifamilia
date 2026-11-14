@@ -2,168 +2,9 @@
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
 // Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
 // Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
-// Mini Player Sutil em Song (1 a 10.mp3): Restrito estritamente a homem.html
 // Integrado ao Catálogo de Ícones PNG da Pasta ./icone/ (com love.png no Radar)
 // Curadoria Dinâmica: Sorteio Diário, "Quero Assistir" e 2 Gavetas Retráteis
 // =========================================================================
-
-// =========================================================================
-// 0. MOTOR DE MÚSICA DE FUNDO DO ESPAÇO MASCULINO (SONG 1 a 10)
-// =========================================================================
-window.PlayerMasc = window.PlayerMasc || {
-    audio: null,
-    totalFaixas: 10,
-    faixaAtual: null,
-    volumeSalvo: parseFloat(localStorage.getItem('suiri_masc_volume') || '0.5'),
-
-    // Trava de segurança: garante execução exclusiva dentro de homem.html
-    estaNoHomemHtml: function() {
-        const rota = (window.location.pathname + window.location.href).toLowerCase();
-        return rota.includes('homem.html');
-    },
-
-    iniciar: function() {
-        // Bloqueio rigoroso: impede disparo se o usuário estiver no index.html ou em outra tela
-        if (!this.estaNoHomemHtml()) {
-            this.parar();
-            return;
-        }
-
-        if (!this.audio) {
-            this.audio = new Audio();
-            this.audio.volume = this.volumeSalvo;
-            
-            // Quando a faixa atual terminar, sorteia e toca outra automaticamente
-            this.audio.addEventListener('ended', () => {
-                if (this.estaNoHomemHtml()) {
-                    this.tocarAleatoria();
-                }
-            });
-
-            this.audio.addEventListener('play', () => this.atualizarInterface());
-            this.audio.addEventListener('pause', () => this.atualizarInterface());
-        }
-
-        if (!this.faixaAtual) {
-            this.tocarAleatoria();
-        } else if (this.audio.paused) {
-            const promessa = this.audio.play();
-            if (promessa !== undefined) {
-                promessa.catch(() => this.aguardarPrimeiroToque());
-            }
-        }
-    },
-
-    obterIndiceAleatorio: function() {
-        if (this.totalFaixas <= 1) return 1;
-        let proximo;
-        do {
-            proximo = Math.floor(Math.random() * this.totalFaixas) + 1;
-        } while (proximo === this.faixaAtual);
-        return proximo;
-    },
-
-    tocarAleatoria: function() {
-        if (!this.estaNoHomemHtml()) {
-            this.parar();
-            return;
-        }
-
-        this.faixaAtual = this.obterIndiceAleatorio();
-        if (!this.audio) {
-            this.audio = new Audio();
-            this.audio.volume = this.volumeSalvo;
-            this.audio.addEventListener('ended', () => {
-                if (this.estaNoHomemHtml()) this.tocarAleatoria();
-            });
-            this.audio.addEventListener('play', () => this.atualizarInterface());
-            this.audio.addEventListener('pause', () => this.atualizarInterface());
-        }
-
-        this.audio.src = `song/${this.faixaAtual}.mp3`;
-        
-        const promessaPlay = this.audio.play();
-        if (promessaPlay !== undefined) {
-            promessaPlay.then(() => {
-                this.atualizarInterface();
-            }).catch(() => {
-                this.atualizarInterface();
-                this.aguardarPrimeiroToque();
-            });
-        }
-    },
-
-    aguardarPrimeiroToque: function() {
-        if (!this.estaNoHomemHtml()) return;
-
-        const iniciarNoPrimeiroToque = () => {
-            if (this.estaNoHomemHtml() && this.audio && this.audio.paused) {
-                this.audio.play().then(() => {
-                    this.atualizarInterface();
-                }).catch(() => {});
-            }
-            document.removeEventListener('click', iniciarNoPrimeiroToque);
-            document.removeEventListener('touchstart', iniciarNoPrimeiroToque);
-        };
-        document.addEventListener('click', iniciarNoPrimeiroToque, { once: true });
-        document.addEventListener('touchstart', iniciarNoPrimeiroToque, { once: true });
-    },
-
-    alternarPausa: function() {
-        if (!this.estaNoHomemHtml()) return;
-
-        if (!this.audio) {
-            this.iniciar();
-            return;
-        }
-        if (this.audio.paused) {
-            this.audio.play().catch(e => console.warn(e));
-        } else {
-            this.audio.pause();
-        }
-        this.atualizarInterface();
-    },
-
-    proxima: function() {
-        if (this.estaNoHomemHtml()) {
-            this.tocarAleatoria();
-        }
-    },
-
-    definirVolume: function(valor) {
-        const v = parseFloat(valor);
-        this.volumeSalvo = v;
-        localStorage.setItem('suiri_masc_volume', v.toString());
-        if (this.audio) {
-            this.audio.volume = v;
-        }
-    },
-
-    parar: function() {
-        if (this.audio) {
-            this.audio.pause();
-            this.audio.currentTime = 0;
-            this.faixaAtual = null;
-        }
-    },
-
-    atualizarInterface: function() {
-        const btnPlay = document.getElementById('btn-player-masc-toggle');
-        const sliderVol = document.getElementById('slider-player-masc-vol');
-        const indicadorFaixa = document.getElementById('player-masc-faixa-lbl');
-
-        if (btnPlay && this.audio) {
-            btnPlay.innerHTML = this.audio.paused ? '▶' : '⏸';
-            btnPlay.title = this.audio.paused ? 'Reproduzir' : 'Pausar';
-        }
-        if (sliderVol) {
-            sliderVol.value = this.volumeSalvo;
-        }
-        if (indicadorFaixa && this.faixaAtual) {
-            indicadorFaixa.textContent = `Faixa ${this.faixaAtual}`;
-        }
-    }
-};
 
 // 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO ANTES DO CATÁLOGO GERAL)
 window.AcervoReflexoesEstoicas365 = window.AcervoReflexoesEstoicas365 || [
@@ -279,11 +120,6 @@ window.abrirEspacoMasculino = async function() {
     window.renderizarHistoricoAssistidos();
     window.renderizarListasMasculinas();
 
-    // Inicia o player apenas se estiver de fato no homem.html
-    if (window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function' && window.PlayerMasc.estaNoHomemHtml()) {
-        window.PlayerMasc.iniciar();
-    }
-
     if (typeof window.carregarDadosNuvemEspacoMasculino === 'function') {
         try {
             await window.carregarDadosNuvemEspacoMasculino();
@@ -294,9 +130,6 @@ window.abrirEspacoMasculino = async function() {
 };
 
 window.fecharEspacoMasculino = function() {
-    if (window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
-        window.PlayerMasc.parar();
-    }
     window.location.href = 'index.html';
 };
 
@@ -317,38 +150,13 @@ window.renderizarEsqueletoEspacoMasculino = function() {
     const sabedoriaArsenal = window.AcervoArsenalPratico[diaDoAno % window.AcervoArsenalPratico.length];
 
     container.innerHTML = `
-        <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR E MINI PLAYER SUTIL NO TOPO DIREITO -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">
+        <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR -->
+        <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
             <button type="button" onclick="window.fecharEspacoMasculino()" 
                     style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
                 <span style="font-size:14px; line-height:1; color:#f97316;">←</span>
                 <span>Voltar ao Lar</span>
             </button>
-
-            <!-- MINI PLAYER DE ÁUDIO SUTIL (SONG 1 A 10) -->
-            <div id="mini-player-espaco-masc" style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:rgba(15, 23, 42, 0.85); border:1.5px solid #334155; border-radius:18px; box-shadow:0 3px 12px rgba(0,0,0,0.4); backdrop-filter:blur(8px);">
-                <span id="player-masc-faixa-lbl" style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.3px; white-space:nowrap;">Música</span>
-                
-                <!-- Botão Pausa / Play -->
-                <button type="button" id="btn-player-masc-toggle" onclick="window.PlayerMasc.alternarPausa()" 
-                        style="background:#1e293b; border:1px solid #475569; color:#f8fafc; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; padding:0;" title="Pausar / Reproduzir">
-                    ⏸
-                </button>
-
-                <!-- Botão Próxima Faixa -->
-                <button type="button" id="btn-player-masc-next" onclick="window.PlayerMasc.proxima()" 
-                        style="background:#1e293b; border:1px solid #475569; color:#f8fafc; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; padding:0;" title="Próxima Música">
-                    ⏭
-                </button>
-
-                <!-- Controle de Volume Deslizante Sutil -->
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:2px;">
-                    <span style="font-size:11px; line-height:1; color:#94a3b8;">🔊</span>
-                    <input type="range" id="slider-player-masc-vol" min="0" max="1" step="0.05" value="${window.PlayerMasc.volumeSalvo}" 
-                           oninput="window.PlayerMasc.definirVolume(this.value)" 
-                           style="width:48px; accent-color:#f97316; cursor:pointer; height:4px; vertical-align:middle;">
-                </div>
-            </div>
         </div>
 
         <!-- LINHA 2: CABEÇALHO NOBRE COM ÍCONE 50px E CONTRASTE MÁXIMO -->
@@ -614,11 +422,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             <div id="lista-manutencao-garagem" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     `;
-
-    // Atualiza o estado inicial do mini player na tela
-    if (window.PlayerMasc && typeof window.PlayerMasc.atualizarInterface === 'function') {
-        window.PlayerMasc.atualizarInterface();
-    }
 };
 
 // =========================================================================
@@ -1143,7 +946,7 @@ window.atualizarVisualizacaoMidia = function() {
     if (elTitulo) elTitulo.textContent = item.titulo || '';
     if (elDesc) elDesc.textContent = item.desc || '';
 
-    const naListaQueroVer = window.dadosMidiaQueroVerMasc.some(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    const naListaQueroVer = (window.dadosMidiaQueroVerMasc || []).some(m => m && m.titulo && item.titulo && m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnQueroVer) {
         if (naListaQueroVer) {
             btnQueroVer.textContent = '📌 Na Minha Lista';
@@ -1158,7 +961,7 @@ window.atualizarVisualizacaoMidia = function() {
         }
     }
 
-    const jaAvaliado = window.dadosMidiaAssistida.find(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    const jaAvaliado = (window.dadosMidiaAssistida || []).find(m => m && m.titulo && item.titulo && m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnAcao) {
         if (jaAvaliado) {
             btnAcao.textContent = `★ ${jaAvaliado.estrelas} Estrelas`;
@@ -1173,9 +976,9 @@ window.atualizarVisualizacaoMidia = function() {
 window.alternarQueroAssistirMasc = function(itemDireto = null) {
     const lista = window.obterListaMidiaMascAtual();
     const item = itemDireto || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
-    if (!item) return;
+    if (!item || !item.titulo) return;
 
-    const idx = window.dadosMidiaQueroVerMasc.findIndex(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    const idx = (window.dadosMidiaQueroVerMasc || []).findIndex(m => m && m.titulo && m.titulo.toLowerCase() === item.titulo.toLowerCase());
 
     if (idx >= 0) {
         window.dadosMidiaQueroVerMasc.splice(idx, 1);
@@ -1210,12 +1013,12 @@ window.abrirModalAvaliacaoMidia = function() {
 window.confirmarAvaliacaoMidia = function(estrelas, itemParam = null) {
     const lista = window.obterListaMidiaMascAtual();
     const item = itemParam || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
-    if (!item) return;
+    if (!item || !item.titulo) return;
 
-    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    window.dadosMidiaQueroVerMasc = (window.dadosMidiaQueroVerMasc || []).filter(m => m && m.titulo && m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
 
-    window.dadosMidiaAssistida = window.dadosMidiaAssistida.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    window.dadosMidiaAssistida = (window.dadosMidiaAssistida || []).filter(m => m && m.titulo && m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     window.dadosMidiaAssistida.push({
         id: item.id || ('mid_' + Date.now()),
         titulo: item.titulo,
@@ -1269,7 +1072,7 @@ window.renderizarHistoricoQueroVerMasc = function() {
 };
 
 window.removerMidiaQueroVerMasc = function(id) {
-    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.id !== id);
+    window.dadosMidiaQueroVerMasc = (window.dadosMidiaQueroVerMasc || []).filter(m => m.id !== id);
     localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
     window.renderizarHistoricoQueroVerMasc();
     window.atualizarVisualizacaoMidia();
@@ -1280,7 +1083,7 @@ window.renderizarHistoricoAssistidos = function() {
     const elContador = document.getElementById('contador-assistidos');
     if (!cont) return;
 
-    const assistidosOrdenados = [...window.dadosMidiaAssistida].sort((a, b) => b.estrelas - a.estrelas);
+    const assistidosOrdenados = [...(window.dadosMidiaAssistida || [])].sort((a, b) => b.estrelas - a.estrelas);
     if (elContador) elContador.textContent = assistidosOrdenados.length;
 
     if (assistidosOrdenados.length === 0) {
@@ -1305,7 +1108,7 @@ window.renderizarHistoricoAssistidos = function() {
 };
 
 window.removerMidiaAssistida = function(id) {
-    window.dadosMidiaAssistida = window.dadosMidiaAssistida.filter(m => m.id !== id);
+    window.dadosMidiaAssistida = (window.dadosMidiaAssistida || []).filter(m => m.id !== id);
     localStorage.setItem('suiri_midia_assistida', JSON.stringify(window.dadosMidiaAssistida));
     window.renderizarHistoricoAssistidos();
     window.atualizarVisualizacaoMidia();
@@ -1440,30 +1243,3 @@ window.carregarDadosNuvemEspacoMasculino = async function() {
         console.warn("Sem conexão remota para o módulo masculino:", err);
     }
 };
-
-// =========================================================================
-// 10. DISPARO AUTOMÁTICO EXCLUSIVO PARA HOMEM.HTML
-// =========================================================================
-function verificarEIniciarPlayerHomem() {
-    const rota = (window.location.pathname + window.location.href).toLowerCase();
-    const ehPaginaHomem = rota.includes('homem.html');
-
-    if (ehPaginaHomem && window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function') {
-        window.PlayerMasc.iniciar();
-    } else if (!ehPaginaHomem && window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
-        window.PlayerMasc.parar();
-    }
-}
-
-// Ao sair ou navegar fora da página, encerra qualquer reprodução ativa imediatamente
-window.addEventListener('beforeunload', () => {
-    if (window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
-        window.PlayerMasc.parar();
-    }
-});
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', verificarEIniciarPlayerHomem);
-} else {
-    verificarEIniciarPlayerHomem();
-}

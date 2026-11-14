@@ -593,6 +593,10 @@ window.guardarFotoPerfil = async function(base64Data) {
 // 5. TROCA DE PERFIL COM LOGIN OFICIAL VIA SUPABASE AUTH PARA ADULTOS
 // =========================================================================
 window.abrirModalSenhaAdulto = function(membro) {
+    if (!membro) {
+        membro = (window.listaMembrosFamilia || []).find(m => m.papel === 'adm') || 
+                 (window.listaMembrosFamilia || []).find(m => !(m.eh_kids === true || m.papel === 'dependente'));
+    }
     if (!membro) return;
 
     let modal = document.getElementById('modal-senha-adulto-suiri');
@@ -623,7 +627,7 @@ window.abrirModalSenhaAdulto = function(membro) {
     const btnConfirmar = document.getElementById('btn-confirmar-senha-membro');
 
     const primeiroNome = (membro.nome || 'Adulto').split(' ')[0];
-    if (sub) sub.textContent = `Acesso para ${primeiroNome}. Digite sua senha de acesso:`;
+    if (sub) sub.textContent = `Acesso para ${primeiroNome}. Digite a palavra-passe do Lar:`;
     if (input) {
         input.value = '';
         setTimeout(() => input.focus(), 200);
@@ -635,9 +639,12 @@ window.abrirModalSenhaAdulto = function(membro) {
             return window.mostrarToast("Digite a sua senha de acesso.", "erro");
         }
 
-        const emailMembro = membro.email ? membro.email.toLowerCase().trim() : '';
+        // Tenta o e-mail específico do membro ou o e-mail da sessão autenticada principal
+        const emailMembro = (membro.email ? membro.email.toLowerCase().trim() : '') || 
+                            (window.usuarioAtual?.email ? window.usuarioAtual.email.toLowerCase().trim() : '');
+
         if (!emailMembro) {
-            return window.mostrarToast("Este perfil não possui e-mail de login cadastrado.", "erro");
+            return window.mostrarToast("E-mail de autenticação não identificado.", "erro");
         }
 
         const cli = window.cliente || window.clienteSupabase;
@@ -678,7 +685,7 @@ window.abrirModalSenhaAdulto = function(membro) {
             window.mostrarToast(`Sessão ativa para ${primeiroNome}!`);
         } catch (e) {
             console.error("Erro na autenticação de troca de adulto:", e);
-            window.mostrarToast("Falha na autenticação do usuário.", "erro");
+            window.mostrarToast("Falha na autenticação do utilizador.", "erro");
         } finally {
             btnConfirmar.disabled = false;
             btnConfirmar.textContent = "Entrar";
@@ -697,6 +704,14 @@ window.abrirModalSenhaAdulto = function(membro) {
     }
 
     modal.classList.remove('oculto');
+};
+
+// Solicitação direta de desbloqueio para sair do Modo Kids
+window.solicitarSaidaModoKids = function() {
+    const adulto = (window.listaMembrosFamilia || []).find(m => m.papel === 'adm') || 
+                   (window.listaMembrosFamilia || []).find(m => !(m.eh_kids === true || m.papel === 'dependente')) ||
+                   window.usuarioAtual;
+    window.abrirModalSenhaAdulto(adulto);
 };
 
 // =========================================================================
@@ -725,6 +740,16 @@ window.atualizarIconeBotaoSessao = function() {
 };
 
 window.acionarBotaoSessaoTopo = function() {
+    if (window.modoKidsAtivo) {
+        const totalMembros = (window.listaMembrosFamilia || []).length;
+        if (totalMembros > 1) {
+            window.abrirJanelaPrincipalQuiosque();
+        } else {
+            window.solicitarSaidaModoKids();
+        }
+        return;
+    }
+
     const totalMembros = (window.listaMembrosFamilia || []).length;
     if (totalMembros > 1) {
         window.abrirJanelaPrincipalQuiosque();
@@ -771,7 +796,7 @@ window.criarModalQuiosqueDinamico = function() {
             <!-- BLOCO 1: PERFIS ADULTOS -->
             <div id="secao-quiosque-adultos" style="margin-bottom:16px;">
                 <span style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:var(--texto-suave, #64748b); display:block; margin-bottom:8px;">
-                    👑 Perfis Adultos
+                    👑 Perfis Adultos (Requer Senha)
                 </span>
                 <div id="grade-avatares-adultos" class="grade-avatares-expandida" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:12px;"></div>
             </div>
@@ -972,6 +997,21 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
             imgKids.src = window.perfilAtual.avatar_url || './icone/icone-casa-escopo.png';
         }
 
+        // Configuração de botão de saída exclusivo Kids se existir na tela
+        const btnSairKids = document.getElementById('btn-sair-kids') || 
+                            document.getElementById('btn-sair-modo-kids') || 
+                            document.getElementById('btn-trocar-perfil-kids');
+        if (btnSairKids) {
+            btnSairKids.onclick = () => {
+                const totalMembros = (window.listaMembrosFamilia || []).length;
+                if (totalMembros > 1) {
+                    window.abrirJanelaPrincipalQuiosque();
+                } else {
+                    window.solicitarSaidaModoKids();
+                }
+            };
+        }
+
         if (window.TamagotchiKids && typeof window.TamagotchiKids.montarWidgetNaTela === 'function') {
             window.TamagotchiKids.montarWidgetNaTela();
         }
@@ -1034,28 +1074,22 @@ window.iniciarAppFamilia = async function() {
     document.getElementById('tela-login')?.classList.add('oculto');
     document.getElementById('tela-app')?.classList.remove('oculto');
 
-    // 2. Busca do membro atual
-    const { data: membro, error: errMembro } = await cliente.from('membros')
+    // 2. Busca do membro principal da sessão
+    const { data: membroAuth, error: errMembro } = await cliente.from('membros')
         .select('*')
         .eq('id', window.usuarioAtual.id)
         .maybeSingle();
 
-    if (errMembro || !membro) {
+    if (errMembro || !membroAuth) {
         window.mostrarToast("Perfil de membro não encontrado.", "erro");
         return;
     }
 
-    if (!membro.genero) {
-        membro.genero = 'Masculino';
+    if (!membroAuth.genero) {
+        membroAuth.genero = 'Masculino';
     }
 
-    window.perfilAtual = membro;
-    window.familiaAtualId = membro.familia_id;
-    try {
-        localStorage.setItem('suiri_perfil_ativo', JSON.stringify(membro));
-    } catch(e) {}
-
-    window.aplicarRegrasPerfilKidsOuAdulto();
+    window.familiaAtualId = membroAuth.familia_id;
 
     // 3. Consultas da família e dos membros em paralelo
     const [resFamilia, resMembros] = await Promise.all([
@@ -1066,7 +1100,25 @@ window.iniciarAppFamilia = async function() {
     window.dadosFamiliaAtual = resFamilia?.data || null;
     window.listaMembrosFamilia = resMembros?.data || [];
 
+    // TRAVA CRÍTICA DO MODO KIDS & RESTAURAÇÃO DE PERFIL ATIVO:
+    // Garante que se o utilizador já estava em modo Kids (ou trocou de perfil), a sessão não reinicia para o titular
+    let perfilParaAtivar = membroAuth;
     try {
+        const perfilCache = JSON.parse(localStorage.getItem('suiri_perfil_ativo') || 'null');
+        if (perfilCache && perfilCache.id) {
+            const membroAtualizado = window.listaMembrosFamilia.find(m => m.id === perfilCache.id);
+            if (membroAtualizado) {
+                perfilParaAtivar = membroAtualizado;
+            } else if (perfilCache.familia_id === window.familiaAtualId) {
+                perfilParaAtivar = perfilCache;
+            }
+        }
+    } catch(e) {}
+
+    window.perfilAtual = perfilParaAtivar;
+
+    try {
+        localStorage.setItem('suiri_perfil_ativo', JSON.stringify(perfilParaAtivar));
         if (window.dadosFamiliaAtual) {
             localStorage.setItem('suiri_familia_ativa', JSON.stringify(window.dadosFamiliaAtual));
         }
@@ -1074,6 +1126,8 @@ window.iniciarAppFamilia = async function() {
             localStorage.setItem('suiri_membros_ativos', JSON.stringify(window.listaMembrosFamilia));
         }
     } catch(e) {}
+
+    window.aplicarRegrasPerfilKidsOuAdulto();
 
     const selRelatorio = document.getElementById('filtro-membro-relatorio');
     if (selRelatorio) {
@@ -1197,7 +1251,6 @@ window.verificarSessao = async function() {
             document.getElementById('tela-login')?.classList.remove('oculto');
         }
     } catch (err) {
-        // Se estiver offline no iPhone mas tiver perfil em cache, preserva a navegação
         if (!window.perfilAtual) {
             document.getElementById('tela-app')?.classList.add('oculto');
             document.getElementById('barra-navegacao-principal')?.classList.add('oculto');

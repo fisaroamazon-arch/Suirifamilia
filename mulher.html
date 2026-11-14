@@ -65,13 +65,11 @@
             pointer-events: none !important;
             -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
-            /* Transição suave do desfoque do vídeo */
             filter: blur(0px);
             -webkit-filter: blur(0px);
             transition: filter 2.5s ease, -webkit-filter 2.5s ease;
         }
 
-        /* Desfoque leve no vídeo após 4 segundos sincronizado com o modo vidro */
         body.modo-vidro #video-cenario-fundo {
             filter: blur(4px);
             -webkit-filter: blur(4px);
@@ -113,10 +111,56 @@
             display: none !important;
         }
 
+        /* Oculta botão duplicado de voltar ao lar inserido por scripts externos */
+        #secao-espaco-mulher button[onclick*="fecharEspacoMulher"],
+        #secao-espaco-mulher button[onclick*="voltarAoLar"],
+        #secao-espaco-mulher a[href="index.html"] {
+            display: none !important;
+        }
+
+        /* =========================================================================
+           LETREIRO DIGITAL EM CICLO CONTÍNUO (MARQUEE)
+           ========================================================================= */
+        .marquee-box-mulher {
+            flex: 1 1 auto;
+            min-width: 70px;
+            max-width: 130px;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            display: inline-flex;
+            mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+        }
+
+        .marquee-track-mulher {
+            display: inline-flex;
+            align-items: center;
+            will-change: transform;
+            animation: deslizarTextoCiclo 13s linear infinite;
+        }
+
+        .marquee-track-mulher span {
+            font-size: 10px;
+            font-weight: 800;
+            color: #7c3aed;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            padding-right: 28px;
+        }
+
+        @keyframes deslizarTextoCiclo {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
         /* =========================================================================
            TRANSPARÊNCIA TOTAL DOS QUADROS E TRANSIÇÃO GRADUAL PARA VIDRO
            ========================================================================= */
-        /* Estado 1 (Primeiros 4 segundos): Transparência completa para ver o vídeo */
         .cartao-geral {
             background: transparent !important;
             border: 1.5px solid rgba(233, 213, 255, 0.5) !important;
@@ -138,7 +182,6 @@
             transition: background 2.5s ease, border-color 2.5s ease !important;
         }
 
-        /* Estado 2 (Após 4 segundos): Transição suave para Vidro Acetinado Feminino */
         body.modo-vidro .cartao-geral {
             background: rgba(255, 255, 255, 0.72) !important;
             border: 1px solid rgba(233, 213, 255, 0.65) !important;
@@ -163,12 +206,10 @@
             -webkit-backdrop-filter: blur(8px) !important;
         }
 
-        /* Sombras leves nas legendas e textos para nitidez sobre o vídeo */
         .cartao-geral p, .cartao-geral span, .cartao-geral strong, .cartao-geral h2, .cartao-geral h3, .cartao-geral h4 {
             text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.6);
         }
 
-        /* Ampliação de ícones (+20%) */
         img[src*="./icone/"],
         img[src*="icone/"],
         .icone-svg,
@@ -208,7 +249,6 @@
             animation: subirPetala linear infinite;
         }
 
-        /* Variações de Cores Florais */
         .petala-lavanda {
             background: radial-gradient(circle, rgba(192, 132, 252, 0.65) 0%, rgba(168, 85, 247, 0.35) 60%, transparent 100%);
             box-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
@@ -250,7 +290,6 @@
             }
         }
 
-        /* 18 Pétalas com diferentes trajetos, atrasos e posições */
         .petala-1  { left: 3%;  width: 16px; height: 23px; animation-duration: 12.5s; animation-delay: 0s; }
         .petala-2  { left: 9%;  width: 14px; height: 19px; animation-duration: 9.8s;  animation-delay: 1.5s; }
         .petala-3  { left: 16%; width: 20px; height: 28px; animation-duration: 14.0s; animation-delay: 3.2s; }
@@ -273,7 +312,7 @@
 </head>
 <body>
 
-    <!-- CAMADA 0: VÍDEO 1080P EM TELA CHEIA (SEM LOOP - CONGELA NO ÚLTIMO FRAME) -->
+    <!-- CAMADA 0: VÍDEO 1080P EM TELA CHEIA (CONGELA NO ÚLTIMO FRAME) -->
     <div id="container-video-fundo">
         <video id="video-cenario-fundo" muted autoplay playsinline webkit-playsinline preload="auto">
             <source src="flores.mp4" type="video/mp4">
@@ -284,7 +323,7 @@
     <div id="container-petalas-fundo">
         <div class="petala-suiri petala-lavanda petala-1"></div>
         <div class="petala-suiri petala-rosa    petala-2"></div>
-        <div class="petala-suiri petala-pessego petala-3"></div>
+        <div class="petala-pessego petala-3"></div>
         <div class="petala-suiri petala-ameixa  petala-4"></div>
         <div class="petala-suiri petala-rosa    petala-5"></div>
         <div class="petala-suiri petala-lavanda petala-6"></div>
@@ -303,27 +342,463 @@
     </div>
 
     <main class="container-mulher">
+        <!-- BARRA SUPERIOR: BOTÃO '← Voltar' E PLAYER AMPLIADO COM LETREIRO EM CICLO -->
+        <div id="barra-topo-player-mulher" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:6px; flex-wrap:nowrap; width:100%;">
+            <!-- BOTÃO COMPACTO "← Voltar" -->
+            <button type="button" onclick="window.fecharEspacoMulher()" 
+                    style="flex-shrink:0; display:inline-flex; align-items:center; gap:4px; padding:6px 10px; border-radius:18px; font-size:11px; font-weight:800; background:rgba(255, 255, 255, 0.90); border:1.5px solid var(--borda-fem, #e9d5ff); color:#581c87; box-shadow:0 3px 10px rgba(124, 58, 237, 0.10); backdrop-filter:blur(8px); cursor:pointer; white-space:nowrap; line-height:1; transition:all 0.2s ease;">
+                <span style="font-size:12px; line-height:1; color:#7c3aed;">←</span>
+                <span>Voltar</span>
+            </button>
+
+            <!-- MINI PLAYER DE ÁUDIO COM LETREIRO AMPLIADO EM CICLO -->
+            <div id="mini-player-espaco-mulher" style="flex:1 1 auto; max-width:calc(100% - 75px); display:inline-flex; align-items:center; justify-content:space-between; gap:3px; padding:4px 7px; background:rgba(255, 255, 255, 0.92); border:1.5px solid #e9d5ff; border-radius:20px; box-shadow:0 3px 12px rgba(124, 58, 237, 0.12); backdrop-filter:blur(8px);">
+                <!-- TÍTULO DA MÚSICA E AUTOR EM CICLO CONTÍNUO (LETREIRO MARQUEE) -->
+                <div class="marquee-box-mulher" title="Música em reprodução">
+                    <div class="marquee-track-mulher" id="marquee-player-mulher-track">
+                        <span id="player-mulher-faixa-lbl-1">Carregando... - Filipe Sales</span>
+                        <span id="player-mulher-faixa-lbl-2">Carregando... - Filipe Sales</span>
+                    </div>
+                </div>
+
+                <!-- CONTROLES DO REPRODUTOR -->
+                <div style="display:inline-flex; align-items:center; gap:3px; flex-shrink:0;">
+                    <!-- Botão Shuffle / Aleatório -->
+                    <button type="button" id="btn-player-mulher-shuffle" onclick="window.PlayerMulher.alternarAleatorio()" 
+                            style="background:#f3e8ff; border:1px solid #d8b4fe; color:#581c87; border-radius:50%; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:9.5px; cursor:pointer; padding:0;" title="Modo Aleatório (Ligado/Desligado)">
+                        🔀
+                    </button>
+
+                    <!-- Botão Faixa Anterior -->
+                    <button type="button" id="btn-player-mulher-prev" onclick="window.PlayerMulher.anterior()" 
+                            style="background:#f3e8ff; border:1px solid #d8b4fe; color:#581c87; border-radius:50%; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:9.5px; cursor:pointer; padding:0;" title="Música Anterior">
+                        ⏮
+                    </button>
+                    
+                    <!-- Botão Play / Pausa -->
+                    <button type="button" id="btn-player-mulher-toggle" onclick="window.PlayerMulher.alternarPausa()" 
+                            style="background:#7c3aed; border:1px solid #6d28d9; color:#ffffff; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; padding:0; box-shadow:0 2px 5px rgba(124, 58, 237, 0.3);" title="Reproduzir / Pausar">
+                        ▶
+                    </button>
+
+                    <!-- Botão Próxima Faixa -->
+                    <button type="button" id="btn-player-mulher-next" onclick="window.PlayerMulher.proxima()" 
+                            style="background:#f3e8ff; border:1px solid #d8b4fe; color:#581c87; border-radius:50%; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:9.5px; cursor:pointer; padding:0;" title="Próxima Música">
+                        ⏭
+                    </button>
+
+                    <!-- Botão Favoritar Coração -->
+                    <button type="button" id="btn-player-mulher-coracao" onclick="window.PlayerMulher.alternarFavorito()" 
+                            style="background:transparent; border:none; color:#db2777; font-size:12px; cursor:pointer; padding:0 1px; line-height:1;" title="Favoritar Música">
+                        🤍
+                    </button>
+
+                    <!-- Botão Gaveta Favoritas -->
+                    <button type="button" id="btn-player-mulher-gaveta" onclick="window.PlayerMulher.alternarGavetaFavoritas()" 
+                            style="background:#fce7f3; border:1px solid #fbcfe8; color:#be185d; border-radius:10px; padding:2px 4px; font-size:8.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:1px;" title="Ver Músicas Favoritas">
+                        ❤️ <span id="contador-favoritas-mulher">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAINEL RETRÁTIL DE MÚSICAS FAVORITAS DO ESPAÇO MULHER -->
+        <div id="gaveta-favoritas-mulher" class="oculto cartao-geral" style="margin-bottom:14px; padding:12px 14px; border:1.5px solid #fbcfe8; background:rgba(255, 255, 255, 0.92); border-radius:18px; box-shadow:0 4px 16px rgba(219, 39, 119, 0.12);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed #fbcfe8; padding-bottom:6px;">
+                <span style="font-size:11.5px; font-weight:800; color:#9d174d; display:flex; align-items:center; gap:4px;">
+                    ❤️ Minhas Faixas Favoritas
+                </span>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" id="btn-tocar-so-favoritas-mulher" onclick="window.PlayerMulher.tocarSoFavoritas()" 
+                            style="background:#db2777; border:none; color:#fff; border-radius:10px; padding:4px 10px; font-size:10px; font-weight:800; cursor:pointer; box-shadow:0 2px 6px rgba(219, 39, 119, 0.25);">
+                        ▶ Tocar Só Favoritas
+                    </button>
+                    <button type="button" onclick="window.PlayerMulher.alternarGavetaFavoritas()" 
+                            style="background:#f3e8ff; border:1px solid #d8b4fe; color:#581c87; border-radius:8px; padding:3px 8px; font-size:10px; font-weight:800; cursor:pointer;">
+                        ✕
+                    </button>
+                </div>
+            </div>
+            <div id="lista-favoritas-mulher-conteudo" style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;">
+                <span style="font-size:11px; color:#9d174d; text-align:center; display:block; padding:8px;">Nenhuma música favoritada ainda. Toque no coração 🤍 para guardar.</span>
+            </div>
+        </div>
+
         <section id="secao-espaco-mulher"></section>
     </main>
 
     <div id="toast-container"></div>
 
     <script src="app-core.js"></script>
+    <!-- LÊ EXATAMENTE O MESMO CATÁLOGO DE MÚSICAS DO HOMEM.HTML (song/ e lista-musicas.js) -->
+    <script src="lista-musicas.js"></script>
     <script src="app-saude-dicas.js"></script>
     <script src="app-saude-mulher.js"></script>
 
     <script>
+        // =========================================================================
+        // MOTOR DE MÚSICA DO ESPAÇO MULHER (100% IDÊNTICO AO MOTOR DE HOMEM.HTML)
+        // COM ROLAGEM CÍCLICA INFINITA: "[Título] - Filipe Sales"
+        // =========================================================================
+        window.PlayerMulher = window.PlayerMulher || {
+            audio: null,
+            pastaSong: 'song/',
+            indiceAtual: 0,
+            autorPadrao: 'Filipe Sales',
+            modoAleatorio: localStorage.getItem('suiri_mulher_aleatorio') !== 'false',
+            soFavoritas: false,
+            deveTocarSalvo: localStorage.getItem('suiri_mulher_deve_tocar') === 'true',
+            favoritas: JSON.parse(localStorage.getItem('suiri_mulher_musicas_favoritas') || '[]'),
+
+            obterCatalogo: function() {
+                if (Array.isArray(window.CatalogoMusicasFelipeSales) && window.CatalogoMusicasFelipeSales.length > 0) {
+                    return window.CatalogoMusicasFelipeSales;
+                }
+                return [{ arquivo: "1.mp3", titulo: "Música 1" }];
+            },
+
+            iniciar: function() {
+                const catalogo = this.obterCatalogo();
+
+                if (!this.audio) {
+                    this.audio = new Audio();
+                    this.audio.preload = 'auto';
+
+                    this.audio.addEventListener('ended', () => {
+                        this.proxima();
+                    });
+
+                    this.audio.addEventListener('play', () => {
+                        localStorage.setItem('suiri_mulher_deve_tocar', 'true');
+                        this.atualizarInterface();
+                    });
+
+                    this.audio.addEventListener('pause', () => {
+                        localStorage.setItem('suiri_mulher_deve_tocar', 'false');
+                        this.atualizarInterface();
+                    });
+
+                    this.audio.addEventListener('error', () => {
+                        this.proxima();
+                    });
+                }
+
+                const ultimoIdx = parseInt(localStorage.getItem('suiri_mulher_idx_atual') || '0', 10);
+                this.indiceAtual = (ultimoIdx >= 0 && ultimoIdx < catalogo.length) ? ultimoIdx : 0;
+
+                this.carregarPorIndice(this.indiceAtual, false);
+                this.atualizarInterface();
+                this.renderizarListaFavoritas();
+
+                if (this.deveTocarSalvo) {
+                    const promessa = this.audio.play();
+                    if (promessa !== undefined) {
+                        promessa.catch(() => {
+                            const retomarAposInteracao = () => {
+                                if (this.deveTocarSalvo && this.audio && this.audio.paused) {
+                                    this.audio.play().catch(() => {});
+                                }
+                                document.removeEventListener('click', retomarAposInteracao);
+                                document.removeEventListener('touchstart', retomarAposInteracao);
+                            };
+                            document.addEventListener('click', retomarAposInteracao, { once: true });
+                            document.addEventListener('touchstart', retomarAposInteracao, { once: true });
+                        });
+                    }
+                }
+            },
+
+            carregarPorIndice: function(indice, reproduzir = true) {
+                const catalogo = this.obterCatalogo();
+                if (indice < 0 || indice >= catalogo.length) {
+                    indice = 0;
+                }
+                this.indiceAtual = indice;
+                localStorage.setItem('suiri_mulher_idx_atual', indice.toString());
+
+                const item = catalogo[indice];
+                if (!this.audio) this.audio = new Audio();
+
+                this.audio.src = `${this.pastaSong}${item.arquivo}`;
+                this.atualizarInterface();
+
+                if (reproduzir) {
+                    this.audio.play().catch(e => console.warn(e));
+                }
+            },
+
+            alternarPausa: function() {
+                if (!this.audio) {
+                    this.iniciar();
+                }
+                if (!this.audio.src || this.audio.src === '' || this.audio.src.endsWith('/')) {
+                    this.carregarPorIndice(this.indiceAtual, true);
+                    return;
+                }
+                if (this.audio.paused) {
+                    this.audio.play().catch(e => console.warn(e));
+                } else {
+                    this.audio.pause();
+                }
+                this.atualizarInterface();
+            },
+
+            alternarAleatorio: function() {
+                this.modoAleatorio = !this.modoAleatorio;
+                localStorage.setItem('suiri_mulher_aleatorio', this.modoAleatorio ? 'true' : 'false');
+                this.atualizarInterface();
+                if (typeof window.mostrarToast === 'function') {
+                    window.mostrarToast(this.modoAleatorio ? "Modo Aleatório ativado 🔀" : "Modo Sequencial ativado ➡️", "info");
+                }
+            },
+
+            obterProximoIndiceAleatorio: function(ignorarAtual = true) {
+                const catalogo = this.obterCatalogo();
+                let listaIndices = [];
+
+                if (this.soFavoritas && this.favoritas.length > 0) {
+                    listaIndices = this.favoritas
+                        .map(arq => catalogo.findIndex(item => item.arquivo === arq))
+                        .filter(idx => idx !== -1);
+                } else {
+                    listaIndices = catalogo.map((_, i) => i);
+                }
+
+                if (listaIndices.length === 0) return 0;
+                if (listaIndices.length === 1) return listaIndices[0];
+
+                let candidatos = ignorarAtual ? listaIndices.filter(i => i !== this.indiceAtual) : listaIndices;
+                if (candidatos.length === 0) candidatos = listaIndices;
+
+                const sorteado = Math.floor(Math.random() * candidatos.length);
+                return candidatos[sorteado];
+            },
+
+            proxima: function() {
+                const catalogo = this.obterCatalogo();
+
+                if (this.soFavoritas && this.favoritas.length > 0) {
+                    const indicesFavs = this.favoritas
+                        .map(arq => catalogo.findIndex(item => item.arquivo === arq))
+                        .filter(idx => idx !== -1);
+
+                    if (indicesFavs.length > 0) {
+                        if (this.modoAleatorio) {
+                            this.carregarPorIndice(this.obterProximoIndiceAleatorio(true), true);
+                        } else {
+                            const pos = indicesFavs.indexOf(this.indiceAtual);
+                            const proxPos = (pos === -1 || pos + 1 >= indicesFavs.length) ? 0 : pos + 1;
+                            this.carregarPorIndice(indicesFavs[proxPos], true);
+                        }
+                        return;
+                    }
+                }
+
+                if (this.modoAleatorio) {
+                    this.carregarPorIndice(this.obterProximoIndiceAleatorio(true), true);
+                } else {
+                    let proximo = this.indiceAtual + 1;
+                    if (proximo >= catalogo.length) proximo = 0;
+                    this.carregarPorIndice(proximo, true);
+                }
+            },
+
+            anterior: function() {
+                const catalogo = this.obterCatalogo();
+
+                if (this.soFavoritas && this.favoritas.length > 0) {
+                    const indicesFavs = this.favoritas
+                        .map(arq => catalogo.findIndex(item => item.arquivo === arq))
+                        .filter(idx => idx !== -1);
+
+                    if (indicesFavs.length > 0) {
+                        const pos = indicesFavs.indexOf(this.indiceAtual);
+                        const antPos = (pos <= 0) ? indicesFavs.length - 1 : pos - 1;
+                        this.carregarPorIndice(indicesFavs[antPos], true);
+                        return;
+                    }
+                }
+
+                let anterior = this.indiceAtual - 1;
+                if (anterior < 0) anterior = catalogo.length - 1;
+                this.carregarPorIndice(anterior, true);
+            },
+
+            alternarFavorito: function() {
+                const catalogo = this.obterCatalogo();
+                const item = catalogo[this.indiceAtual];
+                if (!item) return;
+
+                const pos = this.favoritas.indexOf(item.arquivo);
+                if (pos >= 0) {
+                    this.favoritas.splice(pos, 1);
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast(`"${item.titulo}" removida das favoritas.`, "info");
+                    }
+                } else {
+                    this.favoritas.push(item.arquivo);
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast(`"${item.titulo}" guardada nas favoritas! ❤️`, "sucesso");
+                    }
+                }
+
+                localStorage.setItem('suiri_mulher_musicas_favoritas', JSON.stringify(this.favoritas));
+                this.atualizarInterface();
+                this.renderizarListaFavoritas();
+            },
+
+            alternarGavetaFavoritas: function() {
+                const gaveta = document.getElementById('gaveta-favoritas-mulher');
+                if (!gaveta) return;
+                gaveta.classList.toggle('oculto');
+                this.renderizarListaFavoritas();
+            },
+
+            tocarSoFavoritas: function() {
+                if (this.favoritas.length === 0) {
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast("Nenhuma música favoritada ainda!", "aviso");
+                    }
+                    return;
+                }
+
+                this.soFavoritas = !this.soFavoritas;
+                const btn = document.getElementById('btn-tocar-so-favoritas-mulher');
+
+                if (this.soFavoritas) {
+                    if (btn) btn.textContent = '⏹ Tocar Todas as Faixas';
+                    const catalogo = this.obterCatalogo();
+                    const primeiroFavIdx = catalogo.findIndex(m => m.arquivo === this.favoritas[0]);
+                    this.carregarPorIndice(primeiroFavIdx >= 0 ? primeiroFavIdx : 0, true);
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast("Fila restrita às favoritas! ❤️", "sucesso");
+                    }
+                } else {
+                    if (btn) btn.textContent = '▶ Tocar Só Favoritas';
+                    this.carregarPorIndice(0, true);
+                    if (typeof window.mostrarToast === 'function') {
+                        window.mostrarToast("Reproduzindo catálogo completo.", "info");
+                    }
+                }
+                this.atualizarInterface();
+            },
+
+            renderizarListaFavoritas: function() {
+                const cont = document.getElementById('lista-favoritas-mulher-conteudo');
+                const contador = document.getElementById('contador-favoritas-mulher');
+                if (contador) contador.textContent = this.favoritas.length;
+
+                if (!cont) return;
+
+                if (this.favoritas.length === 0) {
+                    cont.innerHTML = '<span style="font-size:11px; color:#9d174d; text-align:center; display:block; padding:8px;">Nenhuma música favoritada ainda. Toque no coração 🤍 para guardar.</span>';
+                    return;
+                }
+
+                const catalogo = this.obterCatalogo();
+
+                cont.innerHTML = this.favoritas.map(arq => {
+                    const item = catalogo.find(f => f.arquivo === arq) || { titulo: arq, arquivo: arq };
+                    const idxNoCatalogo = catalogo.findIndex(f => f.arquivo === arq);
+
+                    return `
+                        <div style="background:rgba(255, 255, 255, 0.85); border:1px solid #fbcfe8; padding:6px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:11.5px; font-weight:700; color:#581c87; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:65%;">🎵 ${item.titulo} - Filipe Sales</span>
+                            <div style="display:flex; gap:4px; align-items:center;">
+                                <button type="button" onclick="window.PlayerMulher.carregarPorIndice(${idxNoCatalogo}, true)" 
+                                        style="background:#f3e8ff; border:1px solid #d8b4fe; color:#581c87; border-radius:6px; padding:2px 8px; font-size:10px; font-weight:800; cursor:pointer;">
+                                    Tocar ▶
+                                </button>
+                                <button type="button" onclick="window.PlayerMulher.removerFavoritaDireta('${arq}')" 
+                                        style="background:none; border:none; color:#db2777; cursor:pointer; font-size:13px; line-height:1; padding:2px 4px;" title="Remover dos favoritos">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            removerFavoritaDireta: function(caminhoArquivo) {
+                const pos = this.favoritas.indexOf(caminhoArquivo);
+                if (pos >= 0) {
+                    this.favoritas.splice(pos, 1);
+                    localStorage.setItem('suiri_mulher_musicas_favoritas', JSON.stringify(this.favoritas));
+                    if (this.soFavoritas && this.favoritas.length === 0) {
+                        this.soFavoritas = false;
+                    }
+                    this.atualizarInterface();
+                    this.renderizarListaFavoritas();
+                }
+            },
+
+            parar: function() {
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                }
+                localStorage.setItem('suiri_mulher_deve_tocar', 'false');
+                this.atualizarInterface();
+            },
+
+            atualizarInterface: function() {
+                const catalogo = this.obterCatalogo();
+                const item = catalogo[this.indiceAtual] || { titulo: "Sem faixa" };
+
+                const btnPlay = document.getElementById('btn-player-mulher-toggle');
+                const lblFaixa1 = document.getElementById('player-mulher-faixa-lbl-1');
+                const lblFaixa2 = document.getElementById('player-mulher-faixa-lbl-2');
+                const track = document.getElementById('marquee-player-mulher-track');
+                const btnCoracao = document.getElementById('btn-player-mulher-coracao');
+                const contadorFav = document.getElementById('contador-favoritas-mulher');
+                const btnShuffle = document.getElementById('btn-player-mulher-shuffle');
+
+                const estaTocando = this.audio && !this.audio.paused;
+
+                if (btnPlay) {
+                    btnPlay.innerHTML = estaTocando ? '⏸' : '▶';
+                    btnPlay.title = estaTocando ? 'Pausar' : 'Reproduzir';
+                }
+
+                const textoCompleto = `${item.titulo} - ${this.autorPadrao}`;
+                if (lblFaixa1) lblFaixa1.textContent = textoCompleto;
+                if (lblFaixa2) lblFaixa2.textContent = textoCompleto;
+
+                if (track) {
+                    track.style.animationPlayState = estaTocando ? 'running' : 'paused';
+                }
+
+                if (contadorFav) {
+                    contadorFav.textContent = this.favoritas.length;
+                }
+
+                if (btnCoracao && item.arquivo) {
+                    const ehFav = this.favoritas.includes(item.arquivo);
+                    btnCoracao.innerHTML = ehFav ? '❤️' : '🤍';
+                    btnCoracao.title = ehFav ? 'Favoritada' : 'Favoritar';
+                }
+
+                if (btnShuffle) {
+                    btnShuffle.style.background = this.modoAleatorio ? '#d8b4fe' : '#f3e8ff';
+                    btnShuffle.style.borderColor = this.modoAleatorio ? '#9333ea' : '#d8b4fe';
+                    btnShuffle.style.color = this.modoAleatorio ? '#3b0764' : '#581c87';
+                }
+            }
+        };
+
         document.addEventListener("DOMContentLoaded", async () => {
+            if (window.PlayerMulher && typeof window.PlayerMulher.iniciar === 'function') {
+                window.PlayerMulher.iniciar();
+            }
+
             const vidFundo = document.getElementById('video-cenario-fundo');
             if (vidFundo) {
-                // Blindagem de baixo nível para WebKit/Safari iOS (iPhone)
                 vidFundo.muted = true;
                 vidFundo.defaultMuted = true;
                 vidFundo.setAttribute('muted', '');
                 vidFundo.setAttribute('playsinline', '');
                 vidFundo.setAttribute('webkit-playsinline', '');
 
-                // Trava estática: congela no último frame ao terminar a reprodução
                 vidFundo.addEventListener('ended', () => {
                     vidFundo.pause();
                 });
@@ -340,11 +815,9 @@
                     }
                 };
 
-                // Execução imediata com carregamento no motor WebKit
                 vidFundo.load();
                 dispararVideoIos();
 
-                // Destravamento por primeiro toque (caso o iOS esteja em modo de economia de energia)
                 document.body.addEventListener('touchstart', () => {
                     if (vidFundo.paused && !vidFundo.ended) {
                         dispararVideoIos();
@@ -352,7 +825,6 @@
                 }, { once: true });
             }
 
-            // Temporizador: 4 segundos de transparência total, depois ativa o vidro e o desfoque suave
             setTimeout(() => {
                 document.body.classList.add('modo-vidro');
             }, 4000);
@@ -376,6 +848,9 @@
             }
 
             window.fecharEspacoMulher = function() {
+                if (window.PlayerMulher && typeof window.PlayerMulher.parar === 'function') {
+                    window.PlayerMulher.parar();
+                }
                 window.location.href = 'index.html';
             };
 
