@@ -2,7 +2,7 @@
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
 // Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
 // Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
-// Mini Player Sutil em Song (1 a 10.mp3): Aleatório, Próxima, Pausa & Volume
+// Mini Player Sutil em Song (1 a 10.mp3): Restrito estritamente a homem.html
 // Integrado ao Catálogo de Ícones PNG da Pasta ./icone/ (com love.png no Radar)
 // Curadoria Dinâmica: Sorteio Diário, "Quero Assistir" e 2 Gavetas Retráteis
 // =========================================================================
@@ -16,14 +16,28 @@ window.PlayerMasc = window.PlayerMasc || {
     faixaAtual: null,
     volumeSalvo: parseFloat(localStorage.getItem('suiri_masc_volume') || '0.5'),
 
+    // Trava de segurança: garante execução exclusiva dentro de homem.html
+    estaNoHomemHtml: function() {
+        const rota = (window.location.pathname + window.location.href).toLowerCase();
+        return rota.includes('homem.html');
+    },
+
     iniciar: function() {
+        // Bloqueio rigoroso: impede disparo se o usuário estiver no index.html ou em outra tela
+        if (!this.estaNoHomemHtml()) {
+            this.parar();
+            return;
+        }
+
         if (!this.audio) {
             this.audio = new Audio();
             this.audio.volume = this.volumeSalvo;
             
             // Quando a faixa atual terminar, sorteia e toca outra automaticamente
             this.audio.addEventListener('ended', () => {
-                this.tocarAleatoria();
+                if (this.estaNoHomemHtml()) {
+                    this.tocarAleatoria();
+                }
             });
 
             this.audio.addEventListener('play', () => this.atualizarInterface());
@@ -50,11 +64,18 @@ window.PlayerMasc = window.PlayerMasc || {
     },
 
     tocarAleatoria: function() {
+        if (!this.estaNoHomemHtml()) {
+            this.parar();
+            return;
+        }
+
         this.faixaAtual = this.obterIndiceAleatorio();
         if (!this.audio) {
             this.audio = new Audio();
             this.audio.volume = this.volumeSalvo;
-            this.audio.addEventListener('ended', () => this.tocarAleatoria());
+            this.audio.addEventListener('ended', () => {
+                if (this.estaNoHomemHtml()) this.tocarAleatoria();
+            });
             this.audio.addEventListener('play', () => this.atualizarInterface());
             this.audio.addEventListener('pause', () => this.atualizarInterface());
         }
@@ -65,8 +86,7 @@ window.PlayerMasc = window.PlayerMasc || {
         if (promessaPlay !== undefined) {
             promessaPlay.then(() => {
                 this.atualizarInterface();
-            }).catch(err => {
-                // Autoplay bloqueado pelo navegador móvel: aguarda a primeira interação na tela
+            }).catch(() => {
                 this.atualizarInterface();
                 this.aguardarPrimeiroToque();
             });
@@ -74,8 +94,10 @@ window.PlayerMasc = window.PlayerMasc || {
     },
 
     aguardarPrimeiroToque: function() {
+        if (!this.estaNoHomemHtml()) return;
+
         const iniciarNoPrimeiroToque = () => {
-            if (this.audio && this.audio.paused) {
+            if (this.estaNoHomemHtml() && this.audio && this.audio.paused) {
                 this.audio.play().then(() => {
                     this.atualizarInterface();
                 }).catch(() => {});
@@ -88,6 +110,8 @@ window.PlayerMasc = window.PlayerMasc || {
     },
 
     alternarPausa: function() {
+        if (!this.estaNoHomemHtml()) return;
+
         if (!this.audio) {
             this.iniciar();
             return;
@@ -101,7 +125,9 @@ window.PlayerMasc = window.PlayerMasc || {
     },
 
     proxima: function() {
-        this.tocarAleatoria();
+        if (this.estaNoHomemHtml()) {
+            this.tocarAleatoria();
+        }
     },
 
     definirVolume: function(valor) {
@@ -253,8 +279,8 @@ window.abrirEspacoMasculino = async function() {
     window.renderizarHistoricoAssistidos();
     window.renderizarListasMasculinas();
 
-    // Inicia a reprodução aleatória do player
-    if (window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function') {
+    // Inicia o player apenas se estiver de fato no homem.html
+    if (window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function' && window.PlayerMasc.estaNoHomemHtml()) {
         window.PlayerMasc.iniciar();
     }
 
@@ -1416,16 +1442,28 @@ window.carregarDadosNuvemEspacoMasculino = async function() {
 };
 
 // =========================================================================
-// 10. DISPARO AUTOMÁTICO SE A TELA ESTIVER CARREGADA DIRETAMENTE (HOMEM.HTML)
+// 10. DISPARO AUTOMÁTICO EXCLUSIVO PARA HOMEM.HTML
 // =========================================================================
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('secao-espaco-masculino')) {
-            window.PlayerMasc.iniciar();
-        }
-    });
-} else {
-    if (document.getElementById('secao-espaco-masculino')) {
+function verificarEIniciarPlayerHomem() {
+    const rota = (window.location.pathname + window.location.href).toLowerCase();
+    const ehPaginaHomem = rota.includes('homem.html');
+
+    if (ehPaginaHomem && window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function') {
         window.PlayerMasc.iniciar();
+    } else if (!ehPaginaHomem && window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
+        window.PlayerMasc.parar();
     }
+}
+
+// Ao sair ou navegar fora da página, encerra qualquer reprodução ativa imediatamente
+window.addEventListener('beforeunload', () => {
+    if (window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
+        window.PlayerMasc.parar();
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', verificarEIniciarPlayerHomem);
+} else {
+    verificarEIniciarPlayerHomem();
 }
