@@ -75,6 +75,7 @@
             margin: 8px 12px 6px 12px;
             z-index: 50;
             box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .btn-voltar {
@@ -270,7 +271,7 @@
             border: 2.5px solid #fbbf24;
             border-radius: 26px;
             box-shadow: 0 16px 36px rgba(0,0,0,0.3), inset 0 2px 0 #ffffff;
-            padding: 22px 18px;
+            padding: 20px 18px;
             text-align: center;
             position: relative;
             animation: surgirPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -300,8 +301,8 @@
             color: #fff;
             border: none;
             border-bottom: 3.5px solid #047857;
-            padding: 12px 24px;
-            font-size: 14.5px;
+            padding: 11px 20px;
+            font-size: 14px;
             font-weight: 900;
             border-radius: 18px;
             cursor: pointer;
@@ -333,17 +334,17 @@
         /* HUD DE PLACAR SUSPENSA */
         .painel-placar-flappy {
             position: absolute;
-            top: 12px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 14px;
-            background: rgba(255, 255, 255, 0.92);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(10px);
             border: 2px solid #fbbf24;
             border-radius: 22px;
-            padding: 6px 18px;
+            padding: 6px 16px;
             z-index: 35;
             box-shadow: 0 4px 14px rgba(0,0,0,0.12);
         }
@@ -358,19 +359,53 @@
         }
 
         .placar-item strong {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 900;
             color: #0f172a;
         }
 
-        /* =========================================================================
-           ESTILOS DO JOGO DA VELHA TRADICIONAL (CANETA NO CADERNO)
-           ========================================================================= */
+        /* PERSONAGENS DO FLAPPY */
+        .personagem-flappy-el {
+            position: absolute;
+            object-fit: contain;
+            pointer-events: none;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
+            transition: transform 0.08s ease-out;
+        }
+
+        #chuiri-voador-gif-el {
+            width: 68px;
+            height: 108px;
+            object-position: center;
+            z-index: 33;
+            display: none;
+        }
+
+        #gato-voador-gif-el {
+            width: 64px;
+            height: 70px;
+            object-position: center;
+            z-index: 32;
+            display: none;
+        }
+
+        #chuiri-skate-gif-el {
+            position: absolute;
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 32;
+            display: none;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        /* ESTILOS DOS DEMAIS JOGOS */
         .area-velha-caderno {
             position: relative;
             width: 290px;
             height: 290px;
-            margin: 25px auto 16px auto;
+            margin: 18px auto 14px auto;
         }
 
         .linha-caneta {
@@ -440,16 +475,18 @@
             box-shadow: 0 2px 5px rgba(185, 28, 28, 0.4);
         }
 
-        /* =========================================================================
-           ESTILOS DO TECLADO MÁGICO DO CHUÍRI (APRENDIZADO & LIVRE)
-           ========================================================================= */
+        #tela-simon {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .painel-aprendizado-musica {
             background: rgba(255, 255, 255, 0.94);
             border: 2px solid #38bdf8;
             border-radius: 20px;
-            padding: 10px 14px;
-            margin: 6px auto 10px auto;
-            max-width: 380px;
+            padding: 8px 12px;
+            margin: 4px auto 4px auto;
+            max-width: 400px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
             text-align: center;
         }
@@ -464,7 +501,58 @@
             color: #0f172a;
             background: #f8fafc;
             outline: none;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+
+        .painel-velocidade-bichinhos {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 4px 6px;
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .btn-velocidade-bichinho {
+            border: none;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #475569;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .btn-velocidade-bichinho.ativo {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+            transform: scale(1.05);
+        }
+
+        .btn-play-pause-musica {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 12px;
+            padding: 6px 12px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .estrelinha-alvo-box {
@@ -472,21 +560,21 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin: 4px 0;
+            margin: 2px 0 4px 0;
         }
 
         .estrelinha-icone {
-            font-size: 26px;
+            font-size: 20px;
             animation: estrelinhaPulo 1s infinite alternate ease-in-out;
         }
 
         @keyframes estrelinhaPulo {
             0% { transform: scale(1); }
-            100% { transform: scale(1.22) rotate(6deg); }
+            100% { transform: scale(1.18) rotate(5deg); }
         }
 
         .nota-alvo-texto {
-            font-size: 19px;
+            font-size: 16px;
             font-weight: 900;
             color: #0284c7;
             text-transform: uppercase;
@@ -497,21 +585,23 @@
             display: flex;
             justify-content: center;
             gap: 4px;
-            margin-top: 6px;
+            margin-top: 4px;
             flex-wrap: wrap;
+            max-height: 38px;
+            overflow-y: auto;
         }
 
         .dot-nota {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background: #cbd5e1;
-            transition: background 0.2s, transform 0.2s;
+            transition: background 0.15s, transform 0.15s;
         }
 
         .dot-nota.concluido {
             background: #10b981;
-            transform: scale(1.2);
+            transform: scale(1.15);
         }
 
         .dot-nota.atual {
@@ -519,18 +609,184 @@
             transform: scale(1.35);
         }
 
-        /* CONSOLA DO PIANO ACÚSTICO COMPLETO */
+        .pista-esteira-piano-box {
+            position: relative;
+            width: 100%;
+            max-width: 390px;
+            height: 160px;
+            margin: 4px auto 0 auto;
+            background: radial-gradient(circle at bottom, #1e293b 0%, #090d16 100%);
+            border-radius: 16px 16px 4px 4px;
+            border: 2px solid #334155;
+            border-bottom: none;
+            overflow: hidden;
+            box-shadow: inset 0 4px 14px rgba(0,0,0,0.5);
+        }
+
+        #cv-esteira-piano {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pista-dueto-box {
+            position: relative;
+            width: 100%;
+            max-width: 410px;
+            flex: 1;
+            min-height: 150px;
+            background: radial-gradient(circle at bottom, #1e293b 0%, #090d16 100%);
+            border-radius: 12px 12px 2px 2px;
+            border: 1.5px solid #334155;
+            border-bottom: none;
+            overflow: hidden;
+            box-shadow: inset 0 3px 10px rgba(0,0,0,0.5);
+            margin: 0 auto;
+        }
+
+        .pista-dueto-box canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #container-dueto-piano-2p {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            height: 100dvh;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 2px 4px 6px 4px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .bloco-dueto-j2, .bloco-dueto-j1 {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+        }
+
+        .btn-voltar-dueto {
+            background: #ffffff;
+            color: #334155;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 5px 12px;
+            font-weight: 800;
+            font-size: 11.5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-voltar-dueto:active {
+            transform: scale(0.96);
+        }
+
         .teclado-container-piano {
             position: relative;
             width: 100%;
             max-width: 390px;
-            height: 190px;
-            margin: 8px auto 6px auto;
+            height: 165px;
+            margin: 0 auto 6px auto;
             display: flex;
             background: #0f172a;
-            padding: 4px 4px 0 4px;
-            border-radius: 14px 14px 18px 18px;
+            padding: 3px 3px 0 3px;
+            border-radius: 0 0 16px 16px;
+            border: 2px solid #334155;
+            border-top: 2.5px solid #38bdf8;
             box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .container-triplo-teclados-livre {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+            margin: 4px auto 25px auto;
+        }
+
+        .faixa-teclado-unidade {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.45);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .topo-faixa-oitava {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .badge-faixa-oitava {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .seletor-timbre-mini {
+            display: inline-flex;
+            gap: 3px;
+            background: rgba(15, 23, 42, 0.08);
+            padding: 2px;
+            border-radius: 8px;
+        }
+
+        .btn-mini-timbre {
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 9.5px;
+            font-weight: 800;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .btn-mini-timbre.ativo {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 1px 4px rgba(2, 132, 199, 0.4);
+        }
+
+        .teclado-dueto-invertido {
+            transform: rotate(180deg);
+        }
+
+        .teclado-compacto-livre {
+            position: relative;
+            width: 100%;
+            height: 105px;
+            display: flex;
+            background: #0f172a;
+            padding: 3px 3px 0 3px;
+            border-radius: 12px 12px 14px 14px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.28);
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
@@ -546,7 +802,7 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding-bottom: 8px;
+            padding-bottom: 5px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.12), inset 0 2px 0 #ffffff;
             transition: background 0.05s, transform 0.05s;
@@ -557,7 +813,7 @@
 
         .tecla-branca-piano.tocando {
             background: #7dd3fc !important;
-            transform: translateY(3px);
+            transform: translateY(2.5px);
             box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 0 10px rgba(2, 132, 199, 0.4);
         }
 
@@ -568,16 +824,35 @@
             animation: pulsoTeclaAlvo 0.8s infinite alternate;
         }
 
+        .tecla-branca-piano.harmonia-brilhando {
+            background: #fed7aa !important;
+            border-color: #ea580c;
+            box-shadow: 0 0 14px #ea580c !important;
+            animation: pulsoTeclaHarmonia 0.8s infinite alternate;
+        }
+
+        .tecla-branca-piano.nota-errada, .tecla-preta-piano.nota-errada {
+            background: #ef4444 !important;
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 16px #ef4444 !important;
+            transform: translateY(2px);
+        }
+
         @keyframes pulsoTeclaAlvo {
             0% { transform: translateY(0); filter: brightness(1); }
             100% { transform: translateY(-2px); filter: brightness(1.2); }
         }
 
+        @keyframes pulsoTeclaHarmonia {
+            0% { transform: translateY(0); filter: brightness(1); }
+            100% { transform: translateY(-2px); filter: brightness(1.25); }
+        }
+
         .tecla-preta-piano {
             position: absolute;
-            top: 4px;
+            top: 2px;
             width: 8.8%;
-            height: 60%;
+            height: 58%;
             background: linear-gradient(180deg, #334155 0%, #0f172a 100%);
             border: 1.5px solid #000000;
             border-radius: 0 0 6px 6px;
@@ -587,32 +862,38 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
             transition: background 0.05s, transform 0.05s;
             touch-action: none;
         }
 
         .tecla-preta-piano.tocando {
             background: #0284c7 !important;
-            transform: translateY(3px);
+            transform: translateY(2.5px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.7), 0 0 12px #38bdf8;
         }
 
         .tecla-preta-piano.alvo-brilhando {
             background: #f59e0b !important;
-            box-shadow: 0 0 16px #f59e0b;
+            box-shadow: 0 0 14px #f59e0b;
             animation: pulsoTeclaAlvo 0.8s infinite alternate;
         }
 
+        .tecla-preta-piano.harmonia-brilhando {
+            background: #ea580c !important;
+            box-shadow: 0 0 14px #ea580c;
+            animation: pulsoTeclaHarmonia 0.8s infinite alternate;
+        }
+
         .rotulo-nota-branca {
-            font-size: 11px;
+            font-size: 9.5px;
             font-weight: 900;
             color: #334155;
             pointer-events: none;
         }
 
         .rotulo-nota-preta {
-            font-size: 8.5px;
+            font-size: 7.5px;
             font-weight: 900;
             color: #f8fafc;
             pointer-events: none;
@@ -621,13 +902,13 @@
         .alternador-modos-som {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 4px;
         }
 
         .btn-modo-som-tab {
-            padding: 6px 14px;
-            font-size: 12px;
+            padding: 6px 12px;
+            font-size: 11.5px;
             font-weight: 800;
             border-radius: 12px;
             border: 1.5px solid #cbd5e1;
@@ -643,7 +924,36 @@
             box-shadow: 0 3px 8px rgba(2, 132, 199, 0.35);
         }
 
-        /* NOTAS MUSICAIS FLUTUANTES */
+        .alternador-timbre-som {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1.5px solid #cbd5e1;
+            gap: 6px;
+            margin: 4px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .btn-timbre-tab {
+            padding: 6px 12px;
+            font-size: 11.5px;
+            font-weight: 800;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-timbre-tab.ativo {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+        }
+
         .nota-musical-voando {
             position: absolute;
             font-size: 22px;
@@ -659,38 +969,55 @@
             100% { transform: translate(0, -50px) scale(1.3); opacity: 0; }
         }
 
-        /* CHUÍRI VOADOR */
-        #chuiri-voador-gif-el {
-            position: absolute;
-            width: 68px;
-            height: 108px;
-            object-fit: contain;
-            object-position: center;
-            pointer-events: none;
-            z-index: 32;
-            display: none;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
-            transition: transform 0.08s ease-out;
+        .grade-memoria-full {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 340px;
+            margin: 8px auto;
+            perspective: 800px;
         }
 
-        /* CHUÍRI NO SKATE */
-        #chuiri-skate-gif-el {
-            position: absolute;
-            width: 68px;
-            height: 68px;
-            object-fit: contain;
-            pointer-events: none;
-            z-index: 32;
-            display: none;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        .carta-arcade {
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            border-bottom: 4px solid #94a3b8;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            position: relative;
+        }
+
+        .carta-arcade:active {
+            transform: scale(0.94);
+            border-bottom-width: 2px;
+        }
+
+        .carta-arcade.revelada {
+            background: #f8fafc;
+            border-color: #8b5cf6;
+            border-bottom-color: #7c3aed;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+            animation: virarCarta 0.24s ease-out;
+        }
+
+        @keyframes virarCarta {
+            0% { transform: rotateY(90deg) scale(0.9); }
+            100% { transform: rotateY(0deg) scale(1); }
         }
     </style>
 </head>
 <body>
 
     <div id="app-container">
-        <!-- BARRA DO TOPO -->
-        <div class="barra-topo">
+        <!-- BARRA DO TOPO (Ocultada nos modos 2 Jogadores) -->
+        <div class="barra-topo" id="barra-topo-arcade">
             <button class="btn-voltar" onclick="GerenciadorArcade.voltarAcao()">
                 <svg class="icone-svg" style="width:16px;height:16px;" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
                 Voltar
@@ -719,13 +1046,13 @@
                     <span class="tag-premio-card">10 troncos = 1 🪙</span>
                 </div>
 
-                <!-- JOGO 2: QUEBRA-BLOCOS -->
+                <!-- JOGO 2: QUEBRA-BLOCOS / SKATE PONG -->
                 <div class="card-jogo-grade card-quebrablocos" onclick="GerenciadorArcade.abrirJogo('quebrablocos')">
                     <div class="icone-jogo-grade" style="color:#ef4444;">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><rect width="18" height="6" x="3" y="3" rx="2"/><rect width="18" height="6" x="3" y="11" rx="2"/><circle cx="12" cy="20" r="2"/></svg>
                     </div>
-                    <h3>Quebra-Blocos</h3>
-                    <p>Deslize no skate e parta os tijolinhos!</p>
+                    <h3>Quebra-Blocos & Pong</h3>
+                    <p>Solo ou Skate Pong 2P!</p>
                     <span class="tag-premio-card">5 blocos = 1 🪙</span>
                 </div>
 
@@ -734,8 +1061,8 @@
                     <div class="icone-jogo-grade" style="color:#f59e0b;">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                     </div>
-                    <h3>Teclado Mágico</h3>
-                    <p>Aprenda 10 canções ou toque livre!</p>
+                    <h3>Piano & Dueto</h3>
+                    <p>Modo Livre, 20 Músicas ou Dueto 2P!</p>
                     <span class="tag-premio-card">5 🪙 por canção</span>
                 </div>
 
@@ -745,8 +1072,8 @@
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="9" r="2"/></svg>
                     </div>
                     <h3>Estourar Bolhas</h3>
-                    <p>Rebente as bolhas antes que fujam!</p>
-                    <span class="tag-premio-card">20 bolhas = 1 🪙</span>
+                    <p>1P, 2P Duelo ou Modo Rush 3 Min!</p>
+                    <span class="tag-premio-card">Duelo Multitoque 🪙</span>
                 </div>
 
                 <!-- JOGO 5: JOGO DA VELHA TRADICIONAL -->
@@ -755,7 +1082,7 @@
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </div>
                     <h3>Jogo da Velha</h3>
-                    <p>O clássico traço de caneta no papel!</p>
+                    <p>Jogue vs Chuíri ou em 2 Jogadores!</p>
                     <span class="tag-premio-card">1 vitória = 1 🪙</span>
                 </div>
 
@@ -765,15 +1092,15 @@
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </div>
                     <h3>Memória 3D</h3>
-                    <p>Encontre os 8 pares mágicos!</p>
+                    <p>Solo ou Duelo 2P por Turnos!</p>
                     <span class="tag-premio-card">Tabuleiro = 50 🪙</span>
                 </div>
             </div>
         </div>
 
-        <!-- JOGO 1: CHUÍRI VOADOR -->
+        <!-- JOGO 1: CHUÍRI VOADOR (SOLO E 2 JOGADORES COOPERATIVO) -->
         <div id="tela-flappy" class="area-jogo">
-            <div class="painel-placar-flappy">
+            <div class="painel-placar-flappy" id="hud-flappy-normal">
                 <div class="placar-item">
                     <svg class="icone-svg" style="width:15px;height:15px;color:#0284c7;" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/></svg>
                     Troncos: <strong id="placar-flappy">0</strong>
@@ -782,82 +1109,112 @@
                     <svg class="icone-svg" style="width:15px;height:15px;color:#f59e0b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
                     Moedas: <strong id="placar-moedas-ganhas-flappy" style="color:#d97706;">0</strong>
                 </div>
+                <div class="placar-item" id="hud-status-2p-flappy" style="display:none; font-size:11px;">
+                    <span id="badge-p1-flappy-vivo" style="color:#0284c7;">💙 P1</span>
+                    <span id="badge-p2-flappy-vivo" style="color:#ec4899; margin-left:4px;">💖 P2</span>
+                </div>
             </div>
 
-            <img id="chuiri-voador-gif-el" src="voando.gif" alt="Chuíri Voando" />
+            <!-- Personagens Voador 1 (Chuíri) e 2 (Gato) -->
+            <img id="chuiri-voador-gif-el" class="personagem-flappy-el" src="voando.gif" alt="Chuíri Voando" />
+            <img id="gato-voador-gif-el" class="personagem-flappy-el" src="gato.gif" alt="Gato Voando" />
 
             <div id="over-flappy" class="overlay-jogo">
                 <div class="painel-dialogo-arcade">
                     <h2>Chuíri Voador</h2>
-                    <p>Toque na tela para dar impulsos de voo! O espaço inicial é largo e fecha suavemente a cada 10 troncos superados.</p>
-                    <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Iniciar Partida</button>
+                    <p>Escolha o modo de jogo! Voe sozinho ou junte-se em dupla cooperativa com Chuíri e Gato!</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(1)">👤 1 Jogador (Solo)</button>
+                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-bottom-color:#075985;" onclick="MotorFlappy.iniciar(2)">👥 2 Jogadores (Dueto Cooperativo)</button>
+                    </div>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                 </div>
             </div>
             <canvas id="cv-flappy"></canvas>
         </div>
 
-        <!-- JOGO 2: QUEBRA-BLOCOS MÁGICO -->
+        <!-- JOGO 2: QUEBRA-BLOCOS MÁGICO & SKATE PONG 2 JOGADORES -->
         <div id="tela-quebrablocos" class="area-jogo">
-            <div class="painel-placar-flappy">
+            <div class="painel-placar-flappy" id="hud-quebrablocos-normal">
                 <div class="placar-item">Fase: <strong id="placar-quebrablocos-fase" style="color:#0284c7;">1</strong></div>
                 <div class="placar-item">Blocos: <strong id="placar-quebrablocos-blocos">0</strong></div>
                 <div class="placar-item" style="color:#b45309;">Moedas: <strong id="placar-quebrablocos-moedas" style="color:#d97706;">0</strong></div>
+            </div>
+
+            <div class="painel-placar-flappy" id="hud-skate-pong-2p" style="display:none; top:12px;">
+                <div class="placar-item" style="color:#0284c7;"><span class="lbl-j1-nome">J1</span> (Base): <strong id="placar-pong-j1">0</strong></div>
+                <div class="placar-item" style="color:#dc2626;"><span class="lbl-j2-nome">Shuiri</span> (Topo): <strong id="placar-pong-j2">0</strong></div>
+                <button type="button" style="border:none; background:#e2e8f0; border-radius:8px; padding:3px 8px; font-weight:800; font-size:11px;" onclick="GerenciadorArcade.voltarAcao()">Sair</button>
             </div>
 
             <img id="chuiri-skate-gif-el" src="feliz.gif" alt="Chuíri Feliz no Skate" />
 
             <div id="over-quebrablocos" class="overlay-jogo">
                 <div class="painel-dialogo-arcade">
-                    <h2>Quebra-Blocos</h2>
-                    <p>Arraste o skate do Chuíri para rebater a bolinha e estilhaçar os blocos coloridos!</p>
-                    <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Agora</button>
+                    <h2>Quebra-Blocos & Pong</h2>
+                    <p>Escolha o modo de jogo! Quebre blocos sozinho ou jogue tênis de skate em 2 Jogadores!</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)">👤 1 Jogador (Quebra-Blocos)</button>
+                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-bottom-color:#075985;" onclick="MotorQuebraBlocos.iniciar(2)">👥 2 Jogadores (Skate Pong)</button>
+                    </div>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                 </div>
             </div>
             <canvas id="cv-quebrablocos"></canvas>
         </div>
 
-        <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (APRENDIZADO & LIVRE POLIFÓNICO) -->
-        <div id="tela-simon" class="area-jogo" style="padding:12px; text-align:center;">
-            <div class="alternador-modos-som">
-                <button type="button" class="btn-modo-som-tab ativo" id="tab-modo-musicas" onclick="MotorMusica.trocarModo('aprendizado')">🎵 Modo Aprender Músicas</button>
-                <button type="button" class="btn-modo-som-tab" id="tab-modo-livre" onclick="MotorMusica.trocarModo('livre')">🎹 Modo Tocar Livre</button>
+        <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (ESTEIRAS SYNTHESIA SOLO & DUETO 2P) -->
+        <div id="tela-simon" class="area-jogo" style="padding:6px 10px; text-align:center;">
+            <div class="alternador-modos-som" id="tabs-piano-seletor-modos">
+                <button type="button" class="btn-modo-som-tab ativo" id="tab-piano-aprendizado" onclick="MotorMusica.trocarModo('aprendizado')">🎵 Aprender</button>
+                <button type="button" class="btn-modo-som-tab" id="tab-piano-livre" onclick="MotorMusica.trocarModo('livre')">🎹 Modo Livre</button>
+                <button type="button" class="btn-modo-som-tab" id="tab-piano-dueto" onclick="MotorMusica.trocarModo('dueto')">👥 Dueto (2P)</button>
             </div>
 
-            <!-- Painel do Modo Aprendizado -->
+            <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
             <div class="painel-aprendizado-musica" id="painel-aprendizado-box">
                 <select id="seletor-musica-alvo" class="seletor-musicas-select" onchange="MotorMusica.selecionarMusica(this.value)">
-                    <option value="0">1. Parabéns pra Você</option>
-                    <option value="1">2. Ciranda, Cirandinha</option>
-                    <option value="2">3. Brilha, Brilha, Estrelinha</option>
-                    <option value="3">4. Cai, Cai, Balão</option>
-                    <option value="4">5. Marcha Soldado</option>
-                    <option value="6">6. O Cravo Brigou com a Rosa</option>
-                    <option value="7">7. Peixe Vivo</option>
-                    <option value="8">8. Dona Aranha</option>
-                    <option value="9">9. Atirei o Pau no Gato</option>
-                    <option value="10">10. Batatinha Quando Nasce</option>
                 </select>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:4px;">
+                    <div class="painel-velocidade-bichinhos" id="botoes-velocidade-solo">
+                        <button type="button" class="btn-velocidade-bichinho" data-fator="toque" onclick="MotorMusica.mudarFatorVelocidade('toque', this)" title="Toque para a próxima nota">🍼 Toque</button>
+                        <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5, this)">🐢 50%</button>
+                        <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75, this)">🐶 75%</button>
+                        <button type="button" class="btn-velocidade-bichinho ativo" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1.0, this)">🐱 100%</button>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()" title="Reiniciar do começo">🔄 Reiniciar</button>
+                        <button type="button" class="btn-play-pause-musica" id="btn-play-musica-solo" onclick="MotorMusica.togglePlay()">
+                            <span id="icone-play-solo">▶</span> <span id="txt-play-solo">Iniciar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SELETOR DE INSTRUMENTO DO MODO SOLO -->
+                <div class="alternador-timbre-som" style="margin-bottom:6px;">
+                    <button type="button" class="btn-timbre-tab ativo" id="btn-timbre-solo-piano" onclick="MotorMusica.trocarTimbreSolo('piano')">🎹 Piano</button>
+                    <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-cordas" onclick="MotorMusica.trocarTimbreSolo('cordas')">🎻 Cordas</button>
+                    <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-xilofone" onclick="MotorMusica.trocarTimbreSolo('xilofone')">🪵 Xilofone</button>
+                </div>
 
                 <div class="estrelinha-alvo-box">
                     <span class="estrelinha-icone">⭐</span>
-                    <span style="font-size:13px; font-weight:800; color:#475569;">Toque a nota:</span>
+                    <span style="font-size:12px; font-weight:800; color:#475569;">Próxima:</span>
                     <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
                 </div>
 
                 <div class="barra-progresso-musica-dots" id="dots-progresso-musica"></div>
             </div>
 
-            <!-- Banner do Modo Livre -->
-            <div class="painel-aprendizado-musica" id="painel-livre-box" style="display:none;">
-                <span style="font-size:15px; font-weight:900; color:#0284c7;">🎹 Modo Livre Polifónico</span>
-                <p style="font-size:12px; color:#64748b; font-weight:700; margin-top:2px;">Toque várias notas e acordes! Segure a tecla na tela para sustentar a nota do piano.</p>
+            <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
+            <div class="pista-esteira-piano-box" id="pista-esteira-box">
+                <canvas id="cv-esteira-piano"></canvas>
             </div>
 
-            <!-- Teclado com 13 notas reais em frequências de piano -->
+            <!-- TECLADO SOLO (OITAVA 4) -->
             <div class="teclado-container-piano" id="teclado-piano-completo">
-                <!-- 8 Teclas Brancas (Dó a Dó+) -->
                 <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
                 <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
                 <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
@@ -867,7 +1224,6 @@
                 <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
                 <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
 
-                <!-- 5 Teclas Pretas / Sustenidos -->
                 <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
                 <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
                 <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
@@ -875,7 +1231,217 @@
                 <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
             </div>
 
-            <!-- MODAL NATIVO INTERNO DE CONCLUSÃO (NÃO TRAVA NENHUM BOTÃO) -->
+            <!-- PAINEL SUPERIOR DO MODO LIVRE -->
+            <div class="painel-livre-box" id="painel-livre-box" style="display:none; padding:6px 12px; background:rgba(255,255,255,0.94); border:2px solid #38bdf8; border-radius:20px; max-width:420px; margin:4px auto 6px auto;">
+                <p style="font-size:12px; color:#0f172a; font-weight:900;">🎹 Modo Livre 4/8ª Clássico (C2 a C6)</p>
+                <p style="font-size:11px; color:#64748b; font-weight:700; margin-top:2px;">Escolha o timbre de cada oitava individualmente nas faixas abaixo:</p>
+            </div>
+
+            <!-- COLUNA DAS 4 OITAVAS INDEPENDENTES (MODO LIVRE: C2 A C6) -->
+            <div class="container-triplo-teclados-livre" id="container-teclados-livre">
+                <!-- 1. OITAVA 5: AGUDO -->
+                <div class="faixa-teclado-unidade">
+                    <div class="topo-faixa-oitava">
+                        <span class="badge-faixa-oitava" style="color:#8b5cf6;">Oitava 5 (Aguda)</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-5">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(5, 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-livre-agudo">
+                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D5"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E5"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F5"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G5"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A5"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B5"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C6"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#5"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#5"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#5"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#5"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#5"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+
+                <!-- 2. OITAVA 4: MÉDIO -->
+                <div class="faixa-teclado-unidade">
+                    <div class="topo-faixa-oitava">
+                        <span class="badge-faixa-oitava" style="color:#0284c7;">Oitava 4 (Média)</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-4">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(4, 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-livre-medio">
+                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F4"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G4"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A4"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+
+                <!-- 3. OITAVA 3: GRAVE -->
+                <div class="faixa-teclado-unidade">
+                    <div class="topo-faixa-oitava">
+                        <span class="badge-faixa-oitava" style="color:#d97706;">Oitava 3 (Grave)</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-3">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(3, 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-livre-grave">
+                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D3"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E3"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F3"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G3"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A3"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B3"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#3"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#3"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#3"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#3"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#3"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+
+                <!-- 4. OITAVA 2: SUB-GRAVE / BAIXO -->
+                <div class="faixa-teclado-unidade">
+                    <div class="topo-faixa-oitava">
+                        <span class="badge-faixa-oitava" style="color:#b91c1c;">Oitava 2 (Sub-Grave)</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-2">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(2, 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-livre-subgrave">
+                        <div class="tecla-branca-piano" data-nota="C2"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D2"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E2"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F2"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G2"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A2"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B2"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#2"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#2"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#2"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#2"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#2"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODO DUETO 2 JOGADORES COM ESTEIRAS AMPLAS E TIMBRES INDEPENDENTES -->
+            <div id="container-dueto-piano-2p">
+                <div class="bloco-dueto-j2 teclado-dueto-invertido">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
+                        <span style="font-size:10px; font-weight:900; color:#d97706; background:#fff; padding:2px 8px; border-radius:10px;">🎻 <span class="lbl-j2-nome">Shuiri</span> (Base)</span>
+                        <div class="seletor-timbre-mini" id="timbre-dueto-j2">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreDueto('j2', 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreDueto('j2', 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreDueto('j2', 'xilofone', this)">Xilo</button>
+                        </div>
+                        <span id="badge-acorde-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#fef3c7; border:1px solid #f59e0b; padding:2px 8px; border-radius:10px;">Acorde: DÓ</span>
+                    </div>
+
+                    <div class="pista-dueto-box" id="pista-dueto-harmonia-box">
+                        <canvas id="cv-esteira-dueto-harmonia"></canvas>
+                    </div>
+
+                    <div class="teclado-compacto-livre" id="teclado-dueto-harmonia" style="border-radius:0 0 12px 12px; border-top:2px solid #ea580c; flex-shrink:0;">
+                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D3"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E3"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F3"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G3"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A3"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B3"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#3"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#3"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#3"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#3"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#3"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.96); border:2px solid #fbbf24; border-radius:16px; padding:5px 8px; margin:3px 0; box-shadow:0 4px 12px rgba(0,0,0,0.18); flex-shrink:0;">
+                    <select id="seletor-musica-dueto" class="seletor-musicas-select" style="margin-bottom:4px; font-size:12px; padding:5px 8px; width:100%;" onchange="MotorMusica.selecionarMusica(this.value)">
+                    </select>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                        <div class="painel-velocidade-bichinhos" id="botoes-velocidade-dueto" style="margin-bottom:0; padding:2px 4px;">
+                            <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5, this)" style="padding:3px 6px; font-size:10.5px;">🐢 50%</button>
+                            <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75, this)" style="padding:3px 6px; font-size:10.5px;">🐶 75%</button>
+                            <button type="button" class="btn-velocidade-bichinho ativo" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1.0, this)" style="padding:3px 6px; font-size:10.5px;">🐱 100%</button>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()">🔄 Reiniciar</button>
+                            <button type="button" class="btn-voltar-dueto" onclick="GerenciadorArcade.voltarAcao()">Voltar</button>
+                            <button type="button" class="btn-play-pause-musica" id="btn-play-musica-dueto" onclick="MotorMusica.togglePlay()" style="padding:5px 12px; font-size:12px;">
+                                <span id="icone-play-dueto">▶</span> <span id="txt-play-dueto">Iniciar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bloco-dueto-j1">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
+                        <span style="font-size:10px; font-weight:900; color:#0284c7; background:#fff; padding:2px 8px; border-radius:10px;">🎹 <span class="lbl-j1-nome">J1</span> (Melodia)</span>
+                        <div class="seletor-timbre-mini" id="timbre-dueto-j1">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreDueto('j1', 'piano', this)">Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreDueto('j1', 'cordas', this)">Cordas</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreDueto('j1', 'xilofone', this)">Xilo</button>
+                        </div>
+                        <span id="badge-melodia-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#e0f2fe; border:1px solid #38bdf8; padding:2px 8px; border-radius:10px;">Nota: DÓ</span>
+                    </div>
+
+                    <div class="pista-dueto-box" id="pista-dueto-melodia-box">
+                        <canvas id="cv-esteira-dueto-melodia"></canvas>
+                    </div>
+
+                    <div class="teclado-compacto-livre" id="teclado-dueto-melodia" style="border-radius:0 0 12px 12px; border-top:2px solid #38bdf8; flex-shrink:0;">
+                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
+                        <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
+                        <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
+                        <div class="tecla-branca-piano" data-nota="F4"><span class="rotulo-nota-branca">FÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="G4"><span class="rotulo-nota-branca">SOL</span></div>
+                        <div class="tecla-branca-piano" data-nota="A4"><span class="rotulo-nota-branca">LÁ</span></div>
+                        <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
+                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
+
+                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
+                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4"><span class="rotulo-nota-preta">SOL#</span></div>
+                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="over-simon" class="overlay-jogo" style="display:none;">
                 <div class="painel-dialogo-arcade">
                     <h2 style="color:#10b981;">🎉 Parabéns!</h2>
@@ -890,26 +1456,44 @@
 
         <!-- JOGO 4: ESTOURAR BOLHAS -->
         <div id="tela-bolhas" class="area-jogo">
-            <div class="painel-placar-flappy">
-                <div class="placar-item">Estouradas: <strong id="placar-bolhas-estouradas">0</strong></div>
-                <div class="placar-item" style="color:#ef4444;">Vidas: <strong id="placar-bolhas-vidas" style="color:#ef4444;">5</strong></div>
+            <div class="painel-placar-flappy" id="hud-placar-bolhas-container">
+                <div class="placar-item" id="hud-bolhas-tempo-rush" style="color:#b45309; display:none;">
+                    ⏱️ <strong id="placar-bolhas-tempo">03:00</strong>
+                </div>
+                <div class="placar-item" id="hud-bolhas-j1" style="color:#0284c7;">
+                    <span id="lbl-nome-j1-bolhas">J1:</span> <strong id="placar-bolhas-estouradas">0</strong> 
+                    <span style="font-size:11px; margin-left:4px;" id="placar-bolhas-vidas-j1">❤️ 5</span>
+                </div>
+                <div class="placar-item" id="hud-bolhas-j2" style="color:#e11d48; display:none;">
+                    <span id="lbl-nome-j2-bolhas">Shuiri:</span> <strong id="placar-bolhas-estouradas-j2">0</strong> 
+                    <span style="font-size:11px; margin-left:4px;" id="placar-bolhas-vidas-j2">❤️ 5</span>
+                </div>
             </div>
 
             <div id="over-bolhas" class="overlay-jogo">
                 <div class="painel-dialogo-arcade">
                     <h2>Estourar Bolhas</h2>
-                    <p>Rebente as bolhas antes que subam! Bolhas especiais douradas concedem moedas e corações recuperam as suas vidas.</p>
-                    <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Agora</button>
+                    <p id="txt-desc-bolhas-inicio">Escolha o modo de jogo desejado:</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')">👤 1 Jogador (Sobrevivência)</button>
+                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-bottom-color:#9d174d;" onclick="MotorBolhas.iniciarModo('duelo')">👥 2 Jogadores (Duelo com Vidas)</button>
+                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-bottom-color:#b45309;" onclick="MotorBolhas.iniciarModo('rush')">⚡ Modo Rush (Todos os Cantos - 3 Min)</button>
+                    </div>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                 </div>
             </div>
             <canvas id="cv-bolhas"></canvas>
         </div>
 
-        <!-- JOGO 5: JOGO DA VELHA TRADICIONAL (CANETA NO CADERNO) -->
+        <!-- JOGO 5: JOGO DA VELHA TRADICIONAL & MULTIJOGADOR -->
         <div id="tela-velha" class="area-jogo" style="padding:16px; text-align:center;">
+            <div class="alternador-modos-som" style="margin-bottom:8px;">
+                <button type="button" class="btn-modo-som-tab ativo" id="tab-velha-ia" onclick="MotorVelha.trocarModo('ia')">🤖 1 Jogador (Vs Chuíri)</button>
+                <button type="button" class="btn-modo-som-tab" id="tab-velha-2p" onclick="MotorVelha.trocarModo('2p')">👥 2 Jogadores (Mão a Mão)</button>
+            </div>
+
             <div class="painel-placar-flappy" style="position:static; transform:none; margin:4px auto 6px auto; display:inline-flex;">
-                <span id="status-velha" style="font-size:13.5px; color:#0f172a; font-weight:800;">Sua vez: Você joga com X (Caneta Azul)</span>
+                <span id="status-velha" style="font-size:13px; color:#0f172a; font-weight:800;">Sua vez: Você joga com X (Caneta Azul)</span>
             </div>
 
             <div class="area-velha-caderno">
@@ -919,7 +1503,6 @@
                 <div class="linha-caneta linha-caneta-v2"></div>
 
                 <div id="linha-vitoria-caneta"></div>
-
                 <div class="grade-velha-invisivel" id="grade-velha-invisivel"></div>
             </div>
 
@@ -927,13 +1510,41 @@
         </div>
 
         <!-- JOGO 6: JOGO DA MEMÓRIA 3D -->
-        <div id="tela-memoria" class="area-jogo" style="padding:14px; flex-direction:column; align-items:center; justify-content:center;">
-            <div class="painel-placar-flappy" style="position:static; transform:none; margin:4px auto 8px auto; display:inline-flex;">
-                <span style="font-size:13px; font-weight:900; color:#6d28d9;">Encontre os 8 Pares Mágicos!</span>
+        <div id="tela-memoria" class="area-jogo" style="padding:10px 14px; flex-direction:column; align-items:center; justify-content:flex-start;">
+            <div class="alternador-modos-som" style="margin-bottom:6px;">
+                <button type="button" class="btn-modo-som-tab ativo" id="tab-memoria-solo" onclick="MotorMemoria.trocarModo('solo')">👤 1 Jogador</button>
+                <button type="button" class="btn-modo-som-tab" id="tab-memoria-2p" onclick="MotorMemoria.trocarModo('2p')">👥 2 Jogadores</button>
             </div>
+
+            <div class="painel-placar-flappy" id="hud-placar-memoria" style="position:static; transform:none; margin:2px auto 6px auto; display:inline-flex; gap:12px;">
+                <div id="status-memoria-solo" style="font-size:13px; font-weight:900; color:#6d28d9;">
+                    Encontre os 8 Pares Mágicos!
+                </div>
+                <div id="status-memoria-2p" style="display:none; align-items:center; gap:10px; font-size:12px; font-weight:900;">
+                    <span id="memoria-placar-j1" style="color:#0284c7;"><span class="lbl-j1-nome">J1</span>: <strong>0</strong></span>
+                    <span id="memoria-placar-j2" style="color:#dc2626;"><span class="lbl-j2-nome">Shuiri</span>: <strong>0</strong></span>
+                    <span id="memoria-turno-vez" style="background:#fef3c7; color:#b45309; border:1px solid #f59e0b; padding:2px 8px; border-radius:10px; font-size:11px;">Vez do J1</span>
+                </div>
+            </div>
+
             <div class="grade-memoria-full" id="grade-memoria-arcade"></div>
+
+            <div style="margin-top:6px; display:flex; gap:8px;">
+                <button class="btn-acao-jogo" style="max-width:160px; padding:8px 16px; font-size:12.5px;" onclick="MotorMemoria.iniciar()">Reiniciar</button>
+                <button class="btn-voltar" style="padding:8px 14px; font-size:12.5px;" onclick="GerenciadorArcade.voltarAcao()">Voltar</button>
+            </div>
+
+            <div id="over-memoria" class="overlay-jogo" style="display:none;">
+                <div class="painel-dialogo-arcade" id="dialogo-memoria-conteudo"></div>
+            </div>
         </div>
     </div>
+
+    <!-- DADOS DAS MÚSICAS -->
+    <script src="musicas-piano.js"></script>
+
+    <!-- MOTOR DO PIANO E ESTEIRAS -->
+    <script src="app-piano.js"></script>
 
     <script>
         // =========================================================================
@@ -946,14 +1557,68 @@
         }
 
         // =========================================================================
-        // MOTOR ACÚSTICO DE PIANO REAL, POLIFONIA & ALTO VOLUME (WEB AUDIO API)
+        // GERENCIADOR DE TRILHA SONORA EM SEGUNDO PLANO (SONG/1.MP3 A 10.MP3)
+        // =========================================================================
+        const TrilhaSonoraArcade = {
+            audio: null,
+            totalMusicas: 10,
+            ultimaMusica: 0,
+            tocando: false,
+
+            obterAudio: function() {
+                if (!this.audio) {
+                    this.audio = new Audio();
+                    this.audio.volume = 0.35; // Volume equilibrado para os jogos
+                    this.audio.addEventListener('ended', () => {
+                        if (this.tocando) {
+                            this.tocarAleatoria();
+                        }
+                    });
+                }
+                return this.audio;
+            },
+
+            tocarAleatoria: function() {
+                const a = this.obterAudio();
+                let prox = 1;
+                if (this.totalMusicas > 1) {
+                    do {
+                        prox = Math.floor(Math.random() * this.totalMusicas) + 1;
+                    } while (prox === this.ultimaMusica && this.totalMusicas > 1);
+                }
+                this.ultimaMusica = prox;
+                a.src = `song/${prox}.mp3`;
+                this.tocando = true;
+                const promessa = a.play();
+                if (promessa !== undefined) {
+                    promessa.catch(() => {});
+                }
+            },
+
+            iniciar: function() {
+                this.tocando = true;
+                this.tocarAleatoria();
+            },
+
+            parar: function() {
+                this.tocando = false;
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                }
+            }
+        };
+
+        // =========================================================================
+        // MOTOR ACÚSTICO COMPARTILHADO (ARCADE GERAL)
         // =========================================================================
         const AudioMotor = {
             ctx: null,
             masterGain: null,
             compressor: null,
             ondaPiano: null,
-            vozesPiano: {},
+            vozesAtivas: {},
+            instrumento: 'piano',
 
             obterCtx: function() {
                 if (!this.ctx) {
@@ -966,29 +1631,29 @@
                 return this.ctx;
             },
 
-            // Tabela acústica de harmónicos de corda de piano (síntese aditiva natural)
+            trocarInstrumento: function(tipo) {
+                this.soltarTodasVozesPiano();
+                this.instrumento = tipo;
+            },
+
             obterOndaPiano: function(ctx) {
                 if (this.ondaPiano) return this.ondaPiano;
                 const nHarmonics = 12;
                 const real = new Float32Array(nHarmonics);
                 const imag = new Float32Array(nHarmonics);
-                // Proporções espectrais reais das cordas de um piano
                 const coefs = [0, 1.0, 0.65, 0.38, 0.24, 0.15, 0.09, 0.05, 0.03, 0.02, 0.015, 0.01];
-                for (let i = 1; i < coefs.length; i++) {
-                    imag[i] = coefs[i];
-                }
+                for (let i = 1; i < coefs.length; i++) imag[i] = coefs[i];
                 this.ondaPiano = ctx.createPeriodicWave(real, imag, { disableNormalization: false });
                 return this.ondaPiano;
             },
 
-            // Saída mestra de alto volume com compressor dinâmico (evita qualquer distorção)
             obterSaida: function() {
                 const ctx = this.obterCtx();
                 if (!ctx) return null;
 
                 if (!this.masterGain) {
                     this.masterGain = ctx.createGain();
-                    this.masterGain.gain.setValueAtTime(1.5, ctx.currentTime); // Volume encorpado e alto
+                    this.masterGain.gain.setValueAtTime(1.5, ctx.currentTime);
 
                     this.compressor = ctx.createDynamicsCompressor();
                     this.compressor.threshold.setValueAtTime(-14, ctx.currentTime);
@@ -1003,100 +1668,6 @@
                 return this.masterGain;
             },
 
-            // INICIA NOTA COM SOM AUTÊNTICO DE PIANO ACÚSTICO & SUSTAIN LONGO
-            iniciarVozPiano: function(chave, freq) {
-                try {
-                    const ctx = this.obterCtx();
-                    if (!ctx) return;
-                    this.soltarVozPiano(chave);
-
-                    const saida = this.obterSaida();
-                    const now = ctx.currentTime;
-                    const onda = this.obterOndaPiano(ctx);
-
-                    // 1. Ganho individual da nota com Envelope ADSR de Piano
-                    const gNota = ctx.createGain();
-                    gNota.gain.setValueAtTime(0.0001, now);
-                    // Ataque percussivo do martelo
-                    gNota.gain.linearRampToValueAtTime(0.78, now + 0.006);
-                    // Decaimento para sustentação de corda vibrando
-                    gNota.gain.exponentialRampToValueAtTime(0.42, now + 0.28);
-                    // Sustentação longa e viva mantida enquanto a tecla for segurada
-                    gNota.gain.exponentialRampToValueAtTime(0.025, now + 8.5);
-
-                    // 2. Filtro Passa-Baixa Dinâmico (Simula a caixa acústica de madeira e brilho do feltro)
-                    const filtro = ctx.createBiquadFilter();
-                    filtro.type = 'lowpass';
-                    filtro.Q.setValueAtTime(1.8, now);
-                    filtro.frequency.setValueAtTime(Math.min(7200, freq * 5.8), now);
-                    filtro.frequency.exponentialRampToValueAtTime(Math.max(480, freq * 1.9), now + 0.32);
-
-                    // 3. Corda Principal
-                    const osc1 = ctx.createOscillator();
-                    osc1.setPeriodicWave(onda);
-                    osc1.frequency.setValueAtTime(freq, now);
-
-                    // 4. Corda Vizinha em Uníssono (Microligeiro detune acústico que dá calor e vida ao piano)
-                    const osc2 = ctx.createOscillator();
-                    osc2.setPeriodicWave(onda);
-                    osc2.frequency.setValueAtTime(freq, now);
-                    osc2.detune.setValueAtTime(2.8, now); // +2.8 cents de ressonância natural
-
-                    // Conexões
-                    osc1.connect(filtro);
-                    osc2.connect(filtro);
-                    filtro.connect(gNota);
-                    gNota.connect(saida);
-
-                    osc1.start(now);
-                    osc2.start(now);
-
-                    this.vozesPiano[chave] = {
-                        osc1: osc1,
-                        osc2: osc2,
-                        filtro: filtro,
-                        gain: gNota
-                    };
-                } catch(e) {}
-            },
-
-            // SOLTA A NOTA COM O ABAFADOR DE FELTRO SUAVE DO PIANO
-            soltarVozPiano: function(chave) {
-                try {
-                    const voz = this.vozesPiano[chave];
-                    if (!voz) return;
-                    delete this.vozesPiano[chave];
-
-                    const ctx = this.obterCtx();
-                    if (!ctx) return;
-                    const now = ctx.currentTime;
-
-                    const valAtual = Math.max(0.001, voz.gain.gain.value || 0.1);
-                    voz.gain.gain.cancelScheduledValues(now);
-                    voz.gain.gain.setValueAtTime(valAtual, now);
-                    // Abafador do feltro descendo suavemente sobre as cordas (120ms)
-                    voz.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-
-                    voz.osc1.stop(now + 0.14);
-                    voz.osc2.stop(now + 0.14);
-                    setTimeout(() => {
-                        try {
-                            voz.osc1.disconnect();
-                            voz.osc2.disconnect();
-                            voz.filtro.disconnect();
-                            voz.gain.disconnect();
-                        } catch(e) {}
-                    }, 160);
-                } catch(e) {}
-            },
-
-            soltarTodasVozesPiano: function() {
-                for (let k in this.vozesPiano) {
-                    this.soltarVozPiano(k);
-                }
-            },
-
-            // Toca tom rápido de interface (para outros jogos e avisos)
             tocarTom: function(freq, dur = 0.28, tipo = 'triangle') {
                 try {
                     const ctx = this.obterCtx();
@@ -1114,7 +1685,6 @@
                 } catch(e) {}
             },
 
-            // Som de caneta riscando o papel
             tocarSomCaneta: function(duracao = 0.12) {
                 try {
                     const ctx = this.obterCtx();
@@ -1122,9 +1692,7 @@
                     const bufferSize = Math.floor(ctx.sampleRate * duracao);
                     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                     const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = (Math.random() * 2 - 1) * Math.sin(i / 8);
-                    }
+                    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.sin(i / 8);
                     const noise = ctx.createBufferSource();
                     noise.buffer = buffer;
 
@@ -1151,6 +1719,27 @@
         // =========================================================================
         const GerenciadorArcade = {
             telaAtiva: 'menu',
+
+            obterNomeUsuario: function() {
+                try {
+                    const p = JSON.parse(localStorage.getItem('suiri_perfil_ativo') || '{}');
+                    if (p.nome) return p.nome;
+                } catch(e) {}
+                return localStorage.getItem('usuario_ativo') || localStorage.getItem('nome_usuario') || 'Jogador 1';
+            },
+
+            atualizarNomesJogadores: function() {
+                const nomeJ1 = this.obterNomeUsuario();
+                const nomeJ2 = "Shuiri";
+
+                document.querySelectorAll('.lbl-j1-nome').forEach(el => el.textContent = nomeJ1);
+                document.querySelectorAll('.lbl-j2-nome').forEach(el => el.textContent = nomeJ2);
+
+                const lblBolhasJ1 = document.getElementById('lbl-nome-j1-bolhas');
+                const lblBolhasJ2 = document.getElementById('lbl-nome-j2-bolhas');
+                if (lblBolhasJ1 && MotorBolhas.modo !== 'solo') lblBolhasJ1.textContent = `${nomeJ1}:`;
+                if (lblBolhasJ2) lblBolhasJ2.textContent = `${nomeJ2}:`;
+            },
 
             obterEstado: function() {
                 let id = 'padrao_kids';
@@ -1190,14 +1779,26 @@
                 if (el) el.textContent = est.moedas || 0;
             },
 
+            controlarBarraSuperior: function(exibir) {
+                const barra = document.getElementById('barra-topo-arcade');
+                if (barra) {
+                    barra.style.display = exibir ? 'flex' : 'none';
+                }
+            },
+
             voltarAcao: function() {
+                this.controlarBarraSuperior(true);
+                TrilhaSonoraArcade.parar(); // Para a música ao voltar para o menu ou sair
                 if (this.telaAtiva === 'menu') {
                     window.location.href = 'index.html';
                 } else {
                     MotorFlappy.parar();
                     MotorQuebraBlocos.parar();
-                    MotorMusica.pararTodasNotas();
+                    if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
+                        window.MotorMusica.pararMusicaEContadores();
+                    }
                     MotorBolhas.parar();
+                    MotorMemoria.fecharModal();
                     document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                     document.getElementById('menu-arcade').style.display = 'flex';
                     this.telaAtiva = 'menu';
@@ -1205,10 +1806,20 @@
             },
 
             abrirJogo: function(idJogo) {
-                MotorMusica.pararTodasNotas();
+                this.atualizarNomesJogadores();
+                if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
+                    window.MotorMusica.pararMusicaEContadores();
+                }
                 document.getElementById('menu-arcade').style.display = 'none';
                 document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                 this.telaAtiva = idJogo;
+
+                // Todas as fases tocam música aleatória da pasta song, menos o Piano (simon)
+                if (idJogo === 'simon') {
+                    TrilhaSonoraArcade.parar();
+                } else {
+                    TrilhaSonoraArcade.iniciar();
+                }
 
                 if (idJogo === 'flappy') {
                     document.getElementById('tela-flappy').style.display = 'block';
@@ -1218,7 +1829,9 @@
                     MotorQuebraBlocos.montar();
                 } else if (idJogo === 'simon') {
                     document.getElementById('tela-simon').style.display = 'block';
-                    MotorMusica.montar();
+                    if (window.MotorMusica && typeof window.MotorMusica.montar === 'function') {
+                        window.MotorMusica.montar();
+                    }
                 } else if (idJogo === 'bolhas') {
                     document.getElementById('tela-bolhas').style.display = 'block';
                     MotorBolhas.montar();
@@ -1233,23 +1846,30 @@
         };
 
         // =========================================================================
-        // 1. MOTOR DO CHUÍRI VOADOR
+        // 1. MOTOR DO CHUÍRI VOADOR (1P E 2P COOPERATIVO COM REVIVER)
         // =========================================================================
         const MotorFlappy = {
             canvas: null, ctx: null, anim: null, rodando: false,
+            modo: 1, // 1 = Solo, 2 = Cooperativo
             obstaculosPassados: 0,
             moedasGanhasPartida: 0,
             ultimoFrame: 0,
             fpsIntervalo: 25,
-
-            chuiri: { x: 45, y: 220, w: 68, h: 108, grav: 0.34, imp: -5.8, vy: 0 },
-            gifEl: null,
+            
+            // Personagem 1: Chuíri (voando.gif)
+            p1: { xBase: 45, x: 45, y: 220, w: 68, h: 108, grav: 0.34, imp: -5.8, vy: 0, vivo: true, el: null },
+            // Personagem 2: Gato (gato.gif)
+            p2: { xBase: 75, x: 75, y: 220, w: 64, h: 70, grav: 0.34, imp: -5.8, vy: 0, vivo: true, el: null },
+            
             obstaculos: [],
             moedasNoAr: [],
+            vidasNoAr: [], // Itens de reviver coletáveis
             particulasVento: [],
             timer: 0,
             larguraTronco: 58,
             espacoPassagemBase: 215,
+            obstaculoParaSpawnVida: 0,
+            cicloAnimProfundidade: 0,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-flappy');
@@ -1258,49 +1878,114 @@
                 this.canvas.width = r.width;
                 this.canvas.height = r.height;
 
-                this.gifEl = document.getElementById('chuiri-voador-gif-el');
-                this.canvas.onpointerdown = (e) => { e.preventDefault(); this.pular(); };
+                this.p1.el = document.getElementById('chuiri-voador-gif-el');
+                this.p2.el = document.getElementById('gato-voador-gif-el');
+
+                // Multitoque independente: Esquerda = P1 (Chuíri), Direita = P2 (Gato)
+                const capturarPulo = (clientX) => {
+                    if (!this.rodando) return;
+                    const rect = this.canvas.getBoundingClientRect();
+                    const touchX = clientX - rect.left;
+                    if (this.modo === 2) {
+                        if (touchX < rect.width / 2) {
+                            this.pular(1);
+                        } else {
+                            this.pular(2);
+                        }
+                    } else {
+                        this.pular(1);
+                    }
+                };
+
+                this.canvas.onpointerdown = (e) => {
+                    e.preventDefault();
+                    capturarPulo(e.clientX);
+                };
+
+                this.canvas.ontouchstart = (e) => {
+                    e.preventDefault();
+                    for (let i = 0; i < e.changedTouches.length; i++) {
+                        capturarPulo(e.changedTouches[i].clientX);
+                    }
+                };
+
                 document.getElementById('over-flappy').style.display = 'flex';
-                if (this.gifEl) this.gifEl.style.display = 'none';
+                if (this.p1.el) this.p1.el.style.display = 'none';
+                if (this.p2.el) this.p2.el.style.display = 'none';
                 this.rodando = false;
             },
 
-            jogar: function() {
-                this.chuiri.y = this.canvas.height / 2 - 54;
-                this.chuiri.vy = 0;
+            iniciar: function(modoEscolhido = 1) {
+                this.modo = modoEscolhido;
                 this.obstaculos = [];
                 this.moedasNoAr = [];
+                this.vidasNoAr = [];
                 this.particulasVento = [];
                 this.obstaculosPassados = 0;
                 this.moedasGanhasPartida = 0;
                 this.timer = 0;
+                this.cicloAnimProfundidade = 0;
+                this.obstaculoParaSpawnVida = 0;
                 tentarVibrar(35);
+
+                const yInicial = this.canvas.height / 2 - 40;
+
+                // Reset P1
+                this.p1.y = yInicial;
+                this.p1.vy = 0;
+                this.p1.vivo = true;
+                this.p1.xBase = this.modo === 2 ? 40 : 50;
+
+                // Reset P2
+                this.p2.y = yInicial + 20;
+                this.p2.vy = 0;
+                this.p2.vivo = (this.modo === 2);
+                this.p2.xBase = 85;
 
                 document.getElementById('placar-flappy').textContent = '0';
                 document.getElementById('placar-moedas-ganhas-flappy').textContent = '0';
                 document.getElementById('over-flappy').style.display = 'none';
 
-                if (this.gifEl) {
-                    this.gifEl.style.display = 'block';
-                    this.gifEl.src = `voando.gif?t=${Date.now()}`;
-                    this.gifEl.style.transform = 'rotate(0deg)';
+                const hud2P = document.getElementById('hud-status-2p-flappy');
+                if (hud2P) hud2P.style.display = this.modo === 2 ? 'flex' : 'none';
+                this.atualizarBadgesVidas2P();
+
+                if (this.p1.el) {
+                    this.p1.el.style.display = 'block';
+                    this.p1.el.src = `voando.gif?t=${Date.now()}`;
+                    this.p1.el.style.opacity = '1';
+                }
+
+                if (this.p2.el) {
+                    if (this.modo === 2) {
+                        this.p2.el.style.display = 'block';
+                        this.p2.el.src = `gato.gif?t=${Date.now()}`;
+                        this.p2.el.style.opacity = '1';
+                    } else {
+                        this.p2.el.style.display = 'none';
+                    }
                 }
 
                 this.rodando = true;
-                this.pular();
+                this.pular(1);
+                if (this.modo === 2) this.pular(2);
+
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
             },
 
-            pular: function() {
+            pular: function(jogador = 1) {
                 if (!this.rodando) return;
-                this.chuiri.vy = this.chuiri.imp;
-                AudioMotor.tocarTom(520, 0.08);
+                const p = (jogador === 1) ? this.p1 : this.p2;
+                if (!p.vivo) return;
+
+                p.vy = p.imp;
+                AudioMotor.tocarTom(jogador === 1 ? 520 : 680, 0.08);
 
                 for (let i = 0; i < 3; i++) {
                     this.particulasVento.push({
-                        x: this.chuiri.x + 10,
-                        y: this.chuiri.y + 60 + (Math.random() * 20),
+                        x: p.x + 10,
+                        y: p.y + (p.h / 2) + (Math.random() * 20),
                         vx: -(Math.random() * 2 + 1),
                         vy: (Math.random() * 2 - 1),
                         alpha: 0.8,
@@ -1309,10 +1994,25 @@
                 }
             },
 
+            atualizarBadgesVidas2P: function() {
+                const b1 = document.getElementById('badge-p1-flappy-vivo');
+                const b2 = document.getElementById('badge-p2-flappy-vivo');
+                if (b1) {
+                    b1.style.opacity = this.p1.vivo ? '1' : '0.35';
+                    b1.textContent = this.p1.vivo ? '💙 Chuíri' : '💀 Chuíri';
+                }
+                if (b2) {
+                    b2.style.opacity = this.p2.vivo ? '1' : '0.35';
+                    b2.textContent = this.p2.vivo ? '💖 Gato' : '💀 Gato';
+                }
+            },
+
             parar: function() {
                 this.rodando = false;
                 if (this.anim) cancelAnimationFrame(this.anim);
-                if (this.gifEl) this.gifEl.style.display = 'none';
+                this.anim = null;
+                if (this.p1.el) this.p1.el.style.display = 'none';
+                if (this.p2.el) this.p2.el.style.display = 'none';
             },
 
             loop: function(timestamp) {
@@ -1334,20 +2034,69 @@
             },
 
             atualizar: function() {
-                this.chuiri.vy += this.chuiri.grav;
-                this.chuiri.y += this.chuiri.vy;
+                // Ciclo senoidal suave de troca de profundidade e avanço/recuo
+                this.cicloAnimProfundidade += 0.045;
+                const balancoX = Math.sin(this.cicloAnimProfundidade) * 22;
 
-                if (this.chuiri.y + this.chuiri.h - 18 >= this.canvas.height - 24 || this.chuiri.y <= -20) {
+                // Atualização física P1 (Chuíri)
+                if (this.p1.vivo) {
+                    this.p1.vy += this.p1.grav;
+                    this.p1.y += this.p1.vy;
+                    this.p1.x = this.p1.xBase + (this.modo === 2 ? balancoX : 0);
+
+                    if (this.p1.y + this.p1.h - 18 >= this.canvas.height - 24 || this.p1.y <= -20) {
+                        this.abaterJogador(1);
+                    }
+
+                    if (this.p1.el) {
+                        this.p1.el.style.left = `${this.p1.x}px`;
+                        this.p1.el.style.top = `${this.p1.y}px`;
+                        const angulo1 = Math.min(6, Math.max(-10, this.p1.vy * 0.9));
+                        
+                        // Quem está na frente tem z-index maior e escala cheia
+                        if (this.modo === 2 && balancoX > 0) {
+                            this.p1.el.style.zIndex = '34';
+                            this.p1.el.style.transform = `rotate(${angulo1}deg) scale(1)`;
+                        } else if (this.modo === 2) {
+                            this.p1.el.style.zIndex = '31';
+                            this.p1.el.style.transform = `rotate(${angulo1}deg) scale(0.92)`;
+                        } else {
+                            this.p1.el.style.transform = `rotate(${angulo1}deg)`;
+                        }
+                    }
+                }
+
+                // Atualização física P2 (Gato)
+                if (this.modo === 2 && this.p2.vivo) {
+                    this.p2.vy += this.p2.grav;
+                    this.p2.y += this.p2.vy;
+                    this.p2.x = this.p2.xBase - balancoX; // Inverso do P1
+
+                    if (this.p2.y + this.p2.h - 10 >= this.canvas.height - 24 || this.p2.y <= -20) {
+                        this.abaterJogador(2);
+                    }
+
+                    if (this.p2.el) {
+                        this.p2.el.style.left = `${this.p2.x}px`;
+                        this.p2.el.style.top = `${this.p2.y}px`;
+                        const angulo2 = Math.min(6, Math.max(-10, this.p2.vy * 0.9));
+
+                        if (balancoX <= 0) {
+                            this.p2.el.style.zIndex = '34';
+                            this.p2.el.style.transform = `rotate(${angulo2}deg) scale(1)`;
+                        } else {
+                            this.p2.el.style.zIndex = '31';
+                            this.p2.el.style.transform = `rotate(${angulo2}deg) scale(0.92)`;
+                        }
+                    }
+                }
+
+                // Se ambos caíram, fim de jogo
+                if (!this.p1.vivo && !this.p2.vivo) {
                     return this.fim();
                 }
 
-                if (this.gifEl) {
-                    this.gifEl.style.left = `${this.chuiri.x}px`;
-                    this.gifEl.style.top = `${this.chuiri.y}px`;
-                    const angulo = Math.min(5, Math.max(-8, this.chuiri.vy * 0.9));
-                    this.gifEl.style.transform = `rotate(${angulo}deg)`;
-                }
-
+                // Partículas de vento
                 for (let i = this.particulasVento.length - 1; i >= 0; i--) {
                     const p = this.particulasVento[i];
                     p.x += p.vx;
@@ -1356,6 +2105,7 @@
                     if (p.alpha <= 0) this.particulasVento.splice(i, 1);
                 }
 
+                // Spawn de troncos e itens
                 this.timer++;
                 const intervaloSpawn = Math.max(75, 125 - Math.floor(this.obstaculosPassados / 8) * 3);
                 if (this.timer > intervaloSpawn) {
@@ -1372,7 +2122,16 @@
                         passou: false
                     });
 
-                    if (Math.random() < 0.45) {
+                    // Se alguém precisa de vida no modo 2P
+                    const precisaVida = this.modo === 2 && (!this.p1.vivo || !this.p2.vivo);
+                    if (precisaVida && this.vidasNoAr.length === 0 && this.obstaculosPassados >= this.obstaculoParaSpawnVida) {
+                        this.vidasNoAr.push({
+                            x: this.canvas.width + this.larguraTronco / 2,
+                            y: topo + espaco / 2,
+                            coletada: false,
+                            r: 16
+                        });
+                    } else if (Math.random() < 0.45) {
                         this.moedasNoAr.push({
                             x: this.canvas.width + this.larguraTronco / 2,
                             y: topo + espaco / 2,
@@ -1383,22 +2142,46 @@
                 }
 
                 const velRolagem = 2.2 + Math.min(1.0, (this.obstaculosPassados * 0.02));
+
+                // Movimento e colisão com troncos
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
                     const ob = this.obstaculos[i];
                     ob.x -= velRolagem;
 
-                    const mx = 18;
-                    const my = 22;
-                    if (this.chuiri.x + this.chuiri.w - mx > ob.x && this.chuiri.x + mx < ob.x + this.larguraTronco) {
-                        if (this.chuiri.y + my < ob.topo || this.chuiri.y + this.chuiri.h - my > ob.base) {
-                            return this.fim();
+                    // Colisão P1
+                    if (this.p1.vivo) {
+                        const mx1 = 18; const my1 = 22;
+                        if (this.p1.x + this.p1.w - mx1 > ob.x && this.p1.x + mx1 < ob.x + this.larguraTronco) {
+                            if (this.p1.y + my1 < ob.topo || this.p1.y + this.p1.h - my1 > ob.base) {
+                                this.abaterJogador(1);
+                            }
                         }
                     }
 
-                    if (!ob.passou && ob.x + this.larguraTronco < this.chuiri.x + 20) {
+                    // Colisão P2
+                    if (this.modo === 2 && this.p2.vivo) {
+                        const mx2 = 14; const my2 = 14;
+                        if (this.p2.x + this.p2.w - mx2 > ob.x && this.p2.x + mx2 < ob.x + this.larguraTronco) {
+                            if (this.p2.y + my2 < ob.topo || this.p2.y + this.p2.h - my2 > ob.base) {
+                                this.abaterJogador(2);
+                            }
+                        }
+                    }
+
+                    // Pontuação e renascimento
+                    const refX = Math.max(this.p1.x, this.p2.x);
+                    if (!ob.passou && ob.x + this.larguraTronco < refX + 20) {
                         ob.passou = true;
                         this.obstaculosPassados++;
                         document.getElementById('placar-flappy').textContent = this.obstaculosPassados;
+
+                        // Se havia renascimento pendente após passar o próximo tronco
+                        if (this.p1.renascerPendente) {
+                            this.reviverJogador(1);
+                        }
+                        if (this.p2.renascerPendente) {
+                            this.reviverJogador(2);
+                        }
 
                         if (this.obstaculosPassados % 10 === 0) {
                             this.moedasGanhasPartida++;
@@ -1414,11 +2197,15 @@
                     if (ob.x < -80) this.obstaculos.splice(i, 1);
                 }
 
+                // Coleta de moedas
                 for (let i = this.moedasNoAr.length - 1; i >= 0; i--) {
                     const m = this.moedasNoAr[i];
                     m.x -= velRolagem;
 
-                    if (!m.coletada && Math.hypot((this.chuiri.x + 34) - m.x, (this.chuiri.y + 54) - m.y) < 36) {
+                    const pegouP1 = this.p1.vivo && Math.hypot((this.p1.x + 34) - m.x, (this.p1.y + 54) - m.y) < 36;
+                    const pegouP2 = this.modo === 2 && this.p2.vivo && Math.hypot((this.p2.x + 32) - m.x, (this.p2.y + 35) - m.y) < 32;
+
+                    if (!m.coletada && (pegouP1 || pegouP2)) {
                         m.coletada = true;
                         this.moedasGanhasPartida++;
                         GerenciadorArcade.adicionarMoedas(1);
@@ -1429,6 +2216,65 @@
 
                     if (m.x < -40 || m.coletada) this.moedasNoAr.splice(i, 1);
                 }
+
+                // Coleta de vida (reviver parceiro)
+                for (let i = this.vidasNoAr.length - 1; i >= 0; i--) {
+                    const v = this.vidasNoAr[i];
+                    v.x -= velRolagem;
+
+                    const pegouP1 = this.p1.vivo && Math.hypot((this.p1.x + 34) - v.x, (this.p1.y + 54) - v.y) < 38;
+                    const pegouP2 = this.modo === 2 && this.p2.vivo && Math.hypot((this.p2.x + 32) - v.x, (this.p2.y + 35) - v.y) < 34;
+
+                    if (!v.coletada && (pegouP1 || pegouP2)) {
+                        v.coletada = true;
+                        AudioMotor.tocarTom(1046.5, 0.35);
+                        tentarVibrar([30, 40, 50]);
+
+                        // Programa o renascimento para o próximo obstáculo
+                        if (!this.p1.vivo) this.p1.renascerPendente = true;
+                        if (!this.p2.vivo) this.p2.renascerPendente = true;
+                    }
+
+                    if (v.x < -40 || v.coletada) this.vidasNoAr.splice(i, 1);
+                }
+            },
+
+            abaterJogador: function(num) {
+                const p = num === 1 ? this.p1 : this.p2;
+                if (!p.vivo) return;
+
+                p.vivo = false;
+                tentarVibrar(45);
+                AudioMotor.tocarTom(220, 0.25);
+
+                if (p.el) {
+                    p.el.style.opacity = '0';
+                    setTimeout(() => { if (!p.vivo && p.el) p.el.style.display = 'none'; }, 200);
+                }
+
+                this.atualizarBadgesVidas2P();
+
+                // Define que a vidinha aparecerá entre 5 a 10 obstáculos à frente
+                if (this.modo === 2 && (this.p1.vivo || this.p2.vivo)) {
+                    this.obstaculoParaSpawnVida = this.obstaculosPassados + Math.floor(Math.random() * 6) + 5;
+                }
+            },
+
+            reviverJogador: function(num) {
+                const p = num === 1 ? this.p1 : this.p2;
+                const outro = num === 1 ? this.p2 : this.p1;
+                p.renascerPendente = false;
+                p.vivo = true;
+                p.y = outro.vivo ? outro.y : (this.canvas.height / 2);
+                p.vy = -3.5;
+
+                if (p.el) {
+                    p.el.style.display = 'block';
+                    p.el.style.opacity = '1';
+                }
+
+                AudioMotor.tocarTom(880, 0.2);
+                this.atualizarBadgesVidas2P();
             },
 
             desenhar: function() {
@@ -1437,6 +2283,7 @@
                 const h = this.canvas.height;
                 ctx.clearRect(0, 0, w, h);
 
+                // Partículas
                 this.particulasVento.forEach(p => {
                     ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
                     ctx.beginPath();
@@ -1444,11 +2291,13 @@
                     ctx.fill();
                 });
 
+                // Troncos
                 this.obstaculos.forEach(ob => {
                     this.desenharTronco(ctx, ob.x, 0, this.larguraTronco, ob.topo, true);
                     this.desenharTronco(ctx, ob.x, ob.base, this.larguraTronco, h - ob.base, false);
                 });
 
+                // Moedas
                 this.moedasNoAr.forEach(m => {
                     ctx.save();
                     ctx.fillStyle = '#f59e0b';
@@ -1462,10 +2311,40 @@
                     ctx.restore();
                 });
 
+                // Vidas Coletáveis em SVG (Coração Mágico Flutuante)
+                this.vidasNoAr.forEach(v => {
+                    ctx.save();
+                    ctx.shadowColor = '#ec4899';
+                    ctx.shadowBlur = 14;
+                    this.desenharCoracaoSvg(ctx, v.x, v.y, v.r);
+                    ctx.restore();
+                });
+
+                // Chão
                 ctx.fillStyle = '#15803d';
                 ctx.fillRect(0, h - 24, w, 24);
                 ctx.fillStyle = '#166534';
                 ctx.fillRect(0, h - 8, w, 8);
+            },
+
+            desenharCoracaoSvg: function(ctx, x, y, r) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(r / 12, r / 12);
+                ctx.fillStyle = '#ec4899';
+                ctx.beginPath();
+                ctx.moveTo(0, 4);
+                ctx.bezierCurveTo(-6, -4, -12, 2, -12, 7);
+                ctx.bezierCurveTo(-12, 12, -4, 16, 0, 20);
+                ctx.bezierCurveTo(4, 16, 12, 12, 12, 7);
+                ctx.bezierCurveTo(12, 2, 6, -4, 0, 4);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(-4, 6, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             },
 
             desenharTronco: function(ctx, x, y, w, h, invertido) {
@@ -1500,12 +2379,16 @@
                 this.parar();
                 tentarVibrar(60);
                 const ov = document.getElementById('over-flappy');
+                const tituloModo = this.modo === 2 ? 'Dueto Aéreo Finalizado!' : 'Fim do Voo!';
                 ov.innerHTML = `
                     <div class="painel-dialogo-arcade">
-                        <h2 style="color:#ef4444;">Fim do Voo!</h2>
+                        <h2 style="color:#ef4444;">${tituloModo}</h2>
                         <p>Troncos superados: <strong>${this.obstaculosPassados}</strong><br>
                         <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhasPartida} Moedas conquistadas!</span></p>
-                        <button class="btn-acao-jogo" onclick="MotorFlappy.jogar()">Tentar Novamente</button>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(${this.modo})">Jogar Novamente</button>
+                            <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorFlappy.iniciar(${this.modo === 1 ? 2 : 1})">${this.modo === 1 ? '👥 Modo 2 Jogadores (Dueto)' : '👤 Modo 1 Jogador (Solo)'}</button>
+                        </div>
                         <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                     </div>
                 `;
@@ -1514,21 +2397,25 @@
         };
 
         // =========================================================================
-        // 2. QUEBRA-BLOCOS MÁGICO
+        // 2. QUEBRA-BLOCOS MÁGICO (1P) & SKATE PONG (2P)
         // =========================================================================
         const MotorQuebraBlocos = {
             canvas: null, ctx: null, anim: null, rodando: false,
+            modo: 1,
             faseAtual: 1,
             skate: { x: 140, y: 0, w: 98, h: 22 },
+            skateTopo: { x: 140, y: 65, w: 98, h: 22 },
+            pontosJ1: 0,
+            pontosJ2: 0,
             bola: { x: 180, y: 300, r: 7, vx: 2.8, vy: -3.2 },
             chuiriGifEl: null,
             blocos: [],
             estilhacos: [],
             totalDestruidos: 0,
             moedasGanhas: 0,
-            arrastando: false,
             ultimoFrame: 0,
             fpsIntervalo: 25,
+            obstaculoTimer: 0,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-quebrablocos');
@@ -1540,59 +2427,91 @@
                 this.chuiriGifEl = document.getElementById('chuiri-skate-gif-el');
                 this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
+                this.skateTopo.x = this.canvas.width / 2 - this.skateTopo.w / 2;
 
-                const moverSkate = (clientX) => {
+                const moverSkatesToques = (e) => {
                     if (!this.rodando) return;
                     const rect = this.canvas.getBoundingClientRect();
-                    const toqueX = clientX - rect.left;
-                    this.skate.x = Math.max(0, Math.min(this.canvas.width - this.skate.w, toqueX - this.skate.w / 2));
+                    const scaleX = this.canvas.width / rect.width;
+                    const touches = e.touches || [e];
 
-                    if (this.chuiriGifEl) {
-                        this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
-                        this.chuiriGifEl.style.top = `${this.skate.y - 60}px`;
+                    for (let i = 0; i < touches.length; i++) {
+                        const t = touches[i];
+                        const touchX = (t.clientX - rect.left) * scaleX;
+                        const touchY = t.clientY - rect.top;
+
+                        if (this.modo === 2 && touchY < rect.height / 2) {
+                            this.skateTopo.x = Math.max(0, Math.min(this.canvas.width - this.skateTopo.w, touchX - this.skateTopo.w / 2));
+                        } else {
+                            this.skate.x = Math.max(0, Math.min(this.canvas.width - this.skate.w, touchX - this.skate.w / 2));
+                            if (this.chuiriGifEl && this.modo === 1) {
+                                this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
+                                this.chuiriGifEl.style.top = `${this.skate.y - 60}px`;
+                            }
+                        }
                     }
                 };
 
-                this.canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    if (e.touches && e.touches[0]) moverSkate(e.touches[0].clientX);
-                }, { passive: false });
-
-                this.canvas.onpointermove = (e) => { if (this.arrastando) moverSkate(e.clientX); };
-                this.canvas.onpointerdown = (e) => { this.arrastando = true; moverSkate(e.clientX); };
-                window.onpointerup = () => { this.arrastando = false; };
+                this.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moverSkatesToques(e); }, { passive: false });
+                this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); moverSkatesToques(e); }, { passive: false });
+                this.canvas.onpointermove = (e) => { if (e.buttons > 0) moverSkatesToques(e); };
 
                 document.getElementById('over-quebrablocos').style.display = 'flex';
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
                 this.rodando = false;
             },
 
-            iniciar: function() {
+            iniciar: function(modoEscolhido = 1) {
+                this.modo = modoEscolhido;
                 this.faseAtual = 1;
                 this.totalDestruidos = 0;
                 this.moedasGanhas = 0;
+                this.pontosJ1 = 0;
+                this.pontosJ2 = 0;
                 this.estilhacos = [];
+                this.obstaculoTimer = 0;
                 tentarVibrar(35);
 
-                document.getElementById('placar-quebrablocos-fase').textContent = '1';
-                document.getElementById('placar-quebrablocos-blocos').textContent = '0';
-                document.getElementById('placar-quebrablocos-moedas').textContent = '0';
+                const hudNormal = document.getElementById('hud-quebrablocos-normal');
+                const hudPong = document.getElementById('hud-skate-pong-2p');
+
+                if (this.modo === 2) {
+                    GerenciadorArcade.controlarBarraSuperior(false);
+                    GerenciadorArcade.atualizarNomesJogadores();
+                    hudNormal.style.display = 'none';
+                    hudPong.style.display = 'flex';
+                    document.getElementById('placar-pong-j1').textContent = '0';
+                    document.getElementById('placar-pong-j2').textContent = '0';
+                    this.skateTopo.y = 65;
+                    if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
+                } else {
+                    GerenciadorArcade.controlarBarraSuperior(true);
+                    hudNormal.style.display = 'flex';
+                    hudPong.style.display = 'none';
+                    document.getElementById('placar-quebrablocos-fase').textContent = '1';
+                    document.getElementById('placar-quebrablocos-blocos').textContent = '0';
+                    document.getElementById('placar-quebrablocos-moedas').textContent = '0';
+                    if (this.chuiriGifEl) {
+                        this.chuiriGifEl.style.display = 'block';
+                        this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
+                        this.chuiriGifEl.style.top = `${this.skate.y - 60}px`;
+                    }
+                }
+
                 document.getElementById('over-quebrablocos').style.display = 'none';
 
                 this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
+                this.skateTopo.x = this.canvas.width / 2 - this.skateTopo.w / 2;
+
                 this.bola.x = this.canvas.width / 2;
-                this.bola.y = this.skate.y - 18;
+                this.bola.y = this.canvas.height / 2;
                 this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
-                this.bola.vy = -3.4;
+                this.bola.vy = (Math.random() < 0.5 ? -1 : 1) * 3.4;
 
-                if (this.chuiriGifEl) {
-                    this.chuiriGifEl.style.display = 'block';
-                    this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
-                    this.chuiriGifEl.style.top = `${this.skate.y - 60}px`;
-                }
+                if (this.modo === 1) this.gerarGradeBlocos();
+                else this.blocos = [];
 
-                this.gerarGradeBlocos();
                 this.rodando = true;
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
@@ -1620,6 +2539,21 @@
                         });
                     }
                 }
+            },
+
+            adicionarObstaculoCentroPong: function() {
+                const w = 48;
+                const h = 16;
+                const x = Math.random() * (this.canvas.width - w - 20) + 10;
+                const y = this.canvas.height / 2 - 25 + Math.random() * 50;
+                this.blocos.push({
+                    x: x,
+                    y: y,
+                    w: w,
+                    h: h,
+                    cor: '#f59e0b',
+                    vivo: true
+                });
             },
 
             parar: function() {
@@ -1663,9 +2597,47 @@
                     this.bola.vx *= -1;
                     AudioMotor.tocarTom(420, 0.05);
                 }
-                if (this.bola.y - this.bola.r <= 0) {
-                    this.bola.vy *= -1;
-                    AudioMotor.tocarTom(420, 0.05);
+
+                if (this.modo === 1) {
+                    if (this.bola.y - this.bola.r <= 0) {
+                        this.bola.vy *= -1;
+                        AudioMotor.tocarTom(420, 0.05);
+                    }
+                } else {
+                    if (this.bola.y - this.bola.r <= this.skateTopo.y + 12 && this.bola.y + this.bola.r >= this.skateTopo.y) {
+                        if (this.bola.x >= this.skateTopo.x && this.bola.x <= this.skateTopo.x + this.skateTopo.w) {
+                            this.bola.vy = Math.abs(this.bola.vy);
+                            const centro = this.skateTopo.x + this.skateTopo.w / 2;
+                            const offset = (this.bola.x - centro) / (this.skateTopo.w / 2);
+                            this.bola.vx = offset * 4.4;
+                            AudioMotor.tocarTom(620, 0.08);
+                            tentarVibrar(15);
+                        }
+                    }
+
+                    if (this.bola.y < -15) {
+                        this.pontosJ1++;
+                        document.getElementById('placar-pong-j1').textContent = this.pontosJ1;
+                        AudioMotor.tocarTom(880, 0.2);
+                        if (this.pontosJ1 >= 5) return this.fim();
+                        this.resetarBolaPong(1);
+                    }
+
+                    if (this.bola.y > this.canvas.height + 15) {
+                        this.pontosJ2++;
+                        document.getElementById('placar-pong-j2').textContent = this.pontosJ2;
+                        AudioMotor.tocarTom(320, 0.2);
+                        if (this.pontosJ2 >= 5) return this.fim();
+                        this.resetarBolaPong(-1);
+                    }
+
+                    this.obstaculoTimer++;
+                    if (this.obstaculoTimer > 280) {
+                        this.obstaculoTimer = 0;
+                        if (this.blocos.filter(b => b.vivo).length < 3) {
+                            this.adicionarObstaculoCentroPong();
+                        }
+                    }
                 }
 
                 if (this.bola.y + this.bola.r >= this.skate.y && this.bola.y - this.bola.r <= this.skate.y + 12) {
@@ -1698,33 +2670,48 @@
                         b.vivo = false;
                         this.bola.vy *= -1;
                         this.gerarEstilhacos(b.x, b.y, b.w, b.h, b.cor);
-                        this.totalDestruidos++;
-                        document.getElementById('placar-quebrablocos-blocos').textContent = this.totalDestruidos;
 
-                        if (this.totalDestruidos % 5 === 0) {
-                            this.moedasGanhas++;
-                            GerenciadorArcade.adicionarMoedas(1);
-                            document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
-                            AudioMotor.tocarTom(880, 0.16);
+                        if (this.modo === 1) {
+                            this.totalDestruidos++;
+                            document.getElementById('placar-quebrablocos-blocos').textContent = this.totalDestruidos;
+
+                            if (this.totalDestruidos % 5 === 0) {
+                                this.moedasGanhas++;
+                                GerenciadorArcade.adicionarMoedas(1);
+                                document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
+                                AudioMotor.tocarTom(880, 0.16);
+                            } else {
+                                AudioMotor.tocarTom(640, 0.06);
+                            }
                         } else {
-                            AudioMotor.tocarTom(640, 0.06);
+                            AudioMotor.tocarTom(720, 0.1);
+                            tentarVibrar(25);
                         }
                     }
                 });
 
-                if (vivos === 0) {
-                    this.faseAtual++;
-                    this.moedasGanhas += 3;
-                    GerenciadorArcade.adicionarMoedas(3);
-                    document.getElementById('placar-quebrablocos-fase').textContent = this.faseAtual;
-                    document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
-                    this.gerarGradeBlocos();
-                    this.bola.vy *= 1.05;
-                }
+                if (this.modo === 1) {
+                    if (vivos === 0) {
+                        this.faseAtual++;
+                        this.moedasGanhas += 3;
+                        GerenciadorArcade.adicionarMoedas(3);
+                        document.getElementById('placar-quebrablocos-fase').textContent = this.faseAtual;
+                        document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
+                        this.gerarGradeBlocos();
+                        this.bola.vy *= 1.05;
+                    }
 
-                if (this.bola.y - this.bola.r > this.canvas.height) {
-                    this.fim();
+                    if (this.bola.y - this.bola.r > this.canvas.height) {
+                        this.fim();
+                    }
                 }
+            },
+
+            resetarBolaPong: function(direcaoY) {
+                this.bola.x = this.canvas.width / 2;
+                this.bola.y = this.canvas.height / 2;
+                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
+                this.bola.vy = direcaoY * 3.4;
             },
 
             desenhar: function() {
@@ -1750,6 +2737,29 @@
                 ctx.fill();
                 ctx.restore();
 
+                if (this.modo === 2) {
+                    ctx.save();
+                    ctx.fillStyle = '#0f172a';
+                    ctx.beginPath();
+                    ctx.roundRect(this.skateTopo.x, this.skateTopo.y - 2, this.skateTopo.w, 9, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#f87171';
+                    ctx.beginPath();
+                    ctx.roundRect(this.skateTopo.x + 2, this.skateTopo.y, this.skateTopo.w - 4, 6, 4);
+                    ctx.fill();
+                    ctx.restore();
+
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([8, 8]);
+                    ctx.beginPath();
+                    ctx.moveTo(0, this.canvas.height / 2);
+                    ctx.lineTo(this.canvas.width, this.canvas.height / 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.arc(this.bola.x, this.bola.y, this.bola.r, 0, Math.PI * 2);
@@ -1769,376 +2779,261 @@
             fim: function() {
                 this.parar();
                 tentarVibrar(60);
+                GerenciadorArcade.controlarBarraSuperior(true);
                 const ov = document.getElementById('over-quebrablocos');
-                ov.innerHTML = `
-                    <div class="painel-dialogo-arcade">
-                        <h2 style="color:#ef4444;">A bolinha caiu!</h2>
-                        <p>Fase alcançada: <strong>${this.faseAtual}</strong><br>
-                        Blocos destruídos: <strong>${this.totalDestruidos}</strong><br>
-                        <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhas} Moedas conquistadas!</span></p>
-                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar()">Jogar Novamente</button>
-                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
-                    </div>
-                `;
+
+                if (this.modo === 2) {
+                    const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+                    const vencedor = this.pontosJ1 >= 5 ? `🏆 ${nomeJ1} (Base) Venceu!` : '🏆 Shuiri (Topo) Venceu!';
+                    ov.innerHTML = `
+                        <div class="painel-dialogo-arcade">
+                            <h2 style="color:#10b981;">Fim do Duelo!</h2>
+                            <p>${vencedor}<br>
+                            Placar final: <strong>${this.pontosJ1}</strong> a <strong>${this.pontosJ2}</strong></p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)">Jogar Outra Partida (2P)</button>
+                                <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorQuebraBlocos.iniciar(1)">Modo Solo (Quebra-Blocos)</button>
+                            </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                        </div>
+                    `;
+                } else {
+                    ov.innerHTML = `
+                        <div class="painel-dialogo-arcade">
+                            <h2 style="color:#ef4444;">A bolinha caiu!</h2>
+                            <p>Fase alcançada: <strong>${this.faseAtual}</strong><br>
+                            Blocos destruídos: <strong>${this.totalDestruidos}</strong><br>
+                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhas} Moedas conquistadas!</span></p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)">Jogar Novamente</button>
+                                <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-bottom-color:#075985;" onclick="MotorQuebraBlocos.iniciar(2)">👥 Jogar Duelo (Skate Pong)</button>
+                            </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                        </div>
+                    `;
+                }
                 ov.style.display = 'flex';
             }
         };
 
         // =========================================================================
-        // 3. TECLADO MÁGICO DO CHUÍRI (POLIFONIA, MULTITOUCH & TIMBRE ACÚSTICO)
-        // =========================================================================
-        const MotorMusica = {
-            modo: 'aprendizado', // 'aprendizado' ou 'livre'
-            musicaIndex: 0,
-            passoNota: 0,
-            eventosConfigurados: false,
-            teclasAtivasPorPointer: {},
-            contagemDedosPorNota: {},
-
-            // Tabela real de frequências em Hertz (A4 = 440Hz)
-            tabelaFrequencias: {
-                'C4':  { freq: 261.63, nome: 'Dó' },
-                'C#4': { freq: 277.18, nome: 'Dó#' },
-                'D4':  { freq: 293.66, nome: 'Ré' },
-                'D#4': { freq: 311.13, nome: 'Ré#' },
-                'E4':  { freq: 329.63, nome: 'Mi' },
-                'F4':  { freq: 349.23, nome: 'Fá' },
-                'F#4': { freq: 369.99, nome: 'Fá#' },
-                'G4':  { freq: 392.00, nome: 'Sol' },
-                'G#4': { freq: 415.30, nome: 'Sol#' },
-                'A4':  { freq: 440.00, nome: 'Lá' },
-                'A#4': { freq: 466.16, nome: 'Lá#' },
-                'B4':  { freq: 493.88, nome: 'Si' },
-                'C5':  { freq: 523.25, nome: 'Dó+' }
-            },
-
-            // As 10 Músicas Pedagógicas Tradicionais
-            catalogoMusicas: [
-                { titulo: "Parabéns pra Você", notas: ["C4","C4","D4","C4","F4","E4", "C4","C4","D4","C4","G4","F4"] },
-                { titulo: "Ciranda, Cirandinha", notas: ["C4","D4","E4","F4","G4","G4", "A4","G4","F4","E4","D4","C4"] },
-                { titulo: "Brilha, Brilha, Estrelinha", notas: ["C4","C4","G4","G4","A4","A4","G4", "F4","F4","E4","E4","D4","D4","C4"] },
-                { titulo: "Cai, Cai, Balão", notas: ["G4","G4","F4","E4","G4","G4","F4","E4", "G4","A4","G4","F4","E4","D4"] },
-                { titulo: "Marcha Soldado", notas: ["C4","C4","G4","G4","E4","E4","C4", "D4","E4","F4","D4","C4"] },
-                { titulo: "O Cravo Brigou com a Rosa", notas: ["C4","E4","G4","G4","E4","C4", "D4","F4","A4","A4","F4","D4"] },
-                { titulo: "Peixe Vivo", notas: ["C4","D4","E4","F4","E4","D4","C4", "E4","F4","G4","A4","G4","F4","E4"] },
-                { titulo: "Dona Aranha", notas: ["C4","E4","G4","G4","G4","E4","C4", "D4","F4","A4","A4","A4","F4","D4"] },
-                { titulo: "Atirei o Pau no Gato", notas: ["G4","F4","E4","D4","E4","F4","G4", "G4","E4","E4","F4","E4","D4"] },
-                { titulo: "Batatinha Quando Nasce", notas: ["C4","D4","E4","C4","E4","D4","C4", "E4","F4","G4","E4","G4","F4","E4"] }
-            ],
-
-            montar: function() {
-                this.configurarEventosMultitoque();
-                this.trocarModo('aprendizado');
-                this.selecionarMusica(0);
-            },
-
-            // Liga eventos de multitoque e ponteiro independentes
-            configurarEventosMultitoque: function() {
-                if (this.eventosConfigurados) return;
-                this.eventosConfigurados = true;
-
-                const teclado = document.getElementById('teclado-piano-completo');
-                if (!teclado) return;
-
-                const teclas = teclado.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano');
-                teclas.forEach(tecla => {
-                    const nota = tecla.getAttribute('data-nota');
-
-                    tecla.addEventListener('pointerdown', (e) => {
-                        e.preventDefault();
-                        this.pressionarNota(nota, e.pointerId, tecla);
-                    }, { passive: false });
-
-                    tecla.addEventListener('pointerup', (e) => {
-                        e.preventDefault();
-                        this.soltarNota(nota, e.pointerId, tecla);
-                    }, { passive: false });
-
-                    tecla.addEventListener('pointercancel', (e) => {
-                        e.preventDefault();
-                        this.soltarNota(nota, e.pointerId, tecla);
-                    }, { passive: false });
-
-                    tecla.addEventListener('pointerleave', (e) => {
-                        if (this.teclasAtivasPorPointer[e.pointerId] === nota) {
-                            this.soltarNota(nota, e.pointerId, tecla);
-                        }
-                    }, { passive: false });
-                });
-
-                // Salvaguardas globais para garantir liberação e evitar notas presas
-                window.addEventListener('pointerup', (e) => {
-                    if (this.teclasAtivasPorPointer[e.pointerId]) {
-                        const nota = this.teclasAtivasPorPointer[e.pointerId];
-                        this.soltarNota(nota, e.pointerId);
-                    }
-                });
-
-                window.addEventListener('pointercancel', (e) => {
-                    if (this.teclasAtivasPorPointer[e.pointerId]) {
-                        const nota = this.teclasAtivasPorPointer[e.pointerId];
-                        this.soltarNota(nota, e.pointerId);
-                    }
-                });
-
-                window.addEventListener('touchend', (e) => {
-                    if (e.touches && e.touches.length === 0) {
-                        this.pararTodasNotas();
-                    }
-                }, { passive: true });
-
-                window.addEventListener('blur', () => {
-                    this.pararTodasNotas();
-                });
-
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) this.pararTodasNotas();
-                });
-            },
-
-            pressionarNota: function(codigoNota, pointerId, elTecla) {
-                const info = this.tabelaFrequencias[codigoNota];
-                if (!info) return;
-
-                const chaveVoz = `${codigoNota}_${pointerId}`;
-                this.teclasAtivasPorPointer[pointerId] = codigoNota;
-                this.contagemDedosPorNota[codigoNota] = (this.contagemDedosPorNota[codigoNota] || 0) + 1;
-
-                // Inicia nota sustentada de piano acústico
-                AudioMotor.iniciarVozPiano(chaveVoz, info.freq);
-                tentarVibrar(22);
-
-                if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
-                if (elTecla) {
-                    elTecla.classList.add('tocando');
-                    this.soltarNotaFlutuante(elTecla);
-                }
-
-                // Lógica de aprendizado
-                if (this.modo === 'aprendizado') {
-                    const mus = this.catalogoMusicas[this.musicaIndex];
-                    if (!mus) return;
-
-                    const notaEsperada = mus.notas[this.passoNota];
-                    if (codigoNota === notaEsperada) {
-                        this.passoNota++;
-                        if (this.passoNota >= mus.notas.length) {
-                            this.concluirMusica(mus.titulo);
-                        } else {
-                            this.atualizarInterfaceAprendizado();
-                        }
-                    }
-                }
-            },
-
-            soltarNota: function(codigoNota, pointerId, elTecla) {
-                const chaveVoz = `${codigoNota}_${pointerId}`;
-                AudioMotor.soltarVozPiano(chaveVoz);
-
-                delete this.teclasAtivasPorPointer[pointerId];
-
-                if (this.contagemDedosPorNota[codigoNota]) {
-                    this.contagemDedosPorNota[codigoNota]--;
-                    if (this.contagemDedosPorNota[codigoNota] <= 0) {
-                        delete this.contagemDedosPorNota[codigoNota];
-                        if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
-                        if (elTecla) elTecla.classList.remove('tocando');
-                    }
-                } else {
-                    if (!elTecla) elTecla = document.querySelector(`[data-nota="${codigoNota}"]`);
-                    if (elTecla) elTecla.classList.remove('tocando');
-                }
-            },
-
-            pararTodasNotas: function() {
-                AudioMotor.soltarTodasVozesPiano();
-                this.teclasAtivasPorPointer = {};
-                this.contagemDedosPorNota = {};
-                document.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano').forEach(el => {
-                    el.classList.remove('tocando');
-                });
-            },
-
-            trocarModo: function(novoModo) {
-                this.pararTodasNotas();
-                this.modo = novoModo;
-                const tabMusicas = document.getElementById('tab-modo-musicas');
-                const tabLivre = document.getElementById('tab-modo-livre');
-                const boxAprendizado = document.getElementById('painel-aprendizado-box');
-                const boxLivre = document.getElementById('painel-livre-box');
-
-                if (novoModo === 'aprendizado') {
-                    tabMusicas.classList.add('ativo');
-                    tabLivre.classList.remove('ativo');
-                    boxAprendizado.style.display = 'block';
-                    boxLivre.style.display = 'none';
-                    this.atualizarInterfaceAprendizado();
-                } else {
-                    tabLivre.classList.add('ativo');
-                    tabMusicas.classList.remove('ativo');
-                    boxAprendizado.style.display = 'none';
-                    boxLivre.style.display = 'block';
-                    this.limparBrilhosTeclas();
-                }
-            },
-
-            selecionarMusica: function(idx) {
-                this.musicaIndex = parseInt(idx, 10);
-                this.passoNota = 0;
-                document.getElementById('seletor-musica-alvo').value = this.musicaIndex;
-                this.atualizarInterfaceAprendizado();
-            },
-
-            atualizarInterfaceAprendizado: function() {
-                if (this.modo !== 'aprendizado') return;
-                const mus = this.catalogoMusicas[this.musicaIndex];
-                if (!mus) return;
-
-                const notaAtual = mus.notas[this.passoNota];
-                const infoNota = this.tabelaFrequencias[notaAtual];
-
-                const elNotaTxt = document.getElementById('txt-nota-alvo-aprendizado');
-                if (elNotaTxt && infoNota) {
-                    elNotaTxt.textContent = infoNota.nome;
-                }
-
-                // Atualizar bolinhas de progresso
-                const containerDots = document.getElementById('dots-progresso-musica');
-                if (containerDots) {
-                    containerDots.innerHTML = mus.notas.map((_, i) => {
-                        let classe = 'dot-nota';
-                        if (i < this.passoNota) classe += ' concluido';
-                        else if (i === this.passoNota) classe += ' atual';
-                        return `<div class="${classe}"></div>`;
-                    }).join('');
-                }
-
-                this.destacarTeclaAlvo(notaAtual);
-            },
-
-            destacarTeclaAlvo: function(codigoNota) {
-                this.limparBrilhosTeclas();
-                const tecla = document.querySelector(`[data-nota="${codigoNota}"]`);
-                if (tecla) {
-                    tecla.classList.add('alvo-brilhando');
-                }
-            },
-
-            limparBrilhosTeclas: function() {
-                document.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano').forEach(el => {
-                    el.classList.remove('alvo-brilhando');
-                });
-            },
-
-            soltarNotaFlutuante: function(el) {
-                const rect = el.getBoundingClientRect();
-                const container = document.getElementById('tela-simon');
-                const nota = document.createElement('div');
-                nota.className = 'nota-musical-voando';
-                nota.textContent = Math.random() < 0.5 ? '♪' : '♫';
-                nota.style.left = `${rect.left + rect.width / 2 - 8}px`;
-                nota.style.top = `${rect.top - 12}px`;
-                container.appendChild(nota);
-                setTimeout(() => nota.remove(), 800);
-            },
-
-            // CONCLUSÃO SEM ALERT BLOQUEANTE (DESARMA TODAS AS TECLAS IMEDIATAMENTE)
-            concluirMusica: function(nomeMusica) {
-                this.pararTodasNotas(); // Destrava as teclas imediatamente
-                GerenciadorArcade.adicionarMoedas(5);
-                AudioMotor.tocarTom(880, 0.3);
-                setTimeout(() => AudioMotor.tocarTom(1046.5, 0.4), 160);
-
-                const txtAlvo = document.getElementById('txt-nota-alvo-aprendizado');
-                if (txtAlvo) txtAlvo.innerHTML = "<span style='color:#10b981;'>PARABÉNS!</span>";
-
-                const msgEl = document.getElementById('txt-msg-conclusao-musica');
-                if (msgEl) {
-                    msgEl.innerHTML = `Incrível! Concluiu <strong>"${nomeMusica}"</strong> e faturou <strong>+5 Moedas! 🪙</strong>`;
-                }
-
-                const overEl = document.getElementById('over-simon');
-                if (overEl) {
-                    overEl.style.display = 'flex';
-                }
-            },
-
-            avancarProximaMusica: function() {
-                this.fecharModalConclusao();
-                this.musicaIndex = (this.musicaIndex + 1) % this.catalogoMusicas.length;
-                this.passoNota = 0;
-                this.selecionarMusica(this.musicaIndex);
-            },
-
-            fecharModalConclusao: function() {
-                this.pararTodasNotas();
-                const overEl = document.getElementById('over-simon');
-                if (overEl) {
-                    overEl.style.display = 'none';
-                }
-            }
-        };
-
-        // =========================================================================
-        // 4. ESTOURAR BOLHAS
+        // 4. ESTOURAR BOLHAS (SOLO, DUELO 2P & MODO RUSH TOTAL DE TODOS OS CANTOS)
         // =========================================================================
         const MotorBolhas = {
             canvas: null, ctx: null, anim: null, rodando: false,
-            estouradas: 0,
-            vidas: 5,
+            modo: 'solo',
+            estouradasJ1: 0,
+            estouradasJ2: 0,
+            vidasJ1: 5,
+            vidasJ2: 5,
+            segundosRestantesRush: 180,
+            timerRushInterval: null,
             bolhas: [],
             gotas: [],
-            tempoMs: 0,
             ultimoSpawn: 0,
             ultimoFrame: 0,
             fpsIntervalo: 25,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-bolhas');
+                if (!this.canvas) return;
                 this.ctx = this.canvas.getContext('2d');
-                const r = this.canvas.parentElement.getBoundingClientRect();
-                this.canvas.width = r.width;
-                this.canvas.height = r.height;
-                this.canvas.onpointerdown = (e) => this.toque(e);
-                document.getElementById('over-bolhas').style.display = 'flex';
+                this.ajustarCanvasDimensoes();
+
+                const processarToqueMultitouch = (e) => {
+                    if (!this.rodando) return;
+                    e.preventDefault();
+                    const rect = this.canvas.getBoundingClientRect();
+                    const scaleX = this.canvas.width / rect.width;
+                    const scaleY = this.canvas.height / rect.height;
+                    const touches = e.changedTouches ? e.changedTouches : [e];
+
+                    for (let t = 0; t < touches.length; t++) {
+                        const touch = touches[t];
+                        const x = (touch.clientX - rect.left) * scaleX;
+                        const y = (touch.clientY - rect.top) * scaleY;
+                        this.estourarNaPosicao(x, y);
+                    }
+                };
+
+                this.canvas.ontouchstart = processarToqueMultitouch;
+                this.canvas.onpointerdown = (e) => {
+                    if (!this.rodando) return;
+                    if (e.pointerType === 'mouse') {
+                        const rect = this.canvas.getBoundingClientRect();
+                        const scaleX = this.canvas.width / rect.width;
+                        const scaleY = this.canvas.height / rect.height;
+                        this.estourarNaPosicao((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+                    }
+                };
+
+                const overEl = document.getElementById('over-bolhas');
+                if (overEl) overEl.style.display = 'flex';
                 this.rodando = false;
             },
 
-            iniciar: function() {
-                this.estouradas = 0;
-                this.vidas = 5;
+            ajustarCanvasDimensoes: function() {
+                if (!this.canvas || !this.canvas.parentElement) return;
+                const r = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = Math.round(r.width || window.innerWidth);
+                this.canvas.height = Math.round(r.height || window.innerHeight);
+            },
+
+            iniciarModo: function(modoEscolhido = 'solo') {
+                this.parar();
+                this.modo = modoEscolhido;
+                this.estouradasJ1 = 0;
+                this.estouradasJ2 = 0;
+                this.vidasJ1 = 5;
+                this.vidasJ2 = 5;
+                this.segundosRestantesRush = 180;
                 this.bolhas = [];
                 this.gotas = [];
-                this.tempoMs = 0;
                 this.ultimoSpawn = performance.now();
                 tentarVibrar(35);
 
-                document.getElementById('placar-bolhas-estouradas').textContent = '0';
-                document.getElementById('placar-bolhas-vidas').textContent = '5';
-                document.getElementById('over-bolhas').style.display = 'none';
+                const hudTempo = document.getElementById('hud-bolhas-tempo-rush');
+                const hudJ1 = document.getElementById('hud-bolhas-j1');
+                const hudJ2 = document.getElementById('hud-bolhas-j2');
+                const lblJ1 = document.getElementById('lbl-nome-j1-bolhas');
+                const lblJ2 = document.getElementById('lbl-nome-j2-bolhas');
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+
+                if (document.getElementById('placar-bolhas-estouradas')) {
+                    document.getElementById('placar-bolhas-estouradas').textContent = '0';
+                }
+                if (document.getElementById('placar-bolhas-vidas-j1')) {
+                    document.getElementById('placar-bolhas-vidas-j1').textContent = '❤️ 5';
+                }
+                const overEl = document.getElementById('over-bolhas');
+                if (overEl) overEl.style.display = 'none';
+
+                if (this.modo === 'duelo') {
+                    GerenciadorArcade.controlarBarraSuperior(false);
+                    if (lblJ1) lblJ1.textContent = `${nomeJ1} (Azul):`;
+                    if (lblJ2) lblJ2.textContent = "Shuiri (Rosa):";
+                    if (hudJ1) hudJ1.style.display = 'flex';
+                    if (hudJ2) hudJ2.style.display = 'flex';
+                    if (hudTempo) hudTempo.style.display = 'none';
+                    if (document.getElementById('placar-bolhas-vidas-j2')) {
+                        document.getElementById('placar-bolhas-vidas-j2').textContent = '❤️ 5';
+                    }
+                    if (document.getElementById('placar-bolhas-estouradas-j2')) {
+                        document.getElementById('placar-bolhas-estouradas-j2').textContent = '0';
+                    }
+                } else if (this.modo === 'rush') {
+                    GerenciadorArcade.controlarBarraSuperior(false);
+                    if (lblJ1) lblJ1.textContent = `${nomeJ1} (Azul):`;
+                    if (lblJ2) lblJ2.textContent = "Shuiri (Rosa):";
+                    if (hudJ1) hudJ1.style.display = 'flex';
+                    if (hudJ2) hudJ2.style.display = 'flex';
+                    if (hudTempo) hudTempo.style.display = 'flex';
+                    if (document.getElementById('placar-bolhas-vidas-j1')) {
+                        document.getElementById('placar-bolhas-vidas-j1').textContent = '⚡ Livre';
+                    }
+                    if (document.getElementById('placar-bolhas-vidas-j2')) {
+                        document.getElementById('placar-bolhas-vidas-j2').textContent = '⚡ Livre';
+                    }
+                    if (document.getElementById('placar-bolhas-estouradas-j2')) {
+                        document.getElementById('placar-bolhas-estouradas-j2').textContent = '0';
+                    }
+                    this.atualizarDisplayTimerRush();
+
+                    this.timerRushInterval = setInterval(() => {
+                        this.segundosRestantesRush--;
+                        this.atualizarDisplayTimerRush();
+                        if (this.segundosRestantesRush <= 0) {
+                            clearInterval(this.timerRushInterval);
+                            this.timerRushInterval = null;
+                            this.fim();
+                        }
+                    }, 1000);
+                } else {
+                    GerenciadorArcade.controlarBarraSuperior(true);
+                    if (lblJ1) lblJ1.textContent = "Estouradas:";
+                    if (hudJ1) hudJ1.style.display = 'flex';
+                    if (hudJ2) hudJ2.style.display = 'none';
+                    if (hudTempo) hudTempo.style.display = 'none';
+                }
+
+                setTimeout(() => this.ajustarCanvasDimensoes(), 50);
 
                 this.rodando = true;
-                for (let i = 0; i < 4; i++) this.criarBolha();
+                const qtdInicial = this.modo === 'rush' ? 12 : (this.modo === 'duelo' ? 8 : 4);
+                for (let i = 0; i < qtdInicial; i++) this.criarBolha();
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
+            },
+
+            atualizarDisplayTimerRush: function() {
+                const min = String(Math.floor(this.segundosRestantesRush / 60)).padStart(2, '0');
+                const sec = String(this.segundosRestantesRush % 60).padStart(2, '0');
+                const el = document.getElementById('placar-bolhas-tempo');
+                if (el) el.textContent = `${min}:${sec}`;
             },
 
             parar: function() {
                 this.rodando = false;
                 if (this.anim) cancelAnimationFrame(this.anim);
+                this.anim = null;
+                if (this.timerRushInterval) {
+                    clearInterval(this.timerRushInterval);
+                    this.timerRushInterval = null;
+                }
             },
 
             criarBolha: function() {
+                let dono = 'j1';
+                if (this.modo === 'duelo' || this.modo === 'rush') {
+                    dono = Math.random() < 0.5 ? 'j1' : 'j2';
+                }
+
+                const velBase = this.modo === 'rush' ? 2.2 : 1.3;
+                let x, y, vx, vy;
+
+                if (this.modo === 'rush') {
+                    const borda = Math.floor(Math.random() * 4);
+                    if (borda === 0) {
+                        x = Math.random() * (this.canvas.width - 60) + 30;
+                        y = this.canvas.height + 25;
+                        vx = (Math.random() - 0.5) * 1.8;
+                        vy = -(velBase + Math.random() * 1.4);
+                    } else if (borda === 1) {
+                        x = Math.random() * (this.canvas.width - 60) + 30;
+                        y = -25;
+                        vx = (Math.random() - 0.5) * 1.8;
+                        vy = (velBase + Math.random() * 1.4);
+                    } else if (borda === 2) {
+                        x = -25;
+                        y = Math.random() * (this.canvas.height - 60) + 30;
+                        vx = (velBase + Math.random() * 1.4);
+                        vy = (Math.random() - 0.5) * 1.8;
+                    } else {
+                        x = this.canvas.width + 25;
+                        y = Math.random() * (this.canvas.height - 60) + 30;
+                        vx = -(velBase + Math.random() * 1.4);
+                        vy = (Math.random() - 0.5) * 1.8;
+                    }
+                } else {
+                    x = Math.random() * (this.canvas.width - 60) + 30;
+                    y = this.canvas.height + 25;
+                    vx = (Math.random() - 0.5) * 0.9;
+                    vy = -(velBase + Math.random() * 1.4);
+                }
+
                 this.bolhas.push({
-                    x: Math.random() * (this.canvas.width - 60) + 30,
-                    y: this.canvas.height + 20,
-                    r: 22 + Math.random() * 12,
-                    v: 1.1 + Math.random() * 1.3,
-                    oscilacao: Math.random() * Math.PI * 2
+                    dono: dono,
+                    x: x,
+                    y: y,
+                    vx: vx,
+                    vy: vy,
+                    r: 24 + Math.random() * 8,
+                    oscilacao: Math.random() * Math.PI * 2,
+                    entrouNaTela: false
                 });
             },
 
-            gerarGotas: function(bx, by) {
+            gerarGotas: function(bx, by, cor = '#38bdf8') {
                 for (let i = 0; i < 6; i++) {
                     const ang = (Math.PI * 2 / 6) * i;
                     this.gotas.push({
@@ -2146,28 +3041,38 @@
                         y: by,
                         vx: Math.cos(ang) * (Math.random() * 3 + 2),
                         vy: Math.sin(ang) * (Math.random() * 3 + 2),
+                        cor: cor,
                         alpha: 1
                     });
                 }
             },
 
-            toque: function(e) {
-                if (!this.rodando) return;
-                const rect = this.canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
+            estourarNaPosicao: function(x, y) {
                 for (let i = this.bolhas.length - 1; i >= 0; i--) {
                     const b = this.bolhas[i];
-                    if (Math.hypot(x - b.x, y - b.y) < b.r + 14) {
-                        this.gerarGotas(b.x, b.y);
-                        this.bolhas.splice(i, 1);
-                        this.estouradas++;
-                        document.getElementById('placar-bolhas-estouradas').textContent = this.estouradas;
-                        AudioMotor.tocarTom(750 + Math.random() * 150, 0.05);
-                        tentarVibrar(18);
+                    const dist = Math.hypot(x - b.x, y - b.y);
 
-                        if (this.estouradas % 20 === 0) {
+                    if (dist < b.r + 20) {
+                        const corGota = b.dono === 'j2' ? '#f43f5e' : '#38bdf8';
+                        this.gerarGotas(b.x, b.y, corGota);
+
+                        if (b.dono === 'j2') {
+                            this.estouradasJ2++;
+                            const elJ2 = document.getElementById('placar-bolhas-estouradas-j2');
+                            if (elJ2) elJ2.textContent = this.estouradasJ2;
+                            AudioMotor.tocarTom(920 + Math.random() * 100, 0.05);
+                        } else {
+                            this.estouradasJ1++;
+                            const elJ1 = document.getElementById('placar-bolhas-estouradas');
+                            if (elJ1) elJ1.textContent = this.estouradasJ1;
+                            AudioMotor.tocarTom(750 + Math.random() * 100, 0.05);
+                        }
+
+                        this.bolhas.splice(i, 1);
+                        tentarVibrar(20);
+
+                        const totalGeral = this.estouradasJ1 + this.estouradasJ2;
+                        if (totalGeral % 20 === 0) {
                             GerenciadorArcade.adicionarMoedas(1);
                             AudioMotor.tocarTom(880, 0.18);
                         }
@@ -2191,11 +3096,14 @@
 
             atualizar: function() {
                 const agora = performance.now();
-                this.tempoMs += 25;
+                const intervalo = this.modo === 'rush' ? 240 : (this.modo === 'duelo' ? 820 : 1100);
 
-                if (agora - this.ultimoSpawn > 1200) {
+                if (agora - this.ultimoSpawn > intervalo) {
                     this.ultimoSpawn = agora;
                     this.criarBolha();
+                    if (this.modo === 'rush') {
+                        this.criarBolha();
+                    }
                 }
 
                 for (let i = this.gotas.length - 1; i >= 0; i--) {
@@ -2208,17 +3116,40 @@
 
                 for (let i = this.bolhas.length - 1; i >= 0; i--) {
                     const b = this.bolhas[i];
-                    b.y -= b.v;
+                    b.x += b.vx;
+                    b.y += b.vy;
                     b.oscilacao += 0.04;
-                    b.x += Math.sin(b.oscilacao) * 0.6;
+                    b.x += Math.sin(b.oscilacao) * 0.45;
 
-                    if (b.y < -30) {
+                    if (!b.entrouNaTela) {
+                        if (b.x >= 0 && b.x <= this.canvas.width && b.y >= 0 && b.y <= this.canvas.height) {
+                            b.entrouNaTela = true;
+                        }
+                    }
+
+                    const foraTela = b.entrouNaTela && (b.x < -60 || b.x > this.canvas.width + 60 || b.y < -60 || b.y > this.canvas.height + 60);
+
+                    if (foraTela) {
                         this.bolhas.splice(i, 1);
-                        this.vidas--;
-                        document.getElementById('placar-bolhas-vidas').textContent = this.vidas;
-                        AudioMotor.tocarTom(220, 0.2);
-                        tentarVibrar(45);
-                        if (this.vidas <= 0) return this.fim();
+
+                        if (this.modo !== 'rush') {
+                            AudioMotor.tocarTom(220, 0.15);
+                            tentarVibrar(40);
+
+                            if (b.dono === 'j2') {
+                                this.vidasJ2--;
+                                const elV2 = document.getElementById('placar-bolhas-vidas-j2');
+                                if (elV2) elV2.textContent = `❤️ ${this.vidasJ2}`;
+                            } else {
+                                this.vidasJ1--;
+                                const elV1 = document.getElementById('placar-bolhas-vidas-j1');
+                                if (elV1) elV1.textContent = `❤️ ${this.vidasJ1}`;
+                            }
+
+                            if (this.vidasJ1 <= 0 || (this.modo === 'duelo' && this.vidasJ2 <= 0)) {
+                                return this.fim();
+                            }
+                        }
                     }
                 }
             },
@@ -2228,26 +3159,47 @@
                 ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
                 this.gotas.forEach(g => {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${g.alpha})`;
+                    ctx.fillStyle = g.cor;
+                    ctx.globalAlpha = g.alpha;
                     ctx.beginPath();
-                    ctx.arc(g.x, g.y, 2.5, 0, Math.PI * 2);
+                    ctx.arc(g.x, g.y, 2.8, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.globalAlpha = 1;
                 });
 
                 this.bolhas.forEach(b => {
                     ctx.save();
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 1.8;
-                    ctx.beginPath();
-                    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
+                    if (b.dono === 'j2') {
+                        ctx.fillStyle = 'rgba(244, 63, 94, 0.42)';
+                        ctx.strokeStyle = '#fda4af';
+                        ctx.lineWidth = 2.2;
+                        ctx.beginPath();
+                        ctx.moveTo(b.x, b.y - b.r);
+                        ctx.lineTo(b.x + b.r * 0.85, b.y);
+                        ctx.lineTo(b.x, b.y + b.r);
+                        ctx.lineTo(b.x - b.r * 0.85, b.y);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
 
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(b.x - b.r * 0.35, b.y - b.r * 0.35, b.r * 0.22, 0, Math.PI * 2);
-                    ctx.fill();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        ctx.fillStyle = 'rgba(56, 189, 248, 0.38)';
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 2.0;
+                        ctx.beginPath();
+                        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(b.x - b.r * 0.35, b.y - b.r * 0.35, b.r * 0.22, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                     ctx.restore();
                 });
             },
@@ -2255,29 +3207,108 @@
             fim: function() {
                 this.parar();
                 tentarVibrar([60, 50, 60]);
-                const moedas = Math.floor(this.estouradas / 20);
+                GerenciadorArcade.controlarBarraSuperior(true);
                 const ov = document.getElementById('over-bolhas');
-                ov.innerHTML = `
-                    <div class="painel-dialogo-arcade">
-                        <h2 style="color:#ef4444;">Fim de Partida!</h2>
-                        <p>5 bolhas escaparam!<br>
-                        Bolhas estouradas: <strong>${this.estouradas}</strong><br>
-                        <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${moedas} Moedas faturadas!</span></p>
-                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciar()">Jogar Novamente</button>
-                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
-                    </div>
-                `;
+                if (!ov) return;
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+
+                if (this.modo === 'rush') {
+                    const totalGeral = this.estouradasJ1 + this.estouradasJ2;
+                    const moedas = Math.floor(totalGeral / 15);
+                    GerenciadorArcade.adicionarMoedas(moedas);
+
+                    let vencedorRush = "Empate Fantástico!";
+                    if (this.estouradasJ1 > this.estouradasJ2) vencedorRush = `🏆 ${nomeJ1} (Azul) Venceu!`;
+                    else if (this.estouradasJ2 > this.estouradasJ1) vencedorRush = "🏆 Shuiri (Rosa) Venceu!";
+
+                    ov.innerHTML = `
+                        <div class="painel-dialogo-arcade">
+                            <h2 style="color:#f59e0b;">Tempo Esgotado!</h2>
+                            <p style="font-weight:900; color:#0284c7; margin-bottom:6px;">${vencedorRush}</p>
+                            <p>${nomeJ1} (Azul): <strong>${this.estouradasJ1}</strong> bolhas<br>
+                            Shuiri (Rosa): <strong>${this.estouradasJ2}</strong> bolhas<br>
+                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${moedas} Moedas conquistadas! 🪙</span></p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('rush')">Jogar Outro Rush (3 Min)</button>
+                                <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorBolhas.iniciarModo('solo')">Modo Sobrevivência (1P)</button>
+                            </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                        </div>
+                    `;
+                } else if (this.modo === 'duelo') {
+                    let resultado = "Empate emocionante!";
+                    let corRes = "#f59e0b";
+                    if (this.vidasJ1 <= 0 && this.vidasJ2 > 0) {
+                        resultado = "🏆 Shuiri (Rosa) Venceu!";
+                        corRes = "#f43f5e";
+                    } else if (this.vidasJ2 <= 0 && this.vidasJ1 > 0) {
+                        resultado = `🏆 ${nomeJ1} (Azul) Venceu!`;
+                        corRes = "#0284c7";
+                    } else if (this.estouradasJ1 > this.estouradasJ2) {
+                        resultado = `🏆 ${nomeJ1} Venceu por Pontos!`;
+                        corRes = "#0284c7";
+                    } else if (this.estouradasJ2 > this.estouradasJ1) {
+                        resultado = "🏆 Shuiri Venceu por Pontos!";
+                        corRes = "#f43f5e";
+                    }
+
+                    ov.innerHTML = `
+                        <div class="painel-dialogo-arcade">
+                            <h2 style="color:${corRes};">${resultado}</h2>
+                            <p style="margin:10px 0 14px 0;">
+                                ${nomeJ1} (Azul): <strong>${this.estouradasJ1}</strong> bolhas (${this.vidasJ1} vidas)<br>
+                                Shuiri (Rosa): <strong>${this.estouradasJ2}</strong> bolhas (${this.vidasJ2} vidas)
+                            </p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('duelo')">Jogar Novamente (Duelo)</button>
+                                <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorBolhas.iniciarModo('solo')">Modo Solo (1 Jogador)</button>
+                            </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                        </div>
+                    `;
+                } else {
+                    const moedas = Math.floor(this.estouradasJ1 / 20);
+                    ov.innerHTML = `
+                        <div class="painel-dialogo-arcade">
+                            <h2 style="color:#ef4444;">Fim de Partida!</h2>
+                            <p>5 bolhas escaparam!<br>
+                            Bolhas estouradas: <strong>${this.estouradasJ1}</strong><br>
+                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${moedas} Moedas faturadas!</span></p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')">Jogar Novamente</button>
+                                <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-bottom-color:#9d174d;" onclick="MotorBolhas.iniciarModo('duelo')">👥 Jogar Duelo (2P)</button>
+                                <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-bottom-color:#b45309;" onclick="MotorBolhas.iniciarModo('rush')">⚡ Modo Rush (3 Minutos)</button>
+                            </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                        </div>
+                    `;
+                }
                 ov.style.display = 'flex';
             }
         };
 
         // =========================================================================
-        // 5. JOGO DA VELHA TRADICIONAL (COM RISCO DE CANETA NO CADERNO)
+        // 5. JOGO DA VELHA TRADICIONAL & MULTIJOGADOR
         // =========================================================================
         const MotorVelha = {
+            modo: 'ia',
             tabuleiro: Array(9).fill(''),
             turno: 'X',
             fim: false,
+
+            trocarModo: function(novoModo) {
+                this.modo = novoModo;
+                const tabIA = document.getElementById('tab-velha-ia');
+                const tab2P = document.getElementById('tab-velha-2p');
+                if (novoModo === 'ia') {
+                    tabIA.classList.add('ativo');
+                    tab2P.classList.remove('ativo');
+                } else {
+                    tab2P.classList.add('ativo');
+                    tabIA.classList.remove('ativo');
+                }
+                this.iniciar();
+            },
 
             obterSvgX: function() {
                 return `
@@ -2311,7 +3342,14 @@
                 this.tabuleiro = Array(9).fill('');
                 this.turno = 'X';
                 this.fim = false;
-                document.getElementById('status-velha').textContent = 'Sua vez: Você joga com X (Caneta Azul)';
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+                
+                const statusEl = document.getElementById('status-velha');
+                if (this.modo === '2p') {
+                    statusEl.textContent = `Vez de ${nomeJ1} (X - Caneta Azul)`;
+                } else {
+                    statusEl.textContent = 'Sua vez: Você joga com X (Caneta Azul)';
+                }
                 
                 const linhaVitoria = document.getElementById('linha-vitoria-caneta');
                 if (linhaVitoria) linhaVitoria.style.display = 'none';
@@ -2328,23 +3366,40 @@
             },
 
             jogada: function(i) {
-                if (this.fim || this.tabuleiro[i] !== '' || this.turno !== 'X') return;
-                
-                this.marcar(i, 'X');
-                AudioMotor.tocarSomCaneta(0.12);
-                tentarVibrar(25);
+                if (this.fim || this.tabuleiro[i] !== '') return;
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
 
-                const vitoriaInfo = this.checarVitoria('X');
-                if (vitoriaInfo) return this.vitoria('X', vitoriaInfo);
-                if (this.tabuleiro.every(x => x !== '')) return this.empate();
+                if (this.modo === '2p') {
+                    const jogAtual = this.turno;
+                    this.marcar(i, jogAtual);
+                    AudioMotor.tocarSomCaneta(0.12);
+                    tentarVibrar(25);
 
-                this.turno = 'O';
-                document.getElementById('status-velha').textContent = 'Chuíri a riscar...';
-                setTimeout(() => this.jogadaChuiri(), 420);
+                    const vitoriaInfo = this.checarVitoria(jogAtual);
+                    if (vitoriaInfo) return this.vitoria(jogAtual, vitoriaInfo);
+                    if (this.tabuleiro.every(x => x !== '')) return this.empate();
+
+                    this.turno = this.turno === 'X' ? 'O' : 'X';
+                    const vezNome = this.turno === 'X' ? `${nomeJ1} (X)` : 'Shuiri (O)';
+                    document.getElementById('status-velha').innerHTML = `Vez de <strong>${vezNome}</strong>`;
+                } else {
+                    if (this.turno !== 'X') return;
+                    this.marcar(i, 'X');
+                    AudioMotor.tocarSomCaneta(0.12);
+                    tentarVibrar(25);
+
+                    const vitoriaInfo = this.checarVitoria('X');
+                    if (vitoriaInfo) return this.vitoria('X', vitoriaInfo);
+                    if (this.tabuleiro.every(x => x !== '')) return this.empate();
+
+                    this.turno = 'O';
+                    document.getElementById('status-velha').textContent = 'Chuíri a riscar...';
+                    setTimeout(() => this.jogadaChuiri(), 420);
+                }
             },
 
             jogadaChuiri: function() {
-                if (this.fim) return;
+                if (this.fim || this.modo !== 'ia') return;
                 let escolhida = null;
 
                 for (let item of this.linhasVitoria) {
@@ -2364,7 +3419,7 @@
                 if (escolhida === null && this.tabuleiro[4] === '') escolhida = 4;
                 if (escolhida === null) {
                     const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
-                    if (vazias.length > 0)之旅 = vazias[Math.floor(Math.random() * vazias.length)];
+                    if (vazias.length > 0) escolhida = vazias[Math.floor(Math.random() * vazias.length)];
                 }
 
                 if (escolhida !== null) {
@@ -2429,13 +3484,21 @@
             vitoria: function(p, vInfo) {
                 this.fim = true;
                 this.riscarLinhaVitoria(vInfo);
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
 
-                if (p === 'X') {
-                    document.getElementById('status-velha').innerHTML = '<strong style="color:#10b981;">Trinca de caneta perfeita! +1 Moeda!</strong>';
+                if (this.modo === '2p') {
+                    const vencedor = p === 'X' ? `${nomeJ1} (Azul)` : 'Shuiri (Vermelho)';
+                    document.getElementById('status-velha').innerHTML = `<strong style="color:${p === 'X' ? '#10b981' : '#ef4444'};">🎉 ${vencedor} fechou a trinca!</strong>`;
                     GerenciadorArcade.adicionarMoedas(1);
                     AudioMotor.tocarTom(880, 0.25);
                 } else {
-                    document.getElementById('status-velha').innerHTML = '<strong style="color:#ef4444;">O Chuíri fechou a trinca desta vez!</strong>';
+                    if (p === 'X') {
+                        document.getElementById('status-velha').innerHTML = '<strong style="color:#10b981;">Trinca de caneta perfeita! +1 Moeda!</strong>';
+                        GerenciadorArcade.adicionarMoedas(1);
+                        AudioMotor.tocarTom(880, 0.25);
+                    } else {
+                        document.getElementById('status-velha').innerHTML = '<strong style="color:#ef4444;">O Chuíri fechou a trinca desta vez!</strong>';
+                    }
                 }
             },
 
@@ -2446,26 +3509,89 @@
         };
 
         // =========================================================================
-        // 6. JOGO DA MEMÓRIA 3D
+        // 6. JOGO DA MEMÓRIA 3D (SOLO E 2 JOGADORES POR TURNOS ALTERNADOS)
         // =========================================================================
         const MotorMemoria = {
-            cartas: [], viradas: [], pares: 0,
+            modo: 'solo',
+            cartas: [],
+            viradas: [],
+            pares: 0,
+            paresJ1: 0,
+            paresJ2: 0,
+            turno: 1,
+            bloqueado: false,
+
             simbolos: [
-                { id: 'estrela',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
-                { id: 'coracao',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#ef4444;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-                { id: 'coroa',    svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#d97706;" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>` },
-                { id: 'foguete',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#0284c7;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>` },
-                { id: 'patinha',  svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#10b981;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>` },
-                { id: 'diamante', svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#6366f1;" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>` },
-                { id: 'musica',   svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#a855f7;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
-                { id: 'sol',      svg: `<svg class="icone-svg" style="width:26px;height:26px;color:#f97316;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }
+                { id: 'estrela',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
+                { id: 'coracao',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#ef4444;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+                { id: 'coroa',    svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#d97706;" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>` },
+                { id: 'foguete',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#0284c7;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>` },
+                { id: 'patinha',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#10b981;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>` },
+                { id: 'diamante', svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#6366f1;" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>` },
+                { id: 'musica',   svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#a855f7;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
+                { id: 'sol',      svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#f97316;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }
             ],
+
+            trocarModo: function(novoModo) {
+                this.modo = novoModo;
+                document.getElementById('tab-memoria-solo').classList.toggle('ativo', novoModo === 'solo');
+                document.getElementById('tab-memoria-2p').classList.toggle('ativo', novoModo === '2p');
+
+                if (novoModo === '2p') {
+                    GerenciadorArcade.controlarBarraSuperior(false);
+                    GerenciadorArcade.atualizarNomesJogadores();
+                    document.getElementById('status-memoria-solo').style.display = 'none';
+                    document.getElementById('status-memoria-2p').style.display = 'flex';
+                } else {
+                    GerenciadorArcade.controlarBarraSuperior(true);
+                    document.getElementById('status-memoria-solo').style.display = 'block';
+                    document.getElementById('status-memoria-2p').style.display = 'none';
+                }
+                this.iniciar();
+            },
+
+            atualizarPlacar: function() {
+                if (this.modo === '2p') {
+                    const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+                    const elJ1 = document.getElementById('memoria-placar-j1');
+                    const elJ2 = document.getElementById('memoria-placar-j2');
+                    const elTurno = document.getElementById('memoria-turno-vez');
+
+                    if (elJ1) elJ1.innerHTML = `${nomeJ1} (Azul): <strong>${this.paresJ1}</strong>`;
+                    if (elJ2) elJ2.innerHTML = `Shuiri (Vermelho): <strong>${this.paresJ2}</strong>`;
+
+                    if (elTurno) {
+                        if (this.turno === 1) {
+                            elTurno.textContent = `Vez de ${nomeJ1} (Azul)`;
+                            elTurno.style.background = "#e0f2fe";
+                            elTurno.style.color = "#0284c7";
+                            elTurno.style.borderColor = "#38bdf8";
+                        } else {
+                            elTurno.textContent = "Vez de Shuiri (Vermelho)";
+                            elTurno.style.background = "#fee2e2";
+                            elTurno.style.color = "#dc2626";
+                            elTurno.style.borderColor = "#f87171";
+                        }
+                    }
+                } else {
+                    const elSolo = document.getElementById('status-memoria-solo');
+                    if (elSolo) elSolo.textContent = `Encontre os 8 Pares Mágicos! (${this.pares}/8)`;
+                }
+            },
 
             iniciar: function() {
                 const grade = document.getElementById('grade-memoria-arcade');
+                if (!grade) return;
                 grade.innerHTML = '';
                 this.viradas = [];
                 this.pares = 0;
+                this.paresJ1 = 0;
+                this.paresJ2 = 0;
+                this.turno = 1;
+                this.bloqueado = false;
+                this.fecharModal();
+                this.atualizarPlacar();
+
                 let baralho = [...this.simbolos, ...this.simbolos].sort(() => Math.random() - 0.5);
                 this.cartas = baralho;
 
@@ -2473,14 +3599,14 @@
                     const c = document.createElement('div');
                     c.className = 'carta-arcade';
                     c.id = `carta-memoria-${idx}`;
-                    c.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>';
+                    c.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
                     c.onclick = () => this.virar(idx);
                     grade.appendChild(c);
                 });
             },
 
             virar: function(idx) {
-                if (this.viradas.length >= 2) return;
+                if (this.bloqueado || this.viradas.length >= 2) return;
                 const el = document.getElementById(`carta-memoria-${idx}`);
                 if (!el || el.getAttribute('data-v') === '1') return;
 
@@ -2494,32 +3620,113 @@
                 if (this.viradas.length === 2) {
                     const [c1, c2] = this.viradas;
                     if (c1.id === c2.id) {
-                        this.pares++;
-                        this.viradas = [];
                         AudioMotor.tocarTom(880, 0.18);
-                        if (this.pares === 8) {
-                            setTimeout(() => {
-                                GerenciadorArcade.adicionarMoedas(50);
-                                alert("Parabéns! Encontrou todos os pares e conquistou +50 Moedas!");
-                                GerenciadorArcade.voltarAcao();
-                            }, 350);
+                        tentarVibrar(30);
+
+                        if (this.modo === '2p') {
+                            if (this.turno === 1) this.paresJ1++;
+                            else this.paresJ2++;
+                            this.atualizarPlacar();
+
+                            if (this.paresJ1 + this.paresJ2 === 8) {
+                                setTimeout(() => this.fimDeJogo(), 450);
+                            }
+                        } else {
+                            this.pares++;
+                            this.atualizarPlacar();
+
+                            if (this.pares === 8) {
+                                setTimeout(() => this.fimDeJogo(), 450);
+                            }
                         }
+                        this.viradas = [];
                     } else {
+                        this.bloqueado = true;
                         setTimeout(() => {
                             const e1 = document.getElementById(`carta-memoria-${c1.idx}`);
                             const e2 = document.getElementById(`carta-memoria-${c2.idx}`);
-                            if (e1) { e1.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>'; e1.classList.remove('revelada'); e1.removeAttribute('data-v'); }
-                            if (e2) { e2.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:18px;">?</span>'; e2.classList.remove('revelada'); e2.removeAttribute('data-v'); }
+                            if (e1) {
+                                e1.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
+                                e1.classList.remove('revelada');
+                                e1.removeAttribute('data-v');
+                            }
+                            if (e2) {
+                                e2.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
+                                e2.classList.remove('revelada');
+                                e2.removeAttribute('data-v');
+                            }
+                            if (this.modo === '2p') {
+                                this.turno = this.turno === 1 ? 2 : 1;
+                                this.atualizarPlacar();
+                            }
                             this.viradas = [];
+                            this.bloqueado = false;
                         }, 700);
                     }
                 }
+            },
+
+            fimDeJogo: function() {
+                const ov = document.getElementById('over-memoria');
+                const cont = document.getElementById('dialogo-memoria-conteudo');
+                if (!ov || !cont) return;
+                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+
+                if (this.modo === '2p') {
+                    let resultado = "Empate Perfeito!";
+                    let cor = "#f59e0b";
+                    if (this.paresJ1 > this.paresJ2) {
+                        resultado = `🏆 ${nomeJ1} (Azul) Venceu!`;
+                        cor = "#0284c7";
+                    } else if (this.paresJ2 > this.paresJ1) {
+                        resultado = "🏆 Shuiri (Vermelho) Venceu!";
+                        cor = "#dc2626";
+                    }
+                    GerenciadorArcade.adicionarMoedas(25);
+                    cont.innerHTML = `
+                        <h2 style="color:${cor};">${resultado}</h2>
+                        <p style="margin:10px 0 14px 0; font-size:13.5px; color:#334155; line-height:1.45;">
+                            Placar de Pares:<br>
+                            ${nomeJ1} (Azul): <strong>${this.paresJ1}</strong> pares<br>
+                            Shuiri (Vermelho): <strong>${this.paresJ2}</strong> pares<br>
+                            <span style="color:#b45309; font-weight:900; font-size:13px; margin-top:4px; display:inline-block;">+25 Moedas conquistadas! 🪙</span>
+                        </p>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <button class="btn-acao-jogo" onclick="MotorMemoria.iniciar()">Jogar Outra Partida (2P)</button>
+                            <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorMemoria.trocarModo('solo')">Modo Solo (1 Jogador)</button>
+                        </div>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    `;
+                } else {
+                    GerenciadorArcade.adicionarMoedas(50);
+                    cont.innerHTML = `
+                        <h2 style="color:#10b981;">🎉 Parabéns!</h2>
+                        <p style="margin:10px 0 14px 0; font-size:13.5px; color:#334155; line-height:1.45;">
+                            Incrível! Encontrou todos os 8 pares mágicos!<br>
+                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+50 Moedas conquistadas! 🪙</span>
+                        </p>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <button class="btn-acao-jogo" onclick="MotorMemoria.iniciar()">Jogar Novamente</button>
+                            <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-bottom-color:#075985;" onclick="MotorMemoria.trocarModo('2p')">👥 Duelo (2 Jogadores)</button>
+                        </div>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
+                    `;
+                }
+                ov.style.display = 'flex';
+            },
+
+            fecharModal: function() {
+                const ov = document.getElementById('over-memoria');
+                if (ov) ov.style.display = 'none';
             }
         };
 
-        // INICIALIZAÇÃO DO ESTADO
+        // =========================================================================
+        // INICIALIZAÇÃO DO ESTADO GERAL DO ARCADE
+        // =========================================================================
         window.addEventListener('DOMContentLoaded', () => {
             GerenciadorArcade.atualizarSaldoVisual();
+            GerenciadorArcade.atualizarNomesJogadores();
         });
     </script>
 </body>

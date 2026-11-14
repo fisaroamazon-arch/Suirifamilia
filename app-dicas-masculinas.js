@@ -1,482 +1,1410 @@
 // =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-DICAS-MASCULINAS.JS (PARTE 1 DE 3)
-// Acervo Estratégico: 365 Reflexões Estoicas, 52 Pílulas e Curadoria de Mídia
+// SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
+// Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
+// Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
+// Mini Player Sutil em Song (1 a 10.mp3): Aleatório, Próxima, Pausa & Volume
+// Integrado ao Catálogo de Ícones PNG da Pasta ./icone/ (com love.png no Radar)
+// Curadoria Dinâmica: Sorteio Diário, "Quero Assistir" e 2 Gavetas Retráteis
 // =========================================================================
 
-// 1. REFLEXÕES ESTOICAS DIÁRIAS (LIVRO CAMELOT: JANEIRO A ABRIL - 120 DIAS)
-window.AcervoReflexoesEstoicas365 = [
+// =========================================================================
+// 0. MOTOR DE MÚSICA DE FUNDO DO ESPAÇO MASCULINO (SONG 1 a 10)
+// =========================================================================
+window.PlayerMasc = window.PlayerMasc || {
+    audio: null,
+    totalFaixas: 10,
+    faixaAtual: null,
+    volumeSalvo: parseFloat(localStorage.getItem('suiri_masc_volume') || '0.5'),
+
+    iniciar: function() {
+        if (!this.audio) {
+            this.audio = new Audio();
+            this.audio.volume = this.volumeSalvo;
+            
+            // Quando a faixa atual terminar, sorteia e toca outra automaticamente
+            this.audio.addEventListener('ended', () => {
+                this.tocarAleatoria();
+            });
+
+            // Sincroniza estado visual caso ocorra erro ou pausa
+            this.audio.addEventListener('play', () => this.atualizarInterface());
+            this.audio.addEventListener('pause', () => this.atualizarInterface());
+        }
+
+        if (!this.faixaAtual) {
+            this.tocarAleatoria();
+        } else if (this.audio.paused) {
+            this.audio.play().catch(e => console.warn("Interação necessária para reproduzir áudio:", e));
+        }
+    },
+
+    obterIndiceAleatorio: function() {
+        if (this.totalFaixas <= 1) return 1;
+        let proximo;
+        do {
+            proximo = Math.floor(Math.random() * this.totalFaixas) + 1;
+        } while (proximo === this.faixaAtual);
+        return proximo;
+    },
+
+    tocarAleatoria: function() {
+        this.faixaAtual = this.obterIndiceAleatorio();
+        if (!this.audio) {
+            this.audio = new Audio();
+            this.audio.volume = this.volumeSalvo;
+            this.audio.addEventListener('ended', () => this.tocarAleatoria());
+            this.audio.addEventListener('play', () => this.atualizarInterface());
+            this.audio.addEventListener('pause', () => this.atualizarInterface());
+        }
+
+        this.audio.src = `song/${this.faixaAtual}.mp3`;
+        this.audio.play().then(() => {
+            this.atualizarInterface();
+        }).catch(err => {
+            console.warn("Autoplay bloqueado pelo navegador; aguardando clique:", err);
+            this.atualizarInterface();
+        });
+    },
+
+    alternarPausa: function() {
+        if (!this.audio) {
+            this.iniciar();
+            return;
+        }
+        if (this.audio.paused) {
+            this.audio.play().catch(e => console.warn(e));
+        } else {
+            this.audio.pause();
+        }
+        this.atualizarInterface();
+    },
+
+    proxima: function() {
+        this.tocarAleatoria();
+    },
+
+    definirVolume: function(valor) {
+        const v = parseFloat(valor);
+        this.volumeSalvo = v;
+        localStorage.setItem('suiri_masc_volume', v.toString());
+        if (this.audio) {
+            this.audio.volume = v;
+        }
+    },
+
+    parar: function() {
+        if (this.audio) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.faixaAtual = null;
+        }
+    },
+
+    atualizarInterface: function() {
+        const btnPlay = document.getElementById('btn-player-masc-toggle');
+        const sliderVol = document.getElementById('slider-player-masc-vol');
+        const indicadorFaixa = document.getElementById('player-masc-faixa-lbl');
+
+        if (btnPlay && this.audio) {
+            btnPlay.innerHTML = this.audio.paused ? '▶' : '⏸';
+            btnPlay.title = this.audio.paused ? 'Reproduzir' : 'Pausar';
+        }
+        if (sliderVol) {
+            sliderVol.value = this.volumeSalvo;
+        }
+        if (indicadorFaixa && this.faixaAtual) {
+            indicadorFaixa.textContent = `Faixa ${this.faixaAtual}`;
+        }
+    }
+};
+
+// 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO ANTES DO CATÁLOGO GERAL)
+window.AcervoReflexoesEstoicas365 = window.AcervoReflexoesEstoicas365 || [
     { data: "1 de janeiro", autor: "Epiteto, Encheiridion, 23", texto: "Se você voltar sua atenção para as coisas exteriores, para o prazer de qualquer pessoa, esteja certo de que terá arruinado seu propósito de vida. Contente-se, então, em ser sábio; e se você deseja parecer assim para alguém, pareça assim a você mesmo, e isso lhe bastará." },
     { data: "2 de janeiro", autor: "Marco Aurélio, Meditações, 8, 12", texto: "Quando você hesita em lutar para se levantar, lembre-se de que a socialização está de acordo com a sua constituição e com a natureza humana. O sono também é comum para os seres irracionais." },
-    { data: "3 de janeiro", autor: "Marco Aurélio, Meditações, 6, 22", texto: "Cumpro meu dever e, de resto, não me distraio com nada que careça de vida ou de razão, ou com quem tenha perdido ou ignorado o caminho correto." },
-    { data: "4 de janeiro", autor: "Sêneca, Sobre a Brevidade da Vida, 3", texto: "Busque em sua memória e reflita: quantos roubaram sua vida enquanto você não estava ciente de que a estava perdendo? Perceberá, então, que está morrendo antes do tempo." },
-    { data: "5 de janeiro", autor: "Marco Aurélio, Meditações, 7, 4", texto: "Em uma conversa, devemos dar atenção ao que é dito, assim como refletir sobre o efeito de cada ato. Fique atento às consequências e aos significados das palavras." },
-    { data: "6 de janeiro", autor: "Sêneca, Sobre a Ira, 2, 10", texto: "O sábio não ficará zangado com os pecadores. Ele sabe que ninguém nasce sábio, mas se torna, e conhece perfeitamente as circunstâncias da vida humana." },
-    { data: "7 de janeiro", autor: "Marco Aurélio, Meditações, 9, 9", texto: "Você terá mais sucesso em encontrar algo que pertence à terra isolado da terra, do que um homem isolado de todos os outros homens." },
-    { data: "8 de janeiro", autor: "Sêneca, Epístolas, 16", texto: "A filosofia molda e constrói a alma; ordena a nossa vida, orienta a nossa conduta, mostra-nos o que devemos fazer e o que devemos deixar de fazer." },
-    { data: "9 de janeiro", autor: "Epiteto, Discursos", texto: "Todo grande poder é perigoso para iniciantes. Você deve suportar apenas aquilo de que é capaz, de acordo com a sua própria natureza." },
-    { data: "10 de janeiro", autor: "Sêneca, Sobre a Ira, 3, 27", texto: "Quão melhor é curar uma lesão do que vingá-la? A vingança desperdiça muito tempo e atrai novas feridas enquanto você ainda sofre por uma antiga." },
-    { data: "11 de janeiro", autor: "Marco Aurélio, Meditações, 5, 18", texto: "Coisa alguma acontece a um homem que não seja, por natureza, perfeitamente capaz de suportar." },
-    { data: "12 de janeiro", autor: "Epiteto, Encheiridion, 41", texto: "É sinal de falta de intelecto gastar tempo excessivo com o corpo, comendo ou se exercitando em demasia. Nossa principal força deve ser aplicada à razão." },
-    { data: "13 de janeiro", autor: "Epiteto, Encheiridion, 38", texto: "Da mesma forma que você toma cuidado para não pisar num prego ao caminhar, cuide para não ferir suas faculdades mentais." },
-    { data: "14 de janeiro", autor: "Marco Aurélio, Meditações, 8, 29", texto: "Apague as ideias imaginárias e diga a si mesmo: agora está em meu poder preservar minha alma livre de toda maldade, perturbação e desordem." },
-    { data: "15 de janeiro", autor: "Marco Aurélio, Meditações, 12, 20", texto: "Nunca faça algo por acaso ou sem objetivo claro. E não deixe que esse objetivo seja qualquer coisa senão o bem comum." },
-    { data: "16 de janeiro", autor: "Epiteto, Encheiridion, 23", texto: "Fique em silêncio, ou fale apenas o que for estritamente necessário, e em poucas palavras." },
-    { data: "17 de janeiro", autor: "Epiteto, Encheiridion, 9", texto: "Nunca diga 'eu perdi', mas sim 'eu restituí'. O que foi tirado de você foi apenas devolvido à fonte." },
-    { data: "18 de janeiro", autor: "Marco Aurélio, Meditações, 8, 33", texto: "Receba as dádivas da fortuna sem soberba; e desprenda-se delas sem relutância quando partirem." },
-    { data: "19 de janeiro", autor: "Marco Aurélio, Meditações, 3, 4", texto: "Não desperdice o restante de sua vida pensando na vida alheia, quando isso não for para o bem comum." },
-    { data: "20 de janeiro", autor: "Marco Aurélio, Meditações, 6, 58", texto: "Ninguém pode impedi-lo de viver de acordo com sua natureza racional; nada lhe acontecerá contra o destino do Todo." },
-    { data: "21 de janeiro", autor: "Sêneca, Sobre a Ira, 3, 37", texto: "Evite banquetes com pessoas imprudentes. Aqueles que não são modestos sóbrios tornam-se insuportáveis após o vinho." },
-    { data: "22 de janeiro", autor: "Epiteto, Discursos", texto: "São as dificuldades que mostram quem os homens realmente são. As circunstâncias são o teste do caráter." },
-    { data: "23 de janeiro", autor: "Marco Aurélio, Meditações, 6, 19", texto: "Se você não consegue realizar algo com o próprio esforço, não pense que é impossível ao ser humano." },
-    { data: "24 de janeiro", autor: "Sêneca, Sobre a Ira, 3, 31", texto: "Nenhum homem está satisfeito com a sua sorte se fixa os olhos na do vizinho. Olhe antes para os que estão atrás de você." },
-    { data: "25 de janeiro", autor: "Marco Aurélio, Meditações, 7, 5", texto: "Se o meu conhecimento é suficiente para esta tarefa, executo-a. Se não é, dou lugar a quem seja mais capaz ou peço ajuda sem vergonha." },
-    { data: "26 de janeiro", autor: "Marco Aurélio, Meditações, 5, 23", texto: "A substância do mundo é como um rio fluindo incessantemente; quase nada permanece de pé por muito tempo." },
-    { data: "27 de janeiro", autor: "Marco Aurélio, Meditações, 4, 11", texto: "Não perca tempo considerando as coisas tal como são julgadas pelo homem insolente; veja-as como realmente são." },
-    { data: "28 de janeiro", autor: "Sêneca, Sobre a Ira, 1, 14", texto: "Quando um homem erra o caminho em seus campos, é melhor guiá-lo de volta à estrada do que persegui-lo com violência." },
-    { data: "29 de janeiro", autor: "Sêneca, Sobre a Ira, 1, 20", texto: "Não se assuste com palavras de homens furiosos: quanto mais alto e ameaçador gritam, mais tímida e covarde é a alma que guardam." },
-    { data: "30 de janeiro", autor: "Marco Aurélio, Meditações, 6, 30", texto: "Seja simples, bondoso, digno, justo e constante em seus deveres. A vida é curta e seu único fruto é o caráter reto." },
-    { data: "31 de janeiro", autor: "Marco Aurélio, Meditações, 2, 1", texto: "Diga a si mesmo pela manhã: hoje encontrarei intrometidos, ingratos, invejosos e egoístas. Eles agem assim por desconhecerem o bem e o mal." },
-    { data: "1 de fevereiro", autor: "Crísipo, Vidas Eminentes", texto: "A felicidade perfeita reside em agir em harmonia com a sua própria vocação sob a ordem soberana do Universo." },
-    { data: "2 de fevereiro", autor: "Marco Aurélio, Meditações, 4, 2", texto: "Não deixe que nenhuma ação seja tomada ao acaso, nem de outra forma que não seja guiada pelos princípios da reta razão." },
-    { data: "3 de fevereiro", autor: "Sêneca, Sobre a Ira, 3, 12", texto: "A ira muitas vezes vem até nós, mas muitas vezes corremos atrás dela. Descarte-a logo no primeiro sinal de aproximação." },
-    { data: "4 de fevereiro", autor: "Epiteto, Encheiridion, 17", texto: "Você é um ator numa peça de teatro em que o Diretor escolhe o papel. Sua obrigação é desempenhar o seu papel com maestria." },
-    { data: "5 de fevereiro", autor: "Marco Aurélio, Meditações, 8, 51", texto: "Ao agir, não hesite; durante uma conversa, seja claro; em seus pensamentos, não permita dispersões nem perturbações inúteis." },
-    { data: "6 de fevereiro", autor: "Marco Aurélio, Meditações, 7, 61", texto: "A arte da vida é mais semelhante à do lutador do que à do dançarino: exige firmeza constante contra golpes imprevistos." },
-    { data: "7 de fevereiro", autor: "Marco Aurélio, Meditações, 6, 6", texto: "A melhor e mais nobre vingança contra quem o ofendeu é recusar-se a agir como ele." },
-    { data: "8 de fevereiro", autor: "Sêneca, Sobre a Brevidade da Vida, 1", texto: "A vida não é curta; nós é que a desperdiçamos aos montes em ocupações vazias." },
-    { data: "9 de fevereiro", autor: "Epiteto, Discursos", texto: "Se você fraquejar uma vez e disser 'amanhã vencerei', criará o perigoso hábito de justificar os seus próprios desvios." },
-    { data: "10 de fevereiro", autor: "Zenão de Cítio", texto: "É infinitamente melhor tropeçar nos próprios pés do que tropeçar com a língua." },
-    { data: "11 de fevereiro", autor: "Zenão de Cítio", texto: "Temos dois ouvidos e apenas uma boca exatamente para que possamos escutar o dobro do que falamos." },
-    { data: "12 de fevereiro", autor: "Marco Aurélio, Meditações, 7, 31", texto: "Aprecie a modéstia, a simplicidade e a serenidade. Ame a humanidade e submeta-se às leis naturais do Cosmos." },
-    { data: "13 de fevereiro", autor: "Marco Aurélio, Meditações, 8, 30", texto: "Fale com firmeza e gravidade digna, sem afetação ou elegância exagerada; busque a clareza e a virtude nas palavras." },
-    { data: "14 de fevereiro", autor: "Sêneca, Sobre a Brevidade da Vida, 1", texto: "O tempo dado a nós é amplo para a realização de grandes obras, contanto que seja bem investido desde o início." },
-    { data: "15 de fevereiro", autor: "Epiteto, Encheiridion, 12", texto: "Derrubou o azeite? Diga a si mesmo: este é o preço que pago pela minha paz de espírito. Nada grandioso é obtido de graça." },
-    { data: "16 de fevereiro", autor: "Sêneca, Sobre a Brevidade da Vida, 3", texto: "Você carrega os temores frágeis de um mortal e, ao mesmo tempo, os desejos sem fim pertencentes aos imortais." },
-    { data: "17 de fevereiro", autor: "Sêneca, Sobre a Brevidade da Vida, 3", texto: "Muitos dizem: aos cinquenta descansarei. Que garantia você tem de que o destino lhe concederá mais tempo?" },
-    { data: "18 de fevereiro", autor: "Marco Aurélio, Meditações, 12, 27", texto: "Onde estão hoje os homens que foram o centro de glórias e guerras violentas? Fumaça, cinzas e uma memória que desvanece." },
-    { data: "19 de fevereiro", autor: "Heráclito", texto: "A opinião precipitada e não examinada é uma verdadeira cegueira da mente humana." },
-    { data: "20 de fevereiro", autor: "Sêneca, Epístolas, 16", texto: "Não precisamos clamar aos céus como se a divindade estivesse distante: ela habita a sua própria consciência." },
-    { data: "21 de fevereiro", autor: "Sêneca, Sobre a Ira, 3, 36", texto: "O espírito deve ser chamado a prestar contas diariamente: que vício venci hoje? Que falha contive?" },
-    { data: "22 de fevereiro", autor: "Epiteto, Encheiridion, 50", texto: "Cumpra os seus preceitos como leis invioláveis; não se importe com as fofocas alheias, pois elas não lhe dizem respeito." },
-    { data: "23 de fevereiro", autor: "Epiteto, Encheiridion, 50", texto: "Sócrates aperfeiçoou-se guiando-se estritamente pela razão. Mesmo que você não seja Sócrates, deve viver como quem deseja sê-lo." },
-    { data: "24 de fevereiro", autor: "Marco Aurélio, Meditações, 7, 69", texto: "A perfeição do caráter consiste em viver cada dia como se fosse o último: sem histeria, sem desleixo e sem falsidade." },
-    { data: "25 de fevereiro", autor: "Marco Aurélio, Meditações, 8, 51", texto: "Se alguém jogar lama numa fonte pura, a água não para de jorrar límpida. Seja essa fonte inesgotável de retidão." },
-    { data: "26 de fevereiro", autor: "Sêneca, Sobre a Brevidade da Vida, 6", texto: "Mesmo que sua existência durasse mil anos, ela seria reduzida a um sopro caso você a entregasse aos vícios." },
-    { data: "27 de fevereiro", autor: "Marco Aurélio, Meditações, 8, 53", texto: "Você quer ser elogiado por quem amaldiçoa a si mesmo a cada instante? Como deseja agradar a quem vive descontente consigo?" },
-    { data: "28 de fevereiro", autor: "Sêneca, Epístolas, 16", texto: "Os desejos naturais encontram limites claros; aqueles nascidos da vaidade e das falsas opiniões são infinitos e insaciáveis." },
-    { data: "1 de março", autor: "Marco Aurélio, Meditações, 6, 37", texto: "Aquele que viu o presente, viu tudo aquilo que já existiu desde a eternidade, pois todas as coisas são semelhantes em essência." },
-    { data: "2 de março", autor: "Epiteto, Encheiridion, 33", texto: "Se souber que falaram mal de você, responda: ele ignorava os meus outros defeitos, senão não teria citado apenas estes." },
-    { data: "3 de março", autor: "Marco Aurélio, Meditações, 8, 1", texto: "A felicidade não reside em riquezas ou fama, mas em agir conforme a natureza humana requer: sendo justo, sóbrio e livre." },
-    { data: "4 de março", autor: "Marco Aurélio, Meditações, 4, 48", texto: "Passe o seu tempo em acordo com a Natureza, e parta contente como a azeitona madura que abençoa a árvore que a gerou." },
-    { data: "5 de março", autor: "Diógenes Laércio, 6, 2", texto: "Muitos oradores são ansiosos em discursar sobre a justiça, mas lentos e frouxos na hora de praticá-la." },
-    { data: "6 de março", autor: "Marco Aurélio, Meditações, 4, 3", texto: "Em nenhum lugar o homem encontra refúgio mais calmo do que dentro de sua própria alma. Recorra a este retiro com frequência." },
-    { data: "7 de março", autor: "Marco Aurélio, Meditações, 5, 32", texto: "A alma sábia conhece o começo e o fim de tudo e compreende a razão que rege o Cosmos por todos os ciclos." },
-    { data: "8 de março", autor: "Sêneca, Sobre a Brevidade da Vida, 2", texto: "A vida, se você souber como utilizá-la e honrá-la, é longa e generosa." },
-    { data: "9 de março", autor: "Marco Aurélio, Meditações, 9, 13", texto: "Hoje expulsei de mim todas as perturbações. Elas não estavam do lado de fora, mas dentro, nos meus próprios julgamentos." },
-    { data: "10 de março", autor: "Marco Aurélio, Meditações, 6, 53", texto: "Acostume-se a escutar com atenção o que os outros dizem e entre na mente de quem está falando." },
-    { data: "11 de março", autor: "Epiteto, Encheiridion, 30", texto: "Seu irmão foi injusto? Considere não o que ele faz, mas o que você deve fazer para preservar a sua própria retidão." },
-    { data: "12 de março", autor: "Epiteto, Encheiridion, 1", texto: "Se você tomar como seu apenas aquilo que lhe pertence de fato, ninguém jamais poderá forçá-lo ou restringi-lo." },
-    { data: "13 de março", autor: "Sêneca, Epístolas, 9", texto: "A dedicação ao trabalho digno traz satisfação profunda; a mente humana encontra nobreza no dever cumprido." },
-    { data: "14 de março", autor: "Marco Aurélio, Meditações, 6, 7", texto: "Encontre seu prazer em passar de uma ação de bem comum para outra, mantendo sempre a mente serena." },
-    { data: "15 de março", autor: "Zenão de Cítio", texto: "De todas as faltas humanas, a vaidade vazia é a mais imprópria, especialmente na juventude." },
-    { data: "16 de março", autor: "Marco Aurélio, Meditações, 11, 37", texto: "Contenha seus impulsos passionais; mantenha reserva digna e não perca a paz com o que foge ao seu controle." },
-    { data: "17 de março", autor: "Heráclito", texto: "Muito saber superficial não instrui a mente; a verdadeira sabedoria é compreender a razão que governa o todo." },
-    { data: "18 de março", autor: "Marco Aurélio, Meditações, 6, 39", texto: "Adapte-se às circunstâncias que o destino lhe deu e ame com afeto sincero aqueles com quem convive." },
-    { data: "19 de março", autor: "Sêneca, Sobre a Ira, 3, 31", texto: "Você erra ao manter suas contas morais: atribui valor excessivo ao que dá e desmerece ingratamente o que recebe." },
-    { data: "20 de março", autor: "Marco Aurélio, Meditações, 6, 43", texto: "O sol realiza o seu papel; a chuva realiza o seu. Todas as coisas no Cosmos cooperam para um fim comum." },
-    { data: "21 de março", autor: "Marco Aurélio, Meditações, 5, 16", texto: "Onde quer que um homem viva, ele tem o poder de viver com dignidade e retidão de caráter." },
-    { data: "22 de março", autor: "Marco Aurélio, Meditações, 6, 31", texto: "Recupere os seus sentidos, sacuda o sono: saiba que as angústias do passado foram apenas um pesadelo fugaz." },
-    { data: "23 de março", autor: "Marco Aurélio, Meditações, 4, 31", texto: "Ame o ofício que aprendeu, por mais humilde que seja, e passe o resto dos seus dias sem ser tirano nem escravo de ninguém." },
-    { data: "24 de março", autor: "Epiteto, Encheiridion, 1", texto: "Se deseja alcançar grandes virtudes, renuncie às ambições secundárias que dispersam sua energia mental." },
-    { data: "25 de março", autor: "Epiteto, Discursos", texto: "Elimine o desejo cego por coisas externas e transfira a sua atenção apenas para aquilo que depende da sua vontade." },
-    { data: "26 de março", autor: "Marco Aurélio, Meditações, 7, 2", texto: "O que é externo à mente nada pode contra ela sem o seu consentimento. Entenda isso e você estará inabalável." },
-    { data: "27 de março", autor: "Marco Aurélio, Meditações, 5, 34", texto: "A felicidade real está em manter a mente e a conduta inclinadas à justiça diária." },
-    { data: "28 de março", autor: "Marco Aurélio, Meditações, 4, 7", texto: "Elimine o sentimento de 'fui lesado', e a sensação de dano desaparecerá junto com ele." },
-    { data: "29 de março", autor: "Epiteto, Discursos", texto: "Só há um caminho para a paz de espírito: não atribuir valor excessivo ao que depende da sorte e não de você." },
-    { data: "30 de março", autor: "Sêneca, Sobre a Ira, 1, 16", texto: "A raiva é um vício da alma; não se corrige um erro cometendo outro desatino impulsivo." },
-    { data: "31 de março", autor: "Marco Aurélio, Meditações, 8, 32", texto: "Construa a sua vida ação por ação; se cada uma cumprir o seu dever honesto, dê-se por satisfeito." },
-    { data: "1 de abril", autor: "Sêneca, Epístolas, 3", texto: "Se você chama de amigo alguém em quem não confia como a si mesmo, desconhece o que é lealdade." },
-    { data: "2 de abril", autor: "Epiteto, Discursos", texto: "Se quer tornar algo um hábito, pratique-o repetidamente. Se não quer, afaste-se e pratique o oposto." },
-    { data: "3 de abril", autor: "Marco Aurélio, Meditações, 7, 38", texto: "A cólera é cega para a realidade; ela queima por dentro aquele que a acolhe no peito." },
-    { data: "4 de abril", autor: "Sêneca, Sobre a Ira, 1, 3", texto: "Ficamos irados com facilidade por antecipações imaginárias. Tenha a certeza de que a pressa alimenta o engano." },
-    { data: "5 de abril", autor: "Marco Aurélio, Meditações, 6, 26", texto: "Cada dever na vida é composto de partes pequenas. Execute cada uma com calma e sem rancor." },
-    { data: "6 de abril", autor: "Marco Aurélio, Meditações, 12, 33", texto: "Como está o seu guia interior hoje? Tudo depende dele; o resto são apenas sombras passageiras." },
-    { data: "7 de abril", autor: "Marco Aurélio, Meditações, 3, 9", texto: "Honre a faculdade de formar opiniões racionais. É ela que impede julgamentos precipitados e tolos." },
-    { data: "8 de abril", autor: "Marco Aurélio, Meditações, 4, 43", texto: "O tempo é uma torrente veloz de acontecimentos: assim que um surge, logo é arrastado para dar lugar a outro." },
-    { data: "9 de abril", autor: "Epiteto, Discursos", texto: "Onde reside o bem? Na sua vontade reta. Onde reside o mal? Na sua escolha errada. Nas coisas externas, não há nenhum dos dois." },
-    { data: "10 de abril", autor: "Sêneca, Sobre a Ira, 2, 6", texto: "Alegrar-se com o dever cumprido é próprio da virtude; a raiva sempre termina em amargura e remorso." },
-    { data: "11 de abril", autor: "Sêneca, Epístolas, 3", texto: "Pense bastante antes de aceitar um homem como amigo; mas após aceitá-lo, entregue-lhe a sua confiança." },
-    { data: "12 de abril", autor: "Marco Aurélio, Meditações, 2, 14", texto: "Mesmo que vivesse dez mil anos, lembre-se: ninguém perde outra vida além daquela que vive no instante presente." },
-    { data: "13 de abril", autor: "Marco Aurélio, Meditações, 11, 15", texto: "Não há nada mais vil do que o falso companheiro; o homem genuinamente bom carrega a franqueza no olhar." },
-    { data: "14 de abril", autor: "Marco Aurélio, Meditações, 2, 9", texto: "Lembre-se sempre de quem você é e de que ninguém pode impedi-lo de agir conforme a razão." },
-    { data: "15 de abril", autor: "Marco Aurélio, Meditações, 2, 17", texto: "A vida do corpo é um rio que corre; o que nos guia com firmeza em meio à correnteza é a Filosofia." },
-    { data: "16 de abril", autor: "Marco Aurélio, Meditações, 3, 1", texto: "A cada dia que passa, gasta-se uma parte da vida e resta-nos menos tempo para praticar o bem." },
-    { data: "17 de abril", autor: "Sêneca, Sobre a Ira, 1, 7", texto: "É infinitamente mais fácil conter os impulsos passionais no início do que domá-los quando já ganharam força." },
-    { data: "18 de abril", autor: "Marco Aurélio, Meditações, 6, 20", texto: "No ginásio do mundo, muitos nos arranham ou nos empurram. Desvie com elegância e continue a sua jornada." },
-    { data: "19 de abril", autor: "Epiteto, Encheiridion, 35", texto: "Quando decidir agir pelo que é justo, não tema a incompreensão de quem observa com ignorância." },
-    { data: "20 de abril", autor: "Marco Aurélio, Meditações, 12, 19", texto: "Existe dentro de você algo superior aos meros impulsos de prazer e dor. Não seja marionete dos sentidos." },
-    { data: "21 de abril", autor: "Sêneca, Epístolas, 3", texto: "Alguns julgam depois de confiar; o homem sábio avalia o caráter antes para poder confiar de coração aberto." },
-    { data: "22 de abril", autor: "Epiteto, Discursos", texto: "Você é um homem: possui a faculdade da vontade livre. Não se rebaixe à escravidão dos vícios." },
-    { data: "23 de abril", autor: "Marco Aurélio, Meditações, 9, 40", texto: "Em vez de rezar para obter aquilo que cobiça, reze para não ser escravo de tal cobiça." },
-    { data: "24 de abril", autor: "Sêneca, Sobre a Ira, 1, 12", texto: "Não se cura a alma apelando para o veneno das paixões descontroladas; a razão é o único remédio seguro." },
-    { data: "25 de abril", autor: "Epiteto, Encheiridion, 10", texto: "Diante de cada desafio, volte-se para dentro: na tentação use o autocontrole; na dor, a coragem; na ofensa, a paciência." },
-    { data: "26 de abril", autor: "Sêneca, Sobre a Ira, 2, 6", texto: "A satisfação de uma atitude nobre e honrada é duradoura; a cólera contra o erro alheio é mesquinha." },
-    { data: "27 de abril", autor: "Marco Aurélio, Meditações, 2, 6", texto: "A vida de todo homem é curta; não dependa da aprovação alheia para construir a sua paz interior." },
-    { data: "28 de abril", autor: "Sêneca, Epístolas, 35", texto: "A verdadeira amizade busca o aperfeiçoamento mútuo através de virtudes sólidas e respeito sincero." },
-    { data: "29 de abril", autor: "Marco Aurélio, Meditações, 4, 22", texto: "Não se desvie do rumo: em cada impulso faça justiça ao que é devido e compreenda a verdade." },
-    { data: "30 de abril", autor: "Epiteto, Discursos", texto: "Não fique paralisado em lamentações inúteis; use as próprias mãos que a vida lhe deu para trabalhar." }
+    { data: "3 de janeiro", autor: "Marco Aurélio, Meditações, 6, 22", texto: "Cumpro meu dever e, de resto, não me distraio com nada que careça de vida ou de razão, ou com quem tenha perdido ou ignorado o caminho correto." }
 ];
 
-// 2. AS 52 PÍLULAS SEMANAIS DE CONVIVÊNCIA & DINÂMICA A DOIS
-window.AcervoDinamicaADois = [
-    "Semana 01 | Comunicação: Falar sobre suas pressões e planos não é fraqueza. A sua parceira é aliada de trincheira, não plateia.",
-    "Semana 02 | Testosterona: O estresse crônico (cortisol) destrói o vigor masculino. Feche a porta mental do trabalho antes de entrar em casa.",
-    "Semana 03 | Convivência: O suporte proativo na rotina da casa — resolver sem que ela precise pedir — comunica respeito profundo.",
-    "Semana 04 | Presença: Mulheres valorizam presença genuína. Ao sentar para conversar ou jantar, guarde o celular e esteja 100% lá.",
-    "Semana 05 | Saúde Sexual: A intimidade feminina não é um interruptor; ela é construída no clima, na leveza e no afeto acumulado no dia.",
-    "Semana 06 | Comunicação: Durante uma discordância, nunca ataque a pessoa; ataque o problema juntos. O objetivo é a paz do lar.",
-    "Semana 07 | Testosterona: Treinos regulares de força estimulam a produção hormonal, refletindo diretamente na postura e vitalidade.",
-    "Semana 08 | Convivência: Elogie em público e converse em particular. Reconhecer o valor dela perante os outros gera segurança sólida.",
-    "Semana 09 | Presença: Aprenda a ouvir sem a pressa compulsiva de dar conselhos técnicos imediatos. Muitas vezes ela só quer desabafar.",
-    "Semana 10 | Saúde Sexual: Atração mútua pede cuidado pessoal. Continuar treinando, perfumado e alinhado mantém o magnetismo vivo.",
-    "Semana 11 | Comunicação: Elimine o sarcasmo corrosivo. Ironias repetidas corroem a intimidade e fecham os canais de confiança.",
-    "Semana 12 | Testosterona: O sono profundo e escuro de 7 a 8 horas é a oficina de reparo hormonal do corpo masculino.",
-    "Semana 13 | Convivência: Protejam um dia no mês para saírem a sós sem falar de boletos ou filhos. Mantenham o espírito de namoro.",
-    "Semana 14 | Presença: Toques de carinho gratuitos (um abraço demorado, a mão nas costas) constroem segurança emocional no casal.",
-    "Semana 15 | Saúde Sexual: Conversem abertamente sobre o que agrada e o que pode melhorar no quarto com serenidade e respeito.",
-    "Semana 16 | Comunicação: Não guarde mágoas pequenas para explodir depois. O que não é conversado na hora acumula juros altos.",
-    "Semana 17 | Testosterona: Luz solar pela manhã e alimentação limpa sem açúcares refinados equilibram o sistema vascular e hormonal.",
-    "Semana 18 | Convivência: Dividir a carga mental da casa — lembrar de contas e vacinas — tira o fardo solitário dos ombros dela.",
-    "Semana 19 | Presença: Pergunte genuinamente sobre como foi o dia dela e escute as respostas com os olhos atentos.",
-    "Semana 20 | Saúde Sexual: O cansaço extremo da rotina é o maior inimigo da cama. Auxilie nas tarefas para que sobre disposição a dois.",
-    "Semana 21 | Comunicação: Troque a postura defensiva pela maturidade. Assumir um erro com firmeza e corrigir desarma desavenças.",
-    "Semana 22 | Testosterona: Bebidas alcoólicas frequentes aumentam a gordura visceral e sabotam o foco e o tônus muscular.",
-    "Semana 23 | Convivência: Agradeça pelos pequenos detalhes do dia: uma refeição preparada, uma roupa arrumada, o café servido.",
-    "Semana 24 | Presença: Cuidado com o vício no feed de redes sociais. Estar ao lado sem prestar atenção passa a mensagem de abandono.",
-    "Semana 25 | Saúde Sexual: A postura de proteção e serenidade que você transmite no dia a dia relaxa o corpo dela para a entrega.",
-    "Semana 26 | Comunicação: Não discuta temas sérios tarde da noite ou de barriga vazia. Espere o descanso para conversar com lucidez.",
-    "Semana 27 | Testosterona: Gordura visceral comprime a circulação. Manter o peso equilibrado preserva a potência e o fôlego.",
-    "Semana 28 | Convivência: A lealdade primária do homem é com seu próprio núcleo familiar; blinde sua casa contra interferências externas.",
-    "Semana 29 | Presença: Seja um pai participativo e exemplar. Mulheres admiram homens que assumem a liderança e o carinho com os filhos.",
-    "Semana 30 | Saúde Sexual: Fuja de estímulos visuais artificiais na internet. Eles desensibilizam o cérebro e roubam o encanto do real.",
-    "Semana 31 | Comunicação: Atente para o tom da sua voz. Muitas vezes não é o que você fala, mas a rispidez como fala que magoa.",
-    "Semana 32 | Testosterona: Metas físicas concluídas e desafios superados renovam a dopamina e mantêm o homem vibrante.",
-    "Semana 33 | Convivência: Um mimo inesperado numa quarta-feira comum tem mais impacto que um presente caro em data protocolar.",
-    "Semana 34 | Presença: Silêncios confortáveis juntos lendo ou descansando sem a obrigação de preencher cada segundo comunicam paz.",
-    "Semana 35 | Saúde Sexual: Conheça as variações hormonais do ciclo dela para ser mais compreensivo nos momentos de sensibilidade.",
-    "Semana 36 | Comunicação: Valide as preocupações da sua companheira dizendo 'entendo porque isso te incomoda'. Isso gera alívio imediato.",
-    "Semana 37 | Testosterona: Beba água fresca logo ao acordar para desintoxicar os rins e ativar o fluxo cardiovascular matinal.",
-    "Semana 38 | Convivência: Construam tradições simples só de vocês dois: um café na padaria ao sábado ou uma caminhada dominical.",
-    "Semana 39 | Presença: Faça contato visual sincero enquanto ela fala. Olhar nos olhos ancora a presença no momento.",
-    "Semana 40 | Saúde Sexual: A conexão após o momento íntimo consolida o vínculo neuroquímico de apego e segurança do casal.",
-    "Semana 41 | Comunicação: Peça desculpas limpas sem emendar desculpas ou justificativas. 'Errei e vou ajustar' demonstra honra.",
-    "Semana 42 | Testosterona: Ter um tempo sozinho de descompressão ('tempo na caverna') recarrega a paciência e a estabilidade emocional.",
-    "Semana 43 | Convivência: Trate das finanças com clareza e metas comuns. A transparência de gastos afasta desconfianças.",
-    "Semana 44 | Presença: Note e elogie as pequenas mudanças nela: um corte de cabelo, um vestido novo ou a leveza no sorriso.",
-    "Semana 45 | Saúde Sexual: Trate a intimidade física como termômetro da união emocional, dedicando carinho e tempo sem pressa.",
-    "Semana 46 | Comunicação: Diga em palavras diretas que a ama e admira. Não tome como óbvio o que seu coração sente.",
-    "Semana 47 | Testosterona: Faça check-ups médicos regulares. Cuidar dos índices de glicemia e lipídios preserva a longevidade.",
-    "Semana 48 | Convivência: Ria das imperfeições e imprevistos diários. O bom humor masculino é o melhor amortecedor do lar.",
-    "Semana 49 | Presença: Incentive os projetos e conquistas dela. Ver a parceira crescer amplia a harmonia da casa.",
-    "Semana 50 | Saúde Sexual: Elimine expectativas de performance; o foco da cama deve ser conexão, carinho e relaxamento mútuo.",
-    "Semana 51 | Comunicação: Alinhem os planos e prioridades da família com diálogo limpo e renovação de compromissos.",
-    "Semana 52 | Liderança: O pilar de um lar forte é a certeza inabalável de que, diante de qualquer tempestade, vocês caminham juntos."
+window.AcervoDinamicaADois = window.AcervoDinamicaADois || [
+    "❤️ Comunicação: Falar com clareza sobre o que sente ou precisa não é fraqueza. A sua parceira é aliada, não plateia.",
+    "🔋 Testosterona & Libido: O estresse crônico destrói o vigor masculino. Aprenda a fechar o ciclo de trabalho e desligar a mente.",
+    "❤️ Convivência: Surpreenda na rotina doméstica. O suporte proativo na casa comunica respeito e parceria muito além das palavras.",
+    "🔋 Vitalidade: O sono profundo e contínuo é o maior regulador hormonal do homem. Proteja o seu horário de deitar.",
+    "❤️ Presença: Esteja por inteiro quando estiver em família. Largue o telemóvel nos momentos de conversa e descanso a dois."
 ];
 
-// 3. CURADORIA DE FILMES E SÉRIES
-window.CatalogoFilmesMasculinos = [
-    { id: "f1", titulo: "Gladiador", ano: "2000", categoria: "Honra & Liderança", desc: "Força e honra: o general que se tornou escravo, gladiador e enfrentou um império corrupto." },
-    { id: "f2", titulo: "Um Sonho de Liberdade", ano: "1994", categoria: "Paciência & Resiliência", desc: "A paciência calculada e a esperança inabalável trabalhando em silêncio contra a opressão." },
-    { id: "f3", titulo: "À Procura da Felicidade", ano: "2006", categoria: "Superação & Família", desc: "A dignidade inegociável de um pai que não aceita ser derrotado pela miséria extrema." },
-    { id: "f4", titulo: "Ford vs Ferrari", ano: "2019", categoria: "Foco & Obsessão Técnica", desc: "A busca cirúrgica pelos 7.000 RPM da perfeição mecânica contra as pressões corporativas." },
-    { id: "f5", titulo: "Até o Último Homem", ano: "2016", categoria: "Bravura & Princípios", desc: "A integridade moral de servir e salvar irmãos de trincheira na linha de tiro sem pegar numa arma." },
-    { id: "f6", titulo: "Coach Carter", ano: "2005", categoria: "Caráter & Disciplina", desc: "A disciplina em quadra só tem valor real se construir homens íntegros e responsáveis fora dela." },
-    { id: "f7", titulo: "O Resgate do Soldado Ryan", ano: "1998", categoria: "Dever & Liderança", desc: "O peso de comandar homens em combate e a frase que ecoa para a vida: 'Faça por merecer isso'." },
-    { id: "f8", titulo: "Coração Valente", ano: "1995", categoria: "Liberdade & Coragem", desc: "A defesa intransigente da terra e da dignidade do seu povo acima de qualquer conforto terreno." },
-    { id: "f9", titulo: "300", ano: "2006", categoria: "Doutrina & Fraternidade", desc: "A doutrina espartana de escudo ao lado de escudo, onde a força do grupo reside na honra individual." },
-    { id: "f10", titulo: "Cinderella Man", ano: "2005", categoria: "Resistência & Provedor", desc: "A luta de Jim Braddock nos ringues pela sobrevivência e dignidade da sua esposa e filhos." },
-    { id: "f11", titulo: "Rocky: Um Lutador", ano: "1976", categoria: "Persistência", desc: "A vitória não está em bater forte, mas em aguentar os golpes da vida e continuar caminhando." },
-    { id: "f12", titulo: "O Homem Que Mudou o Jogo", ano: "2011", categoria: "Estratégia & Dados", desc: "Desafiar tradições ultrapassadas e vencer o sistema com frieza analítica e disciplina." },
-    { id: "f13", titulo: "Whiplash", ano: "2014", categoria: "Maestria & Obsessão", desc: "O custo implacável da busca pela excelência absoluta e o perigo do esgotamento." },
-    { id: "f14", titulo: "Gattaca", ano: "1997", categoria: "Força de Vontade", desc: "Não guardar nada para a volta: superar os limites genéticos com determinação implacável." },
-    { id: "f15", titulo: "Gran Torino", ano: "2008", categoria: "Mentoria & Honra", desc: "O veterano que ensina masculinidade, trabalho braçal e respeito ao jovem vizinho desorientado." },
-    { id: "f16", titulo: "Apollo 13", ano: "1995", categoria: "Resolução de Crises", desc: "'O fracasso não é uma opção': calma metódica para salvar a equipe sob risco mortal." },
-    { id: "f17", titulo: "O Náufrago", ano: "2000", categoria: "Sobrevivência", desc: "Solidão, foco mental e a virtude de continuar respirando a cada dia porque a maré pode mudar." },
-    { id: "f18", titulo: "Invictus", ano: "2009", categoria: "Liderança de Nações", desc: "O perdão pragmático e o uso do esporte para curar feridas profundas e unir um povo." },
-    { id: "f19", titulo: "Interestelar", ano: "2014", categoria: "Sacrifício & Amor Paterno", desc: "A coragem de cruzar o desconhecido movido pelo dever de salvar o futuro da família." },
-    { id: "f20", titulo: "Perdido em Marte", ano: "2015", categoria: "Engenho & Ciência", desc: "Resolver um problema após o outro com lógica e bom humor sem se entregar ao desespero." }
+window.AcervoArsenalPratico = [
+    "💪 Calistenia: Ao executar flexões de braço, mantenha os cotovelos a 45º do tronco para proteger os ombros e focar no peitoral.",
+    "🥩 Nutrição: Garanta uma fonte limpa de proteína em todas as refeições. Ela constrói massa muscular e mantém a saciedade alta.",
+    "💪 Calistenia: Na barra fixa, complete o movimento até o peito encostar na linha e estenda quase todo o braço na descida.",
+    "💧 Hidratação: Comece a manhã com 500 ml de água antes do primeiro café. Isso reidrata o cérebro e ativa o metabolismo.",
+    "🥩 Nutrição: Evite calorias vazias em bebidas açucaradas ao longo do dia. A constância de energia vem de comida de verdade."
 ];
 
-window.CatalogoSeriesMasculinas = [
-    { id: "s1", titulo: "Band of Brothers", temporadas: "1 Temporada", categoria: "Irmandade & Guerra", desc: "A mais perfeita representação de liderança sob fogo real, sacrifício mútuo e companheirismo." },
-    { id: "s2", titulo: "Peaky Blinders", temporadas: "6 Temporadas", categoria: "Frieza & Estratégia", desc: "Visão estratégica antecipada, postura calma sob ameaças e blindagem da família." },
-    { id: "s3", titulo: "Suits", temporadas: "9 Temporadas", categoria: "Negociação & Postura", desc: "Segurança postural, oratória firme, lealdade aos parceiros e domínio sob pressão." },
-    { id: "s4", titulo: "The Bear (O Urso)", temporadas: "3 Temporadas", categoria: "Padrões & Liderança", desc: "A busca implacável por elevar a régua profissional em meio ao caos da rotina." },
-    { id: "s5", titulo: "Yellowstone", temporadas: "5 Temporadas", categoria: "Proteção do Lar", desc: "A defesa intransigente da terra e dos valores tradicionais contra a invasão corporativa." },
-    { id: "s6", titulo: "Cobra Kai", temporadas: "6 Temporadas", categoria: "Redenção Marcial", desc: "Retomar a disciplina corporal e orientar jovens que precisam de limites e autoconfiança." },
-    { id: "s7", titulo: "O Último Reino", temporadas: "5 Temporadas", categoria: "Honra & Destino", desc: "'O destino é tudo': honrar a palavra empenhada num mundo em guerra e transformações." },
-    { id: "s8", titulo: "Chernobyl", temporadas: "1 Temporada", categoria: "Verdade & Sacrifício", desc: "O custo da mentira institucional e o sacrifício sereno de homens comuns para salvar milhões." },
-    { id: "s9", titulo: "Reacher", temporadas: "2 Temporadas", categoria: "Justiça & Foco", desc: "A calma imponente de quem domina o próprio corpo e mente e não tolera injustiças." },
-    { id: "s10", titulo: "Arremesso Final (The Last Dance)", temporadas: "1 Temporada", categoria: "Mentalidade Campeã", desc: "A mentalidade competitiva incansável e a liderança exigente de Michael Jordan." }
+// Catálogo Base de Recomendações de Mídia
+window.CatalogoFilmesMasculinos = window.CatalogoFilmesMasculinos || [
+    { id: "f1", titulo: "Gladiador", ano: "2000", categoria: "Honra e Liderança", desc: "Força e honra: o general que se tornou escravo e desafiou um império." },
+    { id: "f2", titulo: "Um Sonho de Liberdade", ano: "1994", categoria: "Resiliência e Paciência", desc: "A paciência metódica e a esperança inabalável contra o confinamento." },
+    { id: "f3", titulo: "À Procura da Felicidade", ano: "2006", categoria: "Família e Superação", desc: "A luta inegociável de um pai que se recusa a ser derrotado pela miséria." },
+    { id: "f4", titulo: "Ford vs Ferrari", ano: "2019", categoria: "Foco e Engenharia", desc: "Obsessão por perfeição técnica e a coragem de romper barreiras na pista." },
+    { id: "f5", titulo: "Até o Último Homem", ano: "2016", categoria: "Convicção e Bravura", desc: "A integridade moral de servir e salvar vidas na linha de tiro sem tocar numa arma." },
+    { id: "f6", titulo: "Coach Carter", ano: "2005", categoria: "Disciplina e Caráter", desc: "A disciplina dentro da quadra só tem valor se construir homens íntegros fora dela." },
+    { id: "f7", titulo: "O Resgate do Soldado Ryan", ano: "1998", categoria: "Dever & Sacrifício", desc: "A irmandade incondicional sob a brutalidade do combate e o cumprimento do dever militar." },
+    { id: "f8", titulo: "Clube da Luta", ano: "1999", categoria: "Mentalidade & Caos", desc: "Uma provocação crua sobre o vazio moderno, desapego material e reconstrução pessoal." },
+    { id: "f9", titulo: "Invictus", ano: "2009", categoria: "Perdão & Liderança", desc: "O poder do esporte e da liderança magnânima para unir uma nação dividida." },
+    { id: "f10", titulo: "Cinderella Man", ano: "2005", categoria: "Superação Familiar", desc: "O pugilista que luta cada round pela sobrevivência e dignidade da sua esposa e filhos." }
 ];
+
+window.CatalogoSeriesMasculinas = window.CatalogoSeriesMasculinas || [
+    { id: "s1", titulo: "Band of Brothers", temporadas: "1 Temporada", categoria: "Irmandade e Guerra", desc: "A mais pura representação de liderança sob fogo cruzado e lealdade extrema." },
+    { id: "s2", titulo: "Peaky Blinders", temporadas: "6 Temporadas", categoria: "Estratégia e Frieza", desc: "Visão estratégica, postura calma em momentos críticos e fidelidade à família." },
+    { id: "s3", titulo: "Suits", temporadas: "9 Temporadas", categoria: "Oratória e Negociação", desc: "Postura executiva, domínio sob pressão e resolução inteligente de crises." },
+    { id: "s4", titulo: "The Bear (O Urso)", temporadas: "3 Temporadas", categoria: "Maestria e Foco", desc: "A busca implacável por elevar padrões em meio ao caos e superação pessoal." },
+    { id: "s5", titulo: "Yellowstone", temporadas: "5 Temporadas", categoria: "Lealdade e Defesa", desc: "A proteção intransigente da terra e dos valores da família contra invasões externas." },
+    { id: "s6", titulo: "Vikings", temporadas: "6 Temporadas", categoria: "Ambição & Exploração", desc: "A sede por desbravar novos horizontes, liderar guerreiros e desafiar o destino." },
+    { id: "s7", titulo: "Mad Men", temporadas: "7 Temporadas", categoria: "Negócios & Identidade", desc: "Os bastidores do mundo corporativo, oratória persuasiva e os dilemas da alma masculina." }
+];
+
+// 2. PERSISTÊNCIA E CHAVES DINÂMICAS POR UTILIZADOR
+window.obterIdUsuarioMasc = function() {
+    return window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || 'padrao');
+};
+
+window.obterChaveStorageMasc = function(sufixo) {
+    return `suiri_masc_${sufixo}_${window.obterIdUsuarioMasc()}`;
+};
+
+// 6 Missões Padrão da Forja (Editáveis)
+window.missoesPadraoForja = [
+    { id: "m1", rotulo: "Acordar Cedo" },
+    { id: "m2", rotulo: "Banho Frio" },
+    { id: "m3", rotulo: "Alongamento" },
+    { id: "m4", rotulo: "Treino / Calistenia" },
+    { id: "m5", rotulo: "Sem Açúcar / Dieta Limpa" },
+    { id: "m6", rotulo: "Leitura / Estudo Estoico" }
+];
+
+// Carregamento de dados com chaves seguras
+window.configMissoesForja = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('config_missoes'))) || window.missoesPadraoForja;
+window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('forja_diaria'))) || {};
+window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
+window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
+window.dadosMidiaAssistida = JSON.parse(localStorage.getItem('suiri_midia_assistida')) || [];
+window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
+window.dadosManutencaoGaragem = JSON.parse(localStorage.getItem('suiri_manutencao_masc')) || [];
+window.dadosAcervoLazer = JSON.parse(localStorage.getItem('suiri_lazer_masc')) || [];
+
+window.reflexaoEstoicaExibidaAtual = null;
+window.indiceMidiaAtual = { filmes: 0, series: 0 };
+window.abaMidiaAtiva = 'filmes';
+
 // =========================================================================
-// PARTE 2 DE 3: REFLEXÕES ESTOICAS DE MAIO A AGOSTO (123 DIAS REAIS)
+// 3. ABERTURA E CONTROLO DE NAVEGAÇÃO
 // =========================================================================
 
-if (Array.isArray(window.AcervoReflexoesEstoicas365)) {
-    window.AcervoReflexoesEstoicas365.push(
-        { data: "1 de maio", autor: "Epiteto, Discursos", texto: "É ridículo dizer: 'diga-me o que fazer'. Molde a mente de modo que ela se adapte com serenidade a qualquer coisa que venha a acontecer." },
-        { data: "2 de maio", autor: "Marco Aurélio, Meditações, 11, 9", texto: "Aqueles que se opõem ao caminho da razão não têm poder real para impedi-lo; persista com firmeza na ação e com mansidão para com os que o perturbam." },
-        { data: "3 de maio", autor: "Marco Aurélio, Meditações, 5, 6", texto: "O homem nobre, quando faz o bem ao próximo, não se gaba com alarde; é como a videira que dá o seu fruto na estação própria e repete o feito sem pedir aplausos." },
-        { data: "4 de maio", autor: "Marco Aurélio, Meditações, 5, 1", texto: "De manhã, ao hesitar em se levantar, lembre-se: estou acordando para fazer o trabalho digno de um homem, aquilo para o qual vim ao mundo." },
-        { data: "5 de maio", autor: "Epiteto, Encheiridion, 33", texto: "Evite fazer juramentos vazios ou desnecessários; que a sua palavra seja suficiente e fale por si só." },
-        { data: "6 de maio", autor: "Sêneca, Sobre a Ira, 1, 8", texto: "O melhor plano é rejeitar de imediato os primeiros estímulos da raiva; uma vez admitida na mente, a paixão toma as rédeas e despreza a razão." },
-        { data: "7 de maio", autor: "Sêneca, Sobre a Brevidade da Vida, 8", texto: "A vida corre silenciosa como começou; em lugar algum ela se desviará e em nenhum momento ela se prolongará por apelos ou ordens humanas." },
-        { data: "8 de maio", autor: "Marco Aurélio, Meditações, 4, 15", texto: "Muitos grãos de incenso são postos sobre o mesmo altar; um cai nas chamas antes, outro cai depois. Não há diferença essencial." },
-        { data: "9 de maio", autor: "Sêneca, Sobre a Ira, 1, 11", texto: "Para que recorrer à cegueira da raiva quando o mesmo objetivo pode ser alcançado com muito mais precisão pela reta razão?" },
-        { data: "10 de maio", autor: "Marco Aurélio, Meditações, 7, 7", texto: "Não se envergonhe de receber ajuda quando necessário. Cumpra o seu dever como o soldado que precisa do apoio do companheiro para escalar a muralha." },
-        { data: "11 de maio", autor: "Marco Aurélio, Meditações, 12, 22", texto: "Tudo é uma questão de julgamento; suprima a opinião precipitada e você encontrará de imediato um mar de quietude sem tempestades." },
-        { data: "12 de maio", autor: "Epiteto, Encheiridion, 1", texto: "Algumas coisas estão em nosso poder e outras não. Em nosso poder residem as escolhas, os desejos e as recusas; fora dele, todo o resto." },
-        { data: "13 de maio", autor: "Sêneca, Sobre a Ira, 1, 12", texto: "O homem virtuoso cumpre seu dever sem covardia e sem histeria; ele age com firmeza sem praticar nada que seja indigno de sua honra." },
-        { data: "14 de maio", autor: "Epiteto, Encheiridion, 5", texto: "Não são os fatos que perturbam os homens, mas sim a visão e a interpretação que eles constroem sobre esses acontecimentos." },
-        { data: "15 de maio", autor: "Marco Aurélio, Meditações, 5, 16", texto: "A alma é tingida permanentemente com a cor dos pensamentos que você nutre com mais frequência na mente." },
-        { data: "16 de maio", autor: "Sêneca, Sobre a Ira, 3, 10", texto: "Conheça o seu próprio ponto fraco para poder guardá-lo; quem compreende a própria fragilidade antecipa e neutraliza as ofensas." },
-        { data: "17 de maio", autor: "Sêneca, Sobre a Brevidade da Vida, 18", texto: "Depois de dedicar tanto tempo à vida pública e às obrigações alheias, reserve com urgência uma parte honesta dos seus dias para a sua própria mente." },
-        { data: "18 de maio", autor: "Marco Aurélio, Meditações, 7, 11", texto: "Para um ser dotado de inteligência, agir conforme a natureza cósmica significa agir estritamente conforme a razão." },
-        { data: "19 de maio", autor: "Sêneca, Sobre a Ira, 1, 8", texto: "A mente não observa a cólera de longe: ela se transforma na própria fúria se abrir a porta para o descontrole." },
-        { data: "20 de maio", autor: "Marco Aurélio, Meditações, 3, 7", texto: "Nunca estime nada que o obrigue a quebrar a sua palavra, abandonar a honra ou odiar qualquer irmão humano." },
-        { data: "21 de maio", autor: "Epiteto, Encheiridion, 33", texto: "Se for ao encontro de alguém influente, suporte as demoras e os acasos com dignidade; não se deixe desorientar por convenções passageiras." },
-        { data: "22 de maio", autor: "Marco Aurélio, Meditações, 7, 26", texto: "Quando alguém o ofender, examine que ideia de bem e mal o moveu. Ao compreender o engano dele, você sentirá compaixão em vez de fúria." },
-        { data: "23 de maio", autor: "Marco Aurélio, Meditações, 2, 14", texto: "A duração da vida é irrelevante no momento da passagem: o presente é igual para todos, e perde-se apenas o instante fugaz do agora." },
-        { data: "24 de maio", autor: "Marco Aurélio, Meditações, 6, 49", texto: "Assim como você não se entristece pelo tamanho físico do seu corpo, não se lamente pelo limite de anos que o destino lhe reservou." },
-        { data: "25 de maio", autor: "Marco Aurélio, Meditações, 6, 24", texto: "Alexandre, o Grande, e o seu tratador de cavalos tiveram o mesmo fim na morte: retornaram ambos aos elementos fundamentais da terra." },
-        { data: "26 de maio", autor: "Epiteto, Discursos", texto: "O que torna um homem verdadeiramente livre? Não é a fortuna nem a posição de mando, mas o pleno domínio sobre a sua própria vontade." },
-        { data: "27 de maio", autor: "Marco Aurélio, Meditações, 1, 7", texto: "Aprendi com Rústico a reconciliar-me de pronto com quem me desagradou, a ler com atenção profunda e a fugir de falatórios superficiais." },
-        { data: "28 de maio", autor: "Diógenes Laércio, 6, 2", texto: "Os escravos servem aos seus senhores por imposição física; os homens tolos são servos voluntários de suas paixões desordenadas." },
-        { data: "29 de maio", autor: "Marco Aurélio, Meditações, 5, 24", texto: "Tenha em mente a imensidão do Universo no qual a sua parte é diminuta, e a vastidão do tempo onde a sua vida é apenas um segundo." },
-        { data: "30 de maio", autor: "Zenão de Cítio", texto: "A virtude é construída passo a passo, em pequenas ações diárias; mas a virtude em si é uma conquista imensa." },
-        { data: "31 de maio", autor: "Sêneca, Sobre a Ira, 1, 18", texto: "A razão examina com calma e busca a justiça; a cólera tem pressa cega e prefere perseverar no erro a admitir que se precipitou." },
-        { data: "1 de junho", autor: "Marco Aurélio, Meditações, 7, 50", texto: "Tudo o que brotou da terra retorna ao pó; mas aquilo que procede da centelha divina retorna à sua origem celestial." },
-        { data: "2 de junho", autor: "Epiteto, Encheiridion, 1", texto: "Diga a toda impressão aflitiva: você é apenas uma representação passageira, não a realidade dos fatos. Se não depende de mim, não me atinge." },
-        { data: "3 de junho", autor: "Sêneca, Sobre a Ira, 3, 35", texto: "Você se revolta com uma resposta áspera no lar e reclama da falta de liberdade, esquecendo que destrói a paz na sua própria casa." },
-        { data: "4 de junho", autor: "Epiteto, Encheiridion, 3", texto: "Diante daquilo que lhe traz afeto, lembre-se da natureza mortal de tudo. Aprecie as pessoas queridas sabendo que o adeus faz parte da vida." },
-        { data: "5 de junho", autor: "Marco Aurélio, Meditações, 8, 43", texto: "O meu prazer reside em manter a consciência limpa, sem aversão a homem algum e olhando para todos os fatos com olhar benevolente." },
-        { data: "6 de junho", autor: "Sêneca, Sobre a Ira, 1, 7", texto: "A razão só comanda se estiver pura e isolada; se permitir que os apetites passem à sua frente, perderá o controle da carruagem." },
-        { data: "7 de junho", autor: "Marco Aurélio, Meditações, 3, 14", texto: "Pare de divagar pelo passado ou com leituras que nunca fará na velhice; corra em direção ao seu propósito enquanto tem fôlego." },
-        { data: "8 de junho", autor: "Sêneca, Epístolas, 35", texto: "Avance na sua jornada e seja coerente consigo mesmo; examine se hoje você deseja os mesmos valores corretos que defendia ontem." },
-        { data: "9 de junho", autor: "Sêneca, Sobre a Brevidade da Vida, 20", texto: "Vergonhoso é aquele que desaba exausto no meio de seus deveres, vencido não pelo trabalho árduo, mas pelo desregramento da rotina." },
-        { data: "10 de junho", autor: "Marco Aurélio, Meditações, 9, 37", texto: "Basta de queixas e lamentos. Olhe para a causa do que o aflige com frieza: ou você pode resolver com a razão, ou deve aceitar com honra." },
-        { data: "11 de junho", autor: "Marco Aurélio, Meditações, 5, 17", texto: "Correr atrás do impossível é tolice; mas é igualmente tolo esperar que homens corruptos não ajam de maneira corrompida." },
-        { data: "12 de junho", autor: "Sêneca, Sobre a Ira, 3, 31", texto: "A avidez humana é ingrata: por mais que receba bênçãos da vida, considera-se lesada se outros receberem mais." },
-        { data: "13 de junho", autor: "Epiteto, Encheiridion, 13", texto: "Porte-se na existência como em um banquete: o prato passou diante de si? Desfrute com moderação. Ainda não chegou? Espere sem agonia." },
-        { data: "14 de junho", autor: "Epiteto, Encheiridion, 37", texto: "Se você tentar representar um papel acima de suas forças atuais, além de falhar nele, negligenciará o papel digno que poderia exercer com brilho." },
-        { data: "15 de junho", autor: "Sêneca, Sobre a Ira, 1, 19", texto: "A arrogância detesta a verdade quando esta contraria seus desejos; ela ataca com alvoroço para mascarar a falta de argumentos." },
-        { data: "16 de junho", autor: "Marco Aurélio, Meditações, 8, 58", texto: "Temer a morte é temer a ausência de sensações ou o início de outra condição. Em qualquer hipótese, não há razão para pavor moral." },
-        { data: "17 de junho", autor: "Marco Aurélio, Meditações, 12, 29", texto: "A segurança real é discernir a essência de tudo, agir com justiça de coração e dizer a verdade sem meias palavras." },
-        { data: "18 de junho", autor: "Sêneca, Sobre a Brevidade da Vida, 16", texto: "Quem esquece o passado, desperdiça o presente e teme o futuro vive dias angustiados e percebe tarde demais que trabalhou em vão." },
-        { data: "19 de junho", autor: "Sêneca, Epístolas, 3", texto: "Alguns ensinam o parceiro a mentir por suspeitarem de tudo; na presença de um amigo verdadeiro, você deve poder falar como se estivesse sozinho." },
-        { data: "20 de junho", autor: "Marco Aurélio, Meditações, 3, 15", texto: "Muitos usam as palavras comprar, descansar e vigiar no sentido raso; exige-se uma visão interior aguçada para enxergar o valor de cada ato." },
-        { data: "21 de junho", autor: "Sêneca, Sobre a Ira, 3, 26", texto: "Você diz que não tolera ofensas, mas suporta de bom grado a fúria que destrói a sua saúde e a sua dignidade. Onde está o discernimento?" },
-        { data: "22 de junho", autor: "Marco Aurélio, Meditações, 7, 25", texto: "A Natureza renova continuamente a face da terra; da matéria das coisas antigas ela forja novas vidas para manter o mundo jovem." },
-        { data: "23 de junho", autor: "Marco Aurélio, Meditações, 5, 35", texto: "Se a falha não partiu de mim e a honra da comunidade não foi ferida, por que permito que isso tire o meu sono?" },
-        { data: "24 de junho", autor: "Epiteto, Encheiridion, 9", texto: "A dor é um obstáculo para a perna, mas não para a vontade reta; entenda que os acasos atingem o corpo, mas não vergam a mente sábia." },
-        { data: "25 de junho", autor: "Marco Aurélio, Meditações, 12, 1", texto: "Tudo o que você sonha alcançar adiante já está ao seu alcance hoje, desde que não atropele a retidão do momento presente." },
-        { data: "26 de junho", autor: "Marco Aurélio, Meditações, 6, 38", texto: "Todas as forças do Cosmos estão entrelaçadas numa harmonia silenciosa; uma coisa segue a outra conforme as leis universais." },
-        { data: "27 de junho", autor: "Marco Aurélio, Meditações, 5, 9", texto: "O prazer passageiro seduz os sentidos; mas a serenidade, a honestidade e a coragem moral oferecem uma satisfação incomparavelmente maior." },
-        { data: "28 de junho", autor: "Sêneca, Sobre a Ira, 3, 32", texto: "Evite conflitos tolos com naturezas distintas: com alguns sinta vergonha de brigar, com outros perceba que o silêncio é a melhor barreira." },
-        { data: "29 de junho", autor: "Sêneca, Sobre a Ira, 3, 16", texto: "A ira destrói em primeiro lugar aquele que se torna escravo de suas exigências; mantenha-a longe de sua mente como uma praga." },
-        { data: "30 de junho", autor: "Marco Aurélio, Meditações, 5, 28", texto: "Zangar-se com quem erra por ignorância não tem utilidade; use a sua própria inteligência para esclarecer a dele com paciência." },
-        { data: "1 de julho", autor: "Sêneca, Sobre a Brevidade da Vida, 17", texto: "Tudo o que chega por pura sorte é instável e escorre pelos dedos; miserável é a existência de quem sua para conquistar o que não consegue manter." },
-        { data: "2 de julho", autor: "Marco Aurélio, Meditações, 6, 51", texto: "O tolo põe a sua alegria nos aplausos de fora; o homem lúcido encontra contentamento no dever cumprido com as próprias mãos." },
-        { data: "3 de julho", autor: "Epiteto, Encheiridion, 18", texto: "Nenhum sinal exterior traz desgraça para a sua essência moral. Aconteça o que acontecer, cabe a você converter o fato em oportunidade." },
-        { data: "4 de julho", autor: "Sêneca, Sobre a Ira, 1, 5", texto: "A humanidade foi gerada para o auxílio mútuo e a construção; a fúria foi feita para a demolição e o isolamento." },
-        { data: "5 de julho", autor: "Sêneca, Sobre a Ira, 3, 10", texto: "Assim como as nuvens escuras anunciam a tempestade, o corpo dá sinais claros antes da explosão da raiva; reconheça-os e freie a tempo." },
-        { data: "6 de julho", autor: "Marco Aurélio, Meditações, 5, 9", texto: "Retorne à filosofia não como quem teme um carrasco, mas como quem busca o bálsamo curativo para os olhos cansados das ilusões do mundo." },
-        { data: "7 de julho", autor: "Marco Aurélio, Meditações, 9, 22", texto: "Lembre-se: aquele que o ofendeu é feito da mesma carne e compartilha a mesma centelha humana; ajude-o a ver o erro sem guardar ódio." },
-        { data: "8 de julho", autor: "Sêneca, Sobre a Brevidade da Vida, 17", texto: "A prosperidade desmedida exige vigilância constante; para proteger conquistas frágeis, o homem vive em perpétua ansiedade." },
-        { data: "9 de julho", autor: "Sêneca, Sobre a Brevidade da Vida, 19", texto: "Triste é a sorte de quem regula o sono e as escolhas pelas ordens de outrem, abdicando da coisa mais livre do mundo: a própria mente." },
-        { data: "10 de julho", autor: "Epiteto, Encheiridion, 21", texto: "Mantenha a lembrança da finitude diante dos olhos todos os dias; agindo assim, você nunca terá pensamentos vis nem desejará futilidades." },
-        { data: "11 de julho", autor: "Epiteto, Encheiridion, 29", texto: "Antes de iniciar uma grande empreitada, meça as etapas e os custos necessários; não comece com euforia tola para depois desistir com vergonha." },
-        { data: "12 de julho", autor: "Marco Aurélio, Meditações, 3, 5", texto: "Cumpra sua tarefa sem afetação, sem falar demais e com autonomia; um homem deve ficar em pé pelas próprias pernas, não escorado nos outros." },
-        { data: "13 de julho", autor: "Sêneca, Epístolas, 86", texto: "Um baú de ouro só tem o valor daquilo que guarda em seu interior; o homem vale exatamente pelo que cultiva na alma, não pelo que ostenta." },
-        { data: "14 de julho", autor: "Epiteto, Encheiridion, 33", texto: "Evite distrações fúteis e conversas vulgares; se o ambiente for corrompido, mesmo a mente mais limpa corre o risco de absorver a poeira." },
-        { data: "15 de julho", autor: "Epiteto, Encheiridion, 27", texto: "Assim como ninguém ergue um alvo para que os arqueiros errem, a Natureza não colocou o mal como um princípio orientador do Universo." },
-        { data: "16 de julho", autor: "Marco Aurélio, Meditações, 4, 35", texto: "Tudo na terra é breve: tanto a memória de quem viveu quanto a boca daqueles que tentam recordá-lo no futuro." },
-        { data: "17 de julho", autor: "Marco Aurélio, Meditações, 5, 20", texto: "O intelecto transforma o obstáculo em combustível; o que barrava a ação converte-se no próprio caminho para o progresso moral." },
-        { data: "18 de julho", autor: "Marco Aurélio, Meditações, 4, 47", texto: "Se soubesse que morreria amanhã ou daqui a trinta anos, a diferença seria insignificante perante a eternidade. Foque no agora." },
-        { data: "19 de julho", autor: "Diógenes Laércio, 6, 2", texto: "Quem proclama belos discursos de virtude mas vive na lama das atitudes não passa de um instrumento desafinado tocando notas falsas." },
-        { data: "20 de julho", autor: "Epiteto, Encheiridion, 33", texto: "Ao comparecer perante homens de grande poder, pergunte-se como Sócrates ou Zenão se portariam: com postura ereta e calma inabalável." },
-        { data: "21 de julho", autor: "Sêneca, Sobre a Ira, 3, 11", texto: "Quer evitar a cólera? Não seja curioso com mexericos. Quem procura saber tudo o que dizem pelas costas destrói o próprio sossego." },
-        { data: "22 de julho", autor: "Marco Aurélio, Meditações, 4, 13", texto: "Você foi agraciado com a razão e a consciência. Por que então não as coloca no comando soberano de todas as suas escolhas?" },
-        { data: "23 de julho", autor: "Sêneca, Epístolas, 86", texto: "Onde reside o bem genuíno? Na alma honesta e limpa. E onde a mente é dominada por mesquinharias, não há espaço para a dignidade." },
-        { data: "24 de julho", autor: "Marco Aurélio, Meditações, 4, 41", texto: "Epiteto costumava lembrar: você é uma alma nobre carregando uma armadura mortal de carne e osso." },
-        { data: "25 de julho", autor: "Sêneca, Sobre a Ira, 3, 11", texto: "Aquele que desenterra intrigas e quer saber segredos alheios trabalha como o coveiro de sua própria estabilidade emocional." },
-        { data: "26 de julho", autor: "Marco Aurélio, Meditações, 8, 59", texto: "Os seres humanos nasceram para conviver e se apoiar mutuamente; instrua-os com paciência ou aprenda a conviver com as suas limitações." },
-        { data: "27 de julho", autor: "Marco Aurélio, Meditações, 9, 11", texto: "Ensine o caminho reto a quem errou se puder; se não puder, exerça a virtude da benevolência e siga o seu dever em silêncio." },
-        { data: "28 de julho", autor: "Sêneca, Sobre a Ira, 3, 36", texto: "A fúria recua quando você lembra que ao final do dia terá que prestar contas a si mesmo diante do espelho da sua consciência." },
-        { data: "29 de julho", autor: "Sêneca, Epístolas, 9", texto: "O sábio basta a si mesmo para ser feliz e completo; ele necessita de ferramentas para viver, mas de virtude para triunfar." },
-        { data: "30 de julho", autor: "Marco Aurélio, Meditações, 4, 3", texto: "O mundo é uma dança perpétua de mutações; a sua vida é aquilo que os seus pensamentos decidem edificar a cada instante." },
-        { data: "31 de julho", autor: "Epiteto, Discursos", texto: "O que torna um homem atraente e forte? Não são as roupas ou adornos, mas a posse da retidão, do equilíbrio e da calma nos olhos." },
-        { data: "1 de agosto", autor: "Marco Aurélio, Meditações, 4, 42", texto: "Não há mal no movimento natural das transformações; nada no universo se mantém saudável na estagnação perpétua." },
-{ data: "2 de agosto", autor: "Sêneca, Epístolas, 35", texto: "A comunhão com quem compartilha os mesmos ideais de conduta é um bálsamo revigorante para o espírito de um homem." },
-        { data: "3 de agosto", autor: "Marco Aurélio, Meditações, 6, 52", texto: "Você tem o soberano poder de não emitir julgamento sobre o que ocorre fora de você; as coisas materiais não têm voz na sua alma." },
-        { data: "4 de agosto", autor: "Epiteto, Discursos", texto: "Não apenas o apego ao dinheiro escraviza o homem, mas também o apego ao conforto e à tranquilidade forçada; tudo o que o prende rouba sua liberdade." },
-        { data: "5 de agosto", autor: "Marco Aurélio, Meditações, 7, 43", texto: "Não se junte a lamentações públicas histéricas; conserve a clareza e evite ser arrastado pelas paixões da multidão." },
-        { data: "6 de agosto", autor: "Epiteto, Discursos", texto: "As coisas dividem-se em boas, más e indiferentes: o bem é a virtude; o mal é o vício; riqueza, fama e dor física são neutras." },
-        { data: "7 de agosto", autor: "Marco Aurélio, Meditações, 2, 11", texto: "Execute cada ato, profira cada palavra e formule cada pensamento como se este fosse o último momento concedido a você na terra." },
-        { data: "8 de agosto", autor: "Marco Aurélio, Meditações, 5, 12", texto: "Muitos acumulam tantas posses e fardos materiais que não lhes sobra sequer um canto de paz para descansar a própria cabeça." },
-        { data: "9 de agosto", autor: "Sêneca, Epístolas, 35", texto: "A mente que oscila ao sabor das opiniões de terceiros navega sem rumo; a alma equilibrada finca âncora firme na própria honra." },
-        { data: "10 de agosto", autor: "Epiteto, Discursos", texto: "Abandone a presunção tola: é rigorosamente impossível a um homem aprender aquilo que ele arrogantemente acredita que já sabe." },
-        { data: "11 de agosto", autor: "Marco Aurélio, Meditações, 2, 4", texto: "Lembre-se de sua longa procrastinação: o tempo que lhe foi concedido tem um limite exato; use-o para a clareza interior ou ele findará." },
-        { data: "12 de agosto", autor: "Sêneca, Sobre a Brevidade da Vida, 8", texto: "Enquanto você se ocupa com superficialidades, o tempo avança veloz e a passagem da vida se impõe sem pedir licença." },
-        { data: "13 de agosto", autor: "Sêneca, Sobre a Brevidade da Vida, 15", texto: "A vida do filósofo é ampla porque ele aproveita o presente, recorda com gratidão o passado e antecipa o futuro com bravura." },
-        { data: "14 de agosto", autor: "Marco Aurélio, Meditações, 8, 22", texto: "Você sofre merecidamente quando prefere ser uma boa pessoa amanhã a tomar a atitude honrada e corajosa no dia de hoje." },
-        { data: "15 de agosto", autor: "Marco Aurélio, Meditações, 5, 36", texto: "A verdadeira boa fortuna reside em conquistar para si mesmo um estado de espírito nobre, impulsos limpos e ações retas." },
-        { data: "16 de agosto", autor: "Marco Aurélio, Meditações, 12, 15", texto: "Se a chama da lâmpada ilumina com vigor até se apagar, por que deixaria a justiça e a sobriedade se apagarem antes de sua morte?" },
-        { data: "17 de agosto", autor: "Zenão de Cítio", texto: "Podem acorrentar o meu corpo e controlar os meus passos, mas a minha mente permanece livre e inexpugnável." },
-        { data: "18 de agosto", autor: "Sêneca, Sobre a Ira, 3, 42", texto: "Não busque amenizar a raiva com meias medidas: arranque-a pelas raízes antes que ela escravize os seus julgamentos." },
-        { data: "19 de agosto", autor: "Marco Aurélio, Meditações, 4, 51", texto: "Siga sempre pelo caminho reto da Natureza: fale e aja sem artifícios, poupando-se de discussões estéreis e ostentações vazias." },
-        { data: "20 de agosto", autor: "Sêneca, Sobre a Brevidade da Vida, 9", texto: "O maior desperdício de tempo é o adiamento perpétuo: ele rouba o dia presente prometendo uma vida melhor num futuro incerto." },
-        { data: "21 de agosto", autor: "Marco Aurélio, Meditações, 6, 21", texto: "Se alguém me provar que estou errado em algum pensamento ou conduta, mudarei com alegria. A verdade nunca feriu ninguém." },
-        { data: "22 de agosto", autor: "Epiteto, Discursos", texto: "Você pode atar correntes aos meus pés, mas a minha vontade soberana nem mesmo os deuses podem dobrar sem o meu consentimento." },
-        { data: "23 de agosto", autor: "Epiteto, Discursos", texto: "A lei fundamental da existência diz: se deseja algo genuinamente bom e honrado, receba-o do seu próprio esforço interior." },
-        { data: "24 de agosto", autor: "Marco Aurélio, Meditações, 7, 21", texto: "Em breve você terá esquecido o mundo, e em breve o mundo terá esquecido quem você foi. Cuide do que é essencial agora." },
-        { data: "25 de agosto", autor: "Epiteto, Discursos", texto: "Filosofar não é memorizar frases, mas testar e confirmar os princípios na prática do cotidiano como um homem firme." },
-        { data: "26 de agosto", autor: "Marco Aurélio, Meditações, 11, 1", texto: "A alma lúcida atinge o seu objetivo em qualquer instante da vida; ela colhe o fruto do bem viver a cada ação honrada realizada." },
-        { data: "27 de agosto", autor: "Marco Aurélio, Meditações, 12, 3", texto: "Você é composto de corpo, respiração e intelecto. Cuide com desvelo dos dois primeiros, mas lembre-se que o terceiro é o único que é seu." },
-        { data: "28 de agosto", autor: "Epiteto, Encheiridion, 26", texto: "Quando a xícara do vizinho quebra, você diz que são acasos da vida. Porte-se com a mesma sobriedade serena quando o infortúnio bater à sua porta." },
-        { data: "29 de agosto", autor: "Sêneca, Sobre a Ira, 1, 21", texto: "Não há nada de grandioso na fúria espalhafatosa; o homem verdadeiramente forte demonstra sua firmeza na calma silenciosa." },
-        { data: "30 de agosto", autor: "Marco Aurélio, Meditações, 8, 21", texto: "Olhe para a fragilidade deste corpo de dentro para fora: ele envelhece e decai. Busque a grandeza naquilo que não enferruja: o caráter." },
-        { data: "31 de agosto", autor: "Epiteto, Discursos", texto: "Se um vício ou mau hábito o incomoda, combata-o de frente exercitando diariamente o hábito virtuoso exatamente contrário." }
+window.abrirEspacoMasculino = async function() {
+    const secoes = document.querySelectorAll('.secao-conteudo-app');
+    secoes.forEach(sec => sec.classList.add('oculto'));
+
+    const telaAlvo = document.getElementById('secao-espaco-masculino');
+    if (telaAlvo) {
+        telaAlvo.classList.remove('oculto');
+    }
+
+    document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('ativo'));
+
+    try {
+        window.configMissoesForja = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('config_missoes'))) || window.missoesPadraoForja;
+        window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('forja_diaria'))) || {};
+        window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
+        window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
+        window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
+    } catch (e) {}
+
+    window.renderizarEsqueletoEspacoMasculino();
+    window.renderizarReflexaoEstoica(false);
+    window.renderizarListaFavoritasEstoicas();
+    window.renderizarBotoesForja();
+    window.renderizarHistoricoForja();
+    window.renderizarHistoricoRadarIntimo();
+    window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
+    window.renderizarHistoricoAssistidos();
+    window.renderizarListasMasculinas();
+
+    // Inicia a reprodução aleatória do player
+    if (window.PlayerMasc && typeof window.PlayerMasc.iniciar === 'function') {
+        window.PlayerMasc.iniciar();
+    }
+
+    if (typeof window.carregarDadosNuvemEspacoMasculino === 'function') {
+        try {
+            await window.carregarDadosNuvemEspacoMasculino();
+        } catch (e) {
+            console.warn("Base local ativa para o Espaço Masculino.");
+        }
+    }
+};
+
+window.fecharEspacoMasculino = function() {
+    if (window.PlayerMasc && typeof window.PlayerMasc.parar === 'function') {
+        window.PlayerMasc.parar();
+    }
+    window.location.href = 'index.html';
+};
+
+// =========================================================================
+// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL (TEMA FORJA ROMANA / BRASAS & AÇO)
+// =========================================================================
+
+window.renderizarEsqueletoEspacoMasculino = function() {
+    const container = document.getElementById('secao-espaco-masculino');
+    if (!container) return;
+
+    const agora = new Date();
+    const diaDoAno = Math.floor((agora - new Date(agora.getFullYear(), 0, 0)) / 86400000);
+    const inicioAno = new Date(agora.getFullYear(), 0, 1);
+    const semanaDoAno = Math.floor((((agora - inicioAno) / 86400000) + inicioAno.getDay() + 1) / 7);
+
+    const pilulaSemanal = window.AcervoDinamicaADois[semanaDoAno % window.AcervoDinamicaADois.length];
+    const sabedoriaArsenal = window.AcervoArsenalPratico[diaDoAno % window.AcervoArsenalPratico.length];
+
+    container.innerHTML = `
+        <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR E MINI PLAYER SUTIL NO TOPO DIREITO -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">
+            <button type="button" onclick="window.fecharEspacoMasculino()" 
+                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
+                <span style="font-size:14px; line-height:1; color:#f97316;">←</span>
+                <span>Voltar ao Lar</span>
+            </button>
+
+            <!-- MINI PLAYER DE ÁUDIO SUTIL (SONG 1 A 10) -->
+            <div id="mini-player-espaco-masc" style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:rgba(15, 23, 42, 0.85); border:1.5px solid #334155; border-radius:18px; box-shadow:0 3px 12px rgba(0,0,0,0.4); backdrop-filter:blur(8px);">
+                <span id="player-masc-faixa-lbl" style="font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:0.3px; white-space:nowrap;">Música</span>
+                
+                <!-- Botão Pausa / Play -->
+                <button type="button" id="btn-player-masc-toggle" onclick="window.PlayerMasc.alternarPausa()" 
+                        style="background:#1e293b; border:1px solid #475569; color:#f8fafc; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; padding:0;" title="Pausar / Reproduzir">
+                    ⏸
+                </button>
+
+                <!-- Botão Próxima Faixa -->
+                <button type="button" id="btn-player-masc-next" onclick="window.PlayerMasc.proxima()" 
+                        style="background:#1e293b; border:1px solid #475569; color:#f8fafc; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; padding:0;" title="Próxima Música">
+                    ⏭
+                </button>
+
+                <!-- Controle de Volume Deslizante Sutil -->
+                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:2px;">
+                    <span style="font-size:11px; line-height:1; color:#94a3b8;">🔊</span>
+                    <input type="range" id="slider-player-masc-vol" min="0" max="1" step="0.05" value="${window.PlayerMasc.volumeSalvo}" 
+                           oninput="window.PlayerMasc.definirVolume(this.value)" 
+                           style="width:48px; accent-color:#f97316; cursor:pointer; height:4px; vertical-align:middle;">
+                </div>
+            </div>
+        </div>
+
+        <!-- LINHA 2: CABEÇALHO NOBRE COM ÍCONE 50px E CONTRASTE MÁXIMO -->
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
+            <div style="width:85px; height:85px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
+                <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:70px; height:70px; object-fit:contain;">
+            </div>
+            <div style="flex:1; min-width:0;">
+                <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff; letter-spacing:-0.4px; line-height:1.15; text-shadow:0 2px 8px rgba(0,0,0,0.8);">Espaço Masculino</h1>
+                <span style="font-size:12px; color:#fbbf24; font-weight:700; display:block; margin-top:3px; letter-spacing:0.2px;">A Forja: Descompressão, Foco & Blindagem</span>
+            </div>
+        </div>
+
+        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #38bdf8; border-radius:20px; padding:18px 16px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span id="label-titulo-reflexao-estoica" style="font-size:11.5px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
+                <span style="font-size:10.5px; font-weight:800; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:10px; border:1px solid #334155;">365 Estoicos</span>
+            </div>
+            
+            <p id="texto-reflexao-estoica-conteudo" style="font-size:14px; color:#f8fafc; margin:0 0 10px 0; line-height:1.6; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.5);">Carregando reflexão...</p>
+            <span id="autor-reflexao-estoica-conteudo" style="font-size:11.5px; font-weight:800; color:#fbbf24; display:block; text-align:right; margin-bottom:14px;">— Autor</span>
+
+            <!-- Barra de Ações -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:12px; gap:6px;">
+                <button type="button" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; color:#f8fafc; border:1px solid #475569; font-weight:700; display:inline-flex; align-items:center; gap:6px;" onclick="window.renderizarReflexaoEstoica(false)">
+                    <img src="./icone/icone-calendario.png" alt="Calendário" style="width:16px; height:16px; object-fit:contain;">
+                    De Hoje
+                </button>
+                <button type="button" id="btn-favoritar-estoica" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; border:1px solid #d97706; color:#fde68a; font-weight:800;" onclick="window.alternarFavoritoReflexaoAtual()">🤍 Favoritar</button>
+                <button type="button" class="btn-principal" style="width:auto; padding:7px 14px; font-size:11.5px; border-radius:10px; background:#0284c7; color:#fff; font-weight:800; border:none;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
+            </div>
+
+            <!-- Painel Retrátil de Mensagens Favoritas -->
+            <div style="margin-top:12px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:9px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
+                    <span id="seta-favoritas" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-favoritas-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+        </div>
+
+        <!-- QUADRO 2: A FORJA (MISSÕES EM METAL ESCURO COM BRASAS) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #ef4444; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="./icone/icone-fogo.png" alt="A Forja" style="width:30px; height:30px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">A Forja (6 Missões Diárias)</strong>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
+                        <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:16px; height:16px; object-fit:contain;">
+                        Editar
+                    </button>
+                    <span id="streak-forja" style="font-size:11.5px; font-weight:800; color:#f97316; background:#2a1205; padding:3px 8px; border-radius:8px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:4px;">
+                        <img src="./icone/icone-fogo.png" alt="Fogo" style="width:18px; height:18px; object-fit:contain;"> 0 dias
+                    </span>
+                </div>
+            </div>
+
+            <!-- Painel de Desempenho Noturno -->
+            <div style="background:#1e1b18; border:1px solid #7c2d12; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
+                    <span style="font-weight:700; color:#fed7aa;">Grau de Hoje: <strong id="lbl-grau-forja-hoje" style="color:#f97316;">Inerte</strong></span>
+                    <strong id="lbl-porcentagem-forja-hoje" style="color:#ef4444; font-weight:900;">0%</strong>
+                </div>
+                <div style="background:#0f172a; border-radius:8px; height:8px; width:100%; overflow:hidden;">
+                    <div id="barra-forja-fill-hoje" style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:0%; transition:width 0.3s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Formulário para Editar o Nome das 6 Missões -->
+            <div id="form-edicao-missoes-forja" class="oculto" style="background:#0f172a; border:1.5px dashed #475569; padding:12px; border-radius:12px; margin-bottom:12px;">
+                <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
+                <div id="container-inputs-edicao-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:11px; background:#1e293b; color:#cbd5e1; border:1px solid #475569;" onclick="window.alternarEdicaoConfigForja()">Cancelar</button>
+                    <button type="button" class="btn-principal" style="width:auto; padding:4px 12px; font-size:11px; background:#ea580c; color:#fff;" onclick="window.salvarConfiguracaoMissoesForja()">Salvar Metas</button>
+                </div>
+            </div>
+
+            <!-- Grade das 6 Missões Diárias -->
+            <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;"></div>
+
+            <!-- Histórico Retrátil da Forja -->
+            <div style="border-top:1px dashed #334155; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
+                    <span id="seta-historico-forja" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-historico-forja-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+        </div>
+
+        <!-- QUADRO 3: RADAR ÍNTIMO (COM LOVE.PNG NO CABEÇALHO E NA DISPOSIÇÃO/LIBIDO) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #f43f5e; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar Íntimo" style="width:35px; height:35px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Íntimo & Vitalidade</strong>
+                </div>
+                <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:#e11d48; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
+            </div>
+
+            <div style="background:#2a101b; border:1px dashed #9f1239; padding:12px; border-radius:12px; margin-bottom:14px;">
+                <span style="font-size:10px; font-weight:800; color:#fb7185; text-transform:uppercase; margin-bottom:4px; display:block;">Pílula Semanal • Semana ${semanaDoAno} de 52</span>
+                <p style="font-size:12.5px; color:#ffe4e6; margin:0; line-height:1.5; font-weight:600;">${pilulaSemanal}</p>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-size:11px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
+                <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; border:1px solid #475569; font-size:12px; background:#0f172a; color:#f8fafc; outline:none; font-weight:600;">
+            </div>
+
+            <!-- Barra: Energia Biológica -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/icone-energia.png" alt="Energia" style="width:18px; height:18px; object-fit:contain;">
+                        Energia Biológica:
+                    </span>
+                    <strong id="badge-energia-valor" style="font-size:11.5px; color:#38bdf8; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #0369a1;">Nota 5 (Normal)</strong>
+                </div>
+                <input type="range" id="range-energia" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#0284c7; cursor:pointer;" oninput="window.atualizarRotuloSlider('energia')">
+            </div>
+
+            <!-- Barra: Nível de Estresse -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/icone-estresse.png" alt="Estresse" style="width:18px; height:18px; object-fit:contain;">
+                        Nível de Estresse:
+                    </span>
+                    <strong id="badge-estresse-valor" style="font-size:11.5px; color:#fbbf24; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #d97706;">Nota 5 (Moderado)</strong>
+                </div>
+                <input type="range" id="range-estresse" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloSlider('estresse')">
+            </div>
+
+            <!-- Barra: Disposição / Libido (com love.png) -->
+            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Libido" style="width:18px; height:18px; object-fit:contain;">
+                        Disposição / Libido:
+                    </span>
+                    <strong id="badge-libido-valor" style="font-size:11.5px; color:#f43f5e; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #be123c;">Nota 5 (Normal)</strong>
+                </div>
+                <input type="range" id="range-libido" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f43f5e; cursor:pointer;" oninput="window.atualizarRotuloSlider('libido')">
+            </div>
+
+            <!-- Histórico Retrátil do Radar -->
+            <div style="border-top:1px dashed #334155; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:inline-flex; align-items:center; gap:6px;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Love" style="width:15px; height:15px; object-fit:contain;">
+                        Histórico Confidencial (<span id="contador-historico-radar">0</span>)
+                    </span>
+                    <span id="seta-historico-radar" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-historico-radar-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
+                    <div id="lista-historico-radar-notas" style="display:flex; flex-direction:column; gap:6px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUADRO 4: CURADORIA DE FILMES & SÉRIES DINÂMICA (ROTAÇÃO DIÁRIA + DUAS GAVETAS) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="./icone/icone-filme.png" alt="Filmes e Séries" style="width:24px; height:24px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Curadoria: Filmes & Séries</strong>
+                </div>
+                <div style="display:flex; gap:4px; background:#0f172a; padding:3px; border-radius:10px; border:1px solid #334155;">
+                    <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#6366f1; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes</button>
+                    <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#94a3b8;" onclick="window.alternarAbaMidia('series')">Séries</button>
+                </div>
+            </div>
+
+            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid #334155; border-radius:14px; padding:14px; position:relative; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#312e81; color:#c7d2fe; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
+                        <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#94a3b8;">-</span>
+                    </div>
+                    <h3 id="midia-titulo-destaque" style="margin:6px 0 4px 0; font-size:16px; color:#ffffff; font-weight:900;">Título</h3>
+                    <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0; line-height:1.45;">Descrição da obra e lição de conduta.</p>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #334155; padding-top:10px; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)">◄</button>
+                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)">►</button>
+                    </div>
+
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <!-- Botão Quero Assistir Masculino -->
+                        <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
+                            📌 Quero Assistir
+                        </button>
+                        <!-- Botão Já Assisti Masculino -->
+                        <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
+                            <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#1e293b; border:1.5px solid #d97706; border-radius:12px; padding:12px; text-align:center;">
+                <span style="font-size:12px; font-weight:800; color:#fde68a; display:block; margin-bottom:6px;">Qual a sua avaliação para esta obra?</span>
+                <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(1)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(2)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(3)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(4)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                    <button type="button" onclick="window.confirmarAvaliacaoMidia(5)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
+                </div>
+                <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#0f172a; color:#cbd5e1; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
+            </div>
+
+            <!-- GAVETA 1: QUERO ASSISTIR (RETRÁTIL) -->
+            <div style="margin-top:14px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-quero-ver-masc-conteudo', 'seta-quero-ver-masc')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">📌 Quero Assistir (<span id="contador-quero-ver-masc">0</span>)</span>
+                    <span id="seta-quero-ver-masc" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-quero-ver-masc-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- GAVETA 2: OBRAS ASSISTIDAS E AVALIADAS (RETRÁTIL) -->
+            <div style="margin-top:8px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">⭐ Obras Avaliadas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
+                    <span id="seta-assistidos" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-assistidos-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+        </div>
+
+        <!-- QUADRO 5: ARSENAL PRÁTICO -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                <img src="./icone/icone-forte.png" alt="Arsenal" style="width:26px; height:26px; object-fit:contain;">
+                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Arsenal Prático</strong>
+            </div>
+            <div style="background:#064e3b; border:1px dashed #34d399; padding:12px; border-radius:12px;">
+                <span style="font-size:10.5px; font-weight:800; color:#a7f3d0; text-transform:uppercase; margin-bottom:4px; display:block;">Doutrina Física & Nutrição</span>
+                <p style="font-size:12.5px; color:#ecfdf5; margin:0; line-height:1.45; font-weight:600;">${sabedoriaArsenal}</p>
+            </div>
+        </div>
+
+        <!-- QUADRO 6: OFICINA & GARAGEM -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #64748b; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <img src="./icone/icone-oficina.png" alt="Oficina" style="width:24px; height:24px; object-fit:contain;">
+                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Oficina & Garagem (Manutenções)</strong>
+            </div>
+            <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px 0;">Registo de revisões do veículo, filtros, ferramentas e manutenções do lar.</p>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <input type="text" id="input-nova-manutencao" placeholder="Ex: Óleo do carro, filtro da torneira..." style="flex:1; padding:9px 12px; font-size:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#fff; outline:none;">
+                <button type="button" style="padding:9px 16px; font-weight:800; border-radius:10px; background:#475569; color:#fff; border:none; cursor:pointer;" onclick="window.adicionarManutencao()">+</button>
+            </div>
+            <div id="lista-manutencao-garagem" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+    `;
+
+    // Atualiza o estado inicial do mini player na tela
+    if (window.PlayerMasc && typeof window.PlayerMasc.atualizarInterface === 'function') {
+        window.PlayerMasc.atualizarInterface();
+    }
+};
+
+// =========================================================================
+// 4.1. MOTOR DE ROTAÇÃO E FAVORITOS DA REFLEXÃO ESTOICA
+// =========================================================================
+
+window.renderizarReflexaoEstoica = function(aleatorio = false) {
+    const elTexto = document.getElementById('texto-reflexao-estoica-conteudo');
+    const elAutor = document.getElementById('autor-reflexao-estoica-conteudo');
+    const elTitulo = document.getElementById('label-titulo-reflexao-estoica');
+    if (!elTexto || !elAutor) return;
+
+    const lista = window.AcervoReflexoesEstoicas365 || [];
+    if (lista.length === 0) return;
+
+    let item;
+    if (aleatorio) {
+        const sorteado = Math.floor(Math.random() * lista.length);
+        item = lista[sorteado];
+        if (elTitulo) elTitulo.textContent = `🏛️ Reflexão Sorteada (${item.data || 'Aleatória'})`;
+    } else {
+        const agora = new Date();
+        const diaDoAno = Math.floor((agora - new Date(agora.getFullYear(), 0, 0)) / 86400000);
+        item = lista[diaDoAno % lista.length];
+        if (elTitulo) elTitulo.textContent = `🏛️ Princípio do Dia (${item.data || 'Hoje'})`;
+    }
+
+    if (item) {
+        window.reflexaoEstoicaExibidaAtual = item;
+        elTexto.textContent = `"${item.texto}"`;
+        elAutor.textContent = `— ${item.autor}`;
+        window.atualizarBotaoFavoritoEstado();
+    }
+};
+
+window.atualizarBotaoFavoritoEstado = function() {
+    const btn = document.getElementById('btn-favoritar-estoica');
+    if (!btn || !window.reflexaoEstoicaExibidaAtual) return;
+
+    const ehFavorita = window.dadosReflexoesFavoritas.some(f => 
+        f.texto === window.reflexaoEstoicaExibidaAtual.texto && f.autor === window.reflexaoEstoicaExibidaAtual.autor
     );
+
+    if (ehFavorita) {
+        btn.innerHTML = "❤️ Favoritada";
+        btn.style.background = "#78350f";
+        btn.style.borderColor = "#f59e0b";
+        btn.style.color = "#fde68a";
+    } else {
+        btn.innerHTML = "🤍 Favoritar";
+        btn.style.background = "#1e293b";
+        btn.style.borderColor = "#475569";
+        btn.style.color = "#cbd5e1";
+    }
+};
+
+window.alternarFavoritoReflexaoAtual = function() {
+    if (!window.reflexaoEstoicaExibidaAtual) return;
+
+    const chave = window.obterChaveStorageMasc('estoicas_favoritas');
+    const item = window.reflexaoEstoicaExibidaAtual;
+
+    const idx = window.dadosReflexoesFavoritas.findIndex(f => 
+        f.texto === item.texto && f.autor === item.autor
+    );
+
+    if (idx >= 0) {
+        window.dadosReflexoesFavoritas.splice(idx, 1);
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast("Mensagem removida dos favoritos.", "info");
+        }
+    } else {
+        window.dadosReflexoesFavoritas.unshift({
+            id: 'fav_' + Date.now(),
+            data: item.data || 'Reflexão',
+            autor: item.autor,
+            texto: item.texto,
+            salvo_em: new Date().toISOString()
+        });
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast("Mensagem adicionada aos favoritos! ⭐", "sucesso");
+        }
+    }
+
+    localStorage.setItem(chave, JSON.stringify(window.dadosReflexoesFavoritas));
+    window.atualizarBotaoFavoritoEstado();
+    window.renderizarListaFavoritasEstoicas();
+};
+
+window.renderizarListaFavoritasEstoicas = function() {
+    const cont = document.getElementById('bloco-favoritas-conteudo');
+    const elContador = document.getElementById('contador-favoritas-estoicas');
+    if (!cont) return;
+
+    if (elContador) elContador.textContent = window.dadosReflexoesFavoritas.length;
+
+    if (window.dadosReflexoesFavoritas.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhuma reflexão favoritada ainda.</span>';
+        return;
+    }
+
+    cont.innerHTML = window.dadosReflexoesFavoritas.map(item => `
+        <div style="background:#0f172a; border:1px solid #334155; border-left:3.5px solid #0284c7; padding:8px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <div style="min-width:0; flex:1;">
+                <span style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; display:block;">${item.data || 'Reflexão'} • ${item.autor}</span>
+                <p style="font-size:11.5px; color:#e2e8f0; margin:2px 0 0 0; line-height:1.4; font-weight:500;">"${item.texto}"</p>
+            </div>
+            <button type="button" onclick="window.removerFavoritoEstoico('${item.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 4px; flex-shrink:0; display:flex; align-items:center;" title="Remover dos favoritos">
+                <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+            </button>
+        </div>
+    `).join('');
+};
+
+window.removerFavoritoEstoico = function(id) {
+    const chave = window.obterChaveStorageMasc('estoicas_favoritas');
+    window.dadosReflexoesFavoritas = window.dadosReflexoesFavoritas.filter(f => f.id !== id);
+    localStorage.setItem(chave, JSON.stringify(window.dadosReflexoesFavoritas));
+    window.atualizarBotaoFavoritoEstado();
+    window.renderizarListaFavoritasEstoicas();
+};
+
+// =========================================================================
+// 5. A FORJA: 6 MISSÕES EM METAL ESCURO & CONTRASTE
+// =========================================================================
+
+window.alternarEdicaoConfigForja = function() {
+    const form = document.getElementById('form-edicao-missoes-forja');
+    if (!form) return;
+    const estaOculto = form.classList.contains('oculto');
+    if (estaOculto) {
+        window.renderizarCamposEdicaoForja();
+        form.classList.remove('oculto');
+    } else {
+        form.classList.add('oculto');
+    }
+};
+
+window.renderizarCamposEdicaoForja = function() {
+    const cont = document.getElementById('container-inputs-edicao-forja');
+    if (!cont) return;
+    cont.innerHTML = window.configMissoesForja.map((m, idx) => `
+        <div>
+            <label style="font-size:10.5px; font-weight:700; color:#94a3b8;">Missão ${idx + 1}:</label>
+            <input type="text" id="input-cfg-forja-${m.id}" value="${m.rotulo}" style="width:100%; box-sizing:border-box; padding:6px 8px; border-radius:8px; border:1px solid #475569; background:#1e293b; color:#fff; font-size:11.5px; outline:none;">
+        </div>
+    `).join('');
+};
+
+window.salvarConfiguracaoMissoesForja = function() {
+    window.configMissoesForja = window.configMissoesForja.map(m => {
+        const inp = document.getElementById(`input-cfg-forja-${m.id}`);
+        return {
+            id: m.id,
+            rotulo: (inp && inp.value.trim()) ? inp.value.trim() : m.rotulo
+        };
+    });
+
+    localStorage.setItem(window.obterChaveStorageMasc('config_missoes'), JSON.stringify(window.configMissoesForja));
+    document.getElementById('form-edicao-missoes-forja')?.classList.add('oculto');
+    window.renderizarBotoesForja();
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast("Metas da Forja atualizadas!", "sucesso");
+    }
+};
+
+window.obterGrauHonraForja = function(qtdCumprida) {
+    if (qtdCumprida === 6) return { titulo: "🔥 Forjado no Aço (Ápice Absoluto)", cor: "#ef4444" };
+    if (qtdCumprida === 5) return { titulo: "Vanguarda (Quase Imbatível)", cor: "#f97316" };
+    if (qtdCumprida >= 3) return { titulo: "Guerreiro Firme (Ritmo de Batalha)", cor: "#eab308" };
+    if (qtdCumprida >= 1) return { titulo: "Iniciado (Faísca Acesa)", cor: "#38bdf8" };
+    return { titulo: "Inerte (Desperte o Guerreiro)", cor: "#94a3b8" };
+};
+
+window.renderizarBotoesForja = function() {
+    const grid = document.getElementById('grid-botoes-missoes-forja');
+    if (!grid) return;
+
+    const hojeStr = new Date().toISOString().split('T')[0];
+    const registroHoje = window.dadosForjaDiaria[hojeStr] || { itens: {} };
+
+    grid.innerHTML = window.configMissoesForja.map(m => {
+        const cumprido = !!registroHoje.itens[m.id];
+        return `
+            <label style="display:flex; align-items:center; justify-content:space-between; background:${cumprido ? '#2a1205' : '#1e293b'}; padding:11px 12px; border-radius:12px; border:1.5px solid ${cumprido ? '#ea580c' : '#334155'}; cursor:pointer; transition:all 0.2s ease;">
+                <span style="font-size:12px; font-weight:800; color:${cumprido ? '#fed7aa' : '#f8fafc'};">${m.rotulo}</span>
+                <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:18px; height:18px; accent-color:#f97316;">
+            </label>
+        `;
+    }).join('');
+
+    window.atualizarProgressoForjaHoje();
+};
+
+window.alternarItemForjaHoje = function(idMissao, marcado) {
+    const hojeStr = new Date().toISOString().split('T')[0];
+    if (!window.dadosForjaDiaria[hojeStr]) {
+        window.dadosForjaDiaria[hojeStr] = { data: hojeStr, itens: {} };
+    }
+
+    if (marcado) {
+        window.dadosForjaDiaria[hojeStr].itens[idMissao] = true;
+    } else {
+        delete window.dadosForjaDiaria[hojeStr].itens[idMissao];
+    }
+
+    const qtdCumprida = Object.keys(window.dadosForjaDiaria[hojeStr].itens).length;
+    const porcentagem = Math.round((qtdCumprida / 6) * 100);
+    const honra = window.obterGrauHonraForja(qtdCumprida);
+
+    window.dadosForjaDiaria[hojeStr].qtd = qtdCumprida;
+    window.dadosForjaDiaria[hojeStr].porcentagem = porcentagem;
+    window.dadosForjaDiaria[hojeStr].grau = honra.titulo;
+
+    localStorage.setItem(window.obterChaveStorageMasc('forja_diaria'), JSON.stringify(window.dadosForjaDiaria));
+    
+    window.atualizarProgressoForjaHoje();
+    window.calcularOfensivaForja();
+    window.renderizarHistoricoForja();
+    window.renderizarBotoesForja();
+};
+
+window.atualizarProgressoForjaHoje = function() {
+    const hojeStr = new Date().toISOString().split('T')[0];
+    const registroHoje = window.dadosForjaDiaria[hojeStr] || { itens: {} };
+    const qtd = Object.keys(registroHoje.itens || {}).length;
+    const pct = Math.round((qtd / 6) * 100);
+    const honra = window.obterGrauHonraForja(qtd);
+
+    const elGrau = document.getElementById('lbl-grau-forja-hoje');
+    const elPct = document.getElementById('lbl-porcentagem-forja-hoje');
+    const elFill = document.getElementById('barra-forja-fill-hoje');
+
+    if (elGrau) { elGrau.textContent = honra.titulo; elGrau.style.color = honra.cor; }
+    if (elPct) { elPct.textContent = `${pct}% (${qtd}/6)`; }
+    if (elFill) { elFill.style.width = `${pct}%`; }
+};
+
+window.calcularOfensivaForja = function() {
+    let ofensiva = 0;
+    const datas = Object.keys(window.dadosForjaDiaria).sort().reverse();
+
+    for (let dtStr of datas) {
+        const reg = window.dadosForjaDiaria[dtStr];
+        const qtd = Object.keys(reg.itens || {}).length;
+        if (qtd > 0) {
+            ofensiva++;
+        } else {
+            break;
+        }
+    }
+
+    const elStreak = document.getElementById('streak-forja');
+    if (elStreak) {
+        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${ofensiva} dias seguidos`;
+    }
+};
+
+window.renderizarHistoricoForja = function() {
+    const cont = document.getElementById('bloco-historico-forja-conteudo');
+    const elContador = document.getElementById('contador-historico-forja');
+    if (!cont) return;
+
+    const datas = Object.keys(window.dadosForjaDiaria).sort().reverse();
+    if (elContador) elContador.textContent = datas.length;
+
+    if (datas.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhum registro diário da Forja ainda.</span>';
+        return;
+    }
+
+    cont.innerHTML = datas.slice(0, 15).map(dtStr => {
+        const reg = window.dadosForjaDiaria[dtStr];
+        const qtd = Object.keys(reg.itens || {}).length;
+        const pct = reg.porcentagem || Math.round((qtd / 6) * 100);
+        const grau = reg.grau || window.obterGrauHonraForja(qtd).titulo;
+
+        const nomesItens = Object.keys(reg.itens || {}).map(id => {
+            const m = window.configMissoesForja.find(cfg => cfg.id === id);
+            return m ? m.rotulo : id;
+        });
+
+        return `
+            <div style="background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:12px; border-left:4px solid #ef4444;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:10.5px; font-weight:800; color:#94a3b8;">${dtStr}</span>
+                    <strong style="font-size:11px; color:#f97316;">${pct}% (${qtd}/6)</strong>
+                </div>
+                <div style="font-size:11.5px; font-weight:800; color:#ffffff; margin-bottom:6px;">${grau}</div>
+                
+                <div style="background:#1e293b; border-radius:6px; height:6px; width:100%; overflow:hidden; margin-bottom:8px;">
+                    <div style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:${pct}%;"></div>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                    ${nomesItens.length > 0 ? nomesItens.map(n => `
+                        <span style="font-size:9.5px; font-weight:700; background:#2a1205; color:#fed7aa; padding:2px 6px; border-radius:6px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:3px;">
+                            <img src="./icone/icone-check.png" alt="Feito" style="width:12px; height:12px; object-fit:contain;"> ${n}
+                        </span>
+                    `).join('') : '<span style="font-size:10px; color:#94a3b8;">Nenhum item cumprido</span>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+// =========================================================================
+// 6. RADAR ÍNTIMO: SLIDERS (1 A 10) E HISTÓRICO EXPANSÍVEL COM LOVE.PNG
+// =========================================================================
+
+window.obterDescricaoNotaSlider = function(tipo, valor) {
+    const v = parseInt(valor, 10);
+    if (tipo === 'energia') {
+        if (v <= 2) return `Nota ${v} (Esgotado)`;
+        if (v <= 4) return `Nota ${v} (Baixa)`;
+        if (v <= 6) return `Nota ${v} (Normal)`;
+        if (v <= 8) return `Nota ${v} (Boa)`;
+        return `Nota ${v} (Alta Performance)`;
+    } else if (tipo === 'estresse') {
+        if (v <= 2) return `Nota ${v} (Relaxado)`;
+        if (v <= 4) return `Nota ${v} (Tranquilo)`;
+        if (v <= 6) return `Nota ${v} (Moderado)`;
+        if (v <= 8) return `Nota ${v} (Tenso)`;
+        return `Nota ${v} (Sobrecarga)`;
+    } else if (tipo === 'libido') {
+        if (v <= 3) return `Nota ${v} (Baixa)`;
+        if (v <= 7) return `Nota ${v} (Normal)`;
+        return `Nota ${v} (Alta)`;
+    }
+    return `Nota ${v}`;
+};
+
+window.atualizarRotuloSlider = function(tipo) {
+    const elRange = document.getElementById(`range-${tipo}`);
+    const elBadge = document.getElementById(`badge-${tipo}-valor`);
+    if (elRange && elBadge) {
+        elBadge.textContent = window.obterDescricaoNotaSlider(tipo, elRange.value);
+    }
+};
+
+window.salvarRadarIntimoCompleto = async function() {
+    const dtRelacao = document.getElementById('slider-data-relacao')?.value || null;
+    const vEnergia = parseInt(document.getElementById('range-energia')?.value || '5', 10);
+    const vEstresse = parseInt(document.getElementById('range-estresse')?.value || '5', 10);
+    const vLibido = parseInt(document.getElementById('range-libido')?.value || '5', 10);
+    const hojeStr = new Date().toISOString().split('T')[0];
+
+    const novoRegistro = {
+        id: 'rad_' + Date.now(),
+        data: hojeStr,
+        ultima_relacao: dtRelacao,
+        energia: vEnergia,
+        estresse: vEstresse,
+        libido: vLibido,
+        textoEnergia: window.obterDescricaoNotaSlider('energia', vEnergia),
+        textoEstresse: window.obterDescricaoNotaSlider('estresse', vEstresse),
+        textoLibido: window.obterDescricaoNotaSlider('libido', vLibido)
+    };
+
+    window.dadosRadarIntimo.ultima_relacao = dtRelacao;
+    window.dadosRadarIntimo.energia = vEnergia;
+    window.dadosRadarIntimo.estresse = vEstresse;
+    window.dadosRadarIntimo.libido = vLibido;
+
+    if (!Array.isArray(window.dadosRadarIntimo.historico)) {
+        window.dadosRadarIntimo.historico = [];
+    }
+    
+    window.dadosRadarIntimo.historico.unshift(novoRegistro);
+    if (window.dadosRadarIntimo.historico.length > 20) {
+        window.dadosRadarIntimo.historico = window.dadosRadarIntimo.historico.slice(0, 20);
+    }
+
+    localStorage.setItem(window.obterChaveStorageMasc('radar_intimo'), JSON.stringify(window.dadosRadarIntimo));
+    window.renderizarHistoricoRadarIntimo();
+
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast("Check-in íntimo guardado com sucesso!", "sucesso");
+    }
+
+    const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
+    const meuId = window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || null);
+    if (cli && meuId) {
+        try {
+            await cli.from('espaco_masc_radar').upsert({
+                membro_id: meuId,
+                familia_id: window.familiaAtualId || null,
+                ultima_relacao: dtRelacao,
+                energia: vEnergia,
+                estresse: vEstresse,
+                libido: vLibido
+            }, { onConflict: 'membro_id' });
+        } catch (err) {}
+    }
+};
+
+window.renderizarHistoricoRadarIntimo = function() {
+    const cont = document.getElementById('lista-historico-radar-notas');
+    const elContador = document.getElementById('contador-historico-radar');
+    if (!cont) return;
+
+    const hist = window.dadosRadarIntimo.historico || [];
+    if (elContador) elContador.textContent = hist.length;
+
+    if (hist.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhuma avaliação confidencial registrada ainda.</span>';
+        return;
+    }
+
+    cont.innerHTML = hist.map(reg => `
+        <div style="background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:10px; font-weight:800; color:#94a3b8; display:block;">Data: ${reg.data}${reg.ultima_relacao ? ' • Relação em ' + reg.ultima_relacao : ''}</span>
+                <span style="font-size:11.5px; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                    <img src="./icone/icone-energia.png" alt="Energia" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEnergia} | 
+                    <img src="./icone/icone-estresse.png" alt="Estresse" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEstresse}
+                </span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:10.5px; font-weight:800; color:#fb7185; background:#2a101b; border:1px solid #9f1239; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
+                    <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Libido" style="width:14px; height:14px; object-fit:contain;"> ${reg.textoLibido}
+                </span>
+                <button type="button" onclick="window.removerItemHistoricoRadar('${reg.id}')" style="background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center;" title="Remover registro">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.removerItemHistoricoRadar = function(id) {
+    if (!window.dadosRadarIntimo.historico) return;
+    window.dadosRadarIntimo.historico = window.dadosRadarIntimo.historico.filter(r => r.id !== id);
+    localStorage.setItem(window.obterChaveStorageMasc('radar_intimo'), JSON.stringify(window.dadosRadarIntimo));
+    window.renderizarHistoricoRadarIntimo();
+};
+
+// =========================================================================
+// 7. CURADORIA DE FILMES & SÉRIES (SORTEIO DIÁRIO, QUERO ASSISTIR & AVALIADOS)
+// =========================================================================
+
+function obterSementeDataHojeMasc() {
+    const hoje = new Date();
+    const str = `${hoje.getFullYear()}-${hoje.getMonth() + 1}-${hoje.getDate()}`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
 }
+
+window.obterCatalogoDiarioMasc = function(tipo) {
+    const base = tipo === 'filmes'
+        ? (window.CatalogoFilmesMasculinos || [])
+        : (window.CatalogoSeriesMasculinas || []);
+    
+    if (base.length === 0) return [];
+
+    let seed = obterSementeDataHojeMasc();
+    const copia = [...base];
+    
+    for (let i = copia.length - 1; i > 0; i--) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const rnd = seed / 233280;
+        const j = Math.floor(rnd * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+
+    return copia;
+};
+
+window.alternarAbaMidia = function(aba) {
+    window.abaMidiaAtiva = aba;
+    const btnF = document.getElementById('btn-aba-filmes');
+    const btnS = document.getElementById('btn-aba-series');
+
+    if (aba === 'filmes') {
+        if (btnF) { btnF.style.background = '#6366f1'; btnF.style.color = '#fff'; }
+        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#94a3b8'; }
+    } else {
+        if (btnS) { btnS.style.background = '#6366f1'; btnS.style.color = '#fff'; }
+        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#94a3b8'; }
+    }
+
+    window.indiceMidiaAtual[aba] = 0;
+    window.atualizarVisualizacaoMidia();
+};
+
+window.obterListaMidiaMascAtual = function() {
+    return window.obterCatalogoDiarioMasc(window.abaMidiaAtiva);
+};
+
+window.navegarCarrosselMidia = function(direcao) {
+    const lista = window.obterListaMidiaMascAtual();
+    if (!lista || lista.length === 0) return;
+
+    let idx = (window.indiceMidiaAtual[window.abaMidiaAtiva] || 0) + direcao;
+    if (idx < 0) idx = lista.length - 1;
+    if (idx >= lista.length) idx = 0;
+
+    window.indiceMidiaAtual[window.abaMidiaAtiva] = idx;
+    window.atualizarVisualizacaoMidia();
+};
+
+window.atualizarVisualizacaoMidia = function() {
+    const lista = window.obterListaMidiaMascAtual();
+    const idx = window.indiceMidiaAtual[window.abaMidiaAtiva] || 0;
+    const item = lista[idx];
+
+    if (!item) return;
+
+    const elBadgeCat = document.getElementById('midia-badge-categoria');
+    const elAno = document.getElementById('midia-ano-tempo');
+    const elTitulo = document.getElementById('midia-titulo-destaque');
+    const elDesc = document.getElementById('midia-descricao-destaque');
+    const btnAcao = document.getElementById('btn-marcar-assistido-acao');
+    const btnQueroVer = document.getElementById('btn-quero-ver-masc');
+
+    if (elBadgeCat) elBadgeCat.textContent = item.categoria || window.abaMidiaAtiva.toUpperCase();
+    if (elAno) elAno.textContent = item.ano || item.temporadas || '';
+    if (elTitulo) elTitulo.textContent = item.titulo || '';
+    if (elDesc) elDesc.textContent = item.desc || '';
+
+    const naListaQueroVer = window.dadosMidiaQueroVerMasc.some(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    if (btnQueroVer) {
+        if (naListaQueroVer) {
+            btnQueroVer.textContent = '📌 Na Minha Lista';
+            btnQueroVer.style.background = '#0369a1';
+            btnQueroVer.style.borderColor = '#38bdf8';
+            btnQueroVer.style.color = '#ffffff';
+        } else {
+            btnQueroVer.textContent = '📌 Quero Assistir';
+            btnQueroVer.style.background = '#1e293b';
+            btnQueroVer.style.borderColor = '#0284c7';
+            btnQueroVer.style.color = '#38bdf8';
+        }
+    }
+
+    const jaAvaliado = window.dadosMidiaAssistida.find(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    if (btnAcao) {
+        if (jaAvaliado) {
+            btnAcao.textContent = `★ ${jaAvaliado.estrelas} Estrelas`;
+            btnAcao.style.background = '#f59e0b';
+        } else {
+            btnAcao.innerHTML = `<img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;"> Já Assisti`;
+            btnAcao.style.background = '#10b981';
+        }
+    }
+};
+
+window.alternarQueroAssistirMasc = function(itemDireto = null) {
+    const lista = window.obterListaMidiaMascAtual();
+    const item = itemDireto || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
+    if (!item) return;
+
+    const idx = window.dadosMidiaQueroVerMasc.findIndex(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+
+    if (idx >= 0) {
+        window.dadosMidiaQueroVerMasc.splice(idx, 1);
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast(`"${item.titulo}" removido de 'Quero Assistir'.`, "info");
+        }
+    } else {
+        window.dadosMidiaQueroVerMasc.unshift({
+            id: item.id || ('quero_m_' + Date.now()),
+            titulo: item.titulo,
+            tipo: window.abaMidiaAtiva,
+            categoria: item.categoria || 'Geral',
+            ano: item.ano || item.temporadas || '',
+            desc: item.desc || '',
+            salvo_em: new Date().toISOString()
+        });
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast(`"${item.titulo}" adicionado à lista 'Quero Assistir'! 📌`, "sucesso");
+        }
+    }
+
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+    window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
+};
+
+window.abrirModalAvaliacaoMidia = function() {
+    const caixa = document.getElementById('caixa-avaliacao-midia');
+    if (caixa) caixa.classList.toggle('oculto');
+};
+
+window.confirmarAvaliacaoMidia = function(estrelas, itemParam = null) {
+    const lista = window.obterListaMidiaMascAtual();
+    const item = itemParam || lista[window.indiceMidiaAtual[window.abaMidiaAtiva]];
+    if (!item) return;
+
+    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+
+    window.dadosMidiaAssistida = window.dadosMidiaAssistida.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    window.dadosMidiaAssistida.push({
+        id: item.id || ('mid_' + Date.now()),
+        titulo: item.titulo,
+        tipo: window.abaMidiaAtiva,
+        categoria: item.categoria,
+        estrelas: parseInt(estrelas, 10),
+        data: new Date().toISOString().split('T')[0]
+    });
+
+    localStorage.setItem('suiri_midia_assistida', JSON.stringify(window.dadosMidiaAssistida));
+    document.getElementById('caixa-avaliacao-midia')?.classList.add('oculto');
+    
+    window.atualizarVisualizacaoMidia();
+    window.renderizarHistoricoQueroVerMasc();
+    window.renderizarHistoricoAssistidos();
+
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast(`Avaliação de ${estrelas} estrelas registrada!`, "sucesso");
+    }
+};
+
+window.renderizarHistoricoQueroVerMasc = function() {
+    const cont = document.getElementById('bloco-quero-ver-masc-conteudo');
+    const elContador = document.getElementById('contador-quero-ver-masc');
+    if (!cont) return;
+
+    const lista = window.dadosMidiaQueroVerMasc || [];
+    if (elContador) elContador.textContent = lista.length;
+
+    if (lista.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhum título na sua lista para assistir.</span>';
+        return;
+    }
+
+    cont.innerHTML = lista.map(item => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
+            <div style="min-width:0; flex:1;">
+                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10.5px; color:#38bdf8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                <button type="button" onclick="window.confirmarAvaliacaoMidia(5, { id: '${item.id}', titulo: '${item.titulo}', categoria: '${item.categoria}' })" style="background:#10b981; color:#fff; border:none; padding:4px 8px; font-size:10.5px; border-radius:8px; font-weight:800; cursor:pointer;" title="Marcar como visto">
+                    ✓ Já Vi
+                </button>
+                <button type="button" onclick="window.removerMidiaQueroVerMasc('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.removerMidiaQueroVerMasc = function(id) {
+    window.dadosMidiaQueroVerMasc = window.dadosMidiaQueroVerMasc.filter(m => m.id !== id);
+    localStorage.setItem(window.obterChaveStorageMasc('midia_quero_ver'), JSON.stringify(window.dadosMidiaQueroVerMasc));
+    window.renderizarHistoricoQueroVerMasc();
+    window.atualizarVisualizacaoMidia();
+};
+
+window.renderizarHistoricoAssistidos = function() {
+    const cont = document.getElementById('bloco-assistidos-conteudo');
+    const elContador = document.getElementById('contador-assistidos');
+    if (!cont) return;
+
+    const assistidosOrdenados = [...window.dadosMidiaAssistida].sort((a, b) => b.estrelas - a.estrelas);
+    if (elContador) elContador.textContent = assistidosOrdenados.length;
+
+    if (assistidosOrdenados.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:8px;">Nenhum título avaliado ainda.</span>';
+        return;
+    }
+
+    cont.innerHTML = assistidosOrdenados.map(item => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
+            <div style="min-width:0;">
+                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10.5px; color:#94a3b8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                <span style="font-size:12px; font-weight:800; color:#f59e0b;">${'★'.repeat(item.estrelas)}</span>
+                <button type="button" onclick="window.removerMidiaAssistida('${item.id}')" style="background:none; border:none; cursor:pointer; padding:2px 4px; display:flex; align-items:center;" title="Remover dos assistidos">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.removerMidiaAssistida = function(id) {
+    window.dadosMidiaAssistida = window.dadosMidiaAssistida.filter(m => m.id !== id);
+    localStorage.setItem('suiri_midia_assistida', JSON.stringify(window.dadosMidiaAssistida));
+    window.renderizarHistoricoAssistidos();
+    window.atualizarVisualizacaoMidia();
+};
+
 // =========================================================================
-// PARTE 3 DE 3: REFLEXÕES ESTOICAS DE SETEMBRO A DEZEMBRO (122 DIAS REAIS)
+// 8. OFICINA, GARAGEM E MANUTENÇÕES
 // =========================================================================
 
-if (Array.isArray(window.AcervoReflexoesEstoicas365)) {
-    window.AcervoReflexoesEstoicas365.push(
-        { data: "1 de setembro", autor: "Epiteto, Discursos", texto: "A filosofia não se propõe a assegurar ao homem qualquer coisa externa. A matéria da arte de viver é a vida de cada um." },
-        { data: "2 de setembro", autor: "Marco Aurélio, Meditações, 7, 47", texto: "Contemple os percursos das estrelas como quem gira junto com elas; tais reflexões limpam a poeira e a sujeira desta vida mundana." },
-        { data: "3 de setembro", autor: "Marco Aurélio, Meditações, 11, 18", texto: "A mansidão é invencível se for genuína, sem sorriso afetado ou hipocrisia. Mostre o caminho correto no exato momento da afronta." },
-        { data: "4 de setembro", autor: "Marco Aurélio, Meditações, 7, 15", texto: "Deixe que qualquer um diga ou faça o que bem entender; eu devo ser um homem bom, assim como o ouro mantém o seu brilho." },
-        { data: "5 de setembro", autor: "Epiteto, Discursos", texto: "É fácil louvar a Providência se você possui a capacidade de ver o que acontece a todas as coisas e uma disposição sincera para agradecer." },
-        { data: "6 de setembro", autor: "Marco Aurélio, Meditações, 7, 64", texto: "Na dor, lembre-se das palavras de Epicuro: a dor não é insuportável nem eterna se você mantiver em mente seus limites e não permitir acréscimos da imaginação." },
-        { data: "7 de setembro", autor: "Marco Aurélio, Meditações, 8, 50", texto: "Existem espinhos no caminho? Vá pelos lados. É o suficiente. Não reclame da existência dos espinhos no mundo." },
-        { data: "8 de setembro", autor: "Sêneca, Epístolas, 110", texto: "Você descobrirá que aqueles a quem a fortuna nunca favoreceu são mais felizes do que aqueles a quem ela abandonou." },
-        { data: "9 de setembro", autor: "Epiteto, Discursos", texto: "Eu não negligenciarei o cuidado com o meu caráter só porque estou distante de alcançar o topo da perfeição moral." },
-        { data: "10 de setembro", autor: "Marco Aurélio, Meditações, 11, 18", texto: "Reflita sobre que tipo de homens eles são à mesa, na cama ou em seus negócios: e por quais princípios tortos eles se mantêm arrogantes." },
-        { data: "11 de setembro", autor: "Marco Aurélio, Meditações, 6, 59", texto: "Pense em quão cedo a eternidade envolverá todas as coisas, e o quanto já foi envolvido e esquecido por ela." },
-        { data: "12 de setembro", autor: "Marco Aurélio, Meditações, 7, 6", texto: "Quantos daqueles que outrora foram aclamados estão entregues ao esquecimento! E quantos daqueles que os aclamaram já morreram há muito tempo!" },
-        { data: "13 de setembro", autor: "Marco Aurélio, Meditações, 4, 14", texto: "Você existe como parte de um todo. Você desaparecerá novamente naquilo que o produziu; ou melhor, será retomado na inteligência produtora." },
-        { data: "14 de setembro", autor: "Marco Aurélio, Meditações, 9, 5", texto: "Os homens são frequentemente injustos por omissões, e não apenas quando cometem atitudes ativamente lesivas." },
-        { data: "15 de setembro", autor: "Sêneca, Sobre a Ira, 1, 16", texto: "Mesmo na mente do sábio, uma cicatriz permanece depois que a ferida foi completamente curada pela razão." },
-        { data: "16 de setembro", autor: "Marco Aurélio, Meditações, 4, 24", texto: "'Se quiser ter silêncio interior, faça poucas coisas', dizia o filósofo. Faça apenas o que for estritamente necessário para o bem comum." },
-        { data: "17 de setembro", autor: "Marco Aurélio, Meditações, 12, 12", texto: "Os deuses nunca erram voluntária ou involuntariamente; os homens só erram involuntariamente por ignorância. Não há a quem culpar com ódio." },
-        { data: "18 de setembro", autor: "Marco Aurélio, Meditações, 6, 34", texto: "Quantos são os prazeres desfrutados por ladrões, libertinos e tiranos! O prazer sensorial em si não é indicador de virtude." },
-        { data: "19 de setembro", autor: "Marco Aurélio, Meditações, 2, 2", texto: "Pense assim: agora que você amadureceu, não fique mais na servidão; não seja mais arrastado como marionete por impulsos egoístas." },
-        { data: "20 de setembro", autor: "Marco Aurélio, Meditações, 8, 22", texto: "Preste atenção total ao que está diante de você agora: seja um princípio, seja um ato ou uma palavra honesta." },
-        { data: "21 de setembro", autor: "Marco Aurélio, Meditações, 8, 5", texto: "Antes de tudo, não fique perturbado. Tudo acontece conforme a Natureza; faça o que a dignidade humana requer com bondade e sinceridade." },
-        { data: "22 de setembro", autor: "Sêneca, Sobre a Ira, 1, 16", texto: "Um bom juiz condena atos errôneos, mas não odeia as pessoas que os cometeram." },
-        { data: "23 de setembro", autor: "Epiteto, Encheiridion, 33", texto: "Das coisas relacionadas ao corpo, forneça apenas o estritamente necessário para a vida: elimine tudo o que vise mero luxo e ostentação." },
-        { data: "24 de setembro", autor: "Marco Aurélio, Meditações, 7, 27", texto: "Não se preocupe tanto com o que lhe falta; observe o que você já tem de melhor e reflita como desejaria isso se não o possuísse." },
-        { data: "25 de setembro", autor: "Marco Aurélio, Meditações, 11, 18", texto: "É necessário tomar conhecimento de várias circunstâncias antes de se pronunciar com segurança contra uma falha do outro." },
-        { data: "26 de setembro", autor: "Marco Aurélio, Meditações, 9, 4", texto: "O homem que peca, peca contra si mesmo. Aquele que comete injustiça prejudica a si próprio corrompendo a própria alma." },
-        { data: "27 de setembro", autor: "Marco Aurélio, Meditações, 4, 24", texto: "Em todas as ocasiões pergunte a si mesmo: 'Isso é realmente necessário?'. Deixe de lado ações e pensamentos supérfluos." },
-        { data: "28 de setembro", autor: "Marco Aurélio, Meditações, 3, 6", texto: "Se na vida humana você encontrar algo superior à justiça, à verdade e à coragem, abrace-o; mas se nada for melhor que a razão reta, dê-lhe prioridade." },
-        { data: "29 de setembro", autor: "Marco Aurélio, Meditações, 9, 29", texto: "Faça aquilo que a natureza exige de você agora; não olhe ao redor para ver se alguém está observando. Fique satisfeito se fizer o bem." },
-        { data: "30 de setembro", autor: "Marco Aurélio, Meditações, 6, 54", texto: "O que não beneficia a colmeia inteira, não pode beneficiar a abelha isolada." },
-        { data: "1 de outubro", autor: "Sêneca, Epístolas, 110", texto: "Um grande número de livros sobrecarrega o estudante em vez de instruí-lo; é muito melhor dedicar-se a poucos autores sólidos do que apenas folhear muitos." },
-        { data: "2 de outubro", autor: "Sêneca, Sobre a Ira, 1, 9", texto: "Dizem que a paixão é útil desde que moderada. Mas se ela for desobediente à autoridade da razão, uma paixão moderada é apenas um mal moderado." },
-        { data: "3 de outubro", autor: "Marco Aurélio, Meditações, 5, 11", texto: "Para que propósito estou usando a minha alma agora? Deixe-me examinar se estou agindo como uma criança mimada ou como um homem de verdade." },
-        { data: "4 de outubro", autor: "Marco Aurélio, Meditações, 6, 11", texto: "Sobre cada fato, pergunte: o que é isso em si e por sua constituição? Qual é a sua matéria? Quanto tempo isso irá durar?" },
-        { data: "5 de outubro", autor: "Marco Aurélio, Meditações, 8, 48", texto: "A alma livre de paixões cegas é uma fortaleza resistente; o homem não encontra abrigo mais fortificado onde se refugiar e ser livre." },
-        { data: "6 de outubro", autor: "Marco Aurélio, Meditações, 8, 49", texto: "Não acrescente à sua mente nada além do que lhe é declarado diretamente pelos fatos; não tome conjecturas por verdades absolutas." },
-        { data: "7 de outubro", autor: "Sêneca, Sobre a Ira, 1, 17", texto: "A paixão cega esfria e cansa rapidamente, ao passo que a razão equilibrada é sempre consistente e duradoura." },
-        { data: "8 de outubro", autor: "Sêneca, Epístolas, 110", texto: "O que for realmente necessário você encontrará em todos os lugares; o que é supérfluo exige sempre grande esforço e desgaste." },
-        { data: "9 de outubro", autor: "Epiteto, Encheiridion, 8", texto: "Não exija que os acontecimentos ocorram como você deseja; deseje que eles aconteçam da forma que devem acontecer e sua vida será tranquila." },
-        { data: "10 de outubro", autor: "Marco Aurélio, Meditações, 8, 8", texto: "Você não tem tempo para ler tudo, mas tem tempo de sobra para reprimir a própria insolência e colocar-se acima da dor e da vaidade." },
-        { data: "11 de outubro", autor: "Marco Aurélio, Meditações, 7, 56", texto: "A parte governante de cada um de nós tem o seu próprio poder soberano; o vício de outro não pode tornar a minha alma miserável sem o meu consentimento." },
-        { data: "12 de outubro", autor: "Marco Aurélio, Meditações, 9, 1", texto: "Quem comete injustiça transgride a vontade da Natureza universal, que nos formou para nos ajudarmos e não para nos ferirmos." },
-        { data: "13 de outubro", autor: "Epiteto, Encheiridion, 42", texto: "Quando alguém lhe fizer mal ou falar mal de você, lembre-se de que ele agiu sob a falsa impressão de que aquilo era o correto. Ele é o enganado." },
-        { data: "14 de outubro", autor: "Marco Aurélio, Meditações, 9, 6", texto: "Esteja satisfeito com a sua opinião presente se ela for reta, e com o seu curso de ação atual se ele for voltado ao bem comum." },
-        { data: "15 de outubro", autor: "Zenão de Cítio", texto: "Uma natureza nobre, quando recebe o devido grau de instrução e bons exemplos, prossegue sem dificuldade para a virtude." },
-        { data: "16 de outubro", autor: "Marco Aurélio, Meditações, 12, 9", texto: "No exercício dos princípios morais devemos ser como os pugilistas, não como os espadachins: o pugilista tem as armas sempre unidas ao corpo." },
-        { data: "17 de outubro", autor: "Marco Aurélio, Meditações, 10, 30", texto: "Quando se sentir ofendido pela falha de alguém, volte-se para si mesmo e examine de que ato semelhante você também é culpado." },
-        { data: "18 de outubro", autor: "Epiteto, Discursos", texto: "Não se precipite pela rapidez das aparências; diga: 'Aparência, espere por mim um instante, deixe-me ver quem você é e colocar-lhe à prova'." },
-        { data: "19 de outubro", autor: "Marco Aurélio, Meditações, 12, 7", texto: "Reflita sobre como a morte encontrará o seu corpo e sua alma; pense na brevidade da vida e na fragilidade das coisas perecíveis." },
-        { data: "20 de outubro", autor: "Marco Aurélio, Meditações, 4, 32", texto: "Lembre-se da época de Vespasiano ou de Trajano: homens casando, guerreando e negociando; toda aquela vida se foi e o mesmo ocorrerá conosco." },
-        { data: "21 de outubro", autor: "Marco Aurélio, Meditações, 8, 63", texto: "Toda alma se afasta involuntariamente da verdade e da justiça; lembre-se disso e você será muito mais paciente com os homens." },
-        { data: "22 de outubro", autor: "Sêneca, Sobre a Ira, 2, 29", texto: "O melhor remédio para a ira é o tempo: peça um momento a ela para que a razão possa formular uma decisão sóbria." },
-        { data: "23 de outubro", autor: "Sêneca, Sobre a Ira, 1, 9", texto: "A raiva não tem utilidade nas batalhas da vida; a coragem verdadeira é serena e auto-suficiente, agindo com precisão sem se descontrolar." },
-        { data: "24 de outubro", autor: "Marco Aurélio, Meditações, 7, 49", texto: "Olhe para as revoluções do passado e preveja o futuro: tudo seguirá o mesmo ritmo circular; quarenta anos de vida mostram o que dez mil anos repetiriam." },
-        { data: "25 de outubro", autor: "Marco Aurélio, Meditações, 7, 57", texto: "Ame apenas aquilo que lhe acontece e que foi tecido para você pelo destino; o que poderia se adaptar com mais perfeição às suas necessidades?" },
-        { data: "26 de outubro", autor: "Marco Aurélio, Meditações, 11, 36", texto: "'Nenhum homem na terra pode roubar a sua liberdade de ação e de escolha interna', ensinava Epiteto." },
-        { data: "27 de outubro", autor: "Marco Aurélio, Meditações, 5, 8", texto: "Assim como o médico prescreve um remédio amargo para a cura, o Universo nos prescreve desafios para exercitar a nossa resistência moral." },
-        { data: "28 de outubro", autor: "Marco Aurélio, Meditações, 8, 61", texto: "Adentre na mente dos outros com empatia e permita que homens sábios também adentrem na sua para corrigi-lo." },
-        { data: "29 de outubro", autor: "Marco Aurélio, Meditações, 7, 12", texto: "Erga-se pelas próprias forças morais, ou seja erguido pelo dever; mas não permaneça caído no chão se lamentando." },
-        { data: "30 de outubro", autor: "Marco Aurélio, Meditações, 8, 38", texto: "Se você possui visão aguçada, use-a com sabedoria prática e discrição em favor da harmonia comum." },
-        { data: "31 de outubro", autor: "Marco Aurélio, Meditações, 2, 5", texto: "Esforce-se a cada instante para fazer o que está em suas mãos com perfeita dignidade, firmeza, bondade e justiça inegociável." },
-        { data: "1 de novembro", autor: "Marco Aurélio, Meditações, 7, 10", texto: "A memória terrena de todas as coisas é rapidamente engolida e sepultada pelo fluxo silencioso da eternidade." },
-        { data: "2 de novembro", autor: "Marco Aurélio, Meditações, 4, 44", texto: "Tudo o que acontece é tão natural e familiar quanto a rosa na primavera ou a fruta no verão: inclusive os reveses da rotina." },
-        { data: "3 de novembro", autor: "Marco Aurélio, Meditações, 11, 5", texto: "Qual é o seu ofício fundamental neste mundo? Fazer o bem aos outros a partir de princípios sólidos e da reta razão." },
-        { data: "4 de novembro", autor: "Marco Aurélio, Meditações, 12, 4", texto: "Muitas vezes me pergunto como é que o homem ama a si mesmo mais do que aos outros, mas dá mais peso à opinião dos outros do que à sua própria." },
-        { data: "5 de novembro", autor: "Marco Aurélio, Meditações, 7, 59", texto: "Olhe para dentro de si mesmo: lá dentro está a fonte perene do bem genuíno, pronta para jorrar sempre que você cavar com disciplina." },
-        { data: "6 de novembro", autor: "Marco Aurélio, Meditações, 11, 13", texto: "Alguém me despreza? Que ele cuide dos seus próprios atos; eu cuidarei para que nenhuma palavra ou conduta minha mereça desprezo real." },
-        { data: "7 de novembro", autor: "Marco Aurélio, Meditações, 4, 37", texto: "Você está próximo do fim da jornada terrena e ainda não atingiu a simplicidade sincera ou a calma inabalável contra ofensas exteriores?" },
-        { data: "8 de novembro", autor: "Epiteto, Encheiridion, 20", texto: "Lembre-se de que não é o homem que insulta que fere a sua dignidade, mas sim o seu próprio julgamento de considerar aquilo um insulto." },
-        { data: "9 de novembro", autor: "Sêneca, Sobre a Ira, 1, 13", texto: "Nenhum homem se torna verdadeiramente corajoso por meio da raiva; a fúria não é aliada da bravura, mas um vício desordenado." },
-        { data: "10 de novembro", autor: "Marco Aurélio, Meditações, 8, 52", texto: "Aquele que não sabe para qual propósito o mundo caminha, não sabe quem é nem onde está. Como buscar aplausos de quem vive desorientado?" },
-        { data: "11 de novembro", autor: "Sêneca, Epístolas, 110", texto: "Olhe para a imensidão do Universo: verá que as forças superiores não possuem posses materiais e, ainda assim, provêm a vida a tudo." },
-        { data: "12 de novembro", autor: "Marco Aurélio, Meditações, 10, 16", texto: "Não perca mais tempo discursando sobre como deve ser um homem bom: seja esse homem bom nos seus atos práticos agora." },
-        { data: "13 de novembro", autor: "Sêneca, Sobre a Ira, 1, 7", texto: "A mente dominada pela paixão desenfreada torna-se incapaz de governar a si mesma e perde a bússola do julgamento reto." },
-        { data: "14 de novembro", autor: "Marco Aurélio, Meditações, 6, 5", texto: "A razão dirigente compreende a sua própria condição, sabe o que deve fazer e não guarda ressentimento contra a matéria que molda." },
-        { data: "15 de novembro", autor: "Marco Aurélio, Meditações, 10, 12", texto: "Aquele que em todos os momentos segue a voz da razão está sempre livre de pressa tola: é ao mesmo tempo ativo e perfeitamente sereno." },
-        { data: "16 de novembro", autor: "Marco Aurélio, Meditações, 11, 15", texto: "O caráter íntegro do homem deve brilhar diretamente nos seus olhos e atitudes, sem necessidade de alardes teatrais." },
-        { data: "17 de novembro", autor: "Marco Aurélio, Meditações, 6, 17", texto: "Para cima e para baixo giram os elementos perecíveis; o caminho reto da virtude move-se em plano superior, suave e sublime." },
-        { data: "18 de novembro", autor: "Epiteto, Encheiridion, 42", texto: "Alguém bebeu muito vinho ou tomou banho às pressas? Diga apenas o que viu, sem emitir julgamento malicioso antes de conhecer os motivos." },
-        { data: "19 de novembro", autor: "Marco Aurélio, Meditações, 6, 3", texto: "Olhe para o âmago das coisas: não permita que a qualidade real ou o valor intrínseco de cada ação escape à sua percepção." },
-        { data: "20 de novembro", autor: "Marco Aurélio, Meditações, 12, 1", texto: "Entregue o passado à Providência, governe o presente com justiça e ame a sua sorte sem recorrer ao engano ou ao fingimento." },
-        { data: "21 de novembro", autor: "Sêneca, Sobre a Ira, 1, 17", texto: "Não temos necessidade de recorrer às armas cegas da raiva: a Natureza nos equipou com a razão lúcida, que é soberana." },
-        { data: "22 de novembro", autor: "Marco Aurélio, Meditações, 7, 8", texto: "Não se angustie com o futuro distante: você chegará a ele munido das mesmas armas da razão com as quais enfrenta o presente." },
-        { data: "23 de novembro", autor: "Marco Aurélio, Meditações, 6, 9", texto: "Todas as coisas do cosmos realizam-se em harmonia com a inteligência soberana do Todo; encontre o seu lugar nessa sinfonia." },
-        { data: "24 de novembro", autor: "Marco Aurélio, Meditações, 6, 41", texto: "Se colocarmos o bem apenas nas coisas que estão sob o nosso controle, não restará razão para culpar o destino ou odiar os homens." },
-        { data: "25 de novembro", autor: "Marco Aurélio, Meditações, 11, 29", texto: "Na escrita e na leitura, você deve aprender a ser guiado antes de guiar; o mesmo princípio vale com muito mais força para a vida." },
-        { data: "26 de novembro", autor: "Sêneca, Sobre a Brevidade da Vida, 7", texto: "É necessário ser um homem firme para não permitir que ladrões de atenção roubem o seu tempo sagrado; dedique sua vida a si mesmo." },
-        { data: "27 de novembro", autor: "Marco Aurélio, Meditações, 6, 11", texto: "Sempre que for forçado pelas circunstâncias a se desequilibrar, retorne prontamente à serenidade e não perca o ritmo da harmonia interior." },
-        { data: "28 de novembro", autor: "Epiteto, Discursos", texto: "O verdadeiro atleta da vida é quem luta contra as aparências ilusórias. Grande é o combate pela liberdade moral e paz de espírito." },
-        { data: "29 de novembro", autor: "Sêneca, Sobre a Brevidade da Vida, 9", texto: "O maior obstáculo para a vida é a expectativa do amanhã que devora o presente. Você dispõe do dia de hoje: não o desperdice." },
-        { data: "30 de novembro", autor: "Diógenes Laércio, 6, 2", texto: "Coisas de grande valor interior são com frequência desprezadas por ninharias exteriores; não inverta as prioridades da alma." },
-        { data: "1 de dezembro", autor: "Diógenes Laércio, 7, 2", texto: "'Você já está velho, deveria descansar', disseram a Diógenes. Ele respondeu: 'Se eu corresse num estádio, deveria diminuir o passo perto da chegada?'." },
-{ data: "2 de dezembro", autor: "Sêneca, Sobre a Brevidade da Vida, 7", texto: "Leva-se uma vida inteira para aprender a viver com integridade; e o que talvez o surpreenda mais: leva-se uma vida inteira para aprender a morrer com serenidade." },
-        { data: "3 de dezembro", autor: "Marco Aurélio, Meditações, 7, 73", texto: "Quando você faz um bem a alguém, por que exige uma retribuição como os tolos? O ato reto é a sua própria recompensa." },
-        { data: "4 de dezembro", autor: "Sêneca, Sobre a Ira, 28", texto: "Se você se irrita facilmente, brigará com escravos, amigos, pais e filhos. A raiva encontra motivos em tudo se a mente não for o escudo." },
-        { data: "5 de dezembro", autor: "Marco Aurélio, Meditações, 9, 26", texto: "Você já suportou aflições sem fim por não permitir que a sua razão governante cumprisse o dever para o qual foi constituída. Dê um basta nisso." },
-        { data: "6 de dezembro", autor: "Sêneca, Epístolas, 110", texto: "Acostume-se a desfrutar de refeições simples, sem criadagem numerosa, e a viver de maneira sóbria e honrada." },
-        { data: "7 de dezembro", autor: "Marco Aurélio, Meditações, 7, 32", texto: "Sobre o fim: quer o Universo seja dispersão atômica ou harmonia ordenada, a partida do homem é apenas transição para um novo estado." },
-        { data: "8 de dezembro", autor: "Marco Aurélio, Meditações, 8, 16", texto: "Mudar de opinião perante um conselho sábio não diminui a sua liberdade; a correção faz parte da busca honrada pela verdade." },
-        { data: "9 de dezembro", autor: "Marco Aurélio, Meditações, 5, 5", texto: "Muitos não admiram a sua astúcia rápida; mostre então aquilo que está em seu poder: lealdade, seriedade, sobriedade e desdém pelas futilidades." },
-        { data: "10 de dezembro", autor: "Marco Aurélio, Meditações, 6, 29", texto: "É uma vergonha moral indesculpável que a alma se canse e fraqueje na vida enquanto o corpo ainda se mantém saudável e vigoroso." },
-        { data: "11 de dezembro", autor: "Epiteto, Encheiridion, 13", texto: "Se deseja progredir na virtude, não tema ser considerado ignorante sobre coisas mundanas; não queira parecer importante para a multidão." },
-        { data: "12 de dezembro", autor: "Marco Aurélio, Meditações, 5, 2", texto: "Quão simples é afastar qualquer ideia perturbadora e inadequada e desfrutar de imediato da mais perfeita e tranquila serenidade mental." },
-        { data: "13 de dezembro", autor: "Sêneca, Sobre a Brevidade da Vida, 19", texto: "Recolha-se para os assuntos nobres e seguros da alma; fuja das ocupações barulhentas que apenas desgastam o seu tempo sagrado." },
-        { data: "14 de dezembro", autor: "Epiteto, Encheiridion, 22", texto: "Mantenha a firmeza de seus princípios estoicos; aqueles que no início ridicularizaram a sua disciplina, no final passarão a admirar o seu caráter." },
-        { data: "15 de dezembro", autor: "Cleantes, Vidas Eminentes", texto: "Quando criticado por sua idade avançada, Cleantes replicou: 'Também desejo partir, mas quando me vejo lúcido e forte para os deveres, permaneço sereno no posto'." },
-        { data: "16 de dezembro", autor: "Marco Aurélio, Meditações, 8, 7", texto: "A mente racional prospera quando recusa o assentimento ao falso, orienta suas ações para a generosidade e acolhe o que o destino traz." },
-        { data: "17 de dezembro", autor: "Marco Aurélio, Meditações, 7, 52", texto: "Outro homem pode ser um atleta melhor ou um orador mais afiado; mas certifique-se de que nenhum seja mais modesto, justo e resiliente do que você." },
-        { data: "18 de dezembro", autor: "Sêneca, Epístolas, 16", texto: "Quer o destino seja uma lei fixa ou os acasos governem o mundo, a Filosofia deve ser a nossa muralha protetora em todas as horas." },
-        { data: "19 de dezembro", autor: "Marco Aurélio, Meditações, 8, 47", texto: "Se você se entristece com algo exterior, não é o fato que o atormenta, mas sim o julgamento que você faz dele. E esse julgamento você pode anular agora." },
-        { data: "20 de dezembro", autor: "Sêneca, Sobre a Ira, 13", texto: "Lute contra a irritação interior: não deixe que ela tome conta do seu semblante ou voz. Oculte os sintomas até que a razão reassuma o trono." },
-        { data: "21 de dezembro", autor: "Marco Aurélio, Meditações, 10, 4", texto: "Se alguém errou, instrua-o com bondade e mostre o equívoco; se não for capaz disso, culpe a sua própria incapacidade, mas não guarde rancor." },
-        { data: "22 de dezembro", autor: "Epiteto, Encheiridion, 6", texto: "Não se envaideça com méritos alheios. Se um cavalo dissesse 'sou veloz', isso seria dele; quando você se orgulha de bens de fora, orgulha-se de coisas que não são suas." },
-        { data: "23 de dezembro", autor: "Marco Aurélio, Meditações, 6, 28", texto: "A morte física é o fim definitivo dos apetites sensoriais, da tirania dos impulsos passionais e do cansaço do trabalho material." },
-        { data: "24 de dezembro", autor: "Marco Aurélio, Meditações, 4, 17", texto: "Não viva os seus dias como se tivesse dez mil anos pela frente; enquanto tem fôlego e o destino permite, seja um homem genuinamente bom." },
-        { data: "25 de dezembro", autor: "Marco Aurélio, Meditações, 5, 31", texto: "Recorde tudo o que já enfrentou com honra na vida e tudo o que foi capaz de suportar: a sua história foi cumprida com bravura até aqui." },
-        { data: "26 de dezembro", autor: "Marco Aurélio, Meditações, 8, 36", texto: "Não se desespere antecipando a soma inteira de todos os problemas da vida; divida o fardo no presente e pergunte: o que há de insuportável no agora?" },
-        { data: "27 de dezembro", autor: "Marco Aurélio, Meditações, 7, 56", texto: "Considere a sua vida passada como concluída hoje; e viva o tempo que lhe resta como um excedente sagrado de acordo com as leis da retidão." },
-        { data: "28 de dezembro", autor: "Marco Aurélio, Meditações, 2, 10", texto: "Os erros cometidos pela atração do prazer são moralmente mais fracos e degradantes do que aqueles provocados pela dor súbita." },
-        { data: "29 de dezembro", autor: "Sêneca, Sobre a Brevidade da Vida, 9", texto: "Para onde se voltam os seus olhos? O que está por vir permanece no reino da incerteza: viva e faça o bem imediatamente." },
-        { data: "30 de dezembro", autor: "Marco Aurélio, Meditações, 6, 8", texto: "A razão dirigente é aquela que desperta a si mesma, conduz os seus próprios passos e dá a cada acontecimento o sentido nobre que ele merece." },
-        { data: "31 de dezembro", autor: "Sêneca, Epístolas, 110", texto: "Se você estiver disposto a examinar suas escolhas com sabedoria, esforçar-se-á não para parecer feliz aos olhos da multidão, mas para ser reto perante a si mesmo." }
-    );
+window.adicionarManutencao = async function() {
+    const input = document.getElementById('input-nova-manutencao');
+    const titulo = input?.value.trim();
+    if (!titulo) return;
+
+    input.value = '';
+    const novoItem = { id: 'manut_' + Date.now(), titulo: titulo, concluido: false };
+    window.dadosManutencaoGaragem.push(novoItem);
+    window.salvarERenderizarMasculino();
+
+    const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
+    const meuId = window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || null);
+    if (cli && meuId) {
+        try {
+            const { data } = await cli.from('espaco_masc_listas').insert([{
+                familia_id: window.familiaAtualId || null,
+                membro_id: meuId,
+                tipo: 'manutencao',
+                titulo: titulo
+            }]).select().single();
+            if (data) novoItem.id = data.id;
+        } catch (err) {}
+    }
+};
+
+window.alternarManutencao = async function(id) {
+    const item = window.dadosManutencaoGaragem.find(i => i.id === id);
+    if (!item) return;
+
+    item.concluido = !item.concluido;
+    window.salvarERenderizarMasculino();
+
+    const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
+    if (cli && !String(id).startsWith('manut_')) {
+        try {
+            await cli.from('espaco_masc_listas').update({ concluido: item.concluido }).eq('id', id);
+        } catch (err) {}
+    }
+};
+
+window.removerManutencao = async function(id) {
+    window.dadosManutencaoGaragem = window.dadosManutencaoGaragem.filter(i => i.id !== id);
+    window.salvarERenderizarMasculino();
+
+    const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
+    if (cli && !String(id).startsWith('manut_')) {
+        try {
+            await cli.from('espaco_masc_listas').delete().eq('id', id);
+        } catch (err) {}
+    }
+};
+
+window.salvarERenderizarMasculino = function() {
+    localStorage.setItem('suiri_manutencao_masc', JSON.stringify(window.dadosManutencaoGaragem));
+    window.renderizarListasMasculinas();
+};
+
+window.renderizarListasMasculinas = function() {
+    const contManut = document.getElementById('lista-manutencao-garagem');
+    if (contManut) {
+        if (window.dadosManutencaoGaragem.length === 0) {
+            contManut.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:4px;">Nenhuma manutenção pendente.</span>';
+        } else {
+            contManut.innerHTML = window.dadosManutencaoGaragem.map(item => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:12px; border:1px solid #334155;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1;">
+                        <input type="checkbox" onchange="window.alternarManutencao('${item.id}')" ${item.concluido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#f97316;">
+                        <span style="font-size:12.5px; color:#f8fafc; font-weight:600; ${item.concluido ? 'text-decoration:line-through; color:#64748b;' : ''}">${item.titulo}</span>
+                    </label>
+                    <button type="button" onclick="window.removerManutencao('${item.id}')" style="background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center;" title="Remover">
+                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+
+    window.calcularOfensivaForja();
+
+    // Sincroniza sliders
+    if (window.dadosRadarIntimo) {
+        const inDt = document.getElementById('slider-data-relacao');
+        const rngE = document.getElementById('range-energia');
+        const rngS = document.getElementById('range-estresse');
+        const rngL = document.getElementById('range-libido');
+
+        if (inDt) inDt.value = window.dadosRadarIntimo.ultima_relacao || '';
+        if (rngE) rngE.value = window.dadosRadarIntimo.energia || 5;
+        if (rngS) rngS.value = window.dadosRadarIntimo.estresse || 5;
+        if (rngL) rngL.value = window.dadosRadarIntimo.libido || 5;
+
+        window.atualizarRotuloSlider('energia');
+        window.atualizarRotuloSlider('estresse');
+        window.atualizarRotuloSlider('libido');
+    }
+};
+
+// =========================================================================
+// 9. SINCRONIZAÇÃO EM NUVEM (SUPABASE)
+// =========================================================================
+
+window.carregarDadosNuvemEspacoMasculino = async function() {
+    const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
+    const meuId = window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || null);
+    if (!cli || !meuId) return;
+
+    try {
+        const { data: dRadar } = await cli.from('espaco_masc_radar').select('*').eq('membro_id', meuId).maybeSingle();
+        if (dRadar) {
+            window.dadosRadarIntimo.ultima_relacao = dRadar.ultima_relacao;
+            window.dadosRadarIntimo.energia = dRadar.energia || 5;
+            window.dadosRadarIntimo.estresse = dRadar.estresse || 5;
+            window.dadosRadarIntimo.libido = dRadar.libido || 5;
+        }
+
+        const { data: dListas } = await cli.from('espaco_masc_listas').select('*').eq('membro_id', meuId).order('criado_em', { ascending: true });
+        if (dListas) {
+            window.dadosManutencaoGaragem = dListas.filter(l => l.tipo === 'manutencao');
+        }
+
+        window.renderizarListasMasculinas();
+    } catch (err) {
+        console.warn("Sem conexão remota para o módulo masculino:", err);
+    }
+};
+
+// =========================================================================
+// 10. DISPARO AUTOMÁTICO SE A TELA ESTIVER CARREGADA DIRETAMENTE (HOMEM.HTML)
+// =========================================================================
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.getElementById('secao-espaco-masculino')) {
+            window.PlayerMasc.iniciar();
+        }
+    });
+} else {
+    if (document.getElementById('secao-espaco-masculino')) {
+        window.PlayerMasc.iniciar();
+    }
 }
