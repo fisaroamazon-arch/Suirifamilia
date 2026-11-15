@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Suiri - Espaço Masculino</title>
 
-    <!-- Configurações e Cores da Forja Romana / Medieval -->
-    <meta name="theme-color" content="#0c0f14">
+    <!-- Configurações e Cores do Espaço Masculino (Fundo Papel Claro & Verde Intenso) -->
+    <meta name="theme-color" content="#fcfaf7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="icone.jpg">
 
     <!-- Tipografia e Estilos Dedicados -->
@@ -22,78 +22,41 @@
 
     <style>
         :root {
-            /* Paleta Forja Romana / Ferro Forjado & Brasas */
-            --cor-primaria-masc: #f97316;
-            --cor-secundaria-masc: #ea580c;
-            --texto-titulo-masc: #f8fafc;
-            --bg-forja: #181d28;
-            --borda-masc: #334155;
-            --cor-aco: #94a3b8;
-            --cor-brasa: #ffedd5;
+            /* Paleta Nobre: Papel Claro Arejado & Verde Intenso Vibrante */
+            --bg-papel: #fbf9f5;
+            --bg-card: #ffffff;
+            --texto-titulo: #0f172a;
+            --texto-corpo: #334155;
+            --texto-suave: #64748b;
+            
+            --borda-suave: #e2e8f0;
+            --borda-verde: #16a34a;
+            
+            /* Verdes Intensos */
+            --verde-intenso: #16a34a;
+            --verde-xbox-vivo: #15803d;
+            --verde-luz: #22c55e;
+            --verde-suave-bg: #f0fdf4;
         }
 
-        /* =========================================================================
-           CAMADA 0: VÍDEO DE FUNDO 1080p ADAPTATIVO TELA CHEIA (SEM ESTOURAR)
-           ========================================================================= */
-        #container-video-fundo {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            overflow: hidden !important;
-            z-index: 0 !important;
-            pointer-events: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-        }
-
-        #video-cenario-fundo {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100% !important;
-            max-height: 100% !important;
-            object-fit: cover !important;
-            object-position: center center !important;
-            pointer-events: none !important;
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-            filter: blur(0px);
-            -webkit-filter: blur(0px);
-            transition: filter 2.5s ease, -webkit-filter 2.5s ease;
-        }
-
-        body.modo-vidro #video-cenario-fundo {
-            filter: blur(4px);
-            -webkit-filter: blur(4px);
-        }
-
-        #container-video-fundo::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: transparent !important;
-            pointer-events: none;
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            background: transparent !important;
+            /* Fundo branco claro com textura sutil de fibra/papel */
+            background-color: #faf8f5 !important;
+            background-image: radial-gradient(#e5e0d8 0.75px, transparent 0.75px), radial-gradient(#e5e0d8 0.75px, #faf8f5 0.75px) !important;
+            background-size: 24px 24px !important;
+            background-position: 0 0, 12px 12px !important;
             min-height: 100vh;
-            padding: 14px 10px 45px 10px;
-            color: #e2e8f0;
+            padding: 16px 12px 65px 12px;
+            color: #334155;
             overflow-x: hidden;
             display: flex;
             justify-content: center;
             position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         .container-homem {
@@ -114,59 +77,32 @@
         }
 
         /* =========================================================================
-           TRANSPARÊNCIA TOTAL DOS QUADROS E TRANSIÇÃO GRADUAL PARA VIDRO
+           ESTRUTURA DOS QUADROS: BRANCO ACETINADO COM DESTAQUE VERDE INTENSO
            ========================================================================= */
         .cartao-geral {
-            background: transparent !important;
-            border: 1.5px solid rgba(249, 115, 22, 0.45) !important;
-            border-left: 4px solid #ea580c !important;
-            backdrop-filter: blur(0px) !important;
-            -webkit-backdrop-filter: blur(0px) !important;
-            box-shadow: none !important;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-left: 4px solid #16a34a !important;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04) !important;
             border-radius: 18px !important;
-            color: #f8fafc !important;
-            transition: background 2.5s ease, backdrop-filter 2.5s ease, -webkit-backdrop-filter 2.5s ease, box-shadow 2.5s ease, border-color 2.5s ease !important;
+            color: #0f172a !important;
+            padding: 18px 16px !important;
+            margin-bottom: 16px !important;
         }
 
-        .cartao-geral div[style*="background"],
-        .cartao-geral input[type="text"],
-        .cartao-geral input[type="date"],
-        .cartao-geral label[style*="background"] {
-            background: rgba(15, 20, 30, 0.15) !important;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-            transition: background 2.5s ease, border-color 2.5s ease !important;
-        }
-
-        body.modo-vidro .cartao-geral {
-            background: rgba(15, 20, 30, 0.72) !important;
-            border: 1px solid rgba(148, 163, 184, 0.28) !important;
-            border-left: 4px solid #ea580c !important;
-            backdrop-filter: blur(14px) !important;
-            -webkit-backdrop-filter: blur(14px) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
-        }
-
-        body.modo-vidro .cartao-geral div[style*="background"],
-        body.modo-vidro .cartao-geral label[style*="background"] {
-            background: rgba(30, 41, 59, 0.65) !important;
-            border-color: rgba(71, 85, 105, 0.5) !important;
-        }
-
-        body.modo-vidro .cartao-geral input[type="text"],
-        body.modo-vidro .cartao-geral input[type="date"] {
-            background: rgba(15, 23, 42, 0.75) !important;
-            border-color: rgba(71, 85, 105, 0.6) !important;
-        }
-
-        .cartao-geral p, .cartao-geral span, .cartao-geral strong, .cartao-geral h1, .cartao-geral h3 {
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 2px #000000;
+        .cartao-geral p, 
+        .cartao-geral span, 
+        .cartao-geral strong, 
+        .cartao-geral h1, 
+        .cartao-geral h3 {
+            text-shadow: none !important;
         }
 
         img[src*="./icone/"],
         img[src*="icone/"],
         .icone-svg,
         .icone-sistema-img {
-            transform: scale(1.2);
+            transform: scale(1.1);
             transform-origin: center center;
             display: inline-block;
             vertical-align: middle;
@@ -180,88 +116,25 @@
         }
 
         /* =========================================================================
-           CAMADA 1: ANIMAÇÃO DE FAGULHAS E BRASAS EXPANDIDA
+           REPRODUTOR MUSICAL SÓBRIO & VERDE INTENSO
            ========================================================================= */
-        #container-fogo-fundo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .brasa-suiri {
-            position: absolute;
-            bottom: -35px;
-            background: radial-gradient(circle, rgba(254, 215, 170, 1) 0%, rgba(249, 115, 22, 0.9) 35%, rgba(239, 68, 68, 0.65) 70%, rgba(185, 28, 28, 0) 100%);
-            border-radius: 50%;
-            filter: blur(0.5px);
-            box-shadow: 0 0 14px rgba(249, 115, 22, 0.85), 0 0 4px rgba(254, 215, 170, 0.9);
-            animation: subirBrasa linear infinite;
-        }
-
-        @keyframes subirBrasa {
-            0% { 
-                transform: translateY(0) scale(0.5) translateX(0); 
-                opacity: 0; 
-            }
-            12% { 
-                opacity: 0.95; 
-            }
-            45% { 
-                transform: translateY(-45vh) scale(1.15) translateX(16px); 
-                opacity: 0.85; 
-            }
-            75% { 
-                transform: translateY(-80vh) scale(0.85) translateX(-12px); 
-                opacity: 0.6; 
-            }
-            100% { 
-                transform: translateY(-115vh) scale(0.35) translateX(18px); 
-                opacity: 0; 
-            }
-        }
-
-        .brasa-1  { left: 4%;  width: 5px; height: 8px;  animation-duration: 7.5s; animation-delay: 0s; }
-        .brasa-2  { left: 10%; width: 8px; height: 12px; animation-duration: 9.5s; animation-delay: 1.2s; }
-        .brasa-3  { left: 16%; width: 4px; height: 7px;  animation-duration: 6.8s; animation-delay: 3.5s; }
-        .brasa-4  { left: 22%; width: 9px; height: 13px; animation-duration: 11.2s; animation-delay: 0.6s; }
-        .brasa-5  { left: 28%; width: 6px; height: 10px; animation-duration: 8.2s; animation-delay: 4.1s; }
-        .brasa-6  { left: 34%; width: 4px; height: 6px;  animation-duration: 6.2s; animation-delay: 2.3s; }
-        .brasa-7  { left: 40%; width: 7px; height: 11px; animation-duration: 10.5s; animation-delay: 5.0s; }
-        .brasa-8  { left: 47%; width: 5px; height: 8px;  animation-duration: 7.8s; animation-delay: 1.8s; }
-        .brasa-9  { left: 53%; width: 10px; height: 15px; animation-duration: 12.0s; animation-delay: 0.3s; }
-        .brasa-10 { left: 60%; width: 4px; height: 7px;  animation-duration: 6.5s; animation-delay: 3.1s; }
-        .brasa-11 { left: 66%; width: 8px; height: 12px; animation-duration: 9.8s; animation-delay: 4.7s; }
-        .brasa-12 { left: 72%; width: 6px; height: 9px;  animation-duration: 8.4s; animation-delay: 2.0s; }
-        .brasa-13 { left: 78%; width: 4px; height: 6px;  animation-duration: 6.9s; animation-delay: 5.6s; }
-        .brasa-14 { left: 83%; width: 9px; height: 14px; animation-duration: 10.8s; animation-delay: 1.0s; }
-        .brasa-15 { left: 88%; width: 5px; height: 8px;  animation-duration: 7.2s; animation-delay: 3.8s; }
-        .brasa-16 { left: 93%; width: 7px; height: 11px; animation-duration: 9.0s; animation-delay: 0.8s; }
-        .brasa-17 { left: 48%; width: 3px; height: 5px;  animation-duration: 5.8s; animation-delay: 4.3s; }
-        .brasa-18 { left: 96%; width: 4px; height: 7px;  animation-duration: 6.6s; animation-delay: 2.7s; }
-
-        /* Estilos dedicados ao reprodutor do Homem */
         .painel-player-homem {
-            background: rgba(15, 23, 42, 0.88);
-            border: 1.5px solid #334155;
-            border-radius: 16px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #16a34a;
+            border-radius: 18px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
         }
+
         .btn-ctrl-homem {
-            background: #1e293b;
-            border: 1px solid #475569;
-            color: #f8fafc;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -269,59 +142,168 @@
             font-size: 13px;
             transition: all 0.2s ease;
         }
+
         .btn-ctrl-homem:active {
             transform: scale(0.92);
-        }
-        .btn-ctrl-homem.ativo {
-            background: #ea580c;
-            border-color: #f97316;
+            background: #16a34a;
             color: #ffffff;
+        }
+
+        .btn-ctrl-homem.ativo {
+            background: #16a34a;
+            border-color: #15803d;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+        }
+    
+        /* =========================================================================
+           BARRAS DESLIZANTES ULTRA VIVAS & PULSANTES (TEMA VERDE ENERGIA)
+           ========================================================================= */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 999px;
+            outline: none;
+            border: 1px solid #86efac;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 6px 0;
+        }
+
+        input[type="range"]:focus {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+        }
+
+        /* WebKit (Chrome, Safari, Edge, Android WebView) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+            border: 3px solid #ffffff;
+            box-shadow: 0 3px 10px rgba(22, 163, 74, 0.55), 0 0 6px rgba(34, 197, 94, 0.6);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.22);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.75), 0 0 12px rgba(74, 222, 128, 0.9);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+            border: 3px solid #ffffff;
+            box-shadow: 0 3px 10px rgba(22, 163, 74, 0.55), 0 0 6px rgba(34, 197, 94, 0.6);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.22);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.75), 0 0 12px rgba(74, 222, 128, 0.9);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 999px;
+            height: 10px;
+            border: 1px solid #86efac;
+        }
+
+            /* =========================================================================
+           BARRAS DESLIZANTES FINAS, ELEGANTES & INDIVIDUAIS
+           ========================================================================= */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            margin: 6px 0;
+            transition: opacity 0.2s ease;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        /* WebKit (Android WebView, Chrome, Safari) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: currentColor;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.25);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: currentColor;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.25);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 6px;
+            border: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- CAMADA 0: VÍDEO 1080P EM TELA CHEIA (CONGELA NO ÚLTIMO FRAME) -->
-    <div id="container-video-fundo">
-        <video id="video-cenario-fundo" muted autoplay playsinline webkit-playsinline preload="auto">
-            <source src="fogo.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <!-- CAMADA 1: FLUXO DE FAGULHAS E BRASAS FLUTUANTES -->
-    <div id="container-fogo-fundo">
-        <div class="brasa-suiri brasa-1"></div>
-        <div class="brasa-suiri brasa-2"></div>
-        <div class="brasa-suiri brasa-3"></div>
-        <div class="brasa-suiri brasa-4"></div>
-        <div class="brasa-suiri brasa-5"></div>
-        <div class="brasa-suiri brasa-6"></div>
-        <div class="brasa-suiri brasa-7"></div>
-        <div class="brasa-suiri brasa-8"></div>
-        <div class="brasa-suiri brasa-9"></div>
-        <div class="brasa-suiri brasa-10"></div>
-        <div class="brasa-suiri brasa-11"></div>
-        <div class="brasa-suiri brasa-12"></div>
-        <div class="brasa-suiri brasa-13"></div>
-        <div class="brasa-suiri brasa-14"></div>
-        <div class="brasa-suiri brasa-15"></div>
-        <div class="brasa-suiri brasa-16"></div>
-        <div class="brasa-suiri brasa-17"></div>
-        <div class="brasa-suiri brasa-18"></div>
-    </div>
-
     <main class="container-homem">
         <!-- REPRODUTOR DINÂMICO CONECTADO AO LISTA-MUSICAS.JS -->
         <div class="painel-player-homem">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px;">
                 <div style="min-width: 0; flex: 1;">
                     <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 13px;">🎵</span>
-                        <strong id="player-homem-titulo" style="font-size: 12.5px; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">
+                        <span style="font-size: 14px;">🎵</span>
+                        <strong id="player-homem-titulo" style="font-size: 13px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-weight: 800;">
                             Carregando faixas...
                         </strong>
                     </div>
-                    <span id="player-homem-compositor" style="font-size: 11px; color: #fb923c; font-weight: 700; margin-left: 20px; display: block;">
+                    <span id="player-homem-compositor" style="font-size: 11px; color: #16a34a; font-weight: 700; margin-left: 20px; display: block;">
                         Felipe Sales
                     </span>
                 </div>
@@ -334,7 +316,7 @@
 
                 <!-- Botão para Abrir a Gaveta de Músicas Favoritas -->
                 <button type="button" id="btn-player-abrir-gaveta" onclick="window.PlayerHomem.alternarPainelFavoritas()" 
-                        style="background: #1e293b; border: 1px solid #475569; color: #38bdf8; border-radius: 10px; padding: 6px 9px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                        style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; border-radius: 10px; padding: 6px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
                     ⭐ <span id="contador-player-favoritas">0</span>
                 </button>
             </div>
@@ -352,7 +334,7 @@
                 </button>
 
                 <!-- Pausa / Play -->
-                <button type="button" id="btn-player-toggle" class="btn-ctrl-homem" style="width: 38px; height: 38px; font-size: 16px; background: #ea580c; border-color: #f97316;" onclick="window.PlayerHomem.alternarPlay()" title="Reproduzir / Pausar">
+                <button type="button" id="btn-player-toggle" class="btn-ctrl-homem" style="width: 42px; height: 42px; font-size: 17px; background: #16a34a; border-color: #15803d; color: #ffffff; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);" onclick="window.PlayerHomem.alternarPlay()" title="Reproduzir / Pausar">
                     ▶
                 </button>
 
@@ -363,15 +345,15 @@
             </div>
 
             <!-- Gaveta Retrátil de Músicas Favoritas com Reprodução Exclusiva -->
-            <div id="gaveta-player-favoritas" class="oculto" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #334155;">
+            <div id="gaveta-player-favoritas" class="oculto" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-size: 11.5px; font-weight: 800; color: #fbbf24;">Músicas com Coração</span>
+                    <span style="font-size: 11.5px; font-weight: 800; color: #d97706;">Músicas Selecionadas</span>
                     <button type="button" id="btn-player-tocar-so-favoritas" onclick="window.PlayerHomem.tocarApenasFavoritas()" 
-                            style="background: #10b981; color: #ffffff; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                            style="background: #16a34a; color: #ffffff; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
                         ▶ Tocar Favoritas
                     </button>
                 </div>
-                <div id="lista-player-favoritas-itens" style="display: flex; flex-direction: column; gap: 5px; max-height: 160px; overflow-y: auto;">
+                <div id="lista-player-favoritas-itens" style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto;">
                     <!-- Itens renderizados via JavaScript -->
                 </div>
             </div>
@@ -388,7 +370,7 @@
     <script src="app-dicas-masculinas.js"></script>
     <script src="app-espaco-masculino.js"></script>
 
-    <!-- MOTOR DO PLAYER HOMEM (LÊ DIRETAMENTE DO LISTA-MUSICAS.JS COM ZERO TRAVAMENTOS) -->
+    <!-- MOTOR DO PLAYER HOMEM -->
     <script>
         window.PlayerHomem = {
             audio: null,
@@ -428,12 +410,10 @@
                     });
 
                     this.audio.addEventListener('error', () => {
-                        // Se houver qualquer falha física no arquivo, avança suavemente para a próxima faixa válida
                         this.avancar(this.deveTocarSalvo);
                     });
                 }
 
-                // Resgata o último índice salvo na memória
                 const ultimoIdx = parseInt(localStorage.getItem('suiri_homem_idx_atual') || '0', 10);
                 this.indiceAtual = (ultimoIdx >= 0 && ultimoIdx < catalogo.length) ? ultimoIdx : 0;
 
@@ -441,7 +421,6 @@
                 this.atualizarInterface();
                 this.renderizarListaFavoritas();
 
-                // Retoma caso a última sessão tenha sido deixada tocando
                 if (this.deveTocarSalvo) {
                     const promessa = this.audio.play();
                     if (promessa !== undefined) {
@@ -600,7 +579,7 @@
             tocarApenasFavoritas: function() {
                 if (this.favoritas.length === 0) {
                     if (typeof window.mostrarToast === 'function') {
-                        window.mostrarToast("Nenhuma música favoritada ainda. Toque no coração 🤍 para favoritar!", "erro");
+                        window.mostrarToast("Nenhuma música favoritada ainda. Toque no coração para favoritar!", "erro");
                     }
                     return;
                 }
@@ -618,7 +597,7 @@
 
                 this.atualizarInterface();
                 if (typeof window.mostrarToast === 'function') {
-                    window.mostrarToast("Reproduzindo apenas músicas favoritas! ⭐", "sucesso");
+                    window.mostrarToast("Reproduzindo apenas músicas selecionadas! ⭐", "sucesso");
                 }
             },
 
@@ -630,7 +609,7 @@
                 if (!cont) return;
 
                 if (this.favoritas.length === 0) {
-                    cont.innerHTML = '<span style="font-size: 11px; color: #94a3b8; text-align: center; display: block; padding: 4px;">Nenhuma faixa favoritada.</span>';
+                    cont.innerHTML = '<span style="font-size: 11px; color: #64748b; text-align: center; display: block; padding: 4px;">Nenhuma faixa favoritada.</span>';
                     return;
                 }
 
@@ -641,12 +620,12 @@
                     const idxNoCatalogo = catalogo.findIndex(m => m.arquivo === arq);
 
                     return `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 6px 10px; border-radius: 8px; border: 1px solid #334155;">
-                            <span style="font-size: 11.5px; color: #f8fafc; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <span style="font-size: 11.5px; color: #0f172a; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;">
                                 ${item.titulo} - Felipe Sales
                             </span>
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <button type="button" onclick="window.PlayerHomem.carregarPorIndice(${idxNoCatalogo}, true)" style="background: #ea580c; border: none; color: #fff; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
+                                <button type="button" onclick="window.PlayerHomem.carregarPorIndice(${idxNoCatalogo}, true)" style="background: #16a34a; border: none; color: #fff; padding: 4px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer;">
                                     ▶ Tocar
                                 </button>
                                 <button type="button" onclick="window.PlayerHomem.removerFavoritoDireto('${arq}')" style="background: none; border: none; cursor: pointer; color: #ef4444; font-size: 13px; line-height: 1;">
@@ -704,7 +683,7 @@
                         btnSoFav.style.background = '#d97706';
                         btnSoFav.textContent = '★ Favoritas Ativas';
                     } else {
-                        btnSoFav.style.background = '#10b981';
+                        btnSoFav.style.background = '#16a34a';
                         btnSoFav.textContent = '▶ Tocar Favoritas';
                     }
                 }
@@ -714,48 +693,9 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
-            const vidFundo = document.getElementById('video-cenario-fundo');
-            if (vidFundo) {
-                vidFundo.muted = true;
-                vidFundo.defaultMuted = true;
-                vidFundo.setAttribute('muted', '');
-                vidFundo.setAttribute('playsinline', '');
-                vidFundo.setAttribute('webkit-playsinline', '');
-
-                vidFundo.addEventListener('ended', () => {
-                    vidFundo.pause();
-                });
-
-                const dispararVideoIos = () => {
-                    vidFundo.muted = true;
-                    vidFundo.defaultMuted = true;
-                    const promessa = vidFundo.play();
-                    if (promessa !== undefined) {
-                        promessa.catch(() => {
-                            vidFundo.load();
-                            vidFundo.play().catch(() => {});
-                        });
-                    }
-                };
-
-                vidFundo.load();
-                dispararVideoIos();
-
-                document.body.addEventListener('touchstart', () => {
-                    if (vidFundo.paused && !vidFundo.ended) {
-                        dispararVideoIos();
-                    }
-                }, { once: true });
-            }
-
-            // Inicia o player integrado ao catálogo externo lista-musicas.js
             if (window.PlayerHomem && typeof window.PlayerHomem.iniciar === 'function') {
                 window.PlayerHomem.iniciar();
             }
-
-            setTimeout(() => {
-                document.body.classList.add('modo-vidro');
-            }, 8000);
 
             const perfilRaw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
             let perfil = {};
@@ -787,9 +727,13 @@
                 if (typeof window.renderizarReflexaoEstoica === 'function') window.renderizarReflexaoEstoica(false);
                 if (typeof window.renderizarListaFavoritasEstoicas === 'function') window.renderizarListaFavoritasEstoicas();
                 if (typeof window.renderizarBotoesForja === 'function') window.renderizarBotoesForja();
+                if (typeof window.renderizarPainelEvolucaoForja === 'function') window.renderizarPainelEvolucaoForja();
                 if (typeof window.renderizarHistoricoForja === 'function') window.renderizarHistoricoForja();
+                if (typeof window.renderizarGraficoETendenciasEstadoDiario === 'function') window.renderizarGraficoETendenciasEstadoDiario();
+                if (typeof window.renderizarGraficoETendenciasRadar === 'function') window.renderizarGraficoETendenciasRadar();
                 if (typeof window.renderizarHistoricoRadarIntimo === 'function') window.renderizarHistoricoRadarIntimo();
                 if (typeof window.atualizarVisualizacaoMidia === 'function') window.atualizarVisualizacaoMidia();
+                if (typeof window.renderizarHistoricoQueroVerMasc === 'function') window.renderizarHistoricoQueroVerMasc();
                 if (typeof window.renderizarHistoricoAssistidos === 'function') window.renderizarHistoricoAssistidos();
                 if (typeof window.renderizarListasMasculinas === 'function') window.renderizarListasMasculinas();
 

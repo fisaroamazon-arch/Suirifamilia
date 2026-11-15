@@ -1,111 +1,19 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
-// Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço)
-// Gamificação: Níveis XP, Conquistas, Metas Semanais e Mensais
-// Radar com Gráfico SVG Temporal, Comparador de Semanas e Tendências
-// Curadoria Expandida (200 Filmes & 250 Séries) com Botão Aleatório 🔀
-// Integração Oficial OMDb API (Chave: a007e759) com Cache Local Seguro
+// Reorganização Oficial do Layout: 
+// 1. Princípio do Dia
+// 2. A Forja (Missões + Estado Diário: Humor, Mente Serena, Disposição, Foco)
+// 3. Arsenal Prático (Doutrina Física & Nutrição com Sorteio)
+// 4. Radar Pessoal & Vida a Dois (Libido, Performance Própria, Satisfação Parceira)
+// 5. Filmes & Séries
+// 6. Trincheira Sonora & Digital
+// 7. Oficina & Garagem
 // =========================================================================
 
-// CONFIGURAÇÃO DA API OMDB
-window.OMDB_API_KEY = 'a007e759';
+// CONFIGURAÇÃO DA API TMDB
+window.TMDB_API_KEY = '340bf11ebbaf9247c353e8eb6dc824b4';
 
-// 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO)
-window.AcervoReflexoesEstoicas365 = window.AcervoReflexoesEstoicas365 || [
-    { data: "1 de janeiro", autor: "Epiteto, Encheiridion, 23", texto: "Se você voltar sua atenção para as coisas exteriores, para o prazer de qualquer pessoa, esteja certo de que terá arruinado seu propósito de vida. Contente-se, então, em ser sábio; e se você deseja parecer assim para alguém, pareça assim a você mesmo, e isso lhe bastará." },
-    { data: "2 de janeiro", autor: "Marco Aurélio, Meditações, 8, 12", texto: "Quando você hesita em lutar para se levantar, lembre-se de que a socialização está de acordo com a sua constituição e com a natureza humana. O sono também é comum para os seres irracionais." },
-    { data: "3 de janeiro", autor: "Marco Aurélio, Meditações, 6, 22", texto: "Cumpro meu dever e, de resto, não me distraio com nada que careça de vida ou de razão, ou com quem tenha perdido ou ignorado o caminho correto." }
-];
-
-window.AcervoDinamicaADois = window.AcervoDinamicaADois || [
-    "❤️ Comunicação: Falar com clareza sobre o que sente ou precisa não é fraqueza. A sua parceira é aliada, não plateia.",
-    "🔋 Testosterona & Libido: O estresse crônico destrói o vigor masculino. Aprenda a fechar o ciclo de trabalho e desligar a mente.",
-    "❤️ Convivência: Surpreenda na rotina doméstica. O suporte proativo na casa comunica respeito e parceria muito além das palavras.",
-    "🔋 Vitalidade: O sono profundo e contínuo é o maior regulador hormonal do homem. Proteja o seu horário de deitar.",
-    "❤️ Presença: Esteja por inteiro quando estiver em família. Largue o telemóvel nos momentos de conversa e descanso a dois."
-];
-
-window.AcervoArsenalPratico = window.AcervoArsenalPratico || [
-    "💪 Calistenia: Ao executar flexões de braço, mantenha os cotovelos a 45º do tronco para proteger os ombros e focar no peitoral.",
-    "🥩 Nutrição: Garanta uma fonte limpa de proteína em todas as refeições. Ela constrói massa muscular e mantém a saciedade alta.",
-    "💪 Calistenia: Na barra fixa, complete o movimento até o peito encostar na linha e estenda quase todo o braço na descida.",
-    "💧 Hidratação: Comece a manhã com 500 ml de água antes do primeiro café. Isso reidrata o cérebro e ativa o metabolismo.",
-    "🥩 Nutrição: Evite calorias vazias em bebidas açucaradas ao longo do dia. A constância de energia vem de comida de verdade."
-];
-
-// Playlists do Spotify
-window.CatalogoPlaylistsSpotify = window.CatalogoPlaylistsSpotify || [
-    {
-        id: "sp1",
-        titulo: "Forja & Treino Brutal",
-        subtitulo: "Heavy Metal, Hard Rock & Synthwave de Alta Tensão",
-        icone: "🔥",
-        tag: "Treino Pesado",
-        link: "https://open.spotify.com/search/heavy%20workout%20metal"
-    },
-    {
-        id: "sp2",
-        titulo: "Foco Profundo & Guerra Mental",
-        subtitulo: "Dark Ambient, Lo-Fi e Instrumentais Sem Distração",
-        icone: "⚡",
-        tag: "Foco Profundo",
-        link: "https://open.spotify.com/search/deep%20focus%20instrumental"
-    },
-    {
-        id: "sp3",
-        titulo: "Trilhas Épicas de Cinema",
-        subtitulo: "Hans Zimmer, Howard Shore & Clássicos de Guerra",
-        icone: "🏛️",
-        tag: "Inspiração",
-        link: "https://open.spotify.com/search/epic%20soundtracks%20hans%20zimmer"
-    },
-    {
-        id: "sp4",
-        titulo: "Descompressão & Noite Serena",
-        subtitulo: "Jazz Acústico, Lareira e Sons Calmantes",
-        icone: "🌙",
-        tag: "Relaxamento",
-        link: "https://open.spotify.com/search/calm%20night%20jazz"
-    }
-];
-
-// Canais do YouTube
-window.CatalogoCanaisYoutube = window.CatalogoCanaisYoutube || [
-    {
-        id: "yt1",
-        titulo: "Daily Stoic / Filosofia Prática",
-        categoria: "Caráter & Estoicismo",
-        desc: "Ensaios diários sobre disciplina, virtude estoica e controle mental sob adversidade.",
-        icone: "🏛️",
-        link: "https://www.youtube.com/c/DailyStoic"
-    },
-    {
-        id: "yt2",
-        titulo: "Calistenia & Treinamento Físico",
-        categoria: "Força & Domínio Corporal",
-        desc: "Execução perfeita de flexões, barras, mobilidade e construção de massa magra.",
-        icone: "💪",
-        link: "https://www.youtube.com/results?search_query=calistenia+iniciante+e+avançado"
-    },
-    {
-        id: "yt3",
-        titulo: "Oficina, Restauro & Mecânica",
-        categoria: "Garagem & Habilidade Manual",
-        desc: "Projetos de carpintaria, reparo de motores, ferramentas e engenharia caseira.",
-        icone: "🛠️",
-        link: "https://www.youtube.com/results?search_query=projetos+de+oficina+e+marcenaria"
-    },
-    {
-        id: "yt4",
-        titulo: "Postura, Oratória & Finanças",
-        categoria: "Liderança Executiva",
-        desc: "Negociação de alto nível, inteligência emocional e construção de patrimônio familiar.",
-        icone: "💼",
-        link: "https://www.youtube.com/results?search_query=comunicacao+assertiva+e+negociacao"
-    }
-];
-
-// 2. PERSISTÊNCIA E CHAVES DINÂMICAS POR UTILIZADOR
+// 1. PERSISTÊNCIA E CHAVES DINÂMICAS POR UTILIZADOR
 window.obterIdUsuarioMasc = function() {
     return window.obterUsuarioId ? window.obterUsuarioId() : (window.perfilAtual?.id || 'padrao');
 };
@@ -127,7 +35,8 @@ window.missoesPadraoForja = [
 // Carregamento de dados com chaves seguras
 window.configMissoesForja = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('config_missoes'))) || window.missoesPadraoForja;
 window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('forja_diaria'))) || {};
-window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
+window.dadosEstadoDiario = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estado_diario'))) || { humor: 5, estresse: 5, fisico: 5, mental: 5, historico: [] };
+window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { libido: 5, realizacao: 5, parceira: 5, ultima_relacao: null, historico: [] };
 window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
 window.dadosMidiaAssistida = JSON.parse(localStorage.getItem('suiri_midia_assistida')) || [];
 window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
@@ -137,67 +46,121 @@ window.dadosAcervoLazer = JSON.parse(localStorage.getItem('suiri_lazer_masc')) |
 window.reflexaoEstoicaExibidaAtual = null;
 window.indiceMidiaAtual = { filmes: 0, series: 0 };
 window.abaMidiaAtiva = 'filmes';
+window.modoNavegacaoMidia = 'aleatorio';
 window.itemMidiaAtualmenteExibido = null;
 
 // =========================================================================
-// 2.1. MOTOR DE ENRIQUECIMENTO OMDB COM CACHE LOCAL
+// 2. MOTOR DE ENRIQUECIMENTO TMDB COM CACHE LOCAL (V5 - PT-BR + STREAMING)
 // =========================================================================
-window.obterDadosOMDbComCache = async function(item) {
+window.obterDadosTMDbComCache = async function(item) {
     if (!item) return null;
 
-    const idCache = item.imdbId || item.titulo.toLowerCase().trim();
-    const chaveStorage = `suiri_omdb_cache_${idCache}`;
+    const idCache = item.imdbId || (item.tituloOriginal ? item.tituloOriginal.toLowerCase().trim() : item.titulo.toLowerCase().trim());
+    const chaveStorage = `suiri_tmdb_cache_v5_${idCache}`;
 
     const cache = localStorage.getItem(chaveStorage);
     if (cache) {
         try {
-            return JSON.parse(cache);
+            const objCache = JSON.parse(cache);
+            if (objCache && (objCache.poster || objCache.sinopse)) {
+                return objCache;
+            }
         } catch (e) {}
     }
 
-    if (!window.OMDB_API_KEY) return null;
+    if (!window.TMDB_API_KEY) return null;
 
     try {
-        let url = '';
+        let tmdbId = null;
+        let tipoMidia = (window.abaMidiaAtiva === 'series') ? 'tv' : 'movie';
+        let dadosItem = null;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7500);
+
         if (item.imdbId && item.imdbId.startsWith('tt')) {
-            url = `https://www.omdbapi.com/?apikey=${window.OMDB_API_KEY}&i=${item.imdbId}`;
-        } else {
-            const queryTitulo = item.tituloOriginal || item.titulo;
-            url = `https://www.omdbapi.com/?apikey=${window.OMDB_API_KEY}&t=${encodeURIComponent(queryTitulo)}`;
-            if (item.ano) {
-                const anoLimpo = String(item.ano).substring(0, 4);
-                url += `&y=${anoLimpo}`;
+            const urlFind = `https://api.themoviedb.org/3/find/${item.imdbId}?api_key=${window.TMDB_API_KEY}&external_source=imdb_id&language=pt-BR`;
+            const respFind = await fetch(urlFind, { signal: controller.signal });
+            const dataFind = await respFind.json();
+
+            if (dataFind.movie_results && dataFind.movie_results.length > 0) {
+                dadosItem = dataFind.movie_results[0];
+                tipoMidia = 'movie';
+                tmdbId = dadosItem.id;
+            } else if (dataFind.tv_results && dataFind.tv_results.length > 0) {
+                dadosItem = dataFind.tv_results[0];
+                tipoMidia = 'tv';
+                tmdbId = dadosItem.id;
             }
         }
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6500);
+        if (!dadosItem) {
+            const queryTitulo = item.tituloOriginal || item.titulo;
+            const urlBusca = `https://api.themoviedb.org/3/search/${tipoMidia}?api_key=${window.TMDB_API_KEY}&query=${encodeURIComponent(queryTitulo)}&language=pt-BR&page=1`;
+            const respBusca = await fetch(urlBusca, { signal: controller.signal });
+            const dataBusca = await respBusca.json();
 
-        const response = await fetch(url, { signal: controller.signal });
+            if (dataBusca.results && dataBusca.results.length > 0) {
+                dadosItem = dataBusca.results[0];
+                tmdbId = dadosItem.id;
+            }
+        }
+
+        if (!dadosItem || !tmdbId) {
+            clearTimeout(timeoutId);
+            return null;
+        }
+
+        let provedores = [];
+        let linkJustWatch = `https://www.themoviedb.org/${tipoMidia}/${tmdbId}/watch?locale=BR`;
+        try {
+            const urlProviders = `https://api.themoviedb.org/3/${tipoMidia}/${tmdbId}/watch/providers?api_key=${window.TMDB_API_KEY}`;
+            const respProv = await fetch(urlProviders, { signal: controller.signal });
+            const dataProv = await respProv.json();
+
+            if (dataProv.results && dataProv.results.BR) {
+                const regiaoBR = dataProv.results.BR;
+                linkJustWatch = regiaoBR.link || linkJustWatch;
+
+                const listaFlatrate = regiaoBR.flatrate || [];
+                const listaRent = regiaoBR.rent || [];
+                const listaBuy = regiaoBR.buy || [];
+
+                const mapProvedores = new Map();
+                listaFlatrate.forEach(p => mapProvedores.set(p.provider_name, { nome: p.provider_name, tipo: 'Streaming' }));
+                listaRent.forEach(p => {
+                    if (!mapProvedores.has(p.provider_name)) mapProvedores.set(p.provider_name, { nome: p.provider_name, tipo: 'Aluguel' });
+                });
+                listaBuy.forEach(p => {
+                    if (!mapProvedores.has(p.provider_name)) mapProvedores.set(p.provider_name, { nome: p.provider_name, tipo: 'Compra' });
+                });
+
+                provedores = Array.from(mapProvedores.values()).slice(0, 4);
+            }
+        } catch (eProviders) {}
+
         clearTimeout(timeoutId);
 
-        const data = await response.json();
+        const posterFinal = dadosItem.poster_path ? `https://image.tmdb.org/t/p/w780${dadosItem.poster_path}` : null;
+        const notaTMDb = dadosItem.vote_average ? dadosItem.vote_average.toFixed(1) : (item.imdbRating || '8.0');
 
-        if (data && data.Response === 'True') {
-            const resultado = {
-                titulo: data.Title || item.titulo,
-                ano: data.Year || item.ano,
-                poster: (data.Poster && data.Poster !== 'N/A') ? data.Poster : null,
-                sinopse: (data.Plot && data.Plot !== 'N/A') ? data.Plot : null,
-                imdbRating: data.imdbRating || item.imdbRating || null,
-                generos: data.Genre ? data.Genre.split(', ') : item.generos,
-                diretor: data.Director || '',
-                atores: data.Actors || ''
-            };
+        const resultado = {
+            titulo: dadosItem.title || dadosItem.name || item.titulo,
+            ano: (dadosItem.release_date || dadosItem.first_air_date || item.ano || '').substring(0, 4),
+            poster: posterFinal,
+            sinopse: dadosItem.overview && dadosItem.overview.trim().length > 0 ? dadosItem.overview : null,
+            imdbRating: notaTMDb,
+            provedores: provedores,
+            linkOndeAssistir: linkJustWatch
+        };
 
-            try {
-                localStorage.setItem(chaveStorage, JSON.stringify(resultado));
-            } catch (errStorage) {}
+        try {
+            localStorage.setItem(chaveStorage, JSON.stringify(resultado));
+        } catch (errStorage) {}
 
-            return resultado;
-        }
+        return resultado;
     } catch (err) {
-        console.warn("OMDb em segundo plano ou offline:", err.message);
+        console.warn("TMDb em segundo plano:", err.message);
     }
 
     return null;
@@ -221,7 +184,8 @@ window.abrirEspacoMasculino = async function() {
     try {
         window.configMissoesForja = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('config_missoes'))) || window.missoesPadraoForja;
         window.dadosForjaDiaria = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('forja_diaria'))) || {};
-        window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { energia: 5, estresse: 5, libido: 5, historico: [] };
+        window.dadosEstadoDiario = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estado_diario'))) || { humor: 5, estresse: 5, fisico: 5, mental: 5, historico: [] };
+        window.dadosRadarIntimo = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('radar_intimo'))) || { libido: 5, realizacao: 5, parceira: 5, ultima_relacao: null, historico: [] };
         window.dadosReflexoesFavoritas = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('estoicas_favoritas'))) || [];
         window.dadosMidiaQueroVerMasc = JSON.parse(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
     } catch (e) {}
@@ -232,6 +196,7 @@ window.abrirEspacoMasculino = async function() {
     window.renderizarBotoesForja();
     window.renderizarPainelEvolucaoForja();
     window.renderizarHistoricoForja();
+    window.renderizarGraficoETendenciasEstadoDiario();
     window.renderizarGraficoETendenciasRadar();
     window.renderizarHistoricoRadarIntimo();
     window.atualizarVisualizacaoMidia();
@@ -253,29 +218,143 @@ window.fecharEspacoMasculino = function() {
 };
 
 // =========================================================================
-// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL
+// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL (NOVA ORDEM OFICIAL 1 A 7)
 // =========================================================================
 
 window.renderizarEsqueletoEspacoMasculino = function() {
     const container = document.getElementById('secao-espaco-masculino');
     if (!container) return;
 
-    const agora = new Date();
-    const diaDoAno = Math.floor((agora - new Date(agora.getFullYear(), 0, 0)) / 86400000);
-    const inicioAno = new Date(agora.getFullYear(), 0, 1);
-    const semanaDoAno = Math.floor((((agora - inicioAno) / 86400000) + inicioAno.getDay() + 1) / 7);
+    const listaDinamica = window.AcervoDinamicaADois || [];
+    const pilulaSemanal = listaDinamica.length > 0 
+        ? listaDinamica[Math.floor(Math.random() * listaDinamica.length)] 
+        : "Cultive a presença e o respeito mútuo em todos os momentos no lar.";
 
-    const pilulaSemanal = (window.AcervoDinamicaADois || [])[semanaDoAno % (window.AcervoDinamicaADois?.length || 1)] || "Cultive a presença e o foco no lar.";
-    const sabedoriaArsenal = (window.AcervoArsenalPratico || [])[diaDoAno % (window.AcervoArsenalPratico?.length || 1)] || "Hidrate-se com constância e mantenha a disciplina no treino.";
+    const listaArsenal = window.AcervoArsenalPratico || [];
+    const sabedoriaArsenal = listaArsenal.length > 0 
+        ? listaArsenal[Math.floor(Math.random() * listaArsenal.length)] 
+        : "Dedique constância ao treino físico diário e hidrate o corpo logo ao acordar.";
 
     const totalFilmesDisponiveis = (window.CatalogoFilmesMasculinos || []).length || 200;
     const totalSeriesDisponiveis = (window.CatalogoSeriesMasculinas || []).length || 250;
 
     container.innerHTML = `
+        <style id="estilos-xbox-espaco-masculino">
+/* =========================================================================
+           BARRAS DESLIZANTES FINAS & ELEGANTES COM MICRO-ANIMAÇÃO ESTILO XBOX
+           ========================================================================= */
+        @keyframes pulsoGlowThumbXbox {
+            0% {
+                box-shadow: 0 1px 4px rgba(16, 124, 16, 0.35), 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+            70% {
+                box-shadow: 0 1px 6px rgba(16, 124, 16, 0.45), 0 0 0 5px rgba(34, 197, 94, 0);
+            }
+            100% {
+                box-shadow: 0 1px 4px rgba(16, 124, 16, 0.35), 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .slider-xbox-animado {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            margin: 6px 0;
+            padding: 0;
+            transition: background 0.25s ease;
+        }
+
+        .slider-xbox-animado:focus {
+            outline: none;
+        }
+
+        /* WebKit (Android WebView, Chrome, Safari) */
+        .slider-xbox-animado::-webkit-slider-runnable-track {
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            border: none;
+        }
+
+        .slider-xbox-animado::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #107c10;
+            border: 2px solid #ffffff;
+            cursor: grab;
+            margin-top: -5px;
+            animation: pulsoGlowThumbXbox 2.6s infinite ease-in-out;
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .slider-xbox-animado::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.28);
+            background: #22c55e;
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.65), 0 0 0 6px rgba(34, 197, 94, 0.2);
+            animation: none;
+        }
+
+        /* Cores individuais sutis quando especificadas */
+        .slider-xbox-humor::-webkit-slider-thumb { background: #0284c7 !important; animation: none !important; }
+        .slider-xbox-humor:active::-webkit-slider-thumb { background: #38bdf8 !important; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.6), 0 0 0 6px rgba(2, 132, 199, 0.2) !important; }
+
+        .slider-xbox-estresse::-webkit-slider-thumb { background: #d97706 !important; animation: none !important; }
+        .slider-xbox-estresse:active::-webkit-slider-thumb { background: #f59e0b !important; box-shadow: 0 2px 10px rgba(217, 119, 6, 0.6), 0 0 0 6px rgba(217, 119, 6, 0.2) !important; }
+
+        .slider-xbox-fisico::-webkit-slider-thumb { background: #16a34a !important; animation: pulsoGlowThumbXbox 2.6s infinite ease-in-out !important; }
+        .slider-xbox-fisico:active::-webkit-slider-thumb { background: #22c55e !important; box-shadow: 0 2px 10px rgba(34, 197, 94, 0.65), 0 0 0 6px rgba(34, 197, 94, 0.2) !important; }
+
+        .slider-xbox-mental::-webkit-slider-thumb { background: #7c3aed !important; animation: none !important; }
+        .slider-xbox-mental:active::-webkit-slider-thumb { background: #a855f7 !important; box-shadow: 0 2px 10px rgba(124, 58, 237, 0.6), 0 0 0 6px rgba(124, 58, 237, 0.2) !important; }
+
+        .slider-xbox-libido::-webkit-slider-thumb { background: #e11d48 !important; animation: none !important; }
+        .slider-xbox-libido:active::-webkit-slider-thumb { background: #fb7185 !important; box-shadow: 0 2px 10px rgba(225, 29, 72, 0.6), 0 0 0 6px rgba(225, 29, 72, 0.2) !important; }
+
+        .slider-xbox-realizacao::-webkit-slider-thumb { background: #0284c7 !important; animation: none !important; }
+        .slider-xbox-realizacao:active::-webkit-slider-thumb { background: #38bdf8 !important; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.6), 0 0 0 6px rgba(2, 132, 199, 0.2) !important; }
+
+        .slider-xbox-parceira::-webkit-slider-thumb { background: #d97706 !important; animation: none !important; }
+        .slider-xbox-parceira:active::-webkit-slider-thumb { background: #f59e0b !important; box-shadow: 0 2px 10px rgba(217, 119, 6, 0.6), 0 0 0 6px rgba(217, 119, 6, 0.2) !important; }
+
+        /* Firefox */
+        .slider-xbox-animado::-moz-range-track {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 5px;
+            border: none;
+        }
+
+        .slider-xbox-animado::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #107c10;
+            border: 2px solid #ffffff;
+            cursor: grab;
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+        }
+
+        .slider-xbox-animado::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.28);
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.65), 0 0 0 6px rgba(34, 197, 94, 0.2);
+        }
+        </style>
+
         <!-- TOPO: RETORNO AO LAR -->
         <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
             <button type="button" onclick="window.fecharEspacoMasculino()" 
-                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer;">
+                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:#ffffff; border:1.5px solid #223728; color:#0f172a; box-shadow:0 2px 8px rgba(0,0,0,0.06); cursor:pointer;">
                 <span style="font-size:14px; line-height:1; color:#f97316;">←</span>
                 <span>Voltar ao Lar</span>
             </button>
@@ -283,71 +362,75 @@ window.renderizarEsqueletoEspacoMasculino = function() {
 
         <!-- CABEÇALHO NOBRE -->
         <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
-            <div style="width:85px; height:85px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
+            <div style="width:85px; height:85px; border-radius:18px; background:#ffffff; border:2px solid #22c55e; box-shadow:0 0 16px rgba(37,99,235,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(2, 132, 199, 0.15);">
                 <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:70px; height:70px; object-fit:contain;">
             </div>
             <div style="flex:1; min-width:0;">
-                <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff; letter-spacing:-0.4px; line-height:1.15; text-shadow:0 2px 8px rgba(0,0,0,0.8);">Espaço Masculino</h1>
-                <span style="font-size:12px; color:#fbbf24; font-weight:700; display:block; margin-top:3px; letter-spacing:0.2px;">A Forja: Descompressão, Foco & Blindagem</span>
+                <h1 style="margin:0; font-size:24px; font-weight:900; color:#0f172a; letter-spacing:-0.4px; line-height:1.15;">Espaço Masculino</h1>
+                <span style="font-size:12px; color:#16a34a; font-weight:700; display:block; margin-top:3px; letter-spacing:0.2px;">Descompressão, Foco & Blindagem Diária</span>
             </div>
         </div>
 
-        <!-- QUADRO 1: PRINCÍPIO ESTOICO DO DIA -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #38bdf8; border-radius:20px; padding:18px 16px; margin-bottom:14px;">
+        <!-- ============================================================= -->
+        <!-- 1. PRINCÍPIO ESTOICO DO DIA -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #16a34a; box-shadow:0 4px 18px rgba(15,23,42,0.05); border-radius:20px; padding:18px 16px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span id="label-titulo-reflexao-estoica" style="font-size:11.5px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
-                <span style="font-size:10.5px; font-weight:800; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:10px; border:1px solid #334155;">365 Estoicos</span>
+                <span id="label-titulo-reflexao-estoica" style="font-size:11.5px; font-weight:800; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">🏛️ Princípio do Dia</span>
+                <span style="font-size:10.5px; font-weight:800; background:#f0f9ff; color:#0369a1; padding:3px 9px; border-radius:10px; border:1px solid #bae6fd;">365 Estoicos</span>
             </div>
             
-            <p id="texto-reflexao-estoica-conteudo" style="font-size:14px; color:#f8fafc; margin:0 0 10px 0; line-height:1.6; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.5);">Carregando reflexão...</p>
-            <span id="autor-reflexao-estoica-conteudo" style="font-size:11.5px; font-weight:800; color:#fbbf24; display:block; text-align:right; margin-bottom:14px;">— Autor</span>
+            <p id="texto-reflexao-estoica-conteudo" style="font-size:14px; color:#1e293b; margin:0 0 10px 0; line-height:1.6; font-weight:600;">Carregando reflexão...</p>
+            <span id="autor-reflexao-estoica-conteudo" style="font-size:11.5px; font-weight:800; color:#d97706; display:block; text-align:right; margin-bottom:14px;">— Autor</span>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:12px; gap:6px;">
-                <button type="button" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; color:#f8fafc; border:1px solid #475569; font-weight:700; display:inline-flex; align-items:center; gap:6px;" onclick="window.renderizarReflexaoEstoica(false)">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #cbd5e1; padding-top:12px; gap:6px;">
+                <button type="button" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1; font-weight:700; display:inline-flex; align-items:center; gap:6px;" onclick="window.renderizarReflexaoEstoica(false)">
                     <img src="./icone/icone-calendario.png" alt="Calendário" style="width:16px; height:16px; object-fit:contain;">
                     De Hoje
                 </button>
-                <button type="button" id="btn-favoritar-estoica" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; border:1px solid #d97706; color:#fde68a; font-weight:800;" onclick="window.alternarFavoritoReflexaoAtual()">🤍 Favoritar</button>
-                <button type="button" class="btn-principal" style="width:auto; padding:7px 14px; font-size:11.5px; border-radius:10px; background:#0284c7; color:#fff; font-weight:800; border:none;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
+                <button type="button" id="btn-favoritar-estoica" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#fffbeb; border:1px solid #d97706; color:#b45309; font-weight:800;" onclick="window.alternarFavoritoReflexaoAtual()">🤍 Favoritar</button>
+                <button type="button" class="btn-principal" style="width:auto; padding:7px 14px; font-size:11.5px; border-radius:10px; background:#16a34a; color:#fff; font-weight:800; border:none;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
             </div>
 
             <div style="margin-top:12px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:9px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
-                    <span id="seta-favoritas" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
+                <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f1f5f9; padding:9px 12px; border-radius:10px; border:1px solid #cbd5e1;">
+                    <span style="font-size:11.5px; font-weight:800; color:#4ade80;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
+                    <span id="seta-favoritas" style="font-size:12px; color:#4ade80; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-favoritas-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 2: A FORJA (GAMIFICAÇÃO, NÍVEIS, METAS E CONQUISTAS) -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #ef4444; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+        <!-- ============================================================= -->
+        <!-- 2. A FORJA (MISSÕES, NÍVEIS, XP + ESTADO DIÁRIO DO HOMEM) -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ea580c; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/icone-fogo.png" alt="A Forja" style="width:30px; height:30px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">A Forja (Evolução & Missões)</strong>
+                    <strong style="font-size:14px; color:#0f172a; font-weight:900;">A Forja (Evolução & Missões)</strong>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
+                    <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
                         <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:16px; height:16px; object-fit:contain;">
                         Editar
                     </button>
-                    <span id="streak-forja" style="font-size:11.5px; font-weight:800; color:#f97316; background:#2a1205; padding:3px 8px; border-radius:8px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:4px;">
+                    <span id="streak-forja" style="font-size:11.5px; font-weight:800; color:#f97316; background:#fff7ed; padding:3px 8px; border-radius:8px; border:1px solid #fed7aa; display:inline-flex; align-items:center; gap:4px;">
                         <img src="./icone/icone-fogo.png" alt="Fogo" style="width:18px; height:18px; object-fit:contain;"> 0 dias
                     </span>
                 </div>
             </div>
 
             <!-- NÍVEL DO GUERREIRO & XP ACUMULADO -->
-            <div id="painel-nivel-guerreiro" style="background:#1a1f2c; border:1px solid #3b4252; padding:12px; border-radius:14px; margin-bottom:12px;">
+            <div id="painel-nivel-guerreiro" style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:14px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <div>
                         <span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Patamar Atual:</span>
-                        <h4 id="lbl-nome-nivel-forja" style="margin:2px 0 0 0; font-size:14px; color:#fbbf24; font-weight:900;">Carregando Nível...</h4>
+                        <h4 id="lbl-nome-nivel-forja" style="margin:2px 0 0 0; font-size:14px; color:#b45309; font-weight:900;">Carregando Nível...</h4>
                     </div>
-                    <span id="lbl-xp-acumulado" style="font-size:11px; font-weight:800; color:#f97316; background:#2a1205; padding:3px 8px; border-radius:8px; border:1px solid #7c2d12;">0 XP</span>
+                    <span id="lbl-xp-acumulado" style="font-size:11px; font-weight:800; color:#f97316; background:#fff7ed; padding:3px 8px; border-radius:8px; border:1px solid #fed7aa;">0 XP</span>
                 </div>
-                <div style="background:#0f172a; border-radius:8px; height:7px; width:100%; overflow:hidden; margin-bottom:4px;">
+                <div style="background:#e2e8f0; border-radius:8px; height:7px; width:100%; overflow:hidden; margin-bottom:4px;">
                     <div id="barra-progresso-xp-forja" style="background:linear-gradient(90deg, #ea580c, #f59e0b); height:100%; width:0%; transition:width 0.4s ease;"></div>
                 </div>
                 <span id="lbl-info-proximo-nivel" style="font-size:10px; color:#94a3b8; display:block; text-align:right;">Faltam 0 XP para o próximo nível</span>
@@ -355,57 +438,216 @@ window.renderizarEsqueletoEspacoMasculino = function() {
 
             <!-- ESTATÍSTICAS MENSAIS E META DA SEMANA -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-                <div style="background:#171d29; border:1px solid #2d3748; padding:10px; border-radius:12px;">
-                    <span style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; display:block; margin-bottom:4px;">🎯 Meta da Semana</span>
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:12px;">
+                    <span style="font-size:10px; font-weight:800; color:#15803d; text-transform:uppercase; display:block; margin-bottom:4px;">🎯 Meta da Semana</span>
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-                        <strong id="lbl-meta-semanal-status" style="font-size:12px; color:#f8fafc;">0 / 25</strong>
-                        <span id="lbl-meta-semanal-pct" style="font-size:11px; font-weight:800; color:#38bdf8;">0%</span>
+                        <strong id="lbl-meta-semanal-status" style="font-size:12px; color:#0f172a;">0 / 25</strong>
+                        <span id="lbl-meta-semanal-pct" style="font-size:11px; font-weight:800; color:#4ade80;">0%</span>
                     </div>
-                    <div style="background:#0f172a; border-radius:6px; height:6px; width:100%; overflow:hidden;">
-                        <div id="barra-meta-semanal" style="background:#0284c7; height:100%; width:0%;"></div>
+                    <div style="background:#e2e8f0; border-radius:6px; height:6px; width:100%; overflow:hidden;">
+                        <div id="barra-meta-semanal" style="background:#107c10; height:100%; width:0%;"></div>
                     </div>
                 </div>
 
-                <div style="background:#171d29; border:1px solid #2d3748; padding:10px; border-radius:12px;">
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:12px;">
                     <span style="font-size:10px; font-weight:800; color:#10b981; text-transform:uppercase; display:block; margin-bottom:4px;">📊 Desempenho Mês</span>
                     <div style="display:flex; justify-content:space-between; align-items:baseline;">
                         <div>
-                            <strong id="lbl-stats-concluidas-mes" style="font-size:13px; color:#ffffff;">0</strong>
+                            <strong id="lbl-stats-concluidas-mes" style="font-size:13px; color:#0f172a;">0</strong>
                             <span style="font-size:10px; color:#94a3b8;"> missões</span>
                         </div>
-                        <span id="lbl-stats-dias-perfeitos-mes" style="font-size:10.5px; font-weight:800; color:#fbbf24; background:#241d08; padding:2px 6px; border-radius:6px;">0 dias 100%</span>
+                        <span id="lbl-stats-dias-perfeitos-mes" style="font-size:10.5px; font-weight:800; color:#fbbf24; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:6px;">0 dias 100%</span>
                     </div>
-                    <span id="lbl-stats-taxa-mes" style="font-size:10px; color:#6ee7b7; display:block; margin-top:4px;">Taxa: 0% de consistência</span>
+                    <span id="lbl-stats-taxa-mes" style="font-size:10px; color:#047857; display:block; margin-top:4px;">Taxa: 0% de consistência</span>
                 </div>
             </div>
 
             <!-- DESEMPENHO DO DIA DE HOJE -->
-            <div style="background:#1e1b18; border:1px solid #7c2d12; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+            <div style="background:#fff7ed; border:1px solid #fdba74; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
-                    <span style="font-weight:700; color:#fed7aa;">Grau de Hoje: <strong id="lbl-grau-forja-hoje" style="color:#f97316;">Inerte</strong></span>
+                    <span style="font-weight:700; color:#f59e0b;">Grau de Hoje: <strong id="lbl-grau-forja-hoje" style="color:#f97316;">Inerte</strong></span>
                     <strong id="lbl-porcentagem-forja-hoje" style="color:#ef4444; font-weight:900;">0%</strong>
                 </div>
-                <div style="background:#0f172a; border-radius:8px; height:8px; width:100%; overflow:hidden;">
+                <div style="background:#e2e8f0; border-radius:8px; height:8px; width:100%; overflow:hidden;">
                     <div id="barra-forja-fill-hoje" style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:0%; transition:width 0.3s ease;"></div>
                 </div>
             </div>
 
             <!-- FORMULÁRIO PARA EDITAR AS MISSÕES -->
-            <div id="form-edicao-missoes-forja" class="oculto" style="background:#0f172a; border:1.5px dashed #475569; padding:12px; border-radius:12px; margin-bottom:12px;">
-                <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
+            <div id="form-edicao-missoes-forja" class="oculto" style="background:#f8fafc; border:1.5px dashed #cbd5e1; padding:12px; border-radius:12px; margin-bottom:12px;">
+                <span style="font-size:11.5px; font-weight:800; color:#0f172a; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
                 <div id="container-inputs-edicao-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;"></div>
                 <div style="display:flex; justify-content:flex-end; gap:6px;">
-                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:11px; background:#1e293b; color:#cbd5e1; border:1px solid #475569;" onclick="window.alternarEdicaoConfigForja()">Cancelar</button>
+                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:11px; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1;" onclick="window.alternarEdicaoConfigForja()">Cancelar</button>
                     <button type="button" class="btn-principal" style="width:auto; padding:4px 12px; font-size:11px; background:#ea580c; color:#fff;" onclick="window.salvarConfiguracaoMissoesForja()">Salvar Metas</button>
                 </div>
             </div>
 
             <!-- GRADE DAS 6 MISSÕES -->
-            <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;"></div>
+            <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;"></div>
 
-            <!-- PAINEL RETRÁTIL DE CONQUISTAS (BADGES) -->
+            <!-- NOVO BLOCO: CHECK-IN DO ESTADO DIÁRIO (4 PILARES COM 1=RUIM E 10=ÁPICE) -->
+            <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:16px;">⚡</span>
+                        <strong style="font-size:13px; color:#0f172a; font-weight:900;">Estado do Dia (Corpo & Mente)</strong>
+                    </div>
+                    <button type="button" class="btn-principal" style="padding:4px 10px; font-size:10px; border-radius:7px; width:auto; background:#ea580c; color:#fff; font-weight:800; border:none;" onclick="window.salvarEstadoDiarioCompleto()">Salvar Estado</button>
+                </div>
+                <p style="font-size:11px; color:#94a3b8; margin:0 0 12px 0;">Mapeie como você se sente hoje. Deslize a barra do mal-estar (1) até o ápice de vitalidade e equilíbrio (10).</p>
+
+                                                                                <!-- Humor Geral -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Humor Geral
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-humor-diario')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#0284c7; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-humor-diario-val" style="font-size:11.5px; font-weight:800; color:#0369a1; text-align:right;">
+                        Neutro / Equilibrado
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-humor-diario" class="slider-xbox-animado slider-xbox-humor" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloEstadoDiario('humor')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-humor-diario" class="oculto" style="margin-top:8px; background:#f0f9ff; border-left:3px solid #0284c7; padding:8px 10px; border-radius:8px; font-size:11px; color:#0369a1; line-height:1.45;">
+                    Deslize a barra para expressar como sentiu seu humor e ânimo hoje: marque mais para a esquerda se esteve triste, desanimado ou irritado, ou mais para a direita se esteve animado, radiante e confiante.
+                </div>
+            </div>
+
+            <!-- Nível de Estresse / Paz Mental -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Nível de Estresse / Paz Mental
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-estresse-diario')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#d97706; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-estresse-diario-val" style="font-size:11.5px; font-weight:800; color:#b45309; text-align:right;">
+                        Moderado
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-estresse-diario" class="slider-xbox-animado slider-xbox-estresse" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloEstadoDiario('estresse')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-estresse-diario" class="oculto" style="margin-top:8px; background:#fffbeb; border-left:3px solid #d97706; padding:8px 10px; border-radius:8px; font-size:11px; color:#92400e; line-height:1.45;">
+                    Deslize a barra para expressar o nível de pressão que sentiu hoje: marque mais para a esquerda se esteve tenso, sobrecarregado ou ansioso, ou mais para a direita se esteve com a mente serena, calma e em paz.
+                </div>
+            </div>
+
+            <!-- Disposição Física -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Disposição Física
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-fisico-diario')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#16a34a; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-fisico-diario-val" style="font-size:11.5px; font-weight:800; color:#15803d; text-align:right;">
+                        Normal
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-fisico-diario" class="slider-xbox-animado slider-xbox-fisico" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloEstadoDiario('fisico')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-fisico-diario" class="oculto" style="margin-top:8px; background:#f0fdf4; border-left:3px solid #16a34a; padding:8px 10px; border-radius:8px; font-size:11px; color:#166534; line-height:1.45;">
+                    Deslize a barra para expressar a energia física do seu corpo hoje: marque mais para a esquerda se sentiu o corpo pesado, esgotado ou sem forças, ou mais para a direita se esteve com disposição total e vigor máximo.
+                </div>
+            </div>
+
+            <!-- Foco Mental -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Foco Mental
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-mental-diario')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#7c3aed; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-mental-diario-val" style="font-size:11.5px; font-weight:800; color:#6d28d9; text-align:right;">
+                        Concentrado
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-mental-diario" class="slider-xbox-animado slider-xbox-mental" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloEstadoDiario('mental')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-mental-diario" class="oculto" style="margin-top:8px; background:#f5f3ff; border-left:3px solid #7c3aed; padding:8px 10px; border-radius:8px; font-size:11px; color:#5b21b6; line-height:1.45;">
+                    Deslize a barra para expressar sua clareza de raciocínio hoje: marque mais para a esquerda se sentiu a mente dispersa, distraída ou com névoa, ou mais para a direita se esteve com foco blindado e mente afiada.
+                </div>
+            </div>
+
+                <!-- GRÁFICO RETRÁTIL DO ESTADO DIÁRIO (VER / OCULTAR) -->
+                <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
+                    <div onclick="window.alternarSecaoRetratil('bloco-grafico-estado-diario', 'seta-grafico-estado-diario')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f1f5f9; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                        <span style="font-size:11px; font-weight:800; color:#0f172a;">📊 Ver / Ocultar Gráfico do Estado Diário</span>
+                        <span id="seta-grafico-estado-diario" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
+                    </div>
+                    <div id="bloco-grafico-estado-diario" class="oculto" style="margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:10.5px; font-weight:800; color:#0f172a;">Evolução Temporal (1 a 10):</span>
+                            <div style="display:flex; gap:6px; font-size:9.5px; font-weight:700; flex-wrap:wrap;">
+                                <span style="color:#4ade80;">● Humor</span>
+                                <span style="color:#fbbf24;">● Serenidade</span>
+                                <span style="color:#10b981;">● Físico</span>
+                                <span style="color:#a855f7;">● Mental</span>
+                            </div>
+                        </div>
+                        <div id="container-grafico-svg-estado-diario" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="texto-insight-estado-diario" style="font-size:11px; color:#94a3b8; margin-top:8px; line-height:1.4;">
+                            Mantenha o check-in diário para visualizar tendências de equilíbrio e energia.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAINEL RETRÁTIL DE CONQUISTAS -->
             <div style="margin-bottom:8px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-conquistas-forja-conteudo', 'seta-conquistas-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                <div onclick="window.alternarSecaoRetratil('bloco-conquistas-forja-conteudo', 'seta-conquistas-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
                     <span style="font-size:11.5px; font-weight:800; color:#fbbf24;">🎖️ Conquistas & Insígnias (<span id="contador-conquistas-forja">0/6</span>)</span>
                     <span id="seta-conquistas-forja" style="font-size:12px; color:#fbbf24; transition:transform 0.2s ease;">▼</span>
                 </div>
@@ -413,100 +655,192 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
 
             <!-- HISTÓRICO RETRÁTIL -->
-            <div style="border-top:1px dashed #334155; padding-top:10px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
-                    <span id="seta-historico-forja" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+            <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <span style="font-size:11.5px; font-weight:800; color:#0f172a;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
+                    <span id="seta-historico-forja" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-historico-forja-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 3: RADAR PESSOAL (GRÁFICO TEMPORAL, COMPARADOR E TENDÊNCIAS) -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #f43f5e; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+        <!-- ============================================================= -->
+        <!-- 3. ARSENAL PRÁTICO (DOUTRINA FÍSICA & NUTRIÇÃO COM SORTEIO) -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #059669; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="./icone/icone-forte.png" alt="Arsenal" style="width:26px; height:26px; object-fit:contain;">
+                    <strong style="font-size:14px; color:#0f172a; font-weight:900;">Arsenal Prático</strong>
+                </div>
+                <button type="button" onclick="window.sortearNovoArsenalPratico()" style="background:none; border:none; color:#15803d; font-size:11px; font-weight:800; cursor:pointer;" title="Sortear nova dica">🔀 Sortear</button>
+            </div>
+            <div style="background:#f0fdf4; border:1px dashed #86efac; padding:12px; border-radius:12px;">
+                <span style="font-size:10.5px; font-weight:800; color:#047857; text-transform:uppercase; margin-bottom:4px; display:block;">Doutrina Física & Nutrição • Sorteio Aleatório</span>
+                <p id="texto-arsenal-pratico-conteudo" style="font-size:12.5px; color:#15803d; margin:0; line-height:1.45; font-weight:600;">${sabedoriaArsenal}</p>
+            </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- 4. RADAR PESSOAL & VIDA A DOIS (SEXUALIDADE, PERFORMANCE & PARCEIRA) -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #e11d48; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar Íntimo" style="width:35px; height:35px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Pessoal & Vitalidade</strong>
+                    <strong style="font-size:14px; color:#0f172a; font-weight:900;">Radar Pessoal & Vida a Dois</strong>
                 </div>
-                <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:#e11d48; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
+                <button type="button" class="btn-principal" style="padding:4px 10px; font-size:10px; border-radius:7px; width:auto; background:#ea580c; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Momento</button>
             </div>
 
-            <div style="background:#2a101b; border:1px dashed #9f1239; padding:12px; border-radius:12px; margin-bottom:14px;">
-                <span style="font-size:10px; font-weight:800; color:#fb7185; text-transform:uppercase; margin-bottom:4px; display:block;">Pílula Semanal • Semana ${semanaDoAno} de 52</span>
-                <p style="font-size:12.5px; color:#ffe4e6; margin:0; line-height:1.5; font-weight:600;">${pilulaSemanal}</p>
+            <!-- Pílula de Dinâmica a Dois com Sorteio -->
+            <div style="background:#fff1f2; border:1px dashed #fecdd3; padding:12px; border-radius:12px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:10px; font-weight:800; color:#fb7185; text-transform:uppercase;">Convivência & Casal • Pílula Sorteada</span>
+                    <button type="button" onclick="window.sortearNovaDinamicaADois()" style="background:none; border:none; color:#fb7185; font-size:11px; font-weight:800; cursor:pointer;" title="Sortear outra dica">🔀 Sortear</button>
+                </div>
+                <p id="texto-dinamica-a-dois-conteudo" style="font-size:12.5px; color:#9f1239; margin:0; line-height:1.5; font-weight:600;">${pilulaSemanal}</p>
             </div>
 
-            <div id="painel-tendencias-radar" style="background:#1a1523; border:1px solid #4a1d35; padding:12px; border-radius:14px; margin-bottom:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:11px; font-weight:800; color:#fb7185; text-transform:uppercase;">📈 Análise de Tendências (Semanas)</span>
-                    <span id="badge-status-semanal" style="font-size:10px; font-weight:800; background:#381524; color:#fda4af; padding:2px 6px; border-radius:6px;">Comparativo Ativo</span>
+            <!-- Data da Relação -->
+            <div style="margin-bottom:14px;">
+                <label style="font-size:11px; font-weight:800; color:#0f172a; display:block; margin-bottom:4px;">Data da Relação Íntima:</label>
+                <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; border:1px solid #475569; font-size:12px; background:#f1f5f9; color:#0f172a; outline:none; font-weight:600;">
+            </div>
+
+                                                                        <!-- Disposição / Libido -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Disposição / Libido
                 </div>
 
-                <div id="bloco-comparativo-semanas" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;"></div>
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-libido-radar')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#e11d48; text-decoration:underline;">Instrução</span>
+                    </button>
 
-                <div id="texto-insight-tendencia" style="font-size:11.5px; color:#fce7f3; line-height:1.45; font-weight:500; background:#24111d; padding:8px 10px; border-radius:8px; border-left:3px solid #f43f5e;">
-                    Aguardando registros para análise comparativa.
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-libido-valor" style="font-size:11.5px; font-weight:800; color:#be123c; text-align:right;">
+                        Normal
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-libido" class="slider-xbox-animado slider-xbox-libido" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloSlider('libido')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-libido-radar" class="oculto" style="margin-top:8px; background:#fff1f2; border-left:3px solid #e11d48; padding:8px 10px; border-radius:8px; font-size:11px; color:#9f1239; line-height:1.45;">
+                    Deslize a barra para expressar como esteve seu ânimo sexual e desejo prévio: marque mais para a esquerda se a disposição esteve em baixa, ou mais para a direita se sentiu pleno apetite, magnetismo e vitalidade íntima.
                 </div>
             </div>
 
-            <div style="background:#0f172a; border:1px solid #334155; padding:12px; border-radius:14px; margin-bottom:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:11px; font-weight:800; color:#cbd5e1;">Curva dos Últimos Registros (1 a 10):</span>
-                    <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
-                        <span style="color:#38bdf8;">● Energia</span>
-                        <span style="color:#fbbf24;">● Estresse</span>
-                        <span style="color:#f43f5e;">● Libido</span>
+            <!-- Performance & Satisfação Própria -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Performance & Satisfação Própria
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-realizacao-radar')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#0284c7; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-realizacao-valor" style="font-size:11.5px; font-weight:800; color:#0369a1; text-align:right;">
+                        Satisfeito
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-realizacao" class="slider-xbox-animado slider-xbox-realizacao" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloSlider('realizacao')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-realizacao-radar" class="oculto" style="margin-top:8px; background:#f0f9ff; border-left:3px solid #0284c7; padding:8px 10px; border-radius:8px; font-size:11px; color:#0369a1; line-height:1.45;">
+                    Deslize a barra para expressar como você se sentiu com o seu corpo e o momento a dois: marque mais para a esquerda se sentiu cansaço ou frustração, ou mais para a direita se sentiu potência física, satisfação e plenitude pessoal.
+                </div>
+            </div>
+
+            <!-- Satisfação da Parceira -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                <!-- Linha 1: Título Limpo (Sem números) -->
+                <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                    Satisfação da Parceira
+                </div>
+
+                <!-- Linha 2: Duas Colunas (Esquerda: Botão Instrução | Direita: Status Puro Sem Caixa) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                    <!-- Coluna 1: Botão Instrução -->
+                    <button type="button" onclick="window.alternarSecaoRetratil('legenda-parceira-radar')" 
+                            style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <img src="./icone/icone-manual.png" onerror="this.onerror=null; this.src='./icone/icone-instrucao.png';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                        <span style="font-size:11px; font-weight:700; color:#d97706; text-decoration:underline;">Instrução</span>
+                    </button>
+
+                    <!-- Coluna 2: Referência Resumida e Limpa (Sem Caixa) -->
+                    <span id="badge-parceira-valor" style="font-size:11.5px; font-weight:800; color:#b45309; text-align:right;">
+                        Satisfeita
+                    </span>
+                </div>
+
+                <!-- Linha 3: Barra Deslizante Fina e Estilizada -->
+                <input type="range" id="range-parceira" class="slider-xbox-animado slider-xbox-parceira" min="1" max="10" value="5" step="1" oninput="window.atualizarRotuloSlider('parceira')">
+
+                <!-- Linha 4: Legenda Explicativa Oculta (Explica o Significado da Barra) -->
+                <div id="legenda-parceira-radar" class="oculto" style="margin-top:8px; background:#fffbeb; border-left:3px solid #d97706; padding:8px 10px; border-radius:8px; font-size:11px; color:#92400e; line-height:1.45;">
+                    Deslize a barra para expressar a sua percepção sobre a entrega e o prazer dela: marque mais para a esquerda se sentiu desconexão ou insatisfação, ou mais para a direita se percebeu prazer intenso, cumplicidade e total realização mútua.
+                </div>
+            </div>
+
+            <!-- GRÁFICO RETRÁTIL DO RADAR ÍNTIMO (VER / OCULTAR) -->
+            <div style="border-top:1px dashed #cbd5e1; padding-top:10px; margin-bottom:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-grafico-radar-intimo', 'seta-grafico-radar-intimo')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <span style="font-size:11.5px; font-weight:800; color:#0f172a;">📊 Ver / Ocultar Gráfico & Análise Comparativa</span>
+                    <span id="seta-grafico-radar-intimo" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-grafico-radar-intimo" class="oculto" style="margin-top:10px;">
+                    <div id="painel-tendencias-radar" style="background:#1a1523; border:1px solid #4a1d35; padding:12px; border-radius:14px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:11px; font-weight:800; color:#fb7185; text-transform:uppercase;">📈 Comparativo de Semanas</span>
+                            <span id="badge-status-semanal" style="font-size:10px; font-weight:800; background:#381524; color:#9f1239; padding:2px 6px; border-radius:6px;">Ativo</span>
+                        </div>
+                        <div id="bloco-comparativo-semanas" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;"></div>
+                        <div id="texto-insight-tendencia" style="font-size:11.5px; color:#fce7f3; line-height:1.45; font-weight:500; background:#24111d; padding:8px 10px; border-radius:8px; border-left:3px solid #f43f5e;">
+                            Aguardando registros para análise comparativa.
+                        </div>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:11px; font-weight:800; color:#0f172a;">Curva dos Últimos Registros (1 a 10):</span>
+                            <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
+                                <span style="color:#f43f5e;">● Libido</span>
+                                <span style="color:#4ade80;">● Performance</span>
+                                <span style="color:#fbbf24;">● Parceira</span>
+                            </div>
+                        </div>
+                        <div id="container-grafico-svg-radar" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
                     </div>
                 </div>
-                <div id="container-grafico-svg-radar" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
             </div>
 
-            <div style="margin-bottom:14px;">
-                <label style="font-size:11px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
-                <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; border:1px solid #475569; font-size:12px; background:#0f172a; color:#f8fafc; outline:none; font-weight:600;">
-            </div>
-
-            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-energia.png" alt="Energia" style="width:18px; height:18px; object-fit:contain;">
-                        Energia Biológica:
-                    </span>
-                    <strong id="badge-energia-valor" style="font-size:11.5px; color:#38bdf8; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #0369a1;">Nota 5 (Normal)</strong>
-                </div>
-                <input type="range" id="range-energia" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#0284c7; cursor:pointer;" oninput="window.atualizarRotuloSlider('energia')">
-            </div>
-
-            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/icone-estresse.png" alt="Estresse" style="width:18px; height:18px; object-fit:contain;">
-                        Nível de Estresse:
-                    </span>
-                    <strong id="badge-estresse-valor" style="font-size:11.5px; color:#fbbf24; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #d97706;">Nota 5 (Moderado)</strong>
-                </div>
-                <input type="range" id="range-estresse" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloSlider('estresse')">
-            </div>
-
-            <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Libido" style="width:18px; height:18px; object-fit:contain;">
-                        Disposição / Libido:
-                    </span>
-                    <strong id="badge-libido-valor" style="font-size:11.5px; color:#f43f5e; background:#0f172a; padding:2px 8px; border-radius:8px; border:1px solid #be123c;">Nota 5 (Normal)</strong>
-                </div>
-                <input type="range" id="range-libido" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f43f5e; cursor:pointer;" oninput="window.atualizarRotuloSlider('libido')">
-            </div>
-
-            <div style="border-top:1px dashed #334155; padding-top:10px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:inline-flex; align-items:center; gap:6px;">
+            <!-- Histórico Retrátil Confidencial -->
+            <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <span style="font-size:11.5px; font-weight:800; color:#0f172a; display:inline-flex; align-items:center; gap:6px;">
                         <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Love" style="width:15px; height:15px; object-fit:contain;">
                         Histórico Confidencial (<span id="contador-historico-radar">0</span>)
                     </span>
-                    <span id="seta-historico-radar" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+                    <span id="seta-historico-radar" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-historico-radar-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
                     <div id="lista-historico-radar-notas" style="display:flex; flex-direction:column; gap:6px;"></div>
@@ -514,66 +848,73 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 4: CURADORIA DE 200 FILMES & 250 SÉRIES (COM BOTÃO ALEATÓRIO E NAVEGAÇÃO SEQUENCIAL) -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <!-- ============================================================= -->
+        <!-- 5. FILMES E SÉRIES (CURADORIA DE 200 FILMES & 250 SÉRIES) -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #4f46e5; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/icone-filme.png" alt="Filmes e Séries" style="width:24px; height:24px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Curadoria de Obras</strong>
+                    <strong style="font-size:14px; color:#0f172a; font-weight:900;">Curadoria de Obras</strong>
                 </div>
-                <div style="display:flex; gap:4px; background:#0f172a; padding:3px; border-radius:10px; border:1px solid #334155;">
-                    <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#6366f1; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes (${totalFilmesDisponiveis})</button>
+
+                <div style="display:flex; gap:4px; background:#f1f5f9; padding:3px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#16a34a; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes (${totalFilmesDisponiveis})</button>
                     <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#94a3b8;" onclick="window.alternarAbaMidia('series')">Séries (${totalSeriesDisponiveis})</button>
                 </div>
             </div>
 
-            <!-- CARTÃO DE DESTAQUE COM CAPA OFICIAL OMDB -->
-            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid #334155; border-radius:14px; overflow:hidden;">
-                <!-- Pôster Oficial via OMDb -->
-                <div id="midia-capa-container" style="width:100%; height:180px; background-size:cover; background-position:center top; position:relative; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; background-color:#0f172a;">
-                    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.95) 100%);"></div>
-                    <div style="position:relative; z-index:2; width:100%;">
+            <!-- CARD DE DESTAQUE -->
+            <div id="card-carrossel-midia" style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden;">
+                <div id="midia-capa-container" style="width:100%; height:200px; position:relative; overflow:hidden; background:#0b0f19;">
+                    <img id="midia-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80" alt="Capa" style="width:100%; height:100%; object-fit:cover; object-position:center top; display:block;">
+                    <div id="midia-overlay-gradiente" style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.92) 100%); pointer-events:none;"></div>
+                    <div style="position:absolute; bottom:10px; left:12px; right:12px; z-index:2;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                             <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#312e81; color:#c7d2fe; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <span id="midia-rating-imdb" style="font-size:11px; font-weight:800; color:#fbbf24; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:6px; border:1px solid rgba(251,191,36,0.3);">★ 8.5</span>
-                                <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#cbd5e1;">-</span>
+                                <span id="midia-rating-imdb" style="font-size:11px; font-weight:800; color:#fbbf24; background:rgba(0,0,0,0.7); padding:2px 6px; border-radius:6px; border:1px solid rgba(251,191,36,0.3);">★ 8.5</span>
+                                <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#0f172a;">-</span>
                             </div>
                         </div>
-                        <h3 id="midia-titulo-destaque" style="margin:0; font-size:17px; color:#ffffff; font-weight:900; text-shadow:0 2px 4px rgba(0,0,0,0.8);">Título</h3>
+                        <h3 id="midia-titulo-destaque" style="margin:0; font-size:16px; color:#0f172a; font-weight:900; text-shadow:0 2px 4px rgba(0,0,0,0.9);">Título</h3>
                         <span id="midia-subtitulo-original" style="font-size:11px; color:#94a3b8; font-weight:600; display:block; margin-top:2px;"></span>
                     </div>
                 </div>
 
                 <div style="padding:14px;">
-                    <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0 0 10px 0; line-height:1.5;">Carregando sinopse oficial via OMDb...</p>
+                    <p id="midia-descricao-destaque" style="font-size:12px; color:#1e293b; margin:0 0 10px 0; line-height:1.5;">Carregando sinopse oficial em português...</p>
+
+                    <div id="midia-bloco-onde-assistir" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:10.5px; font-weight:800; color:#15803d; text-transform:uppercase;">📺 Onde Assistir (Brasil):</span>
+                            <a id="midia-link-justwatch" href="#" target="_blank" rel="noopener noreferrer" style="font-size:10px; font-weight:700; color:#94a3b8; text-decoration:none;">Mais opções ↗</a>
+                        </div>
+                        <div id="midia-provedores-lista" style="display:flex; flex-wrap:wrap; gap:5px;">
+                            <span style="font-size:11px; color:#64748b;">Consultando disponibilidade...</span>
+                        </div>
+                    </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
                         <div id="midia-tags-generos" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
-                        <div id="midia-posicao-contador" style="font-size:10.5px; font-weight:800; color:#94a3b8; background:#0f172a; padding:2px 8px; border-radius:6px; border:1px solid #334155;">1 / 200</div>
+                        <div id="midia-posicao-contador" style="font-size:10.5px; font-weight:800; color:#94a3b8; background:#f1f5f9; padding:2px 8px; border-radius:6px; border:1px solid #e2e8f0;">1 / 200</div>
                     </div>
 
-                    <!-- CONTROLADORES DO CARROSSEL COM BOTÃO ALEATÓRIO DEDICADO -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:10px; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #cbd5e1; padding-top:10px; flex-wrap:wrap; gap:8px;">
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <!-- Sequência Normal: Anterior -->
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)" title="Obra Anterior">◄</button>
-                            
-                            <!-- Botão de Sorteio Aleatório Solicitado -->
-                            <button type="button" class="btn-secundario" style="padding:0 10px; height:34px; border-radius:10px; font-size:11.5px; font-weight:800; background:#312e81; color:#c7d2fe; border:1px solid #6366f1; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.sortearMidiaAleatoria()" title="Indicar obra aleatória da lista toda">
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#ffffff; color:#0f172a; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)" title="Obra Anterior">◄</button>
+                            <button type="button" class="btn-secundario" style="padding:0 10px; height:34px; border-radius:10px; font-size:11.5px; font-weight:800; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.sortearMidiaAleatoria()" title="Sortear obra">
                                 <span>🔀</span>
                                 <span>Aleatório</span>
                             </button>
-
-                            <!-- Sequência Normal: Próximo -->
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)" title="Próxima Obra">►</button>
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#ffffff; color:#0f172a; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)" title="Próxima Obra">►</button>
                         </div>
 
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
+                            <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1a271e; color:#4ade80; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
                                 📌 Quero Assistir
                             </button>
-                            <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
+                            <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#16a34a; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
                                 <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
                             </button>
                         </div>
@@ -581,8 +922,8 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
             </div>
 
-            <!-- Caixa de Avaliação (1 a 5 estrelas) -->
-            <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#1e293b; border:1.5px solid #d97706; border-radius:12px; padding:12px; text-align:center;">
+            <!-- Caixa de Avaliação -->
+            <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#1a271e; border:1.5px solid #d97706; border-radius:12px; padding:12px; text-align:center;">
                 <span style="font-size:12px; font-weight:800; color:#fde68a; display:block; margin-bottom:6px;">Qual a sua avaliação para esta obra?</span>
                 <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
                     <button type="button" onclick="window.confirmarAvaliacaoMidia(1)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
@@ -591,69 +932,67 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                     <button type="button" onclick="window.confirmarAvaliacaoMidia(4)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                     <button type="button" onclick="window.confirmarAvaliacaoMidia(5)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                 </div>
-                <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#0f172a; color:#cbd5e1; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
+                <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#f1f5f9; color:#0f172a; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
             </div>
 
-            <!-- GAVETA 1: QUERO ASSISTIR -->
             <div style="margin-top:14px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-quero-ver-masc-conteudo', 'seta-quero-ver-masc')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">📌 Quero Assistir (<span id="contador-quero-ver-masc">0</span>)</span>
-                    <span id="seta-quero-ver-masc" style="font-size:12px; color:#38bdf8; transition:transform 0.2s ease;">▼</span>
+                <div onclick="window.alternarSecaoRetratil('bloco-quero-ver-masc-conteudo', 'seta-quero-ver-masc')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <span style="font-size:11.5px; font-weight:800; color:#4ade80;">📌 Quero Assistir (<span id="contador-quero-ver-masc">0</span>)</span>
+                    <span id="seta-quero-ver-masc" style="font-size:12px; color:#4ade80; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-quero-ver-masc-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
 
-            <!-- GAVETA 2: OBRAS AVALIADAS -->
             <div style="margin-top:8px;">
-                <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
-                    <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">⭐ Obras Avaliadas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
-                    <span id="seta-assistidos" style="font-size:12px; color:#cbd5e1; transition:transform 0.2s ease;">▼</span>
+                <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <span style="font-size:11.5px; font-weight:800; color:#0f172a;">⭐ Obras Avaliadas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
+                    <span id="seta-assistidos" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
                 </div>
                 <div id="bloco-assistidos-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- QUADRO 5: TRINCHEIRA SONORA & DIGITAL (SPOTIFY & YOUTUBE) -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+        <!-- ============================================================= -->
+        <!-- 6. TRINCHEIRA SONORA & DIGITAL -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #059669; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                 <span style="font-size:20px;">🎧</span>
-                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Trincheira Sonora & Digital</strong>
+                <strong style="font-size:14px; color:#0f172a; font-weight:900;">Trincheira Sonora & Digital</strong>
             </div>
 
-            <!-- Playlists do Spotify -->
             <span style="font-size:11px; font-weight:800; color:#10b981; text-transform:uppercase; display:block; margin-bottom:8px;">🎵 Playlists Recomendadas (Spotify)</span>
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
                 ${(window.CatalogoPlaylistsSpotify || []).map(p => `
-                    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #16a34a; box-shadow:0 2px 8px rgba(0,0,0,0.03); border-radius:14px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
                         <div style="min-width:0;">
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <span style="font-size:14px;">${p.icone}</span>
-                                <strong style="font-size:12.5px; color:#ffffff;">${p.titulo}</strong>
-                                <span style="font-size:9.5px; font-weight:800; background:#064e3b; color:#6ee7b7; padding:2px 6px; border-radius:6px;">${p.tag}</span>
+                                <strong style="font-size:12.5px; color:#0f172a;">${p.titulo}</strong>
+                                <span style="font-size:9.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:6px;">${p.tag}</span>
                             </div>
                             <span style="font-size:11px; color:#94a3b8; display:block; margin-top:2px;">${p.subtitulo}</span>
                         </div>
-                        <a href="${p.link}" target="_blank" rel="noopener noreferrer" style="background:#10b981; color:#0f172a; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                        <a href="${p.link}" target="_blank" rel="noopener noreferrer" style="background:#16a34a; color:#ffffff; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
                             Ouvir ↗
                         </a>
                     </div>
                 `).join('')}
             </div>
 
-            <!-- Canais do YouTube -->
             <span style="font-size:11px; font-weight:800; color:#ef4444; text-transform:uppercase; display:block; margin-bottom:8px;">📺 Canais de Formação & Prática (YouTube)</span>
             <div style="display:flex; flex-direction:column; gap:8px;">
                 ${(window.CatalogoCanaisYoutube || []).map(c => `
-                    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #16a34a; box-shadow:0 2px 8px rgba(0,0,0,0.03); border-radius:14px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
                         <div style="min-width:0;">
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <span style="font-size:14px;">${c.icone}</span>
-                                <strong style="font-size:12.5px; color:#ffffff;">${c.titulo}</strong>
+                                <strong style="font-size:12.5px; color:#0f172a;">${c.titulo}</strong>
                             </div>
                             <span style="font-size:10.5px; font-weight:700; color:#f87171; display:block; margin-top:2px;">${c.categoria}</span>
                             <span style="font-size:11px; color:#94a3b8; display:block; margin-top:1px;">${c.desc}</span>
                         </div>
-                        <a href="${c.link}" target="_blank" rel="noopener noreferrer" style="background:#ef4444; color:#ffffff; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                        <a href="${c.link}" target="_blank" rel="noopener noreferrer" style="background:#dc2626; color:#ffffff; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
                             Acessar ↗
                         </a>
                     </div>
@@ -661,32 +1000,41 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 6: ARSENAL PRÁTICO -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                <img src="./icone/icone-forte.png" alt="Arsenal" style="width:26px; height:26px; object-fit:contain;">
-                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Arsenal Prático</strong>
-            </div>
-            <div style="background:#064e3b; border:1px dashed #34d399; padding:12px; border-radius:12px;">
-                <span style="font-size:10.5px; font-weight:800; color:#a7f3d0; text-transform:uppercase; margin-bottom:4px; display:block;">Doutrina Física & Nutrição</span>
-                <p style="font-size:12.5px; color:#ecfdf5; margin:0; line-height:1.45; font-weight:600;">${sabedoriaArsenal}</p>
-            </div>
-        </div>
-
-        <!-- QUADRO 7: OFICINA & GARAGEM -->
-        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #64748b; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+        <!-- ============================================================= -->
+        <!-- 7. OFICINA & GARAGEM (MANUTENÇÕES) -->
+        <!-- ============================================================= -->
+        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #475569; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                 <img src="./icone/icone-oficina.png" alt="Oficina" style="width:24px; height:24px; object-fit:contain;">
-                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Oficina & Garagem (Manutenções)</strong>
+                <strong style="font-size:14px; color:#0f172a; font-weight:900;">Oficina & Garagem (Manutenções)</strong>
             </div>
             <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px 0;">Registo de revisões do veículo, filtros, ferramentas e manutenções do lar.</p>
             <div style="display:flex; gap:6px; margin-bottom:10px;">
-                <input type="text" id="input-nova-manutencao" placeholder="Ex: Óleo do carro, filtro da torneira..." style="flex:1; padding:9px 12px; font-size:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#fff; outline:none;">
+                <input type="text" id="input-nova-manutencao" placeholder="Ex: Óleo do carro, filtro da torneira..." style="flex:1; padding:9px 12px; font-size:12px; border-radius:10px; border:1px solid #475569; background:#f1f5f9; color:#fff; outline:none;">
                 <button type="button" style="padding:9px 16px; font-weight:800; border-radius:10px; background:#475569; color:#fff; border:none; cursor:pointer;" onclick="window.adicionarManutencao()">+</button>
             </div>
             <div id="lista-manutencao-garagem" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     `;
+};
+
+// Funções para sorteio dinâmico das dicas
+window.sortearNovaDinamicaADois = function() {
+    const lista = window.AcervoDinamicaADois || [];
+    const el = document.getElementById('texto-dinamica-a-dois-conteudo');
+    if (!el || lista.length === 0) return;
+    const sorteado = lista[Math.floor(Math.random() * lista.length)];
+    el.textContent = sorteado;
+    if (typeof window.mostrarToast === 'function') window.mostrarToast("Nova dinâmica a dois sorteada! 🎲", "info");
+};
+
+window.sortearNovoArsenalPratico = function() {
+    const lista = window.AcervoArsenalPratico || [];
+    const el = document.getElementById('texto-arsenal-pratico-conteudo');
+    if (!el || lista.length === 0) return;
+    const sorteado = lista[Math.floor(Math.random() * lista.length)];
+    el.textContent = sorteado;
+    if (typeof window.mostrarToast === 'function') window.mostrarToast("Novo arsenal prático sorteado! 💪", "info");
 };
 
 // =========================================================================
@@ -700,7 +1048,11 @@ window.renderizarReflexaoEstoica = function(aleatorio = false) {
     if (!elTexto || !elAutor) return;
 
     const lista = window.AcervoReflexoesEstoicas365 || [];
-    if (lista.length === 0) return;
+    if (lista.length === 0) {
+        elTexto.textContent = "Carregando acervo de princípios estoicos...";
+        elAutor.textContent = "— Filosofia";
+        return;
+    }
 
     let item;
     if (aleatorio) {
@@ -709,9 +1061,16 @@ window.renderizarReflexaoEstoica = function(aleatorio = false) {
         if (elTitulo) elTitulo.textContent = `🏛️ Reflexão Sorteada (${item.data || 'Aleatória'})`;
     } else {
         const agora = new Date();
-        const diaDoAno = Math.floor((agora - new Date(agora.getFullYear(), 0, 0)) / 86400000);
-        item = lista[diaDoAno % lista.length];
-        if (elTitulo) elTitulo.textContent = `🏛️ Princípio do Dia (${item.data || 'Hoje'})`;
+        const inicioAno = new Date(agora.getFullYear(), 0, 1);
+        const diaDoAno = Math.floor((agora - inicioAno) / 86400000);
+        
+        const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+        const dataHojeStr = `${agora.getDate()} de ${meses[agora.getMonth()]}`;
+        
+        const itemDoDia = lista.find(r => r.data && r.data.toLowerCase().trim() === dataHojeStr.toLowerCase().trim());
+        item = itemDoDia || lista[diaDoAno % lista.length];
+        
+        if (elTitulo) elTitulo.textContent = `🏛️ Princípio do Dia (${item.data || dataHojeStr})`;
     }
 
     if (item) {
@@ -737,7 +1096,7 @@ window.atualizarBotaoFavoritoEstado = function() {
         btn.style.color = "#fde68a";
     } else {
         btn.innerHTML = "🤍 Favoritar";
-        btn.style.background = "#1e293b";
+        btn.style.background = "#1a271e";
         btn.style.borderColor = "#475569";
         btn.style.color = "#cbd5e1";
     }
@@ -789,10 +1148,10 @@ window.renderizarListaFavoritasEstoicas = function() {
     }
 
     cont.innerHTML = window.dadosReflexoesFavoritas.map(item => `
-        <div style="background:#0f172a; border:1px solid #334155; border-left:3.5px solid #0284c7; padding:8px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-left:3.5px solid #0284c7; padding:8px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
             <div style="min-width:0; flex:1;">
-                <span style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; display:block;">${item.data || 'Reflexão'} • ${item.autor}</span>
-                <p style="font-size:11.5px; color:#e2e8f0; margin:2px 0 0 0; line-height:1.4; font-weight:500;">"${item.texto}"</p>
+                <span style="font-size:10px; font-weight:800; color:#15803d; text-transform:uppercase; display:block;">${item.data || 'Reflexão'} • ${item.autor}</span>
+                <p style="font-size:11.5px; color:#1a271e; margin:2px 0 0 0; line-height:1.4; font-weight:500;">"${item.texto}"</p>
             </div>
             <button type="button" onclick="window.removerFavoritoEstoico('${item.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 4px; flex-shrink:0; display:flex; align-items:center;" title="Remover dos favoritos">
                 <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
@@ -959,12 +1318,12 @@ window.renderizarPainelEvolucaoForja = function() {
         if (elContadorConquistas) elContadorConquistas.textContent = `${desbloqueadas}/${dadosEvol.conquistas.length}`;
 
         contConquistas.innerHTML = dadosEvol.conquistas.map(c => `
-            <div style="background:${c.desbloqueada ? '#261b0c' : '#0f172a'}; border:1px solid ${c.desbloqueada ? '#f59e0b' : '#334155'}; padding:8px 10px; border-radius:10px;">
+            <div style="background:${c.desbloqueada ? '#fef3c7' : '#f8fafc'}; border:1px solid ${c.desbloqueada ? '#f59e0b' : '#e2e8f0'}; padding:8px 10px; border-radius:10px;">
                 <div style="display:flex; align-items:center; gap:6px;">
                     <span style="font-size:14px;">${c.desbloqueada ? '🏆' : '🔒'}</span>
-                    <strong style="font-size:11.5px; color:${c.desbloqueada ? '#fbbf24' : '#64748b'};">${c.titulo}</strong>
+                    <strong style="font-size:11.5px; color:${c.desbloqueada ? '#b45309' : '#64748b'};">${c.titulo}</strong>
                 </div>
-                <span style="font-size:10px; color:${c.desbloqueada ? '#fed7aa' : '#475569'}; display:block; margin-top:2px;">${c.desc}</span>
+                <span style="font-size:10px; color:${c.desbloqueada ? '#92400e' : '#64748b'}; display:block; margin-top:2px;">${c.desc}</span>
             </div>
         `).join('');
     }
@@ -988,7 +1347,7 @@ window.renderizarCamposEdicaoForja = function() {
     cont.innerHTML = window.configMissoesForja.map((m, idx) => `
         <div>
             <label style="font-size:10.5px; font-weight:700; color:#94a3b8;">Missão ${idx + 1}:</label>
-            <input type="text" id="input-cfg-forja-${m.id}" value="${m.rotulo}" style="width:100%; box-sizing:border-box; padding:6px 8px; border-radius:8px; border:1px solid #475569; background:#1e293b; color:#fff; font-size:11.5px; outline:none;">
+            <input type="text" id="input-cfg-forja-${m.id}" value="${m.rotulo}" style="width:100%; box-sizing:border-box; padding:6px 8px; border-radius:8px; border:1px solid #475569; background:#ffffff; color:#0f172a; font-size:11.5px; outline:none;">
         </div>
     `).join('');
 };
@@ -1028,9 +1387,9 @@ window.renderizarBotoesForja = function() {
     grid.innerHTML = window.configMissoesForja.map(m => {
         const cumprido = !!registroHoje.itens[m.id];
         return `
-            <label style="display:flex; align-items:center; justify-content:space-between; background:${cumprido ? '#2a1205' : '#1e293b'}; padding:11px 12px; border-radius:12px; border:1.5px solid ${cumprido ? '#ea580c' : '#334155'}; cursor:pointer; transition:all 0.2s ease;">
-                <span style="font-size:12px; font-weight:800; color:${cumprido ? '#fed7aa' : '#f8fafc'};">${m.rotulo}</span>
-                <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:18px; height:18px; accent-color:#f97316;">
+            <label style="display:flex; align-items:center; justify-content:space-between; background:${cumprido ? '#f0fdf4' : '#f8fafc'}; padding:8px 10px; border-radius:10px; border:1.5px solid ${cumprido ? '#16a34a' : '#e2e8f0'}; cursor:pointer; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+                <span style="font-size:11.5px; font-weight:800; color:${cumprido ? '#15803d' : '#1e293b'};">${m.rotulo}</span>
+                <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#16a34a;">
             </label>
         `;
     }).join('');
@@ -1116,20 +1475,20 @@ window.renderizarHistoricoForja = function() {
         });
 
         return `
-            <div style="background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:12px; border-left:4px solid #ef4444;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px 12px; border-radius:12px; border-left:4px solid #ea580c;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                     <span style="font-size:10.5px; font-weight:800; color:#94a3b8;">${dtStr}</span>
                     <strong style="font-size:11px; color:#f97316;">${pct}% (${qtd}/6)</strong>
                 </div>
-                <div style="font-size:11.5px; font-weight:800; color:#ffffff; margin-bottom:6px;">${grau}</div>
+                <div style="font-size:11.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">${grau}</div>
                 
-                <div style="background:#1e293b; border-radius:6px; height:6px; width:100%; overflow:hidden; margin-bottom:8px;">
+                <div style="background:#1a271e; border-radius:6px; height:6px; width:100%; overflow:hidden; margin-bottom:8px;">
                     <div style="background:linear-gradient(90deg, #f97316, #ef4444); height:100%; width:${pct}%;"></div>
                 </div>
 
-                <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                <div style="flex-wrap:wrap; gap:4px; display:flex;">
                     ${nomesItens.length > 0 ? nomesItens.map(n => `
-                        <span style="font-size:9.5px; font-weight:700; background:#2a1205; color:#fed7aa; padding:2px 6px; border-radius:6px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:3px;">
+                        <span style="font-size:9.5px; font-weight:700; background:#2a1205; color:#f59e0b; padding:2px 6px; border-radius:6px; border:1px solid #7c2d12; display:inline-flex; align-items:center; gap:3px;">
                             <img src="./icone/icone-check.png" alt="Feito" style="width:12px; height:12px; object-fit:contain;"> ${n}
                         </span>
                     `).join('') : '<span style="font-size:10px; color:#94a3b8;">Nenhum item cumprido</span>'}
@@ -1140,29 +1499,180 @@ window.renderizarHistoricoForja = function() {
 };
 
 // =========================================================================
-// 6. RADAR PESSOAL: GRÁFICO SVG, COMPARATIVO DE SEMANAS E TENDÊNCIAS
+// 5.1. ESTADO DIÁRIO (CORPO & MENTE): 4 PILARES (1=RUIM, 10=ÁPICE) & GRÁFICO
+// =========================================================================
+
+window.obterDescricaoNotaEstadoDiario = function(tipo, valor) {
+    const v = parseInt(valor, 10);
+    if (tipo === 'humor') {
+        if (v <= 2) return "Irritado / Desanimado";
+        if (v <= 4) return "Mal-humorado";
+        if (v <= 6) return "Neutro / Equilibrado";
+        if (v <= 8) return "Bem-humorado";
+        return "Radiante / Inabalável";
+    } else if (tipo === 'estresse') {
+        if (v <= 2) return "Sobrecarga / Tensão";
+        if (v <= 4) return "Pressionado";
+        if (v <= 6) return "Moderado";
+        if (v <= 8) return "Tranquilo";
+        return "Sereno / Calmo";
+    } else if (tipo === 'fisico') {
+        if (v <= 2) return "Esgotado";
+        if (v <= 4) return "Cansado";
+        if (v <= 6) return "Normal";
+        if (v <= 8) return "Ativo / Forte";
+        return "Vigor Máximo";
+    } else if (tipo === 'mental') {
+        if (v <= 2) return "Disperso / Confuso";
+        if (v <= 4) return "Desfocado";
+        if (v <= 6) return "Concentrado";
+        if (v <= 8) return "Boa Clareza";
+        return "Foco Blindado";
+    }
+    return "Equilibrado";
+};
+
+window.atualizarRotuloEstadoDiario = function(tipo) {
+    const elRange = document.getElementById(`range-${tipo}-diario`);
+    const elBadge = document.getElementById(`badge-${tipo}-diario-val`);
+    if (elRange && elBadge) {
+        elBadge.textContent = window.obterDescricaoNotaEstadoDiario(tipo, elRange.value);
+    }
+};
+
+window.salvarEstadoDiarioCompleto = async function() {
+    const vHumor = parseInt(document.getElementById('range-humor-diario')?.value || '5', 10);
+    const vEstresse = parseInt(document.getElementById('range-estresse-diario')?.value || '5', 10);
+    const vFisico = parseInt(document.getElementById('range-fisico-diario')?.value || '5', 10);
+    const vMental = parseInt(document.getElementById('range-mental-diario')?.value || '5', 10);
+    const hojeStr = new Date().toISOString().split('T')[0];
+
+    const novoRegistro = {
+        id: 'est_' + Date.now(),
+        data: hojeStr,
+        humor: vHumor,
+        estresse: vEstresse,
+        fisico: vFisico,
+        mental: vMental,
+        textoHumor: window.obterDescricaoNotaEstadoDiario('humor', vHumor),
+        textoEstresse: window.obterDescricaoNotaEstadoDiario('estresse', vEstresse),
+        textoFisico: window.obterDescricaoNotaEstadoDiario('fisico', vFisico),
+        textoMental: window.obterDescricaoNotaEstadoDiario('mental', vMental)
+    };
+
+    window.dadosEstadoDiario.humor = vHumor;
+    window.dadosEstadoDiario.estresse = vEstresse;
+    window.dadosEstadoDiario.fisico = vFisico;
+    window.dadosEstadoDiario.mental = vMental;
+
+    if (!Array.isArray(window.dadosEstadoDiario.historico)) {
+        window.dadosEstadoDiario.historico = [];
+    }
+
+    const idxHoje = window.dadosEstadoDiario.historico.findIndex(r => r.data === hojeStr);
+    if (idxHoje >= 0) {
+        window.dadosEstadoDiario.historico[idxHoje] = novoRegistro;
+    } else {
+        window.dadosEstadoDiario.historico.unshift(novoRegistro);
+    }
+
+    if (window.dadosEstadoDiario.historico.length > 30) {
+        window.dadosEstadoDiario.historico = window.dadosEstadoDiario.historico.slice(0, 30);
+    }
+
+    localStorage.setItem(window.obterChaveStorageMasc('estado_diario'), JSON.stringify(window.dadosEstadoDiario));
+    window.renderizarGraficoETendenciasEstadoDiario();
+
+    if (typeof window.mostrarToast === 'function') {
+        window.mostrarToast("Estado diário salvo com sucesso!", "sucesso");
+    }
+};
+
+window.renderizarGraficoETendenciasEstadoDiario = function() {
+    const hist = window.dadosEstadoDiario.historico || [];
+    const contGraf = document.getElementById('container-grafico-svg-estado-diario');
+    const elInsight = document.getElementById('texto-insight-estado-diario');
+
+    if (!contGraf) return;
+
+    if (hist.length < 2) {
+        contGraf.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas do seu Estado Diário.</span>';
+        if (elInsight) elInsight.textContent = "Faça seu check-in diário para acompanhar a consistência do seu humor, serenidade, vigor físico e foco mental.";
+        return;
+    }
+
+    const pontos = [...hist.slice(0, 7)].reverse();
+    const w = 320;
+    const h = 90;
+    const pad = 16;
+    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
+
+    const calcY = (val) => h - pad - (((val - 1) / 9) * (h - (pad * 2)));
+
+    const ptsHumor = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.humor || 5)}`).join(' ');
+    const ptsEstresse = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.estresse || 5)}`).join(' ');
+    const ptsFisico = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.fisico || 5)}`).join(' ');
+    const ptsMental = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.mental || 5)}`).join(' ');
+
+    contGraf.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
+            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#223728" stroke-dasharray="3,3" stroke-width="1" />
+            <polyline fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsHumor}" />
+            <polyline fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsEstresse}" />
+            <polyline fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsFisico}" />
+            <polyline fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsMental}" />
+            ${pontos.map((p, idx) => `
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.humor || 5)}" r="2.5" fill="#38bdf8" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.estresse || 5)}" r="2.5" fill="#fbbf24" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.fisico || 5)}" r="2.5" fill="#10b981" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.mental || 5)}" r="2.5" fill="#a855f7" />
+            `).join('')}
+        </svg>
+    `;
+
+    const calcMedia = (arr, campo) => arr.length ? (arr.reduce((acc, cur) => acc + (cur[campo] || 5), 0) / arr.length).toFixed(1) : '5.0';
+    const medH = calcMedia(pontos, 'humor');
+    const medE = calcMedia(pontos, 'estresse');
+    const medF = calcMedia(pontos, 'fisico');
+    const medM = calcMedia(pontos, 'mental');
+
+    if (elInsight) {
+        if (parseFloat(medE) <= 4.0) {
+            elInsight.innerHTML = `⚠️ <strong>Alerta de Tensão:</strong> Sua serenidade média está baixa (${medE}/10). Proteja momentos de silêncio e descompressão após o expediente.`;
+        } else if (parseFloat(medF) >= 7.5 && parseFloat(medM) >= 7.5) {
+            elInsight.innerHTML = `🔥 <strong>Pico de Rendimento:</strong> Seu vigor físico (${medF}/10) e foco mental (${medM}/10) estão no ápice. Momento propício para desafios de grande porte.`;
+        } else {
+            elInsight.innerHTML = `🎯 <strong>Estabilidade:</strong> Médias da semana: Humor ${medH} | Serenidade ${medE} | Físico ${medF} | Mental ${medM}. Mantenha a constância na Forja.`;
+        }
+    }
+};
+
+// =========================================================================
+// 6. RADAR PESSOAL & VIDA A DOIS: SLIDERS REFORMULADOS, LEGENDAS & GRÁFICO
 // =========================================================================
 
 window.obterDescricaoNotaSlider = function(tipo, valor) {
     const v = parseInt(valor, 10);
-    if (tipo === 'energia') {
-        if (v <= 2) return `Nota ${v} (Esgotado)`;
-        if (v <= 4) return `Nota ${v} (Baixa)`;
-        if (v <= 6) return `Nota ${v} (Normal)`;
-        if (v <= 8) return `Nota ${v} (Boa)`;
-        return `Nota ${v} (Alta Performance)`;
-    } else if (tipo === 'estresse') {
-        if (v <= 2) return `Nota ${v} (Relaxado)`;
-        if (v <= 4) return `Nota ${v} (Tranquilo)`;
-        if (v <= 6) return `Nota ${v} (Moderado)`;
-        if (v <= 8) return `Nota ${v} (Tenso)`;
-        return `Nota ${v} (Sobrecarga)`;
-    } else if (tipo === 'libido') {
-        if (v <= 3) return `Nota ${v} (Baixa)`;
-        if (v <= 7) return `Nota ${v} (Normal)`;
-        return `Nota ${v} (Alta)`;
+    if (tipo === 'libido') {
+        if (v <= 2) return "Baixa / Desanimado";
+        if (v <= 4) return "Disposição Baixa";
+        if (v <= 6) return "Normal";
+        if (v <= 8) return "Alta / Disposto";
+        return "Desejo Máximo";
+    } else if (tipo === 'realizacao') {
+        if (v <= 2) return "Frustrado";
+        if (v <= 4) return "Insatisfeito";
+        if (v <= 6) return "Satisfeito";
+        if (v <= 8) return "Muito Gratificante";
+        return "Pleno & Revigorado";
+    } else if (tipo === 'parceira') {
+        if (v <= 2) return "Distante / Insatisfeita";
+        if (v <= 4) return "Pouco Conectada";
+        if (v <= 6) return "Satisfeita";
+        if (v <= 8) return "Radiante";
+        return "Totalmente Realizada";
     }
-    return `Nota ${v}`;
+    return "Satisfeito";
 };
 
 window.atualizarRotuloSlider = function(tipo) {
@@ -1175,27 +1685,27 @@ window.atualizarRotuloSlider = function(tipo) {
 
 window.salvarRadarIntimoCompleto = async function() {
     const dtRelacao = document.getElementById('slider-data-relacao')?.value || null;
-    const vEnergia = parseInt(document.getElementById('range-energia')?.value || '5', 10);
-    const vEstresse = parseInt(document.getElementById('range-estresse')?.value || '5', 10);
     const vLibido = parseInt(document.getElementById('range-libido')?.value || '5', 10);
+    const vRealizacao = parseInt(document.getElementById('range-realizacao')?.value || '5', 10);
+    const vParceira = parseInt(document.getElementById('range-parceira')?.value || '5', 10);
     const hojeStr = new Date().toISOString().split('T')[0];
 
     const novoRegistro = {
         id: 'rad_' + Date.now(),
         data: hojeStr,
         ultima_relacao: dtRelacao,
-        energia: vEnergia,
-        estresse: vEstresse,
         libido: vLibido,
-        textoEnergia: window.obterDescricaoNotaSlider('energia', vEnergia),
-        textoEstresse: window.obterDescricaoNotaSlider('estresse', vEstresse),
-        textoLibido: window.obterDescricaoNotaSlider('libido', vLibido)
+        realizacao: vRealizacao,
+        parceira: vParceira,
+        textoLibido: window.obterDescricaoNotaSlider('libido', vLibido),
+        textoRealizacao: window.obterDescricaoNotaSlider('realizacao', vRealizacao),
+        textoParceira: window.obterDescricaoNotaSlider('parceira', vParceira)
     };
 
     window.dadosRadarIntimo.ultima_relacao = dtRelacao;
-    window.dadosRadarIntimo.energia = vEnergia;
-    window.dadosRadarIntimo.estresse = vEstresse;
     window.dadosRadarIntimo.libido = vLibido;
+    window.dadosRadarIntimo.realizacao = vRealizacao;
+    window.dadosRadarIntimo.parceira = vParceira;
 
     if (!Array.isArray(window.dadosRadarIntimo.historico)) {
         window.dadosRadarIntimo.historico = [];
@@ -1212,7 +1722,7 @@ window.salvarRadarIntimoCompleto = async function() {
     window.renderizarHistoricoRadarIntimo();
 
     if (typeof window.mostrarToast === 'function') {
-        window.mostrarToast("Check-in guardado e análise atualizada!", "sucesso");
+        window.mostrarToast("Momento registrado com sucesso! ⭐", "sucesso");
     }
 
     const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
@@ -1223,8 +1733,8 @@ window.salvarRadarIntimoCompleto = async function() {
                 membro_id: meuId,
                 familia_id: window.familiaAtualId || null,
                 ultima_relacao: dtRelacao,
-                energia: vEnergia,
-                estresse: vEstresse,
+                energia: vRealizacao,
+                estresse: vParceira,
                 libido: vLibido
             }, { onConflict: 'membro_id' });
         } catch (err) {}
@@ -1240,9 +1750,9 @@ window.renderizarGraficoETendenciasRadar = function() {
     if (!contGraf) return;
 
     if (hist.length < 2) {
-        contGraf.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas do Radar.</span>';
+        contGraf.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas da Vida a Dois.</span>';
         if (contComp) contComp.innerHTML = '<span style="font-size:11px; color:#94a3b8; grid-column:span 2; text-align:center;">Sem dados semanais suficientes para comparação.</span>';
-        if (elInsight) elInsight.textContent = "Faça seu check-in diário para identificar se o estresse está a afetar a sua vitalidade e rendimento.";
+        if (elInsight) elInsight.textContent = "Faça seu check-in após os momentos a dois para acompanhar a evolução da cumplicidade e satisfação mútua.";
         return;
     }
 
@@ -1254,20 +1764,20 @@ window.renderizarGraficoETendenciasRadar = function() {
 
     const calcY = (val) => h - pad - (((val - 1) / 9) * (h - (pad * 2)));
 
-    const ptsEnergia = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.energia)}`).join(' ');
-    const ptsEstresse = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.estresse)}`).join(' ');
-    const ptsLibido = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.libido)}`).join(' ');
+    const ptsLibido = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.libido || 5)}`).join(' ');
+    const ptsRealizacao = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.realizacao || p.energia || 5)}`).join(' ');
+    const ptsParceira = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.parceira || p.estresse || 5)}`).join(' ');
 
     contGraf.innerHTML = `
         <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
-            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
-            <polyline fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsEnergia}" />
-            <polyline fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsEstresse}" />
+            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#223728" stroke-dasharray="3,3" stroke-width="1" />
             <polyline fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsLibido}" />
+            <polyline fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsRealizacao}" />
+            <polyline fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsParceira}" />
             ${pontos.map((p, idx) => `
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.energia)}" r="3" fill="#38bdf8" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.estresse)}" r="3" fill="#fbbf24" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.libido)}" r="3" fill="#f43f5e" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.libido || 5)}" r="3" fill="#f43f5e" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.realizacao || p.energia || 5)}" r="3" fill="#38bdf8" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.parceira || p.estresse || 5)}" r="3" fill="#fbbf24" />
             `).join('')}
         </svg>
     `;
@@ -1275,42 +1785,43 @@ window.renderizarGraficoETendenciasRadar = function() {
     const semAtual = hist.slice(0, 7);
     const semAnterior = hist.slice(7, 14);
 
-    const calcMedia = (arr, campo) => arr.length ? (arr.reduce((acc, cur) => acc + (cur[campo] || 5), 0) / arr.length).toFixed(1) : null;
+    const calcMedia = (arr, campo, fallback) => {
+        if (!arr.length) return null;
+        return (arr.reduce((acc, cur) => acc + (cur[campo] || cur[fallback] || 5), 0) / arr.length).toFixed(1);
+    };
 
-    const medE_Atu = calcMedia(semAtual, 'energia');
-    const medS_Atu = calcMedia(semAtual, 'estresse');
-    const medL_Atu = calcMedia(semAtual, 'libido');
+    const medL_Atu = calcMedia(semAtual, 'libido', 'libido');
+    const medR_Atu = calcMedia(semAtual, 'realizacao', 'energia');
+    const medP_Atu = calcMedia(semAtual, 'parceira', 'estresse');
 
-    const medE_Ant = calcMedia(semAnterior, 'energia');
-    const medS_Ant = calcMedia(semAnterior, 'estresse');
-    const medL_Ant = calcMedia(semAnterior, 'libido');
+    const medL_Ant = calcMedia(semAnterior, 'libido', 'libido');
+    const medR_Ant = calcMedia(semAnterior, 'realizacao', 'energia');
+    const medP_Ant = calcMedia(semAnterior, 'parceira', 'estresse');
 
     if (contComp) {
         contComp.innerHTML = `
-            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #334155;">
+            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #e2e8f0;">
                 <span style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase; display:block;">Semana Atual:</span>
-                <span style="font-size:11.5px; color:#ffffff; font-weight:700; display:block; margin-top:3px;">
-                    ⚡ ${medE_Atu} | 🧠 ${medS_Atu} | 🔥 ${medL_Atu}
+                <span style="font-size:11.5px; color:#0f172a; font-weight:700; display:block; margin-top:3px;">
+                    🔥 ${medL_Atu} | ⚡ ${medR_Atu} | ❤️ ${medP_Atu}
                 </span>
             </div>
-            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #334155;">
+            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #e2e8f0;">
                 <span style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase; display:block;">Semana Anterior:</span>
-                <span style="font-size:11.5px; color:#ffffff; font-weight:700; display:block; margin-top:3px;">
-                    ${medE_Ant ? `⚡ ${medE_Ant} | 🧠 ${medS_Ant} | 🔥 ${medL_Ant}` : '<em style="color:#64748b; font-size:10.5px;">Sem dados</em>'}
+                <span style="font-size:11.5px; color:#0f172a; font-weight:700; display:block; margin-top:3px;">
+                    ${medL_Ant ? `🔥 ${medL_Ant} | ⚡ ${medR_Ant} | ❤️ ${medP_Ant}` : '<em style="color:#64748b; font-size:10.5px;">Sem dados</em>'}
                 </span>
             </div>
         `;
     }
 
     if (elInsight) {
-        if (parseFloat(medS_Atu) >= 7.0 && parseFloat(medE_Atu) <= 5.0) {
-            elInsight.innerHTML = `⚠️ <strong>Sobrecarga Detectada:</strong> O estresse elevado (${medS_Atu}) está consumindo a sua energia biológica. Priorize fechar o expediente no horário e proteja seu sono.`;
-        } else if (parseFloat(medE_Atu) >= 7.5 && parseFloat(medS_Atu) <= 4.5) {
-            elInsight.innerHTML = `🔥 <strong>Zona de Alta Performance:</strong> Excelente alinhamento entre vitalidade (${medE_Atu}) e baixo estresse (${medS_Atu}). Momento ideal para metas desafiadoras.`;
-        } else if (medE_Ant && parseFloat(medE_Atu) > parseFloat(medE_Ant)) {
-            elInsight.innerHTML = `📈 <strong>Tendência Positiva:</strong> A sua energia biológica subiu de ${medE_Ant} para ${medE_Atu} em relação à semana anterior. A constância na Forja está a surtir efeito.`;
+        if (parseFloat(medP_Atu) >= 7.5 && parseFloat(medR_Atu) >= 7.5) {
+            elInsight.innerHTML = `❤️ <strong>Alta Sintonia:</strong> Excelente harmonia e satisfação mútua no casal. As atenções e a presença estão a gerar conexão genuína.`;
+        } else if (parseFloat(medL_Atu) >= 7.0 && parseFloat(medR_Atu) <= 5.0) {
+            elInsight.innerHTML = `💡 <strong>Ajuste de Ritmo:</strong> Disposição em alta, porém a performance/realização sentida ficou moderada. Reduza a pressa e priorize o clima de cumplicidade.`;
         } else {
-            elInsight.innerHTML = `🎯 <strong>Estabilidade:</strong> Mantenha a rotina da Forja ativa e preserve a hidratação matinal para sustentar o rendimento ao longo dos próximos dias.`;
+            elInsight.innerHTML = `🎯 <strong>Conexão Constante:</strong> Mantenha o diálogo aberto e a antecipação carinhosa ao longo da rotina para preservar o magnetismo a dois.`;
         }
     }
 };
@@ -1329,12 +1840,12 @@ window.renderizarHistoricoRadarIntimo = function() {
     }
 
     cont.innerHTML = hist.map(reg => `
-        <div style="background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:8px 12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <span style="font-size:10px; font-weight:800; color:#94a3b8; display:block;">Data: ${reg.data}${reg.ultima_relacao ? ' • Relação em ' + reg.ultima_relacao : ''}</span>
-                <span style="font-size:11.5px; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
-                    <img src="./icone/icone-energia.png" alt="Energia" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEnergia} | 
-                    <img src="./icone/icone-estresse.png" alt="Estresse" style="width:15px; height:15px; object-fit:contain;"> ${reg.textoEstresse}
+                <span style="font-size:11.5px; color:#0f172a; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                    ⚡ ${reg.textoRealizacao || reg.textoEnergia} | 
+                    ❤️ ${reg.textoParceira || reg.textoEstresse}
                 </span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
@@ -1358,25 +1869,8 @@ window.removerItemHistoricoRadar = function(id) {
 };
 
 // =========================================================================
-// 7. CURADORIA DE MÍDIA COM NAVEGAÇÃO SEQUENCIAL E SORTEIO ALEATÓRIO 🔀
+// 7. CURADORIA DE 200 FILMES & SÉRIES (MODO SEQUENCIAL + ALEATÓRIO 🔀 + TMDB)
 // =========================================================================
-
-window.alternarAbaMidia = function(aba) {
-    window.abaMidiaAtiva = aba;
-    const btnF = document.getElementById('btn-aba-filmes');
-    const btnS = document.getElementById('btn-aba-series');
-
-    if (aba === 'filmes') {
-        if (btnF) { btnF.style.background = '#6366f1'; btnF.style.color = '#fff'; }
-        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#94a3b8'; }
-    } else {
-        if (btnS) { btnS.style.background = '#6366f1'; btnS.style.color = '#fff'; }
-        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#94a3b8'; }
-    }
-
-    window.indiceMidiaAtual[aba] = 0;
-    window.atualizarVisualizacaoMidia();
-};
 
 window.obterListaMidiaMascAtual = function() {
     if (window.abaMidiaAtiva === 'filmes') {
@@ -1385,7 +1879,23 @@ window.obterListaMidiaMascAtual = function() {
     return window.CatalogoSeriesMasculinas || [];
 };
 
-// Navegação Sequencial Normal (◄ e ► por toda a lista)
+window.alternarAbaMidia = function(aba) {
+    window.abaMidiaAtiva = aba;
+    const btnF = document.getElementById('btn-aba-filmes');
+    const btnS = document.getElementById('btn-aba-series');
+
+    if (aba === 'filmes') {
+        if (btnF) { btnF.style.background = '#16a34a'; btnF.style.color = '#fff'; }
+        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#94a3b8'; }
+    } else {
+        if (btnS) { btnS.style.background = '#16a34a'; btnS.style.color = '#fff'; }
+        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#94a3b8'; }
+    }
+
+    window.indiceMidiaAtual[aba] = 0;
+    window.atualizarVisualizacaoMidia();
+};
+
 window.navegarCarrosselMidia = function(direcao) {
     const lista = window.obterListaMidiaMascAtual();
     if (!lista || lista.length === 0) return;
@@ -1398,7 +1908,6 @@ window.navegarCarrosselMidia = function(direcao) {
     window.atualizarVisualizacaoMidia();
 };
 
-// Novo Botão: Indicar Aleatório 🔀
 window.sortearMidiaAleatoria = function() {
     const lista = window.obterListaMidiaMascAtual();
     if (!lista || lista.length === 0) return;
@@ -1426,7 +1935,7 @@ window.atualizarVisualizacaoMidia = function() {
     if (!item) return;
     window.itemMidiaAtualmenteExibido = item;
 
-    const elCapa = document.getElementById('midia-capa-container');
+    const elImg = document.getElementById('midia-poster-img');
     const elBadgeCat = document.getElementById('midia-badge-categoria');
     const elAno = document.getElementById('midia-ano-tempo');
     const elTitulo = document.getElementById('midia-titulo-destaque');
@@ -1437,6 +1946,8 @@ window.atualizarVisualizacaoMidia = function() {
     const contPosicao = document.getElementById('midia-posicao-contador');
     const btnAcao = document.getElementById('btn-marcar-assistido-acao');
     const btnQueroVer = document.getElementById('btn-quero-ver-masc');
+    const contProvedores = document.getElementById('midia-provedores-lista');
+    const linkJustWatch = document.getElementById('midia-link-justwatch');
 
     if (elBadgeCat) elBadgeCat.textContent = item.categoria || window.abaMidiaAtiva.toUpperCase();
     if (elAno) elAno.textContent = item.ano || item.temporadas || '';
@@ -1445,23 +1956,27 @@ window.atualizarVisualizacaoMidia = function() {
         elSubtitulo.textContent = (item.tituloOriginal && item.tituloOriginal !== item.titulo) ? item.tituloOriginal : '';
     }
     if (elRating) {
-        elRating.textContent = `★ ${item.imdbRating || item.rating || '8.5'}`;
+        elRating.textContent = `★ ${item.imdbRating || '8.0'}`;
     }
-    if (elDesc) elDesc.textContent = item.desc || "Buscando sinopse e detalhes via OMDb...";
+    if (elDesc) elDesc.textContent = item.desc || "Buscando detalhes da obra...";
 
     if (contPosicao) {
         contPosicao.textContent = `${idx + 1} / ${lista.length}`;
     }
 
-    if (elCapa) {
-        const imagemPadrao = item.capa || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80';
-        elCapa.style.backgroundImage = `url('${imagemPadrao}')`;
+    if (contProvedores) {
+        contProvedores.innerHTML = '<span style="font-size:11px; color:#64748b;">Consultando provedores de streaming...</span>';
+    }
+
+    const imagemPadrao = item.capa || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80';
+    if (elImg) {
+        elImg.src = imagemPadrao;
     }
 
     if (contGeneros) {
         const generos = item.generos || [item.categoria || 'Geral'];
         contGeneros.innerHTML = generos.slice(0, 3).map(g => `
-            <span style="font-size:9.5px; font-weight:800; background:#1e293b; color:#cbd5e1; padding:2px 7px; border-radius:6px; border:1px solid #334155;">${g}</span>
+            <span style="font-size:9.5px; font-weight:800; background:#1a271e; color:#0f172a; padding:2px 7px; border-radius:6px; border:1px solid #e2e8f0;">${g}</span>
         `).join('');
     }
 
@@ -1474,7 +1989,7 @@ window.atualizarVisualizacaoMidia = function() {
             btnQueroVer.style.color = '#ffffff';
         } else {
             btnQueroVer.textContent = '📌 Quero Assistir';
-            btnQueroVer.style.background = '#1e293b';
+            btnQueroVer.style.background = '#1a271e';
             btnQueroVer.style.borderColor = '#0284c7';
             btnQueroVer.style.color = '#38bdf8';
         }
@@ -1491,21 +2006,41 @@ window.atualizarVisualizacaoMidia = function() {
         }
     }
 
-    // Consulta e Atualização em Tempo Real via API OMDb
-    window.obterDadosOMDbComCache(item).then(dadosOmdb => {
-        if (!dadosOmdb) return;
+    window.obterDadosTMDbComCache(item).then(dadosTmdb => {
+        if (!dadosTmdb) return;
         if (window.itemMidiaAtualmenteExibido !== item) return;
 
-        if (dadosOmdb.poster && elCapa) {
-            elCapa.style.backgroundImage = `url('${dadosOmdb.poster}')`;
+        if (dadosTmdb.poster && elImg) {
+            elImg.src = dadosTmdb.poster;
         }
 
-        if (dadosOmdb.sinopse && elDesc) {
-            elDesc.textContent = dadosOmdb.sinopse;
+        if (dadosTmdb.sinopse && elDesc) {
+            elDesc.textContent = dadosTmdb.sinopse;
         }
 
-        if (dadosOmdb.imdbRating && elRating) {
-            elRating.textContent = `★ ${dadosOmdb.imdbRating}`;
+        if (dadosTmdb.imdbRating && elRating) {
+            elRating.textContent = `★ ${dadosTmdb.imdbRating}`;
+        }
+
+        if (linkJustWatch && dadosTmdb.linkOndeAssistir) {
+            linkJustWatch.href = dadosTmdb.linkOndeAssistir;
+        }
+
+        if (contProvedores) {
+            if (dadosTmdb.provedores && dadosTmdb.provedores.length > 0) {
+                contProvedores.innerHTML = dadosTmdb.provedores.map(p => `
+                    <span style="font-size:10px; font-weight:800; background:#1a271e; color:#4ade80; border:1px solid #0284c7; padding:2px 7px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
+                        <span>📺</span> ${p.nome}
+                    </span>
+                `).join('');
+            } else {
+                contProvedores.innerHTML = `
+                    <span style="font-size:10.5px; color:#94a3b8;">
+                        Disponível sob consulta no Brasil. 
+                        <a href="${dadosTmdb.linkOndeAssistir || '#'}" target="_blank" rel="noopener noreferrer" style="color:#f59e0b; text-decoration:underline;">Ver opções no JustWatch</a>
+                    </span>
+                `;
+            }
         }
     });
 };
@@ -1593,10 +2128,10 @@ window.renderizarHistoricoQueroVerMasc = function() {
     }
 
     cont.innerHTML = lista.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#172219; border:1px solid #e2e8f0; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0; flex:1;">
-                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
-                <span style="font-size:10.5px; color:#38bdf8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
+                <strong style="font-size:12.5px; color:#0f172a; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <span style="font-size:10.5px; color:#15803d; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <button type="button" onclick="window.confirmarAvaliacaoMidia(5, { id: '${item.id}', titulo: '${item.titulo}', categoria: '${item.categoria}' })" style="background:#10b981; color:#fff; border:none; padding:4px 8px; font-size:10.5px; border-radius:8px; font-weight:800; cursor:pointer;" title="Marcar como visto">
@@ -1631,9 +2166,9 @@ window.renderizarHistoricoAssistidos = function() {
     }
 
     cont.innerHTML = assistidosOrdenados.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #334155; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#172219; border:1px solid #e2e8f0; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0;">
-                <strong style="font-size:12.5px; color:#ffffff; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
+                <strong style="font-size:12.5px; color:#0f172a; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
                 <span style="font-size:10.5px; color:#94a3b8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
@@ -1721,10 +2256,10 @@ window.renderizarListasMasculinas = function() {
             contManut.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center; display:block; padding:4px;">Nenhuma manutenção pendente.</span>';
         } else {
             contManut.innerHTML = window.dadosManutencaoGaragem.map(item => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:12px; border:1px solid #334155;">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#f1f5f9; padding:10px 12px; border-radius:12px; border:1px solid #e2e8f0;">
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1;">
                         <input type="checkbox" onchange="window.alternarManutencao('${item.id}')" ${item.concluido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#f97316;">
-                        <span style="font-size:12.5px; color:#f8fafc; font-weight:600; ${item.concluido ? 'text-decoration:line-through; color:#64748b;' : ''}">${item.titulo}</span>
+                        <span style="font-size:12.5px; color:#0f172a; font-weight:600; ${item.concluido ? 'text-decoration:line-through; color:#64748b;' : ''}">${item.titulo}</span>
                     </label>
                     <button type="button" onclick="window.removerManutencao('${item.id}')" style="background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center;" title="Remover">
                         <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
@@ -1736,20 +2271,39 @@ window.renderizarListasMasculinas = function() {
 
     window.calcularOfensivaForja();
 
+    // Sincroniza sliders de estado diário
+    if (window.dadosEstadoDiario) {
+        const rngH = document.getElementById('range-humor-diario');
+        const rngE = document.getElementById('range-estresse-diario');
+        const rngF = document.getElementById('range-fisico-diario');
+        const rngM = document.getElementById('range-mental-diario');
+
+        if (rngH) rngH.value = window.dadosEstadoDiario.humor || 5;
+        if (rngE) rngE.value = window.dadosEstadoDiario.estresse || 5;
+        if (rngF) rngF.value = window.dadosEstadoDiario.fisico || 5;
+        if (rngM) rngM.value = window.dadosEstadoDiario.mental || 5;
+
+        window.atualizarRotuloEstadoDiario('humor');
+        window.atualizarRotuloEstadoDiario('estresse');
+        window.atualizarRotuloEstadoDiario('fisico');
+        window.atualizarRotuloEstadoDiario('mental');
+    }
+
+    // Sincroniza sliders do radar íntimo
     if (window.dadosRadarIntimo) {
         const inDt = document.getElementById('slider-data-relacao');
-        const rngE = document.getElementById('range-energia');
-        const rngS = document.getElementById('range-estresse');
         const rngL = document.getElementById('range-libido');
+        const rngR = document.getElementById('range-realizacao');
+        const rngP = document.getElementById('range-parceira');
 
         if (inDt) inDt.value = window.dadosRadarIntimo.ultima_relacao || '';
-        if (rngE) rngE.value = window.dadosRadarIntimo.energia || 5;
-        if (rngS) rngS.value = window.dadosRadarIntimo.estresse || 5;
         if (rngL) rngL.value = window.dadosRadarIntimo.libido || 5;
+        if (rngR) rngR.value = window.dadosRadarIntimo.realizacao || window.dadosRadarIntimo.energia || 5;
+        if (rngP) rngP.value = window.dadosRadarIntimo.parceira || window.dadosRadarIntimo.estresse || 5;
 
-        window.atualizarRotuloSlider('energia');
-        window.atualizarRotuloSlider('estresse');
         window.atualizarRotuloSlider('libido');
+        window.atualizarRotuloSlider('realizacao');
+        window.atualizarRotuloSlider('parceira');
     }
 };
 
@@ -1766,8 +2320,8 @@ window.carregarDadosNuvemEspacoMasculino = async function() {
         const { data: dRadar } = await cli.from('espaco_masc_radar').select('*').eq('membro_id', meuId).maybeSingle();
         if (dRadar) {
             window.dadosRadarIntimo.ultima_relacao = dRadar.ultima_relacao;
-            window.dadosRadarIntimo.energia = dRadar.energia || 5;
-            window.dadosRadarIntimo.estresse = dRadar.estresse || 5;
+            window.dadosRadarIntimo.realizacao = dRadar.energia || 5;
+            window.dadosRadarIntimo.parceira = dRadar.estresse || 5;
             window.dadosRadarIntimo.libido = dRadar.libido || 5;
         }
 
