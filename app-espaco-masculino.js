@@ -1,12 +1,16 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
-// Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço),
-// Cabeçalho Nobre com Ícones +20%, Sliders Noturnos e Contraste Máximo
-// Integrado ao Catálogo de Ícones PNG da Pasta ./icone/ (com love.png no Radar)
-// Curadoria Dinâmica: Sorteio Diário, "Quero Assistir" e 2 Gavetas Retráteis
+// Alta Performance: Forja Romana & Medieval (Ferro Forjado, Brasas & Aço)
+// Gamificação: Níveis XP, Conquistas, Metas Semanais e Mensais
+// Radar com Gráfico SVG Temporal, Comparador de Semanas e Tendências
+// Curadoria Expandida (200 Filmes & 250 Séries) com Botão Aleatório 🔀
+// Integração Oficial OMDb API (Chave: a007e759) com Cache Local Seguro
 // =========================================================================
 
-// 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO ANTES DO CATÁLOGO GERAL)
+// CONFIGURAÇÃO DA API OMDB
+window.OMDB_API_KEY = 'a007e759';
+
+// 1. ACERVOS DIÁRIOS E SEMANAIS (FALLBACK SEGURO)
 window.AcervoReflexoesEstoicas365 = window.AcervoReflexoesEstoicas365 || [
     { data: "1 de janeiro", autor: "Epiteto, Encheiridion, 23", texto: "Se você voltar sua atenção para as coisas exteriores, para o prazer de qualquer pessoa, esteja certo de que terá arruinado seu propósito de vida. Contente-se, então, em ser sábio; e se você deseja parecer assim para alguém, pareça assim a você mesmo, e isso lhe bastará." },
     { data: "2 de janeiro", autor: "Marco Aurélio, Meditações, 8, 12", texto: "Quando você hesita em lutar para se levantar, lembre-se de que a socialização está de acordo com a sua constituição e com a natureza humana. O sono também é comum para os seres irracionais." },
@@ -21,7 +25,7 @@ window.AcervoDinamicaADois = window.AcervoDinamicaADois || [
     "❤️ Presença: Esteja por inteiro quando estiver em família. Largue o telemóvel nos momentos de conversa e descanso a dois."
 ];
 
-window.AcervoArsenalPratico = [
+window.AcervoArsenalPratico = window.AcervoArsenalPratico || [
     "💪 Calistenia: Ao executar flexões de braço, mantenha os cotovelos a 45º do tronco para proteger os ombros e focar no peitoral.",
     "🥩 Nutrição: Garanta uma fonte limpa de proteína em todas as refeições. Ela constrói massa muscular e mantém a saciedade alta.",
     "💪 Calistenia: Na barra fixa, complete o movimento até o peito encostar na linha e estenda quase todo o braço na descida.",
@@ -29,28 +33,76 @@ window.AcervoArsenalPratico = [
     "🥩 Nutrição: Evite calorias vazias em bebidas açucaradas ao longo do dia. A constância de energia vem de comida de verdade."
 ];
 
-// Catálogo Base de Recomendações de Mídia
-window.CatalogoFilmesMasculinos = window.CatalogoFilmesMasculinos || [
-    { id: "f1", titulo: "Gladiador", ano: "2000", categoria: "Honra e Liderança", desc: "Força e honra: o general que se tornou escravo e desafiou um império." },
-    { id: "f2", titulo: "Um Sonho de Liberdade", ano: "1994", categoria: "Resiliência e Paciência", desc: "A paciência metódica e a esperança inabalável contra o confinamento." },
-    { id: "f3", titulo: "À Procura da Felicidade", ano: "2006", categoria: "Família e Superação", desc: "A luta inegociável de um pai que se recusa a ser derrotado pela miséria." },
-    { id: "f4", titulo: "Ford vs Ferrari", ano: "2019", categoria: "Foco e Engenharia", desc: "Obsessão por perfeição técnica e a coragem de romper barreiras na pista." },
-    { id: "f5", titulo: "Até o Último Homem", ano: "2016", categoria: "Convicção e Bravura", desc: "A integridade moral de servir e salvar vidas na linha de tiro sem tocar numa arma." },
-    { id: "f6", titulo: "Coach Carter", ano: "2005", categoria: "Disciplina e Caráter", desc: "A disciplina dentro da quadra só tem valor se construir homens íntegros fora dela." },
-    { id: "f7", titulo: "O Resgate do Soldado Ryan", ano: "1998", categoria: "Dever & Sacrifício", desc: "A irmandade incondicional sob a brutalidade do combate e o cumprimento do dever militar." },
-    { id: "f8", titulo: "Clube da Luta", ano: "1999", categoria: "Mentalidade & Caos", desc: "Uma provocação crua sobre o vazio moderno, desapego material e reconstrução pessoal." },
-    { id: "f9", titulo: "Invictus", ano: "2009", categoria: "Perdão & Liderança", desc: "O poder do esporte e da liderança magnânima para unir uma nação dividida." },
-    { id: "f10", titulo: "Cinderella Man", ano: "2005", categoria: "Superação Familiar", desc: "O pugilista que luta cada round pela sobrevivência e dignidade da sua esposa e filhos." }
+// Playlists do Spotify
+window.CatalogoPlaylistsSpotify = window.CatalogoPlaylistsSpotify || [
+    {
+        id: "sp1",
+        titulo: "Forja & Treino Brutal",
+        subtitulo: "Heavy Metal, Hard Rock & Synthwave de Alta Tensão",
+        icone: "🔥",
+        tag: "Treino Pesado",
+        link: "https://open.spotify.com/search/heavy%20workout%20metal"
+    },
+    {
+        id: "sp2",
+        titulo: "Foco Profundo & Guerra Mental",
+        subtitulo: "Dark Ambient, Lo-Fi e Instrumentais Sem Distração",
+        icone: "⚡",
+        tag: "Foco Profundo",
+        link: "https://open.spotify.com/search/deep%20focus%20instrumental"
+    },
+    {
+        id: "sp3",
+        titulo: "Trilhas Épicas de Cinema",
+        subtitulo: "Hans Zimmer, Howard Shore & Clássicos de Guerra",
+        icone: "🏛️",
+        tag: "Inspiração",
+        link: "https://open.spotify.com/search/epic%20soundtracks%20hans%20zimmer"
+    },
+    {
+        id: "sp4",
+        titulo: "Descompressão & Noite Serena",
+        subtitulo: "Jazz Acústico, Lareira e Sons Calmantes",
+        icone: "🌙",
+        tag: "Relaxamento",
+        link: "https://open.spotify.com/search/calm%20night%20jazz"
+    }
 ];
 
-window.CatalogoSeriesMasculinas = window.CatalogoSeriesMasculinas || [
-    { id: "s1", titulo: "Band of Brothers", temporadas: "1 Temporada", categoria: "Irmandade e Guerra", desc: "A mais pura representação de liderança sob fogo cruzado e lealdade extrema." },
-    { id: "s2", titulo: "Peaky Blinders", temporadas: "6 Temporadas", categoria: "Estratégia e Frieza", desc: "Visão estratégica, postura calma em momentos críticos e fidelidade à família." },
-    { id: "s3", titulo: "Suits", temporadas: "9 Temporadas", categoria: "Oratória e Negociação", desc: "Postura executiva, domínio sob pressão e resolução inteligente de crises." },
-    { id: "s4", titulo: "The Bear (O Urso)", temporadas: "3 Temporadas", categoria: "Maestria e Foco", desc: "A busca implacável por elevar padrões em meio ao caos e superação pessoal." },
-    { id: "s5", titulo: "Yellowstone", temporadas: "5 Temporadas", categoria: "Lealdade e Defesa", desc: "A proteção intransigente da terra e dos valores da família contra invasões externas." },
-    { id: "s6", titulo: "Vikings", temporadas: "6 Temporadas", categoria: "Ambição & Exploração", desc: "A sede por desbravar novos horizontes, liderar guerreiros e desafiar o destino." },
-    { id: "s7", titulo: "Mad Men", temporadas: "7 Temporadas", categoria: "Negócios & Identidade", desc: "Os bastidores do mundo corporativo, oratória persuasiva e os dilemas da alma masculina." }
+// Canais do YouTube
+window.CatalogoCanaisYoutube = window.CatalogoCanaisYoutube || [
+    {
+        id: "yt1",
+        titulo: "Daily Stoic / Filosofia Prática",
+        categoria: "Caráter & Estoicismo",
+        desc: "Ensaios diários sobre disciplina, virtude estoica e controle mental sob adversidade.",
+        icone: "🏛️",
+        link: "https://www.youtube.com/c/DailyStoic"
+    },
+    {
+        id: "yt2",
+        titulo: "Calistenia & Treinamento Físico",
+        categoria: "Força & Domínio Corporal",
+        desc: "Execução perfeita de flexões, barras, mobilidade e construção de massa magra.",
+        icone: "💪",
+        link: "https://www.youtube.com/results?search_query=calistenia+iniciante+e+avançado"
+    },
+    {
+        id: "yt3",
+        titulo: "Oficina, Restauro & Mecânica",
+        categoria: "Garagem & Habilidade Manual",
+        desc: "Projetos de carpintaria, reparo de motores, ferramentas e engenharia caseira.",
+        icone: "🛠️",
+        link: "https://www.youtube.com/results?search_query=projetos+de+oficina+e+marcenaria"
+    },
+    {
+        id: "yt4",
+        titulo: "Postura, Oratória & Finanças",
+        categoria: "Liderança Executiva",
+        desc: "Negociação de alto nível, inteligência emocional e construção de patrimônio familiar.",
+        icone: "💼",
+        link: "https://www.youtube.com/results?search_query=comunicacao+assertiva+e+negociacao"
+    }
 ];
 
 // 2. PERSISTÊNCIA E CHAVES DINÂMICAS POR UTILIZADOR
@@ -85,6 +137,71 @@ window.dadosAcervoLazer = JSON.parse(localStorage.getItem('suiri_lazer_masc')) |
 window.reflexaoEstoicaExibidaAtual = null;
 window.indiceMidiaAtual = { filmes: 0, series: 0 };
 window.abaMidiaAtiva = 'filmes';
+window.itemMidiaAtualmenteExibido = null;
+
+// =========================================================================
+// 2.1. MOTOR DE ENRIQUECIMENTO OMDB COM CACHE LOCAL
+// =========================================================================
+window.obterDadosOMDbComCache = async function(item) {
+    if (!item) return null;
+
+    const idCache = item.imdbId || item.titulo.toLowerCase().trim();
+    const chaveStorage = `suiri_omdb_cache_${idCache}`;
+
+    const cache = localStorage.getItem(chaveStorage);
+    if (cache) {
+        try {
+            return JSON.parse(cache);
+        } catch (e) {}
+    }
+
+    if (!window.OMDB_API_KEY) return null;
+
+    try {
+        let url = '';
+        if (item.imdbId && item.imdbId.startsWith('tt')) {
+            url = `https://www.omdbapi.com/?apikey=${window.OMDB_API_KEY}&i=${item.imdbId}`;
+        } else {
+            const queryTitulo = item.tituloOriginal || item.titulo;
+            url = `https://www.omdbapi.com/?apikey=${window.OMDB_API_KEY}&t=${encodeURIComponent(queryTitulo)}`;
+            if (item.ano) {
+                const anoLimpo = String(item.ano).substring(0, 4);
+                url += `&y=${anoLimpo}`;
+            }
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6500);
+
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        const data = await response.json();
+
+        if (data && data.Response === 'True') {
+            const resultado = {
+                titulo: data.Title || item.titulo,
+                ano: data.Year || item.ano,
+                poster: (data.Poster && data.Poster !== 'N/A') ? data.Poster : null,
+                sinopse: (data.Plot && data.Plot !== 'N/A') ? data.Plot : null,
+                imdbRating: data.imdbRating || item.imdbRating || null,
+                generos: data.Genre ? data.Genre.split(', ') : item.generos,
+                diretor: data.Director || '',
+                atores: data.Actors || ''
+            };
+
+            try {
+                localStorage.setItem(chaveStorage, JSON.stringify(resultado));
+            } catch (errStorage) {}
+
+            return resultado;
+        }
+    } catch (err) {
+        console.warn("OMDb em segundo plano ou offline:", err.message);
+    }
+
+    return null;
+};
 
 // =========================================================================
 // 3. ABERTURA E CONTROLO DE NAVEGAÇÃO
@@ -113,7 +230,9 @@ window.abrirEspacoMasculino = async function() {
     window.renderizarReflexaoEstoica(false);
     window.renderizarListaFavoritasEstoicas();
     window.renderizarBotoesForja();
+    window.renderizarPainelEvolucaoForja();
     window.renderizarHistoricoForja();
+    window.renderizarGraficoETendenciasRadar();
     window.renderizarHistoricoRadarIntimo();
     window.atualizarVisualizacaoMidia();
     window.renderizarHistoricoQueroVerMasc();
@@ -134,7 +253,7 @@ window.fecharEspacoMasculino = function() {
 };
 
 // =========================================================================
-// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL (TEMA FORJA ROMANA / BRASAS & AÇO)
+// 4. RENDERIZAÇÃO DO ESQUELETO VISUAL
 // =========================================================================
 
 window.renderizarEsqueletoEspacoMasculino = function() {
@@ -146,20 +265,23 @@ window.renderizarEsqueletoEspacoMasculino = function() {
     const inicioAno = new Date(agora.getFullYear(), 0, 1);
     const semanaDoAno = Math.floor((((agora - inicioAno) / 86400000) + inicioAno.getDay() + 1) / 7);
 
-    const pilulaSemanal = window.AcervoDinamicaADois[semanaDoAno % window.AcervoDinamicaADois.length];
-    const sabedoriaArsenal = window.AcervoArsenalPratico[diaDoAno % window.AcervoArsenalPratico.length];
+    const pilulaSemanal = (window.AcervoDinamicaADois || [])[semanaDoAno % (window.AcervoDinamicaADois?.length || 1)] || "Cultive a presença e o foco no lar.";
+    const sabedoriaArsenal = (window.AcervoArsenalPratico || [])[diaDoAno % (window.AcervoArsenalPratico?.length || 1)] || "Hidrate-se com constância e mantenha a disciplina no treino.";
+
+    const totalFilmesDisponiveis = (window.CatalogoFilmesMasculinos || []).length || 200;
+    const totalSeriesDisponiveis = (window.CatalogoSeriesMasculinas || []).length || 250;
 
     container.innerHTML = `
-        <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR -->
+        <!-- TOPO: RETORNO AO LAR -->
         <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
             <button type="button" onclick="window.fecharEspacoMasculino()" 
-                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
+                    style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:18px; font-size:12px; font-weight:800; background:rgba(30, 41, 59, 0.85); border:1.5px solid #475569; color:#f8fafc; box-shadow:0 3px 12px rgba(0,0,0,0.5); backdrop-filter:blur(8px); cursor:pointer;">
                 <span style="font-size:14px; line-height:1; color:#f97316;">←</span>
                 <span>Voltar ao Lar</span>
             </button>
         </div>
 
-        <!-- LINHA 2: CABEÇALHO NOBRE COM ÍCONE 50px E CONTRASTE MÁXIMO -->
+        <!-- CABEÇALHO NOBRE -->
         <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
             <div style="width:85px; height:85px; border-radius:18px; background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:2px solid #ea580c; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 16px rgba(234, 88, 12, 0.4);">
                 <img src="./icone/icone-escudo.png" alt="Espaço Masculino" style="width:70px; height:70px; object-fit:contain;">
@@ -180,7 +302,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             <p id="texto-reflexao-estoica-conteudo" style="font-size:14px; color:#f8fafc; margin:0 0 10px 0; line-height:1.6; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.5);">Carregando reflexão...</p>
             <span id="autor-reflexao-estoica-conteudo" style="font-size:11.5px; font-weight:800; color:#fbbf24; display:block; text-align:right; margin-bottom:14px;">— Autor</span>
 
-            <!-- Barra de Ações -->
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:12px; gap:6px;">
                 <button type="button" class="btn-secundario" style="padding:7px 12px; font-size:11.5px; border-radius:10px; background:#1e293b; color:#f8fafc; border:1px solid #475569; font-weight:700; display:inline-flex; align-items:center; gap:6px;" onclick="window.renderizarReflexaoEstoica(false)">
                     <img src="./icone/icone-calendario.png" alt="Calendário" style="width:16px; height:16px; object-fit:contain;">
@@ -190,7 +311,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <button type="button" class="btn-principal" style="width:auto; padding:7px 14px; font-size:11.5px; border-radius:10px; background:#0284c7; color:#fff; font-weight:800; border:none;" onclick="window.renderizarReflexaoEstoica(true)">Próxima 🔀</button>
             </div>
 
-            <!-- Painel Retrátil de Mensagens Favoritas -->
             <div style="margin-top:12px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-favoritas-conteudo', 'seta-favoritas')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:9px 12px; border-radius:10px; border:1px solid #334155;">
                     <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">⭐ Mensagens Favoritas (<span id="contador-favoritas-estoicas">0</span>)</span>
@@ -200,12 +320,12 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 2: A FORJA (MISSÕES EM METAL ESCURO COM BRASAS) -->
+        <!-- QUADRO 2: A FORJA (GAMIFICAÇÃO, NÍVEIS, METAS E CONQUISTAS) -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #ef4444; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/icone-fogo.png" alt="A Forja" style="width:30px; height:30px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">A Forja (6 Missões Diárias)</strong>
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">A Forja (Evolução & Missões)</strong>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:10.5px; border-radius:8px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px;" onclick="window.alternarEdicaoConfigForja()">
@@ -218,7 +338,48 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
             </div>
 
-            <!-- Painel de Desempenho Noturno -->
+            <!-- NÍVEL DO GUERREIRO & XP ACUMULADO -->
+            <div id="painel-nivel-guerreiro" style="background:#1a1f2c; border:1px solid #3b4252; padding:12px; border-radius:14px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Patamar Atual:</span>
+                        <h4 id="lbl-nome-nivel-forja" style="margin:2px 0 0 0; font-size:14px; color:#fbbf24; font-weight:900;">Carregando Nível...</h4>
+                    </div>
+                    <span id="lbl-xp-acumulado" style="font-size:11px; font-weight:800; color:#f97316; background:#2a1205; padding:3px 8px; border-radius:8px; border:1px solid #7c2d12;">0 XP</span>
+                </div>
+                <div style="background:#0f172a; border-radius:8px; height:7px; width:100%; overflow:hidden; margin-bottom:4px;">
+                    <div id="barra-progresso-xp-forja" style="background:linear-gradient(90deg, #ea580c, #f59e0b); height:100%; width:0%; transition:width 0.4s ease;"></div>
+                </div>
+                <span id="lbl-info-proximo-nivel" style="font-size:10px; color:#94a3b8; display:block; text-align:right;">Faltam 0 XP para o próximo nível</span>
+            </div>
+
+            <!-- ESTATÍSTICAS MENSAIS E META DA SEMANA -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div style="background:#171d29; border:1px solid #2d3748; padding:10px; border-radius:12px;">
+                    <span style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase; display:block; margin-bottom:4px;">🎯 Meta da Semana</span>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+                        <strong id="lbl-meta-semanal-status" style="font-size:12px; color:#f8fafc;">0 / 25</strong>
+                        <span id="lbl-meta-semanal-pct" style="font-size:11px; font-weight:800; color:#38bdf8;">0%</span>
+                    </div>
+                    <div style="background:#0f172a; border-radius:6px; height:6px; width:100%; overflow:hidden;">
+                        <div id="barra-meta-semanal" style="background:#0284c7; height:100%; width:0%;"></div>
+                    </div>
+                </div>
+
+                <div style="background:#171d29; border:1px solid #2d3748; padding:10px; border-radius:12px;">
+                    <span style="font-size:10px; font-weight:800; color:#10b981; text-transform:uppercase; display:block; margin-bottom:4px;">📊 Desempenho Mês</span>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                        <div>
+                            <strong id="lbl-stats-concluidas-mes" style="font-size:13px; color:#ffffff;">0</strong>
+                            <span style="font-size:10px; color:#94a3b8;"> missões</span>
+                        </div>
+                        <span id="lbl-stats-dias-perfeitos-mes" style="font-size:10.5px; font-weight:800; color:#fbbf24; background:#241d08; padding:2px 6px; border-radius:6px;">0 dias 100%</span>
+                    </div>
+                    <span id="lbl-stats-taxa-mes" style="font-size:10px; color:#6ee7b7; display:block; margin-top:4px;">Taxa: 0% de consistência</span>
+                </div>
+            </div>
+
+            <!-- DESEMPENHO DO DIA DE HOJE -->
             <div style="background:#1e1b18; border:1px solid #7c2d12; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px;">
                     <span style="font-weight:700; color:#fed7aa;">Grau de Hoje: <strong id="lbl-grau-forja-hoje" style="color:#f97316;">Inerte</strong></span>
@@ -229,7 +390,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
             </div>
 
-            <!-- Formulário para Editar o Nome das 6 Missões -->
+            <!-- FORMULÁRIO PARA EDITAR AS MISSÕES -->
             <div id="form-edicao-missoes-forja" class="oculto" style="background:#0f172a; border:1.5px dashed #475569; padding:12px; border-radius:12px; margin-bottom:12px;">
                 <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:8px;">Personalize suas 6 metas diárias:</span>
                 <div id="container-inputs-edicao-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;"></div>
@@ -239,10 +400,19 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
             </div>
 
-            <!-- Grade das 6 Missões Diárias -->
+            <!-- GRADE DAS 6 MISSÕES -->
             <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;"></div>
 
-            <!-- Histórico Retrátil da Forja -->
+            <!-- PAINEL RETRÁTIL DE CONQUISTAS (BADGES) -->
+            <div style="margin-bottom:8px;">
+                <div onclick="window.alternarSecaoRetratil('bloco-conquistas-forja-conteudo', 'seta-conquistas-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
+                    <span style="font-size:11.5px; font-weight:800; color:#fbbf24;">🎖️ Conquistas & Insígnias (<span id="contador-conquistas-forja">0/6</span>)</span>
+                    <span id="seta-conquistas-forja" style="font-size:12px; color:#fbbf24; transition:transform 0.2s ease;">▼</span>
+                </div>
+                <div id="bloco-conquistas-forja-conteudo" class="oculto" style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px;"></div>
+            </div>
+
+            <!-- HISTÓRICO RETRÁTIL -->
             <div style="border-top:1px dashed #334155; padding-top:10px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-historico-forja-conteudo', 'seta-historico-forja')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
                     <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">📜 Histórico de Desempenho (<span id="contador-historico-forja">0</span>)</span>
@@ -252,12 +422,12 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 3: RADAR ÍNTIMO (COM LOVE.PNG NO CABEÇALHO E NA DISPOSIÇÃO/LIBIDO) -->
+        <!-- QUADRO 3: RADAR PESSOAL (GRÁFICO TEMPORAL, COMPARADOR E TENDÊNCIAS) -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #f43f5e; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar Íntimo" style="width:35px; height:35px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Íntimo & Vitalidade</strong>
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Radar Pessoal & Vitalidade</strong>
                 </div>
                 <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:#e11d48; color:#fff; font-weight:800; border:none;" onclick="window.salvarRadarIntimoCompleto()">Salvar Check-in</button>
             </div>
@@ -267,12 +437,36 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <p style="font-size:12.5px; color:#ffe4e6; margin:0; line-height:1.5; font-weight:600;">${pilulaSemanal}</p>
             </div>
 
+            <div id="painel-tendencias-radar" style="background:#1a1523; border:1px solid #4a1d35; padding:12px; border-radius:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:11px; font-weight:800; color:#fb7185; text-transform:uppercase;">📈 Análise de Tendências (Semanas)</span>
+                    <span id="badge-status-semanal" style="font-size:10px; font-weight:800; background:#381524; color:#fda4af; padding:2px 6px; border-radius:6px;">Comparativo Ativo</span>
+                </div>
+
+                <div id="bloco-comparativo-semanas" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;"></div>
+
+                <div id="texto-insight-tendencia" style="font-size:11.5px; color:#fce7f3; line-height:1.45; font-weight:500; background:#24111d; padding:8px 10px; border-radius:8px; border-left:3px solid #f43f5e;">
+                    Aguardando registros para análise comparativa.
+                </div>
+            </div>
+
+            <div style="background:#0f172a; border:1px solid #334155; padding:12px; border-radius:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:11px; font-weight:800; color:#cbd5e1;">Curva dos Últimos Registros (1 a 10):</span>
+                    <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
+                        <span style="color:#38bdf8;">● Energia</span>
+                        <span style="color:#fbbf24;">● Estresse</span>
+                        <span style="color:#f43f5e;">● Libido</span>
+                    </div>
+                </div>
+                <div id="container-grafico-svg-radar" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
+            </div>
+
             <div style="margin-bottom:14px;">
                 <label style="font-size:11px; font-weight:800; color:#cbd5e1; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
                 <input type="date" id="slider-data-relacao" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; border:1px solid #475569; font-size:12px; background:#0f172a; color:#f8fafc; outline:none; font-weight:600;">
             </div>
 
-            <!-- Barra: Energia Biológica -->
             <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
@@ -284,7 +478,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <input type="range" id="range-energia" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#0284c7; cursor:pointer;" oninput="window.atualizarRotuloSlider('energia')">
             </div>
 
-            <!-- Barra: Nível de Estresse -->
             <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
@@ -296,7 +489,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <input type="range" id="range-estresse" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloSlider('estresse')">
             </div>
 
-            <!-- Barra: Disposição / Libido (com love.png) -->
             <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <span style="font-size:12px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
@@ -308,7 +500,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <input type="range" id="range-libido" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#f43f5e; cursor:pointer;" oninput="window.atualizarRotuloSlider('libido')">
             </div>
 
-            <!-- Histórico Retrátil do Radar -->
             <div style="border-top:1px dashed #334155; padding-top:10px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-historico-radar-conteudo', 'seta-historico-radar')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
                     <span style="font-size:11.5px; font-weight:800; color:#cbd5e1; display:inline-flex; align-items:center; gap:6px;">
@@ -323,48 +514,74 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 4: CURADORIA DE FILMES & SÉRIES DINÂMICA (ROTAÇÃO DIÁRIA + DUAS GAVETAS) -->
+        <!-- QUADRO 4: CURADORIA DE 200 FILMES & 250 SÉRIES (COM BOTÃO ALEATÓRIO E NAVEGAÇÃO SEQUENCIAL) -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #6366f1; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="./icone/icone-filme.png" alt="Filmes e Séries" style="width:24px; height:24px; object-fit:contain;">
-                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Curadoria: Filmes & Séries</strong>
+                    <strong style="font-size:14px; color:#ffffff; font-weight:900;">Curadoria de Obras</strong>
                 </div>
                 <div style="display:flex; gap:4px; background:#0f172a; padding:3px; border-radius:10px; border:1px solid #334155;">
-                    <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#6366f1; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes</button>
-                    <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#94a3b8;" onclick="window.alternarAbaMidia('series')">Séries</button>
+                    <button type="button" id="btn-aba-filmes" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#6366f1; color:#fff;" onclick="window.alternarAbaMidia('filmes')">Filmes (${totalFilmesDisponiveis})</button>
+                    <button type="button" id="btn-aba-series" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#94a3b8;" onclick="window.alternarAbaMidia('series')">Séries (${totalSeriesDisponiveis})</button>
                 </div>
             </div>
 
-            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid #334155; border-radius:14px; padding:14px; position:relative; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
-                <div>
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#312e81; color:#c7d2fe; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
-                        <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#94a3b8;">-</span>
+            <!-- CARTÃO DE DESTAQUE COM CAPA OFICIAL OMDB -->
+            <div id="card-carrossel-midia" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid #334155; border-radius:14px; overflow:hidden;">
+                <!-- Pôster Oficial via OMDb -->
+                <div id="midia-capa-container" style="width:100%; height:180px; background-size:cover; background-position:center top; position:relative; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; background-color:#0f172a;">
+                    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.95) 100%);"></div>
+                    <div style="position:relative; z-index:2; width:100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#312e81; color:#c7d2fe; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span id="midia-rating-imdb" style="font-size:11px; font-weight:800; color:#fbbf24; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:6px; border:1px solid rgba(251,191,36,0.3);">★ 8.5</span>
+                                <span id="midia-ano-tempo" style="font-size:11px; font-weight:700; color:#cbd5e1;">-</span>
+                            </div>
+                        </div>
+                        <h3 id="midia-titulo-destaque" style="margin:0; font-size:17px; color:#ffffff; font-weight:900; text-shadow:0 2px 4px rgba(0,0,0,0.8);">Título</h3>
+                        <span id="midia-subtitulo-original" style="font-size:11px; color:#94a3b8; font-weight:600; display:block; margin-top:2px;"></span>
                     </div>
-                    <h3 id="midia-titulo-destaque" style="margin:6px 0 4px 0; font-size:16px; color:#ffffff; font-weight:900;">Título</h3>
-                    <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0; line-height:1.45;">Descrição da obra e lição de conduta.</p>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #334155; padding-top:10px; flex-wrap:wrap; gap:8px;">
-                    <div style="display:flex; gap:6px;">
-                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)">◄</button>
-                        <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)">►</button>
+                <div style="padding:14px;">
+                    <p id="midia-descricao-destaque" style="font-size:12px; color:#cbd5e1; margin:0 0 10px 0; line-height:1.5;">Carregando sinopse oficial via OMDb...</p>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                        <div id="midia-tags-generos" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+                        <div id="midia-posicao-contador" style="font-size:10.5px; font-weight:800; color:#94a3b8; background:#0f172a; padding:2px 8px; border-radius:6px; border:1px solid #334155;">1 / 200</div>
                     </div>
 
-                    <div style="display:flex; gap:6px; align-items:center;">
-                        <!-- Botão Quero Assistir Masculino -->
-                        <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
-                            📌 Quero Assistir
-                        </button>
-                        <!-- Botão Já Assisti Masculino -->
-                        <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
-                            <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
-                        </button>
+                    <!-- CONTROLADORES DO CARROSSEL COM BOTÃO ALEATÓRIO DEDICADO -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #334155; padding-top:10px; flex-wrap:wrap; gap:8px;">
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <!-- Sequência Normal: Anterior -->
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(-1)" title="Obra Anterior">◄</button>
+                            
+                            <!-- Botão de Sorteio Aleatório Solicitado -->
+                            <button type="button" class="btn-secundario" style="padding:0 10px; height:34px; border-radius:10px; font-size:11.5px; font-weight:800; background:#312e81; color:#c7d2fe; border:1px solid #6366f1; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.sortearMidiaAleatoria()" title="Indicar obra aleatória da lista toda">
+                                <span>🔀</span>
+                                <span>Aleatório</span>
+                            </button>
+
+                            <!-- Sequência Normal: Próximo -->
+                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#1e293b; color:#fff; border:1px solid #475569;" onclick="window.navegarCarrosselMidia(1)" title="Próxima Obra">►</button>
+                        </div>
+
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button type="button" id="btn-quero-ver-masc" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; cursor:pointer;" onclick="window.alternarQueroAssistirMasc()">
+                                📌 Quero Assistir
+                            </button>
+                            <button type="button" id="btn-marcar-assistido-acao" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidia()">
+                                <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Caixa de Avaliação (1 a 5 estrelas) -->
             <div id="caixa-avaliacao-midia" class="oculto" style="margin-top:10px; background:#1e293b; border:1.5px solid #d97706; border-radius:12px; padding:12px; text-align:center;">
                 <span style="font-size:12px; font-weight:800; color:#fde68a; display:block; margin-bottom:6px;">Qual a sua avaliação para esta obra?</span>
                 <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
@@ -377,7 +594,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; background:#0f172a; color:#cbd5e1; border:1px solid #475569;" onclick="document.getElementById('caixa-avaliacao-midia').classList.add('oculto')">Cancelar</button>
             </div>
 
-            <!-- GAVETA 1: QUERO ASSISTIR (RETRÁTIL) -->
+            <!-- GAVETA 1: QUERO ASSISTIR -->
             <div style="margin-top:14px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-quero-ver-masc-conteudo', 'seta-quero-ver-masc')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
                     <span style="font-size:11.5px; font-weight:800; color:#38bdf8;">📌 Quero Assistir (<span id="contador-quero-ver-masc">0</span>)</span>
@@ -386,7 +603,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <div id="bloco-quero-ver-masc-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
 
-            <!-- GAVETA 2: OBRAS ASSISTIDAS E AVALIADAS (RETRÁTIL) -->
+            <!-- GAVETA 2: OBRAS AVALIADAS -->
             <div style="margin-top:8px;">
                 <div onclick="window.alternarSecaoRetratil('bloco-assistidos-conteudo', 'seta-assistidos')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#1e293b; padding:8px 12px; border-radius:10px; border:1px solid #334155;">
                     <span style="font-size:11.5px; font-weight:800; color:#cbd5e1;">⭐ Obras Avaliadas (<span id="contador-assistidos">0</span>) • Mais Bem Avaliados no Topo</span>
@@ -396,7 +613,55 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 5: ARSENAL PRÁTICO -->
+        <!-- QUADRO 5: TRINCHEIRA SONORA & DIGITAL (SPOTIFY & YOUTUBE) -->
+        <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <span style="font-size:20px;">🎧</span>
+                <strong style="font-size:14px; color:#ffffff; font-weight:900;">Trincheira Sonora & Digital</strong>
+            </div>
+
+            <!-- Playlists do Spotify -->
+            <span style="font-size:11px; font-weight:800; color:#10b981; text-transform:uppercase; display:block; margin-bottom:8px;">🎵 Playlists Recomendadas (Spotify)</span>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+                ${(window.CatalogoPlaylistsSpotify || []).map(p => `
+                    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <div style="min-width:0;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:14px;">${p.icone}</span>
+                                <strong style="font-size:12.5px; color:#ffffff;">${p.titulo}</strong>
+                                <span style="font-size:9.5px; font-weight:800; background:#064e3b; color:#6ee7b7; padding:2px 6px; border-radius:6px;">${p.tag}</span>
+                            </div>
+                            <span style="font-size:11px; color:#94a3b8; display:block; margin-top:2px;">${p.subtitulo}</span>
+                        </div>
+                        <a href="${p.link}" target="_blank" rel="noopener noreferrer" style="background:#10b981; color:#0f172a; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                            Ouvir ↗
+                        </a>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Canais do YouTube -->
+            <span style="font-size:11px; font-weight:800; color:#ef4444; text-transform:uppercase; display:block; margin-bottom:8px;">📺 Canais de Formação & Prática (YouTube)</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                ${(window.CatalogoCanaisYoutube || []).map(c => `
+                    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <div style="min-width:0;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:14px;">${c.icone}</span>
+                                <strong style="font-size:12.5px; color:#ffffff;">${c.titulo}</strong>
+                            </div>
+                            <span style="font-size:10.5px; font-weight:700; color:#f87171; display:block; margin-top:2px;">${c.categoria}</span>
+                            <span style="font-size:11px; color:#94a3b8; display:block; margin-top:1px;">${c.desc}</span>
+                        </div>
+                        <a href="${c.link}" target="_blank" rel="noopener noreferrer" style="background:#ef4444; color:#ffffff; text-decoration:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                            Acessar ↗
+                        </a>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- QUADRO 6: ARSENAL PRÁTICO -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #10b981; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
                 <img src="./icone/icone-forte.png" alt="Arsenal" style="width:26px; height:26px; object-fit:contain;">
@@ -408,7 +673,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </div>
         </div>
 
-        <!-- QUADRO 6: OFICINA & GARAGEM -->
+        <!-- QUADRO 7: OFICINA & GARAGEM -->
         <div class="cartao-geral" style="background:#131822; border:1px solid #334155; border-left:4px solid #64748b; margin-bottom:14px; padding:16px 18px; border-radius:18px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                 <img src="./icone/icone-oficina.png" alt="Oficina" style="width:24px; height:24px; object-fit:contain;">
@@ -545,8 +810,165 @@ window.removerFavoritoEstoico = function(id) {
 };
 
 // =========================================================================
-// 5. A FORJA: 6 MISSÕES EM METAL ESCURO & CONTRASTE
+// 5. A FORJA: GAMIFICAÇÃO, NÍVEIS, CONQUISTAS E METAS
 // =========================================================================
+
+window.niveisGuerreiroForja = [
+    { nivel: 1, nome: "Iniciado do Fogo", minXP: 0, maxXP: 300 },
+    { nivel: 2, nome: "Forjador de Ferro", minXP: 300, maxXP: 700 },
+    { nivel: 3, nome: "Guerreiro de Bronze", minXP: 700, maxXP: 1400 },
+    { nivel: 4, nome: "Guardião de Aço", minXP: 1400, maxXP: 2500 },
+    { nivel: 5, nome: "Mestre da Bigorna", minXP: 2500, maxXP: 4000 },
+    { nivel: 6, nome: "Titã Forjado no Aço", minXP: 4000, maxXP: 99999 }
+];
+
+window.calcularNivelEConquistasForja = function() {
+    let totalMissoesCumpridas = 0;
+    let totalDiasPerfeitos = 0;
+    let xpTotal = 0;
+
+    const datas = Object.keys(window.dadosForjaDiaria);
+    datas.forEach(dt => {
+        const reg = window.dadosForjaDiaria[dt];
+        const qtd = Object.keys(reg.itens || {}).length;
+        totalMissoesCumpridas += qtd;
+        xpTotal += (qtd * 10);
+        if (qtd === 6) {
+            totalDiasPerfeitos++;
+            xpTotal += 40;
+        }
+    });
+
+    let nivelAtual = window.niveisGuerreiroForja[0];
+    for (let n of window.niveisGuerreiroForja) {
+        if (xpTotal >= n.minXP) {
+            nivelAtual = n;
+        }
+    }
+
+    const conquistasDef = [
+        { id: "c1", titulo: "Primeira Brasa", desc: "Completou a 1ª missão na Forja", desbloqueada: totalMissoesCumpridas >= 1 },
+        { id: "c2", titulo: "Trinca de Ferro", desc: "3 dias seguidos de ofensiva", desbloqueada: window.obterStreakAtual() >= 3 },
+        { id: "c3", titulo: "Aço Puro", desc: "Completou 100% (6/6) em 1 dia", desbloqueada: totalDiasPerfeitos >= 1 },
+        { id: "c4", titulo: "Semana Blindada", desc: "7 dias seguidos de ofensiva", desbloqueada: window.obterStreakAtual() >= 7 },
+        { id: "c5", titulo: "Muralha de Esparta", desc: "14 dias seguidos na batalha", desbloqueada: window.obterStreakAtual() >= 14 },
+        { id: "c6", titulo: "Constância de Titã", desc: "Alcançou 30 missões concluídas", desbloqueada: totalMissoesCumpridas >= 30 }
+    ];
+
+    return {
+        totalMissoes: totalMissoesCumpridas,
+        diasPerfeitos: totalDiasPerfeitos,
+        xp: xpTotal,
+        nivel: nivelAtual,
+        conquistas: conquistasDef
+    };
+};
+
+window.obterStreakAtual = function() {
+    let ofensiva = 0;
+    const datas = Object.keys(window.dadosForjaDiaria).sort().reverse();
+    for (let dtStr of datas) {
+        const reg = window.dadosForjaDiaria[dtStr];
+        const qtd = Object.keys(reg.itens || {}).length;
+        if (qtd > 0) {
+            ofensiva++;
+        } else {
+            break;
+        }
+    }
+    return ofensiva;
+};
+
+window.renderizarPainelEvolucaoForja = function() {
+    const dadosEvol = window.calcularNivelEConquistasForja();
+
+    const elNivel = document.getElementById('lbl-nome-nivel-forja');
+    const elXP = document.getElementById('lbl-xp-acumulado');
+    const elBarraXP = document.getElementById('barra-progresso-xp-forja');
+    const elProx = document.getElementById('lbl-info-proximo-nivel');
+
+    if (elNivel) elNivel.textContent = `Nível ${dadosEvol.nivel.nivel}: ${dadosEvol.nivel.nome}`;
+    if (elXP) elXP.textContent = `${dadosEvol.xp} XP`;
+
+    const spanNivel = dadosEvol.nivel.maxXP - dadosEvol.nivel.minXP;
+    const progressoNoNivel = dadosEvol.xp - dadosEvol.nivel.minXP;
+    const pctNivel = Math.min(100, Math.round((progressoNoNivel / spanNivel) * 100));
+
+    if (elBarraXP) elBarraXP.style.width = `${pctNivel}%`;
+    if (elProx) {
+        if (dadosEvol.nivel.nivel === 6) {
+            elProx.textContent = "Patamar Máximo Alcançado! Honra Eterna.";
+        } else {
+            elProx.textContent = `Faltam ${dadosEvol.nivel.maxXP - dadosEvol.xp} XP para o próximo nível (${pctNivel}%)`;
+        }
+    }
+
+    const agora = new Date();
+    let missoesSemana = 0;
+    for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(agora.getDate() - i);
+        const dStr = d.toISOString().split('T')[0];
+        const reg = window.dadosForjaDiaria[dStr];
+        if (reg) missoesSemana += Object.keys(reg.itens || {}).length;
+    }
+    const metaSemanaAlvo = 25;
+    const pctSemana = Math.min(100, Math.round((missoesSemana / metaSemanaAlvo) * 100));
+
+    const elMetaStatus = document.getElementById('lbl-meta-semanal-status');
+    const elMetaPct = document.getElementById('lbl-meta-semanal-pct');
+    const elBarraSemana = document.getElementById('barra-meta-semanal');
+
+    if (elMetaStatus) elMetaStatus.textContent = `${missoesSemana} / ${metaSemanaAlvo}`;
+    if (elMetaPct) elMetaPct.textContent = `${pctSemana}%`;
+    if (elBarraSemana) elBarraSemana.style.width = `${pctSemana}%`;
+
+    const mesAtual = agora.getMonth();
+    const anoAtual = agora.getFullYear();
+    let missoesMes = 0;
+    let diasPerfeitosMes = 0;
+
+    Object.keys(window.dadosForjaDiaria).forEach(dtStr => {
+        const [ano, mes] = dtStr.split('-').map(Number);
+        if (ano === anoAtual && (mes - 1) === mesAtual) {
+            const reg = window.dadosForjaDiaria[dtStr];
+            const qtd = Object.keys(reg.itens || {}).length;
+            if (qtd > 0) {
+                missoesMes += qtd;
+                if (qtd === 6) diasPerfeitosMes++;
+            }
+        }
+    });
+
+    const diasDecorridosMes = agora.getDate();
+    const totalPossivelMes = diasDecorridosMes * 6;
+    const taxaMes = totalPossivelMes > 0 ? Math.round((missoesMes / totalPossivelMes) * 100) : 0;
+
+    const elStatsMissoes = document.getElementById('lbl-stats-concluidas-mes');
+    const elStatsDiasPerfeitos = document.getElementById('lbl-stats-dias-perfeitos-mes');
+    const elStatsTaxa = document.getElementById('lbl-stats-taxa-mes');
+
+    if (elStatsMissoes) elStatsMissoes.textContent = missoesMes;
+    if (elStatsDiasPerfeitos) elStatsDiasPerfeitos.textContent = `${diasPerfeitosMes} dias 100%`;
+    if (elStatsTaxa) elStatsTaxa.textContent = `Taxa: ${taxaMes}% de consistência`;
+
+    const contConquistas = document.getElementById('bloco-conquistas-forja-conteudo');
+    const elContadorConquistas = document.getElementById('contador-conquistas-forja');
+    if (contConquistas) {
+        const desbloqueadas = dadosEvol.conquistas.filter(c => c.desbloqueada).length;
+        if (elContadorConquistas) elContadorConquistas.textContent = `${desbloqueadas}/${dadosEvol.conquistas.length}`;
+
+        contConquistas.innerHTML = dadosEvol.conquistas.map(c => `
+            <div style="background:${c.desbloqueada ? '#261b0c' : '#0f172a'}; border:1px solid ${c.desbloqueada ? '#f59e0b' : '#334155'}; padding:8px 10px; border-radius:10px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:14px;">${c.desbloqueada ? '🏆' : '🔒'}</span>
+                    <strong style="font-size:11.5px; color:${c.desbloqueada ? '#fbbf24' : '#64748b'};">${c.titulo}</strong>
+                </div>
+                <span style="font-size:10px; color:${c.desbloqueada ? '#fed7aa' : '#475569'}; display:block; margin-top:2px;">${c.desc}</span>
+            </div>
+        `).join('');
+    }
+};
 
 window.alternarEdicaoConfigForja = function() {
     const form = document.getElementById('form-edicao-missoes-forja');
@@ -640,6 +1062,7 @@ window.alternarItemForjaHoje = function(idMissao, marcado) {
     
     window.atualizarProgressoForjaHoje();
     window.calcularOfensivaForja();
+    window.renderizarPainelEvolucaoForja();
     window.renderizarHistoricoForja();
     window.renderizarBotoesForja();
 };
@@ -661,19 +1084,7 @@ window.atualizarProgressoForjaHoje = function() {
 };
 
 window.calcularOfensivaForja = function() {
-    let ofensiva = 0;
-    const datas = Object.keys(window.dadosForjaDiaria).sort().reverse();
-
-    for (let dtStr of datas) {
-        const reg = window.dadosForjaDiaria[dtStr];
-        const qtd = Object.keys(reg.itens || {}).length;
-        if (qtd > 0) {
-            ofensiva++;
-        } else {
-            break;
-        }
-    }
-
+    const ofensiva = window.obterStreakAtual();
     const elStreak = document.getElementById('streak-forja');
     if (elStreak) {
         elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${ofensiva} dias seguidos`;
@@ -700,7 +1111,7 @@ window.renderizarHistoricoForja = function() {
         const grau = reg.grau || window.obterGrauHonraForja(qtd).titulo;
 
         const nomesItens = Object.keys(reg.itens || {}).map(id => {
-            const m = window.configMissoesForja.find(cfg => cfg.id === id);
+            const m = (window.configMissoesForja || []).find(cfg => cfg.id === id);
             return m ? m.rotulo : id;
         });
 
@@ -729,7 +1140,7 @@ window.renderizarHistoricoForja = function() {
 };
 
 // =========================================================================
-// 6. RADAR ÍNTIMO: SLIDERS (1 A 10) E HISTÓRICO EXPANSÍVEL COM LOVE.PNG
+// 6. RADAR PESSOAL: GRÁFICO SVG, COMPARATIVO DE SEMANAS E TENDÊNCIAS
 // =========================================================================
 
 window.obterDescricaoNotaSlider = function(tipo, valor) {
@@ -791,15 +1202,17 @@ window.salvarRadarIntimoCompleto = async function() {
     }
     
     window.dadosRadarIntimo.historico.unshift(novoRegistro);
-    if (window.dadosRadarIntimo.historico.length > 20) {
-        window.dadosRadarIntimo.historico = window.dadosRadarIntimo.historico.slice(0, 20);
+    if (window.dadosRadarIntimo.historico.length > 30) {
+        window.dadosRadarIntimo.historico = window.dadosRadarIntimo.historico.slice(0, 30);
     }
 
     localStorage.setItem(window.obterChaveStorageMasc('radar_intimo'), JSON.stringify(window.dadosRadarIntimo));
+    
+    window.renderizarGraficoETendenciasRadar();
     window.renderizarHistoricoRadarIntimo();
 
     if (typeof window.mostrarToast === 'function') {
-        window.mostrarToast("Check-in íntimo guardado com sucesso!", "sucesso");
+        window.mostrarToast("Check-in guardado e análise atualizada!", "sucesso");
     }
 
     const cli = window.obterClienteSupabase ? window.obterClienteSupabase() : window.cliente;
@@ -815,6 +1228,90 @@ window.salvarRadarIntimoCompleto = async function() {
                 libido: vLibido
             }, { onConflict: 'membro_id' });
         } catch (err) {}
+    }
+};
+
+window.renderizarGraficoETendenciasRadar = function() {
+    const hist = window.dadosRadarIntimo.historico || [];
+    const contGraf = document.getElementById('container-grafico-svg-radar');
+    const contComp = document.getElementById('bloco-comparativo-semanas');
+    const elInsight = document.getElementById('texto-insight-tendencia');
+
+    if (!contGraf) return;
+
+    if (hist.length < 2) {
+        contGraf.innerHTML = '<span style="font-size:11px; color:#94a3b8; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas do Radar.</span>';
+        if (contComp) contComp.innerHTML = '<span style="font-size:11px; color:#94a3b8; grid-column:span 2; text-align:center;">Sem dados semanais suficientes para comparação.</span>';
+        if (elInsight) elInsight.textContent = "Faça seu check-in diário para identificar se o estresse está a afetar a sua vitalidade e rendimento.";
+        return;
+    }
+
+    const pontos = [...hist.slice(0, 7)].reverse();
+    const w = 320;
+    const h = 90;
+    const pad = 16;
+    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
+
+    const calcY = (val) => h - pad - (((val - 1) / 9) * (h - (pad * 2)));
+
+    const ptsEnergia = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.energia)}`).join(' ');
+    const ptsEstresse = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.estresse)}`).join(' ');
+    const ptsLibido = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.libido)}`).join(' ');
+
+    contGraf.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
+            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+            <polyline fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsEnergia}" />
+            <polyline fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsEstresse}" />
+            <polyline fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsLibido}" />
+            ${pontos.map((p, idx) => `
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.energia)}" r="3" fill="#38bdf8" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.estresse)}" r="3" fill="#fbbf24" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.libido)}" r="3" fill="#f43f5e" />
+            `).join('')}
+        </svg>
+    `;
+
+    const semAtual = hist.slice(0, 7);
+    const semAnterior = hist.slice(7, 14);
+
+    const calcMedia = (arr, campo) => arr.length ? (arr.reduce((acc, cur) => acc + (cur[campo] || 5), 0) / arr.length).toFixed(1) : null;
+
+    const medE_Atu = calcMedia(semAtual, 'energia');
+    const medS_Atu = calcMedia(semAtual, 'estresse');
+    const medL_Atu = calcMedia(semAtual, 'libido');
+
+    const medE_Ant = calcMedia(semAnterior, 'energia');
+    const medS_Ant = calcMedia(semAnterior, 'estresse');
+    const medL_Ant = calcMedia(semAnterior, 'libido');
+
+    if (contComp) {
+        contComp.innerHTML = `
+            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #334155;">
+                <span style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase; display:block;">Semana Atual:</span>
+                <span style="font-size:11.5px; color:#ffffff; font-weight:700; display:block; margin-top:3px;">
+                    ⚡ ${medE_Atu} | 🧠 ${medS_Atu} | 🔥 ${medL_Atu}
+                </span>
+            </div>
+            <div style="background:#131822; padding:8px 10px; border-radius:10px; border:1px solid #334155;">
+                <span style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase; display:block;">Semana Anterior:</span>
+                <span style="font-size:11.5px; color:#ffffff; font-weight:700; display:block; margin-top:3px;">
+                    ${medE_Ant ? `⚡ ${medE_Ant} | 🧠 ${medS_Ant} | 🔥 ${medL_Ant}` : '<em style="color:#64748b; font-size:10.5px;">Sem dados</em>'}
+                </span>
+            </div>
+        `;
+    }
+
+    if (elInsight) {
+        if (parseFloat(medS_Atu) >= 7.0 && parseFloat(medE_Atu) <= 5.0) {
+            elInsight.innerHTML = `⚠️ <strong>Sobrecarga Detectada:</strong> O estresse elevado (${medS_Atu}) está consumindo a sua energia biológica. Priorize fechar o expediente no horário e proteja seu sono.`;
+        } else if (parseFloat(medE_Atu) >= 7.5 && parseFloat(medS_Atu) <= 4.5) {
+            elInsight.innerHTML = `🔥 <strong>Zona de Alta Performance:</strong> Excelente alinhamento entre vitalidade (${medE_Atu}) e baixo estresse (${medS_Atu}). Momento ideal para metas desafiadoras.`;
+        } else if (medE_Ant && parseFloat(medE_Atu) > parseFloat(medE_Ant)) {
+            elInsight.innerHTML = `📈 <strong>Tendência Positiva:</strong> A sua energia biológica subiu de ${medE_Ant} para ${medE_Atu} em relação à semana anterior. A constância na Forja está a surtir efeito.`;
+        } else {
+            elInsight.innerHTML = `🎯 <strong>Estabilidade:</strong> Mantenha a rotina da Forja ativa e preserve a hidratação matinal para sustentar o rendimento ao longo dos próximos dias.`;
+        }
     }
 };
 
@@ -856,43 +1353,13 @@ window.removerItemHistoricoRadar = function(id) {
     if (!window.dadosRadarIntimo.historico) return;
     window.dadosRadarIntimo.historico = window.dadosRadarIntimo.historico.filter(r => r.id !== id);
     localStorage.setItem(window.obterChaveStorageMasc('radar_intimo'), JSON.stringify(window.dadosRadarIntimo));
+    window.renderizarGraficoETendenciasRadar();
     window.renderizarHistoricoRadarIntimo();
 };
 
 // =========================================================================
-// 7. CURADORIA DE FILMES & SÉRIES (SORTEIO DIÁRIO, QUERO ASSISTIR & AVALIADOS)
+// 7. CURADORIA DE MÍDIA COM NAVEGAÇÃO SEQUENCIAL E SORTEIO ALEATÓRIO 🔀
 // =========================================================================
-
-function obterSementeDataHojeMasc() {
-    const hoje = new Date();
-    const str = `${hoje.getFullYear()}-${hoje.getMonth() + 1}-${hoje.getDate()}`;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
-    }
-    return Math.abs(hash);
-}
-
-window.obterCatalogoDiarioMasc = function(tipo) {
-    const base = tipo === 'filmes'
-        ? (window.CatalogoFilmesMasculinos || [])
-        : (window.CatalogoSeriesMasculinas || []);
-    
-    if (base.length === 0) return [];
-
-    let seed = obterSementeDataHojeMasc();
-    const copia = [...base];
-    
-    for (let i = copia.length - 1; i > 0; i--) {
-        seed = (seed * 9301 + 49297) % 233280;
-        const rnd = seed / 233280;
-        const j = Math.floor(rnd * (i + 1));
-        [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-
-    return copia;
-};
 
 window.alternarAbaMidia = function(aba) {
     window.abaMidiaAtiva = aba;
@@ -912,9 +1379,13 @@ window.alternarAbaMidia = function(aba) {
 };
 
 window.obterListaMidiaMascAtual = function() {
-    return window.obterCatalogoDiarioMasc(window.abaMidiaAtiva);
+    if (window.abaMidiaAtiva === 'filmes') {
+        return window.CatalogoFilmesMasculinos || [];
+    }
+    return window.CatalogoSeriesMasculinas || [];
 };
 
+// Navegação Sequencial Normal (◄ e ► por toda a lista)
 window.navegarCarrosselMidia = function(direcao) {
     const lista = window.obterListaMidiaMascAtual();
     if (!lista || lista.length === 0) return;
@@ -927,24 +1398,72 @@ window.navegarCarrosselMidia = function(direcao) {
     window.atualizarVisualizacaoMidia();
 };
 
+// Novo Botão: Indicar Aleatório 🔀
+window.sortearMidiaAleatoria = function() {
+    const lista = window.obterListaMidiaMascAtual();
+    if (!lista || lista.length === 0) return;
+
+    let idxAtual = window.indiceMidiaAtual[window.abaMidiaAtiva] || 0;
+    let novoIdx;
+    do {
+        novoIdx = Math.floor(Math.random() * lista.length);
+    } while (lista.length > 1 && novoIdx === idxAtual);
+
+    window.indiceMidiaAtual[window.abaMidiaAtiva] = novoIdx;
+    window.atualizarVisualizacaoMidia();
+
+    if (typeof window.mostrarToast === 'function') {
+        const item = lista[novoIdx];
+        window.mostrarToast(`Sorteado: ${item.titulo} 🎲`, "info");
+    }
+};
+
 window.atualizarVisualizacaoMidia = function() {
     const lista = window.obterListaMidiaMascAtual();
     const idx = window.indiceMidiaAtual[window.abaMidiaAtiva] || 0;
     const item = lista[idx];
 
     if (!item) return;
+    window.itemMidiaAtualmenteExibido = item;
 
+    const elCapa = document.getElementById('midia-capa-container');
     const elBadgeCat = document.getElementById('midia-badge-categoria');
     const elAno = document.getElementById('midia-ano-tempo');
     const elTitulo = document.getElementById('midia-titulo-destaque');
+    const elSubtitulo = document.getElementById('midia-subtitulo-original');
+    const elRating = document.getElementById('midia-rating-imdb');
     const elDesc = document.getElementById('midia-descricao-destaque');
+    const contGeneros = document.getElementById('midia-tags-generos');
+    const contPosicao = document.getElementById('midia-posicao-contador');
     const btnAcao = document.getElementById('btn-marcar-assistido-acao');
     const btnQueroVer = document.getElementById('btn-quero-ver-masc');
 
     if (elBadgeCat) elBadgeCat.textContent = item.categoria || window.abaMidiaAtiva.toUpperCase();
     if (elAno) elAno.textContent = item.ano || item.temporadas || '';
     if (elTitulo) elTitulo.textContent = item.titulo || '';
-    if (elDesc) elDesc.textContent = item.desc || '';
+    if (elSubtitulo) {
+        elSubtitulo.textContent = (item.tituloOriginal && item.tituloOriginal !== item.titulo) ? item.tituloOriginal : '';
+    }
+    if (elRating) {
+        elRating.textContent = `★ ${item.imdbRating || item.rating || '8.5'}`;
+    }
+    if (elDesc) elDesc.textContent = item.desc || "Buscando sinopse e detalhes via OMDb...";
+
+    if (contPosicao) {
+        contPosicao.textContent = `${idx + 1} / ${lista.length}`;
+    }
+
+    if (elCapa) {
+        const imagemPadrao = item.capa || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80';
+        elCapa.style.backgroundImage = `url('${imagemPadrao}')`;
+    }
+
+    if (contGeneros) {
+        const generos = item.generos || [item.categoria || 'Geral'];
+        contGeneros.innerHTML = generos.slice(0, 3).map(g => `
+            <span style="font-size:9.5px; font-weight:800; background:#1e293b; color:#cbd5e1; padding:2px 7px; border-radius:6px; border:1px solid #334155;">${g}</span>
+        `).join('');
+    }
 
     const naListaQueroVer = (window.dadosMidiaQueroVerMasc || []).some(m => m && m.titulo && item.titulo && m.titulo.toLowerCase() === item.titulo.toLowerCase());
     if (btnQueroVer) {
@@ -971,6 +1490,24 @@ window.atualizarVisualizacaoMidia = function() {
             btnAcao.style.background = '#10b981';
         }
     }
+
+    // Consulta e Atualização em Tempo Real via API OMDb
+    window.obterDadosOMDbComCache(item).then(dadosOmdb => {
+        if (!dadosOmdb) return;
+        if (window.itemMidiaAtualmenteExibido !== item) return;
+
+        if (dadosOmdb.poster && elCapa) {
+            elCapa.style.backgroundImage = `url('${dadosOmdb.poster}')`;
+        }
+
+        if (dadosOmdb.sinopse && elDesc) {
+            elDesc.textContent = dadosOmdb.sinopse;
+        }
+
+        if (dadosOmdb.imdbRating && elRating) {
+            elRating.textContent = `★ ${dadosOmdb.imdbRating}`;
+        }
+    });
 };
 
 window.alternarQueroAssistirMasc = function(itemDireto = null) {
@@ -988,6 +1525,7 @@ window.alternarQueroAssistirMasc = function(itemDireto = null) {
     } else {
         window.dadosMidiaQueroVerMasc.unshift({
             id: item.id || ('quero_m_' + Date.now()),
+            imdbId: item.imdbId || '',
             titulo: item.titulo,
             tipo: window.abaMidiaAtiva,
             categoria: item.categoria || 'Geral',
@@ -1021,6 +1559,7 @@ window.confirmarAvaliacaoMidia = function(estrelas, itemParam = null) {
     window.dadosMidiaAssistida = (window.dadosMidiaAssistida || []).filter(m => m && m.titulo && m.titulo.toLowerCase() !== item.titulo.toLowerCase());
     window.dadosMidiaAssistida.push({
         id: item.id || ('mid_' + Date.now()),
+        imdbId: item.imdbId || '',
         titulo: item.titulo,
         tipo: window.abaMidiaAtiva,
         categoria: item.categoria,
@@ -1197,7 +1736,6 @@ window.renderizarListasMasculinas = function() {
 
     window.calcularOfensivaForja();
 
-    // Sincroniza sliders
     if (window.dadosRadarIntimo) {
         const inDt = document.getElementById('slider-data-relacao');
         const rngE = document.getElementById('range-energia');

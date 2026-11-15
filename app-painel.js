@@ -128,33 +128,78 @@ window.aplicarVisibilidadeEspacoGenero = function() {
 
 window.carregarListaMembrosPainel = async function() {
     const cli = obterClienteSupabase();
-    if (!window.familiaAtualId || !cli) return;
+    if (!cli) return;
 
-    const { data, error } = await cli.from('membros')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .order('nome');
-
-    if (error) {
-        console.error("Erro ao carregar membros:", error);
+    const familiaId = window.familiaAtualId || window.perfilAtual?.familia_id;
+    if (!familiaId) {
+        if (window.perfilAtual) {
+            window.listaMembrosFamilia = [window.perfilAtual];
+            window.aplicarAdaptacaoSoloOuFamilia();
+            window.renderizarMembrosFamiliaPainel();
+            window.atualizarTodosSeletoresMembros();
+            window.atualizarBandeiraPerfilTopo();
+            window.aplicarVisibilidadeEspacoGenero();
+        }
         return;
     }
 
-    window.listaMembrosFamilia = data || [];
+    try {
+        let { data, error } = await cli.from('membros')
+            .select('*')
+            .eq('familia_id', familiaId)
+            .order('nome');
 
-    const meuId = obterUsuarioId();
-    if (meuId && window.perfilAtual) {
-        const meuPerfilAtualizado = window.listaMembrosFamilia.find(m => m.id === meuId);
-        if (meuPerfilAtualizado) {
-            Object.assign(window.perfilAtual, meuPerfilAtualizado);
+        // Tentativa de fallback caso a ordenação por 'nome' falhe
+        if (error) {
+            const fallback = await cli.from('membros')
+                .select('*')
+                .eq('familia_id', familiaId);
+            if (!fallback.error) {
+                data = fallback.data;
+                error = null;
+            }
+        }
+
+        if (error) {
+            const msgErro = error.message || error.details || JSON.stringify(error);
+            console.warn("Aviso detalhado ao carregar membros do Supabase:", msgErro);
+
+            // Resgate por cache local defensivo para não quebrar a tela
+            const cacheMembros = localStorage.getItem('suiri_cache_membros_' + familiaId);
+            if (cacheMembros) {
+                try {
+                    window.listaMembrosFamilia = JSON.parse(cacheMembros);
+                } catch (e) {}
+            } else if (window.perfilAtual) {
+                window.listaMembrosFamilia = [window.perfilAtual];
+            }
+        } else {
+            window.listaMembrosFamilia = data || [];
+            try {
+                localStorage.setItem('suiri_cache_membros_' + familiaId, JSON.stringify(window.listaMembrosFamilia));
+            } catch (e) {}
+        }
+
+        const meuId = obterUsuarioId();
+        if (meuId && window.perfilAtual) {
+            const meuPerfilAtualizado = window.listaMembrosFamilia.find(m => m.id === meuId);
+            if (meuPerfilAtualizado) {
+                Object.assign(window.perfilAtual, meuPerfilAtualizado);
+            }
+        }
+
+        window.aplicarAdaptacaoSoloOuFamilia();
+        window.renderizarMembrosFamiliaPainel();
+        window.atualizarTodosSeletoresMembros();
+        window.atualizarBandeiraPerfilTopo();
+        window.aplicarVisibilidadeEspacoGenero();
+    } catch (errGeral) {
+        console.warn("Falha controlada em carregarListaMembrosPainel:", errGeral);
+        if (window.perfilAtual && window.listaMembrosFamilia.length === 0) {
+            window.listaMembrosFamilia = [window.perfilAtual];
+            window.renderizarMembrosFamiliaPainel();
         }
     }
-
-    window.aplicarAdaptacaoSoloOuFamilia();
-    window.renderizarMembrosFamiliaPainel();
-    window.atualizarTodosSeletoresMembros();
-    window.atualizarBandeiraPerfilTopo();
-    window.aplicarVisibilidadeEspacoGenero();
 };
 
 window.atualizarBandeiraPerfilTopo = function() {
