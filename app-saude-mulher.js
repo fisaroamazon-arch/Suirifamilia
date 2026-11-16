@@ -1,11 +1,13 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-SAUDE-MULHER.JS (100% COMPLETO E INTEGRAL)
-// Topo Nobre Redesenhado: Diário & Ciclo em Coluna Dupla, Ícones Preservados,
-// Botão de Voltar Elegante, Título Ampliado e Diário Rústico Paginado
-// Minuto Zen com zen.mp4 em Tela Cheia, Som Ativo, Loop e Botão Fechar no Topo
-// Ícones Atualizados: Minuto Zen (zen.png), Modo Alívio (alivio.png)
-// e Radar de Feminilidade / Afeto com love.png
-// Curadoria Dinâmica: Sorteio Aleatório Diário, "Quero Assistir" e 2 Gavetas
+// Ordem Reorganizada:
+// 1. Fase Menstrual (com Botão "Menstruei hoje 🩸" integrado)
+// 2. Inspiração Literária & Alma
+// 3. Como se Sente Hoje (Retrátil, 5 Níveis, Sem Prefixo de Nota)
+// 4. Santuário (Rituais & Evolução)
+// 5. Radar de Feminilidade (Retrátil, 5 Níveis, Sem Prefixo de Nota)
+// 6. Curadoria Completa (Com Logos de Streaming & Links Diretos aos Streamers)
+// 7. Refúgio Sonoro & Digital (Spotify & YouTube)
 // =========================================================================
 
 window.dadosCicloMulher = [];
@@ -24,9 +26,9 @@ window.configMetasFemininas = JSON.parse(localStorage.getItem('suiri_metas_fem_c
 ];
 
 window.dadosRadarFeminilidade = JSON.parse(localStorage.getItem('suiri_radar_fem')) || {
-    vitalidade: 5,
-    paz_mental: 5,
-    afeto_libido: 5,
+    vitalidade: 3,
+    paz_mental: 3,
+    afeto_libido: 3,
     ultima_relacao: null,
     historico: []
 };
@@ -35,6 +37,10 @@ window.dadosMidiaMulherAssistida = JSON.parse(localStorage.getItem('suiri_midia_
 window.dadosMidiaMulherQueroVer = JSON.parse(localStorage.getItem('suiri_midia_mulher_quero_ver')) || [];
 window.indiceMidiaMulher = { filmes: 0, series: 0 };
 window.abaMidiaMulherAtiva = 'filmes';
+
+// Configuração TMDb (Sinopse em Português pt-BR, Logos Oficiais e Cache V3)
+window.TMDB_API_KEY = window.TMDB_API_KEY || '340bf11ebbaf9247c353e8eb6dc824b4';
+window.cacheTmdbMulher = JSON.parse(localStorage.getItem('suiri_tmdb_cache_mulher_v3')) || {};
 
 // Estado da Paginação do Diário
 window.paginasDiarioAtuais = [""];
@@ -64,48 +70,350 @@ function obterUsuarioIdSeguro() {
     return localStorage.getItem('suiri_usuario_id') || null;
 }
 
-// Catálogo Base de Filmes e Séries Femininas
-window.CatalogoFilmesMulher = window.CatalogoFilmesMasculinos || [
-    { id: "f1", titulo: "Comer, Rezar, Amar", ano: "2010", categoria: "Autodescoberta", desc: "A coragem de romper a rotina e reencontrar o prazer e a espiritualidade pelo mundo." },
-    { id: "f2", titulo: "O Fabuloso Destino de Amélie Poulain", ano: "2001", categoria: "Sensibilidade & Afeto", desc: "A delicadeza em transformar pequenos gestos quotidianos em poesia visual." },
-    { id: "f3", titulo: "Estrelas Além do Tempo", ano: "2016", categoria: "Superação & Força", desc: "A mente brilhante de três mulheres pioneiras que romperam barreiras históricas na NASA." },
-    { id: "f4", titulo: "Adoráveis Mulheres (Little Women)", ano: "2019", categoria: "Irmandade & Independência", desc: "A cumplicidade feminina, ambição criativa e a liberdade de traçar o próprio caminho." },
-    { id: "f5", titulo: "Um Sonho de Liberdade", ano: "1994", categoria: "Paciência & Resiliência", desc: "A esperança inabalável e a clareza de mente nos momentos de maior provação." },
-    { id: "f6", titulo: "À Procura da Felicidade", ano: "2006", categoria: "Família & Coragem", desc: "A determinação incansável em proteger os nossos sonhos e a nossa família." },
-    { id: "f7", titulo: "Erin Brockovich", ano: "2000", categoria: "Coragem & Determinação", desc: "Uma mulher determinada que desafiou uma grande corporação para proteger dezenas de famílias." },
-    { id: "f8", titulo: "Coco Antes de Chanel", ano: "2009", categoria: "Autenticidade", desc: "A trajetória da mulher visionária que quebrou os padrões e revolucionou a moda e a liberdade." },
-    { id: "f9", titulo: "Histórias Cruzadas", ano: "2011", categoria: "Sororidade & Voz", desc: "Mulheres corajosas que uniram as suas vozes para expor verdades e transformar a sociedade." },
-    { id: "f10", titulo: "A Teoria de Tudo", ano: "2014", categoria: "Amor & Resiliência", desc: "A força inabalável de parceria, apoio e dedicação em meio aos desafios da vida." }
+// =========================================================================
+// MOTOR DE LINKS DIRETOS AOS STREAMERS
+// =========================================================================
+window.obterLinkDiretoStreamingMulher = function(nomeProvedor, tituloObra, linkFallback) {
+    if (!nomeProvedor) return linkFallback || '#';
+    const p = nomeProvedor.toLowerCase();
+    const q = encodeURIComponent(tituloObra || '');
+
+    if (p.includes('netflix')) {
+        return `https://www.netflix.com/search?q=${q}`;
+    }
+    if (p.includes('prime') || p.includes('amazon')) {
+        return `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${q}`;
+    }
+    if (p.includes('max') || p.includes('hbo')) {
+        return `https://play.max.com/search?q=${q}`;
+    }
+    if (p.includes('disney')) {
+        return `https://www.disneyplus.com/search?q=${q}`;
+    }
+    if (p.includes('globo')) {
+        return `https://globoplay.globo.com/busca/?q=${q}`;
+    }
+    if (p.includes('apple')) {
+        return `https://tv.apple.com/search?term=${q}`;
+    }
+    if (p.includes('looke')) {
+        return `https://www.looke.com.br/busca/${q}`;
+    }
+    if (p.includes('paramount')) {
+        return `https://www.paramountplus.com/search/?q=${q}`;
+    }
+    if (p.includes('claro')) {
+        return `https://www.clarovideo.com/brasil/search?q=${q}`;
+    }
+    if (p.includes('telecine')) {
+        return `https://globoplay.globo.com/busca/?q=${q}`;
+    }
+    if (p.includes('crunchyroll')) {
+        return `https://www.crunchyroll.com/search?q=${q}`;
+    }
+    if (p.includes('oldflix')) {
+        return `https://www.oldflix.com.br/busca?q=${q}`;
+    }
+    if (p.includes('belas artes') || p.includes('carte')) {
+        return `https://www.belasartesalacarte.com.br/search?q=${q}`;
+    }
+    if (p.includes('youtube') || p.includes('google play')) {
+        return `https://www.google.com/search?q=${encodeURIComponent(tituloObra + ' ' + nomeProvedor + ' assistir')}`;
+    }
+
+    return linkFallback || `https://www.google.com/search?q=${encodeURIComponent(tituloObra + ' ' + nomeProvedor + ' onde assistir')}`;
+};
+
+// Curadoria de Playlists do Spotify
+window.CatalogoPlaylistsSpotifyMulher = window.CatalogoPlaylistsSpotifyMulher || [
+    {
+        id: "sp_f1",
+        titulo: "Manhã Serena & Autocuidado",
+        subtitulo: "Acústicos, Sons da Natureza e Despertar Suave",
+        icone: "🌿",
+        tag: "Manhã Leve",
+        link: "https://open.spotify.com/search/morning%20acoustic%20peaceful"
+    },
+    {
+        id: "sp_f2",
+        titulo: "Foco Criativo & Leveza",
+        subtitulo: "Piano Neoclássico, Lo-Fi Serena e Concentração",
+        icone: "✨",
+        tag: "Foco & Mente",
+        link: "https://open.spotify.com/search/peaceful%20piano%20study"
+    },
+    {
+        id: "sp_f3",
+        titulo: "Pilates, Treino & Vitalidade",
+        subtitulo: "Batidas Elevadas, Dança e Energia Feminina",
+        icone: "⚡",
+        tag: "Treino Radiante",
+        link: "https://open.spotify.com/search/workout%20pop%20energy"
+    },
+    {
+        id: "sp_f4",
+        titulo: "Noite Zen & Descompressão",
+        subtitulo: "Sons de Chuva, Frequências Binaurais e Spa",
+        icone: "🌙",
+        tag: "Sono Reparador",
+        link: "https://open.spotify.com/search/spa%20relaxation%20ambient"
+    }
 ];
 
-window.CatalogoSeriesMulher = window.CatalogoSeriesMasculinas || [
-    { id: "s1", titulo: "The Crown", temporadas: "6 Temporadas", categoria: "Liderança & Dever", desc: "Os bastidores do poder, maturidade e a responsabilidade de sustentar um legado." },
-    { id: "s2", titulo: "Anne with an E", temporadas: "3 Temporadas", categoria: "Poesia & Imaginação", desc: "O poder transformador do afeto, do intelecto e da resiliência perante o mundo." },
-    { id: "s3", titulo: "O Gambito da Rainha", temporadas: "1 Temporada", categoria: "Maestria & Foco", desc: "A genialidade estratégica superando traumas num universo dominado pelo rigor analítico." },
-    { id: "s4", titulo: "The Bear (O Urso)", temporadas: "3 Temporadas", categoria: "Cura & Superação", desc: "A busca por excelência sob pressão extrema e o valor das relações verdadeiras." },
-    { id: "s5", titulo: "This Is Us", temporadas: "6 Temporadas", categoria: "Família & Conexão", desc: "Uma reflexão inesquecível sobre tempo, luto, memórias e os laços que nos unem." },
-    { id: "s6", titulo: "Downton Abbey", temporadas: "6 Temporadas", categoria: "Lealdade & Tradição", desc: "A força feminina administrando lares, mudanças de época e laços inquebráveis." },
-    { id: "s7", titulo: "Grace and Frankie", temporadas: "7 Temporadas", categoria: "Amizade & Maturidade", desc: "A redescoberta da vida, do humor e da cumplicidade após grandes reviravoltas." }
+// Curadoria de Canais do YouTube
+window.CatalogoCanaisYoutubeMulher = window.CatalogoCanaisYoutubeMulher || [
+    {
+        id: "yt_f1",
+        titulo: "Saúde da Mulher & Hormônios",
+        categoria: "Fisiologia & Ciclo Consciente",
+        desc: "Orientações sobre as 4 fases biológicas, equilíbrio hormonal e nutrição.",
+        icone: "🌸",
+        link: "https://www.youtube.com/results?search_query=saude+da+mulher+e+ciclo+menstrual"
+    },
+    {
+        id: "yt_f2",
+        titulo: "Pilates, Yoga & Mobilidade",
+        categoria: "Corpo & Movimento Fluido",
+        desc: "Rotinas práticas para alívio de cólicas, postura, respiração e bem-estar em casa.",
+        icone: "🧘‍♀️",
+        link: "https://www.youtube.com/results?search_query=yoga+para+alivio+de+colica+e+estresse"
+    },
+    {
+        id: "yt_f3",
+        titulo: "Psicologia & Inteligência Emocional",
+        categoria: "Autoconhecimento & Paz",
+        desc: "Gestão da carga mental, limites saudáveis, autocuidado e autoestima.",
+        icone: "📖",
+        link: "https://www.youtube.com/results?search_query=inteligencia+emocional+e+autocuidado+feminino"
+    }
 ];
+
+window.ORIENTACOES_FASES_CICLO = {
+    1: {
+        nome: "Fase Menstrual (Estágio 1)",
+        emoji: "🩸",
+        estacao: "Inverno Interior",
+        dias_ref: "Dias 1 a 5 do ciclo",
+        resumo_vibe: "O corpo está a renovar o endométrio. Os níveis de estrogénio e progesterona estão no ponto mais baixo. É tempo de recolhimento, desaceleração e escuta profunda do próprio corpo.",
+        cards: {
+            fertilidade: {
+                titulo: "Fertilidade & Gravidez",
+                badge: "Muito Baixa",
+                sub: "Improvável engravidar",
+                cor: "#9d174d",
+                icone: "🍼",
+                fisiologia: "O óvulo anterior não foi fecundado e o corpo descarta a camada interna do útero. A probabilidade de conceção durante o fluxo é muito baixa.",
+                como_lidar: [
+                    "<strong>Para quem deseja engravidar:</strong> Fase de repouso uterino. Foque em nutrir o sangue e descansar para o novo ciclo de folículos que começará em seguida.",
+                    "<strong>Para quem evita gravidez:</strong> Embora a probabilidade seja mínima, em ciclos muito curtos ou irregulares os espermatozoides podem sobreviver até 5 dias. Mantenha os cuidados habituais.",
+                    "<strong>Cuidados íntimos:</strong> Troque os absorventes ou esvazie o coletor com frequência para evitar proliferação bacteriana e higienize com água morna e sabonete neutro."
+                ]
+            },
+            libido: {
+                titulo: "Libido & Intimidade",
+                badge: "Introspectiva",
+                sub: "Conforto & Aconchego",
+                cor: "#6b21a8",
+                icone: "🔥",
+                fisiologia: "Os níveis hormonais basais reduzem o ímpeto sexual ativo, mas a sensibilidade física na região pélvica pode variar.",
+                como_lidar: [
+                    "<strong>Sintonia emocional:</strong> O corpo pede carinho, abraços, cafuné e segurança afetiva mais do que sexo intenso.",
+                    "<strong>Relação durante o período:</strong> Se houver vontade mútua, é perfeitamente seguro e saudável — o orgasmo liberta endorfinas e ocitocina que funcionam como analgésicos naturais contra cólicas.",
+                    "<strong>Conforto a dois:</strong> Comunique com naturalidade como se sente ao parceiro. Uma massagem nos pés ou na região lombar faz maravilhas."
+                ]
+            },
+            energia: {
+                titulo: "Energia & Produtividade",
+                badge: "Bateria Baixa",
+                sub: "Repouso & Descanso",
+                cor: "#e11d48",
+                icone: "⚡",
+                fisiologia: "A perda sanguínea e a baixa hormonal exigem trabalho extra do organismo. A fadiga é uma resposta biológica natural, não preguiça.",
+                como_lidar: [
+                    "<strong>No trabalho e rotina:</strong> Evite sobrecarga de tarefas complexas. Delegue o que puder e faça pausas respiratórias conscientes ao longo do dia.",
+                    "<strong>Exercícios físicos:</strong> Substitua treinos pesados por caminhadas leves, alongamentos e posturas suaves de yoga (postura da criança e pernas na parede).",
+                    "<strong>Nutrição e chás:</strong> Alimentos ricos em ferro (espinafre, feijão, lentilha, carnes) e chás mornos de camomila, gengibre ou canela para desinflamar e acalmar as cólicas."
+                ]
+            }
+        }
+    },
+    2: {
+        nome: "Fase Folicular (Estágio 2)",
+        emoji: "🌿",
+        estacao: "Primavera Interior",
+        dias_ref: "Dias 6 a 11 do ciclo",
+        resumo_vibe: "O hormônio FSH estimula o crescimento dos folículos e o estrogénio sobe dia a dia. Você ganha clareza mental, otimismo, leveza e vontade de iniciar novos projetos.",
+        cards: {
+            fertilidade: {
+                titulo: "Fertilidade & Gravidez",
+                badge: "Média-Baixa",
+                sub: "Fertilidade subindo",
+                cor: "#b45309",
+                icone: "🍼",
+                fisiologia: "Os folículos ovarianos estão amadurecendo. Conforme se aproxima do 10º dia, o muco cervical começa a ficar mais hidratado e alcalino.",
+                como_lidar: [
+                    "<strong>Para quem deseja engravidar:</strong> Inicie a preparação! Espermatozoides vivem até 5 dias nas trompas. Relações a cada 2 dias a partir do dia 8-9 aumentam muito as chances de conceber.",
+                    "<strong>Para quem evita gravidez:</strong> Atenção redobrada. A janela fértil começa a abrir-se antes da ovulação real. Métodos de barreira são indispensáveis.",
+                    "<strong>Sinal do corpo:</strong> Observe a mudança do muco vaginal, que sai de um aspecto seco/pastoso para mais leitoso e húmido."
+                ]
+            },
+            libido: {
+                titulo: "Libido & Intimidade",
+                badge: "Despertando",
+                sub: "Energia em ascensão",
+                cor: "#7c3aed",
+                icone: "🔥",
+                fisiologia: "O estrogénio em alta estimula a vascularização pélvica, melhora a lubrificação e aumenta a receptividade sensorial.",
+                como_lidar: [
+                    "<strong>Vontade de explorar:</strong> Sua autoconfiança física está aumentando. Excelente momento para novidades a dois, jogos de sedução e encontros a sós.",
+                    "<strong>Comunicação fluida:</strong> É mais fácil expressar fantasias e desejos com leveza e sem constrangimento.",
+                    "<strong>Sensação de frescura:</strong> Aproveite para se vestir de maneira que te faça sentir bonita e poderosa para si mesma."
+                ]
+            },
+            energia: {
+                titulo: "Energia & Produtividade",
+                badge: "Em Alta ⚡",
+                sub: "Criatividade & Pique",
+                cor: "#16a34a",
+                icone: "⚡",
+                fisiologia: "A dopamina e o estrogénio ativam áreas cerebrais ligadas ao foco, planeamento estratégico e resistência física.",
+                como_lidar: [
+                    "<strong>No trabalho e estudos:</strong> Tire projetos do papel, organize a casa, estude coisas novas e marque reuniões importantes. A mente está afiada.",
+                    "<strong>Exercícios físicos:</strong> Aproveite para musculação intensa, corridas e desportos que exigem agilidade. A recuperação muscular é rápida.",
+                    "<strong>Nutrição:</strong> Alimentos frescos, saladas verdes, sementes de abóbora e linhaça para dar suporte ao estrogénio saudável."
+                ]
+            }
+        }
+    },
+    3: {
+        nome: "Fase Ovulatória (Estágio 3)",
+        emoji: "✨",
+        estacao: "Verão Interior",
+        dias_ref: "Dias 12 a 16 do ciclo",
+        resumo_vibe: "Pico de estrogénio, pico de LH e surto de testosterona. Você está no auge do seu magnetismo, capacidade de comunicação e poder de atração.",
+        cards: {
+            fertilidade: {
+                titulo: "Fertilidade & Gravidez",
+                badge: "PICO MÁXIMO",
+                sub: "Altamente propensa",
+                cor: "#e11d48",
+                icone: "🍼",
+                fisiologia: "O folículo rompe-se e liberta o óvulo maduro, que sobrevive de 12 a 24 horas. O muco cervical fica transparente, escorregadio e elástico (estilo clara de ovo).",
+                como_lidar: [
+                    "<strong>Para quem deseja engravidar:</strong> ESTE É O MOMENTO! Mantenha relações no dia da ovulação e nas 24h seguintes para aproveitar o óvulo fresco.",
+                    "<strong>Para quem evita gravidez:</strong> ALERTA MÁXIMO. É o período de maior risco fértil do mês. Use proteção rigorosa ou evite relações com penetração desprotegida.",
+                    "<strong>Identificação no corpo:</strong> Sensação de humidade evidente e, por vezes, uma pontadinha leve em um dos lados do baixo ventre (dor da ovulação)."
+                ]
+            },
+            libido: {
+                titulo: "Libido & Intimidade",
+                badge: "Ápice & Fogo 🔥",
+                sub: "Magnetismo no auge",
+                cor: "#c026d3",
+                icone: "🔥",
+                fisiologia: "A testosterona feminina atinge o ponto mais alto do mês. O olfato apura-se, a pele fica radiante e o desejo sexual alcança o topo biológico.",
+                como_lidar: [
+                    "<strong>Celebração a dois:</strong> A intimidade flui com intensidade e entusiasmo. A lubrificação natural e a sensibilidade do clitóris estão perfeitas.",
+                    "<strong>Magnetismo social:</strong> Você atrai a atenção naturalmente, tem facilidade para encantar e negociar tanto na vida íntima quanto no trabalho.",
+                    "<strong>Autonomia feminina:</strong> Canalize essa energia para celebrar o seu corpo, dançar ou desfrutar de momentos de autocuidado luxuoso."
+                ]
+            },
+            energia: {
+                titulo: "Energia & Produtividade",
+                badge: "Radiante / 100%",
+                sub: "Força & Vigor Total",
+                cor: "#d97706",
+                icone: "⚡",
+                fisiologia: "Vigor neuromuscular no topo. A força contrátil dos músculos é máxima e a capacidade cardiovascular responde com facilidade.",
+                como_lidar: [
+                    "<strong>No dia a dia:</strong> Excelente para apresentações, eventos sociais, festas e tarefas desafiadoras do lar.",
+                    "<strong>Exercícios físicos:</strong> Quebre recordes pessoais em treinos de força (perna, agachamento) ou treinos intervalados (HIIT).",
+                    "<strong>Atenção:</strong> Como o corpo gasta bastante energia, beba pelo menos 2 a 2.5L de água e consuma carboidratos complexos e magnésio."
+                ]
+            }
+        }
+    },
+    4: {
+        nome: "Fase Lútea (Estágio 4)",
+        emoji: "🍂",
+        estacao: "Outono Interior",
+        dias_ref: "Dias 17 a 28 do ciclo",
+        resumo_vibe: "A progesterona assume o comando. O seu foco volta-se para a organização de detalhes, limites saudáveis e necessidade de silêncio e acolhimento.",
+        cards: {
+            fertilidade: {
+                titulo: "Fertilidade & Gravidez",
+                badge: "Infértil / Baixa",
+                sub: "Pouco propensa",
+                cor: "#64748b",
+                icone: "🍼",
+                fisiologia: "O corpo lúteo produz progesterona. O colo do útero fecha-se com muco espesso e a ovulação já se encerrou. Fecundação inviável após o 3º dia pós-ovulação.",
+                como_lidar: [
+                    "<strong>Para quem deseja engravidar:</strong> Fase das duas semanas de espera (2WW). Evite stress excessivo, mantenha o corpo aquecido e apoie a implantação do embrião com descanso.",
+                    "<strong>Para quem evita gravidez:</strong> Período biologicamente seguro após a confirmação da ovulação, trazendo alívio reprodutivo.",
+                    "<strong>Sinais corporais:</strong> Os seios podem ficar mais sensíveis ou inchados devido à ação da progesterona."
+                ]
+            },
+            libido: {
+                titulo: "Libido & Intimidade",
+                badge: "Calma & Suave",
+                sub: "Afeto e conexão serena",
+                cor: "#581c87",
+                icone: "🔥",
+                fisiologia: "A progesterona tem efeito calmante sobre o sistema nervoso central. A libido intensa diminui e dá lugar ao desejo de segurança e abraço.",
+                como_lidar: [
+                    "<strong>Sem cobranças:</strong> Não se sinta culpada se a vontade de sexo intenso diminuir. O corpo pede carinho, massagens nos ombros e cafuné.",
+                    "<strong>Comunicação aberta:</strong> Avise o seu parceiro de que está na fase pré-menstrual para evitar mal-entendidos emocionais.",
+                    "<strong>Conforto térmico:</strong> Banhos quentes a dois e momentos de aconchego sem pressa fortalecem o vínculo emocional."
+                ]
+            },
+            energia: {
+                titulo: "Energia & Produtividade",
+                badge: "Desacelerando",
+                sub: "Pede pausas & calma",
+                cor: "#64748b",
+                icone: "⚡",
+                fisiologia: "Aumento do metabolismo basal (mais fome calórica) e tendência à retenção de líquidos. Nos últimos dias antes de descer, a queda hormonal pode trazer a TPM.",
+                como_lidar: [
+                    "<strong>No dia a dia:</strong> Excelente para organizar armários, limpar gavetas, pagar contas e concluir pendências que exigem foco detalhista.",
+                    "<strong>Exercícios físicos:</strong> Diminua a carga. Troque treinos pesados por pilates, yoga ou caminhadas ao ar livre.",
+                    "<strong>Alívio da TPM:</strong> Chocolate preto (70%), sementes de girassol e sésamo, banana com aveia e canela. Evite excesso de sal e cafeína para diminuir o inchaço e a irritabilidade."
+                ]
+            }
+        }
+    }
+};
 
 const DICAS_BIOLOGICAS_FALLBACK = {
     menstrual: "O corpo pede descanso e aconchego. Hidrate-se e faça refeições quentinhas.",
-    folicular: "A energia está a despertar! Excelente momento para novos planos e ideias criativas.",
+    folicular: "A sua energia está a despertar! Excelente momento para novos planos e ideias criativas.",
     ovulatoria: "Pico de magnetismo e vitalidade. Expresse-se, converse e celebre o seu brilho.",
     lutea: "Tempo de recolhimento e organização. Desacelere o ritmo e acolha os seus limites."
 };
 
 const INSPIRACOES_FALLBACK = [
-    "Dica de Leitura: 'Quarto de Despejo' (Carolina Maria de Jesus). A força crua e real de uma mulher que não se curvou à vida.",
-    "Citação: 'Não sou alegre, nem sou triste: sou poeta.' — Cecília Meireles",
-    "Bem-Estar: Prepare uma chávena do seu chá preferido. Sente-se num lugar confortável e beba sem olhar para o ecrã.",
-    "Poesia: 'Renda-se, como eu me rendi. Mergulhe no que você não conhece como eu mergulhei.' — Clarice Lispector"
+    "📖 Dica de Leitura: 'Quarto de Despejo' (Carolina Maria de Jesus). A força crua e real de uma mulher que não se curvou à vida.",
+    "✨ Citação: 'Não sou alegre, nem sou triste: sou poeta.' — Cecília Meireles",
+    "🌿 Bem-Estar: Prepare uma chávena do seu chá preferido. Sente-se num lugar confortável e beba sem olhar para o ecrã.",
+    "✒️ Poesia: 'Renda-se, como eu me rendi. Mergulhe no que você não conhece como eu mergulhei.' — Clarice Lispector",
+    "📖 Dica de Leitura: 'Mulheres que Correm com os Lobos' (Clarissa Pinkola Estés). O resgate do instinto mais profundo da alma feminina.",
+    "✨ Citação: 'Pense como uma rainha. Uma rainha não tem medo de falhar. O fracasso é apenas mais um degrau para a grandeza.' — Oprah Winfrey",
+    "📖 Dica de Leitura: 'Um Teto Todo Seu' (Virginia Woolf). Uma reflexão essencial sobre a independência e o espaço da mulher.",
+    "✒️ Poesia: 'Mesmo quando tudo parece desabar, cabe a mim decidir entre rir ou chorar, ir ou ficar, desistir ou lutar.' — Cora Coralina",
+    "🌿 Bem-Estar: Feche os olhos por 60 segundos. Respire fundo, preenchendo o ventre de ar, e solte devagar. O seu corpo agradece a pausa.",
+    "✨ Citação: 'Eu não sou o que me aconteceu. Eu sou o que escolho me tornar.' — Carl Jung",
+    "📖 Dica de Leitura: 'A Cor Púrpura' (Alice Walker). Uma história brutal e bela sobre libertação feminina e irmandade.",
+    "✒️ Poesia: 'A forma como você se ama é a forma como você ensina os outros a te amarem.' — Rupi Kaur",
+    "🌿 Bem-Estar: Hoje, faça um elogio sincero a si mesma em frente ao espelho. Reconheça a sua própria beleza e força.",
+    "✨ Citação: 'Não há limite para o que nós, como mulheres, podemos alcançar.' — Michelle Obama",
+    "📖 Dica de Leitura: 'Circe' (Madeline Miller). A reinvenção de uma feiticeira, reclamando o seu poder e a sua voz autêntica.",
+    "✒️ Poesia: 'Amar a si mesma é o início de um romance para toda a vida.' — Oscar Wilde"
 ];
 
 function criarDataAbsoluta(ano, mes, dia) {
     const d = new Date();
     d.setFullYear(ano, mes - 1, dia);
     d.setHours(0, 0, 0, 0);
+    d.setMilliseconds(0);
     return d;
 }
 
@@ -141,7 +449,7 @@ function formatarDataVisor(data) {
 })();
 
 // =========================================================================
-// 1. RENDERIZAÇÃO DA INTERFACE PRINCIPAL (TOPO ELEGANTE E ÍCONES PRESERVADOS)
+// 1. RENDERIZAÇÃO DA INTERFACE PRINCIPAL
 // =========================================================================
 
 window.abrirEspacoMulher = async function() {
@@ -150,9 +458,11 @@ window.abrirEspacoMulher = async function() {
 
     window.renderizarEsqueletoEspacoMulher();
     window.processarEExibirPrevisao();
+    window.atualizarInspiracaoDiaria(false);
     window.sincronizarCheckboxesRituaisHoje();
-    window.calcularOfensivaERendimentoRituais();
+    window.renderizarPainelEvolucaoSantuario();
     window.renderizarHistoricoRadarFeminilidade();
+    window.renderizarGraficoETendenciasFeminilidade();
     window.atualizarVisualizacaoMidiaMulher();
     window.renderizarHistoricoQueroVerMulher();
     window.renderizarHistoricoAssistidosMulher();
@@ -174,10 +484,13 @@ window.renderizarEsqueletoEspacoMulher = function() {
     const container = document.getElementById('secao-espaco-mulher');
     if (!container) return;
 
+    const listaFilmes = (window.CatalogoFilmesMasculinos && window.CatalogoFilmesMasculinos.length) || 0;
+    const listaSeries = (window.CatalogoSeriesMasculinas && window.CatalogoSeriesMasculinas.length) || 0;
+
     container.innerHTML = `
         <div id="vista-principal-espaco-mulher">
             
-            <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR SOFISTICADO (ESTILO PÍLULA VIDRO) -->
+            <!-- LINHA 1 SUPERIOR: BOTÃO VOLTAR -->
             <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:12px;">
                 <button type="button" onclick="window.fecharEspacoMulher()" 
                         style="display:inline-flex; align-items:center; gap:8px; padding:8px 18px; border-radius:20px; font-size:12.5px; font-weight:800; background:rgba(255,255,255,0.92); border:1.5px solid #e9d5ff; color:#581c87; box-shadow:0 3px 10px rgba(124,58,237,0.06); backdrop-filter:blur(8px); cursor:pointer; transition:all 0.2s ease;">
@@ -186,7 +499,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </button>
             </div>
 
-            <!-- LINHA 2: CABEÇALHO COM QUADRO (70px), ÍCONE (80px) E TIPOGRAFIA NOBRE (26px) -->
+            <!-- LINHA 2: CABEÇALHO -->
             <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:2px 4px;">
                 <div style="width:70px; height:70px; border-radius:22px; background:linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border:1.8px solid #d8b4fe; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 8px 20px rgba(124,58,237,0.16);">
                     <img src="./icone/medita.png" onerror="this.onerror=null; this.src='./icone/icone-mulher.png';" alt="Espaço Mulher" style="width:80px; height:80px; object-fit:contain;">
@@ -197,9 +510,8 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </div>
             </div>
 
-            <!-- LINHA 3: DIÁRIO E CICLO (50% / 50%) -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
-                <!-- Botão Diário à Esquerda com diario.png -->
+            <!-- LINHA 3: DIÁRIO E CICLO -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
                 <button type="button" onclick="window.abrirPaginaDiario()" 
                         style="width:100%; box-sizing:border-box; padding:12px 14px; border-radius:18px; border:1.5px solid #d8b4fe; background:linear-gradient(135deg, #ffffff 0%, #faf5ff 100%); color:#3b0764; box-shadow:0 4px 14px rgba(124,58,237,0.08); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform 0.15s ease;">
                     <img src="./icone/diario.png" onerror="this.onerror=null; this.src='./icone/icone-livro.png'; this.style.display='inline-block';" alt="Diário" style="width:29px; height:29px; object-fit:contain; flex-shrink:0;">
@@ -209,7 +521,6 @@ window.renderizarEsqueletoEspacoMulher = function() {
                     </div>
                 </button>
 
-                <!-- Botão Ciclo à Direita com ciclo.png -->
                 <button type="button" onclick="window.abrirModalRegistroCiclo()" 
                         style="width:100%; box-sizing:border-box; padding:12px 14px; border-radius:18px; border:1.5px solid #d8b4fe; background:linear-gradient(135deg, #ffffff 0%, #faf5ff 100%); color:#3b0764; box-shadow:0 4px 14px rgba(124,58,237,0.08); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform 0.15s ease;">
                     <img src="./icone/ciclo.png" onerror="this.onerror=null; this.src='./icone/icone-mulher.png'; this.style.display='inline-block';" alt="Ciclo" style="width:50px; height:50px; object-fit:contain; flex-shrink:0;">
@@ -220,152 +531,349 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </button>
             </div>
 
-            <!-- BOTÕES DE BEM-ESTAR: MINUTO ZEN (zen.png) & MODO ALÍVIO (alivio.png) -->
+            <!-- BOTÕES: MINUTO ZEN & MODO ALÍVIO -->
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
                 <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #c084fc; background:#ffffff; color:#581c87; box-shadow:0 2px 8px rgba(124,58,237,0.08); display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="window.abrirModalMinutoZen()">
-                    <img src="./icone/zen.png" onerror="this.onerror=null; this.src='./icone/icone-ioga.png';" alt="Zen" style="width:40px; height:40px; object-fit:contain;">
+                    <img src="./icone/zen.png" onerror="this.onerror=null; this.src='./icone/icone-ioga.png';" alt="Zen" style="width:36px; height:36px; object-fit:contain;">
                     <span>Minuto Zen</span>
                 </button>
                 <button type="button" class="btn-secundario" style="padding:11px; border-radius:14px; font-size:11.5px; font-weight:800; border:1.5px solid #a855f7; background:#faf5ff; color:#6b21a8; box-shadow:0 2px 8px rgba(168,85,247,0.08); display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="window.abrirModoAcolhimentoEmergencia()">
-                    <img src="./icone/alivio.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Alívio" style="width:40px; height:40px; object-fit:contain;">
+                    <img src="./icone/alivio.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Alívio" style="width:36px; height:36px; object-fit:contain;">
                     <span>Modo Alívio (TPM)</span>
                 </button>
             </div>
 
-            <!-- CARTÃO DO CICLO & DICA DA FASE -->
-            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #e9d5ff; border-left:4px solid #7c3aed; text-align:center; padding:22px 18px; border-radius:24px; box-shadow:0 10px 25px rgba(88,28,135,0.06); position:relative; overflow:hidden;">
-                <span style="font-size:11px; font-weight:800; color:#6b21a8; text-transform:uppercase; letter-spacing:1.5px; display:inline-block; margin-bottom:6px; background:#f3e8ff; padding:3px 12px; border-radius:20px; border:1px solid #e9d5ff;">Fase do Ciclo</span>
+            <!-- 1. FASE MENSTRUAL & ROTEIRO EM LINHA DOS 4 ESTÁGIOS -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #7c3aed; text-align:center; padding:18px 16px 16px 16px; border-radius:24px; box-shadow:0 8px 24px rgba(88,28,135,0.05); position:relative;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:10.5px; font-weight:800; color:#6b21a8; text-transform:uppercase; letter-spacing:1px; background:#f3e8ff; padding:2px 10px; border-radius:20px;">Jornada do Ciclo</span>
+                    <span id="lbl-status-estagio-resumo" style="font-size:11px; font-weight:800; color:#7c3aed; background:#faf5ff; border:1px solid #d8b4fe; padding:2px 8px; border-radius:10px;">Estágio 1 • Menstrual</span>
+                </div>
+
                 <div id="display-fase-ciclo-atual" style="font-size:22px; font-weight:900; color:#3b0764; margin-bottom:4px;">Ciclo Natural</div>
-                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#581c87; margin:0 0 4px 0; font-weight:600;">Toque em '+ Ciclo' para registar a sua data.</p>
-                <span id="txt-data-base-calculo" style="font-size:10.5px; color:#7e22ce; display:block; margin-bottom:10px; font-weight:600;"></span>
+                <p id="txt-previsao-proxima-menstruacao" style="font-size:12px; color:#581c87; margin:0 0 3px 0; font-weight:600;">Toque em 'Ciclo' para registar a sua data.</p>
+                <span id="txt-data-base-calculo" style="font-size:10.5px; color:#7e22ce; display:block; margin-bottom:14px; font-weight:600;"></span>
                 
-                <div style="background:#f3e8ff; border-radius:12px; height:8px; width:100%; overflow:hidden;">
+                <!-- ROTEIRO EM LINHA (STEPPER HORIZONTAL COM OS 4 ESTÁGIOS) -->
+                <div style="position:relative; margin:22px 4px 14px 4px; padding:0 2px;">
+                    <!-- Linha de fundo da trilha -->
+                    <div style="position:absolute; top:13px; left:8%; right:8%; height:3px; background:#f3e8ff; z-index:1; border-radius:4px;"></div>
+                    <!-- Linha ativa de progresso -->
+                    <div id="linha-progresso-estagios" style="position:absolute; top:13px; left:8%; width:10%; height:3px; background:linear-gradient(90deg, #e11d48, #7c3aed); z-index:2; border-radius:4px; transition:width 0.4s ease;"></div>
+
+                    <!-- 4 Estágios em Linha -->
+                    <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:flex-start;">
+                        <!-- Estágio 1: Menstrual -->
+                        <div id="marco-estagio-1" onclick="window.abrirModalOrientacoesFase('geral', 1)" style="display:flex; flex-direction:column; align-items:center; width:24%; text-align:center; cursor:pointer;" title="Toque para ver detalhes da fase 1">
+                            <div class="bolinha-estagio" style="width:26px; height:26px; border-radius:50%; background:#ffffff; border:2.5px solid #d8b4fe; color:#6b21a8; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(124,58,237,0.1); transition:all 0.3s ease;">1</div>
+                            <strong style="font-size:11px; color:#3b0764; margin-top:6px; display:block; line-height:1.2;">Menstrual</strong>
+                            <span id="sub-estagio-1" style="font-size:9.5px; color:#7e22ce; font-weight:700; display:block; margin-top:2px;">Dia 1-5</span>
+                        </div>
+
+                        <!-- Estágio 2: Folicular -->
+                        <div id="marco-estagio-2" onclick="window.abrirModalOrientacoesFase('geral', 2)" style="display:flex; flex-direction:column; align-items:center; width:24%; text-align:center; cursor:pointer;" title="Toque para ver detalhes da fase 2">
+                            <div class="bolinha-estagio" style="width:26px; height:26px; border-radius:50%; background:#ffffff; border:2.5px solid #d8b4fe; color:#6b21a8; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(124,58,237,0.1); transition:all 0.3s ease;">2</div>
+                            <strong style="font-size:11px; color:#3b0764; margin-top:6px; display:block; line-height:1.2;">Folicular</strong>
+                            <span id="sub-estagio-2" style="font-size:9.5px; color:#7e22ce; font-weight:700; display:block; margin-top:2px;">Dia 6-11</span>
+                        </div>
+
+                        <!-- Estágio 3: Ovulatória -->
+                        <div id="marco-estagio-3" onclick="window.abrirModalOrientacoesFase('geral', 3)" style="display:flex; flex-direction:column; align-items:center; width:24%; text-align:center; cursor:pointer;" title="Toque para ver detalhes da fase 3">
+                            <div class="bolinha-estagio" style="width:26px; height:26px; border-radius:50%; background:#ffffff; border:2.5px solid #d8b4fe; color:#6b21a8; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(124,58,237,0.1); transition:all 0.3s ease;">3</div>
+                            <strong style="font-size:11px; color:#3b0764; margin-top:6px; display:block; line-height:1.2;">Ovulatória</strong>
+                            <span id="sub-estagio-3" style="font-size:9.5px; color:#7e22ce; font-weight:700; display:block; margin-top:2px;">Dia 12-16</span>
+                        </div>
+
+                        <!-- Estágio 4: Lútea -->
+                        <div id="marco-estagio-4" onclick="window.abrirModalOrientacoesFase('geral', 4)" style="display:flex; flex-direction:column; align-items:center; width:24%; text-align:center; cursor:pointer;" title="Toque para ver detalhes da fase 4">
+                            <div class="bolinha-estagio" style="width:26px; height:26px; border-radius:50%; background:#ffffff; border:2.5px solid #d8b4fe; color:#6b21a8; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(124,58,237,0.1); transition:all 0.3s ease;">4</div>
+                            <strong style="font-size:11px; color:#3b0764; margin-top:6px; display:block; line-height:1.2;">Lútea</strong>
+                            <span id="sub-estagio-4" style="font-size:9.5px; color:#7e22ce; font-weight:700; display:block; margin-top:2px;">Dia 17-28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD DE ESTIMATIVA: CHEGADA MÉDIA DO PRÓXIMO ESTÁGIO -->
+                <div id="box-previsao-proximo-estagio" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:14px; padding:10px 12px; margin-top:14px; text-align:left; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:20px; line-height:1;">⏳</span>
+                    <div style="flex:1;">
+                        <span style="font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; letter-spacing:0.5px; display:block;">Próximo Marco Biológico:</span>
+                        <p id="txt-estimativa-proximo-estagio" style="margin:2px 0 0 0; font-size:11.5px; color:#3b0764; font-weight:700; line-height:1.35;">
+                            Aguardando configuração do ciclo...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CABEÇALHO DA SUA VIBE & SENSAÇÕES -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; margin-bottom:6px; padding:0 2px;">
+                    <div style="text-align:left;">
+                        <span style="font-size:11.5px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:5px;">
+                            <span>✨</span> Sua Vibe: Como Você Pode Estar se Sentindo
+                        </span>
+                        <span style="font-size:10px; color:#6b21a8; font-weight:600; display:block; margin-top:1px;">
+                            Toque nos cards para ver como melhor lidar com esta fase
+                        </span>
+                    </div>
+                    <button type="button" onclick="window.abrirModalOrientacoesFase('geral')" 
+                            style="background:#faf5ff; border:1px solid #d8b4fe; color:#7c3aed; border-radius:10px; padding:4px 9px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; flex-shrink:0; box-shadow:0 1px 3px rgba(124,58,237,0.06);" 
+                            title="Ver orientações completas da fase">
+                        <span>📖</span> Guia da Fase
+                    </button>
+                </div>
+
+                <!-- PAINEL BIOLÓGICO: FERTILIDADE, LIBIDO & ENERGIA (INTERATIVO COM MODAL) -->
+                <div id="painel-biologico-estagio" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+                    <!-- Card 1: Fertilidade / Gravidez -->
+                    <div onclick="window.abrirModalOrientacoesFase('fertilidade')" 
+                         style="background:#fdf2f8; border:1px solid #fbcfe8; border-radius:14px; padding:10px 8px; text-align:center; cursor:pointer; transition:transform 0.15s ease, box-shadow 0.15s ease;"
+                         title="Toque para ver orientações de fertilidade">
+                        <span style="font-size:16px; display:block; margin-bottom:2px;">🍼</span>
+                        <span style="font-size:9.5px; font-weight:800; color:#9d174d; text-transform:uppercase; letter-spacing:0.3px; display:block;">Fertilidade</span>
+                        <strong id="badge-bio-fertilidade" style="font-size:11px; font-weight:800; color:#be185d; display:block; margin-top:3px; line-height:1.2;">Mínima</strong>
+                        <span id="sub-bio-fertilidade" style="font-size:9px; color:#9d174d; display:block; margin-top:2px;">Pouco propenso</span>
+                        <span style="font-size:8.5px; color:#be185d; font-weight:700; display:block; margin-top:5px; text-decoration:underline;">Ver dicas ↗</span>
+                    </div>
+
+                    <!-- Card 2: Libido / Magnetismo -->
+                    <div onclick="window.abrirModalOrientacoesFase('libido')" 
+                         style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:14px; padding:10px 8px; text-align:center; cursor:pointer; transition:transform 0.15s ease, box-shadow 0.15s ease;"
+                         title="Toque para ver orientações de libido e intimidade">
+                        <span style="font-size:16px; display:block; margin-bottom:2px;">🔥</span>
+                        <span style="font-size:9.5px; font-weight:800; color:#6b21a8; text-transform:uppercase; letter-spacing:0.3px; display:block;">Libido</span>
+                        <strong id="badge-bio-libido" style="font-size:11px; font-weight:800; color:#7c3aed; display:block; margin-top:3px; line-height:1.2;">Em recolhimento</strong>
+                        <span id="sub-bio-libido" style="font-size:9px; color:#6b21a8; display:block; margin-top:2px;">Foco em carinho</span>
+                        <span style="font-size:8.5px; color:#7c3aed; font-weight:700; display:block; margin-top:5px; text-decoration:underline;">Ver dicas ↗</span>
+                    </div>
+
+                    <!-- Card 3: Energia & Vitalidade -->
+                    <div onclick="window.abrirModalOrientacoesFase('energia')" 
+                         style="background:#fefce8; border:1px solid #fef08a; border-radius:14px; padding:10px 8px; text-align:center; cursor:pointer; transition:transform 0.15s ease, box-shadow 0.15s ease;"
+                         title="Toque para ver orientações de energia e disposição">
+                        <span style="font-size:16px; display:block; margin-bottom:2px;">⚡</span>
+                        <span style="font-size:9.5px; font-weight:800; color:#854d0e; text-transform:uppercase; letter-spacing:0.3px; display:block;">Energia</span>
+                        <strong id="badge-bio-energia" style="font-size:11px; font-weight:800; color:#a16207; display:block; margin-top:3px; line-height:1.2;">Bateria Baixa</strong>
+                        <span id="sub-bio-energia" style="font-size:9px; color:#854d0e; display:block; margin-top:2px;">Repouso & Ninho</span>
+                        <span style="font-size:8.5px; color:#a16207; font-weight:700; display:block; margin-top:5px; text-decoration:underline;">Ver dicas ↗</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Progresso Geral do Ciclo -->
+                <div style="background:#f3e8ff; border-radius:12px; height:6px; width:100%; overflow:hidden; margin-top:14px;">
                     <div id="barra-progresso-ciclo" style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:35%; border-radius:12px;"></div>
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; font-weight:800; color:#6b21a8;">
+                <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:10.5px; font-weight:800; color:#6b21a8;">
                     <span id="txt-dia-ciclo-atual">Dia 1</span>
                     <span id="txt-dia-ciclo-final">Dia 28</span>
                 </div>
 
-                <!-- QUADRO DE SAÚDE BIOLÓGICA DA FASE -->
-                <div style="background:#faf5ff; border:1px dashed #c084fc; border-radius:14px; padding:12px; margin-top:14px; text-align:left; display:flex; align-items:flex-start; gap:10px;">
-                    <img id="icone-dica-diaria-img" src="./icone/icone-mulher.png" alt="Fase" style="width:50px; height:50px; object-fit:contain; flex-shrink:0; margin-top:2px;">
+                <!-- CONSELHO BIOLÓGICO -->
+                <div style="border-top:1.5px solid #d8b4fe; padding-top:14px; margin-top:14px; text-align:left; display:flex; align-items:flex-start; gap:12px;">
+                    <img id="icone-dica-diaria-img" src="./icone/icone-mulher.png" alt="Fase" style="width:42px; height:42px; object-fit:contain; flex-shrink:0;">
                     <div style="flex:1;">
-                        <strong style="font-size:11.5px; color:#3b0764; text-transform:uppercase; display:block; margin-bottom:2px;">Conselho Biológico da Fase:</strong>
+                        <strong style="font-size:11.5px; color:#3b0764; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:3px;">Conselho Biológico da Fase</strong>
                         <p id="txt-dica-diaria-ciclo" style="font-size:12px; color:#581c87; margin:0; line-height:1.45; font-weight:500;">A carregar orientação...</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- QUADRO DE INSPIRAÇÃO LITERÁRIA & ALMA -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #a855f7; margin-top:14px; padding:14px 16px; border-radius:18px; box-shadow:0 4px 12px rgba(88,28,135,0.04);">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-                    <img src="./icone/icone-lampada-pense.png" alt="Inspiração" style="width:40px; height:40px; object-fit:contain;">
-                    <strong style="font-size:12.5px; color:#3b0764; font-weight:800;">Inspiração Literária & Alma</strong>
+                <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+                    <button type="button" onclick="window.registrarMenstruacaoHojeRapido()" 
+                            style="display:inline-flex; align-items:center; gap:6px; padding:7px 15px; border-radius:12px; font-size:11.5px; font-weight:800; background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:#ffffff; border:none; box-shadow:0 3px 8px rgba(225,29,72,0.22); cursor:pointer; transition:transform 0.15s ease;">
+                        <span>🩸</span>
+                        <span>Menstruei hoje</span>
+                    </button>
                 </div>
-                <p id="txt-inspiracao-diaria" style="font-size:12px; color:#581c87; margin:0; line-height:1.55; font-style:italic;">A procurar reflexão...</p>
             </div>
 
-            <!-- QUADRO: RADAR DE FEMINILIDADE & BEM-ESTAR COM LOVE.PNG -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #7c3aed; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
+            <!-- 2. INSPIRAÇÃO LITERÁRIA E ALMA -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #a855f7; margin-top:14px; padding:15px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(88,28,135,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="./icone/icone-lampada-pense.png" alt="Inspiração" style="width:30px; height:30px; object-fit:contain;">
+                        <strong style="font-size:13px; color:#3b0764; font-weight:800;">Inspiração Literária & Alma</strong>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" onclick="window.atualizarInspiracaoDiaria(true)" 
+                                style="background:#faf5ff; border:1px solid #d8b4fe; color:#6b21a8; font-size:11px; font-weight:800; border-radius:8px; padding:4px 8px; cursor:pointer;" title="Sortear outra inspiração">
+                            🔀 Outra
+                        </button>
+                        <button type="button" onclick="window.atualizarInspiracaoDiaria(false)" 
+                                style="background:#f3e8ff; border:1px solid #c084fc; color:#581c87; font-size:11px; font-weight:800; border-radius:8px; padding:4px 8px; cursor:pointer;" title="Voltar à inspiração do dia">
+                            📅 De Hoje
+                        </button>
+                    </div>
+                </div>
+                <p id="txt-inspiracao-diaria" style="font-size:12.5px; color:#4c1d95; margin:0; line-height:1.55; font-style:italic; font-weight:600;">
+                    A carregar reflexão da alma...
+                </p>
+            </div>
+
+            <!-- 3. COMO SE SENTE HOJE -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #ec4899; border-radius:20px; margin-top:14px; padding:16px 18px; box-shadow:0 4px 14px rgba(88,28,135,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div>
+                        <h4 style="font-size:14px; font-weight:900; color:#3b0764; margin:0;">Como se sente hoje</h4>
+                        <span style="font-size:11.5px; color:#6b21a8; font-weight:600; display:block; margin-top:2px;">Um espaço para demonstrar suas sensações e emoções.</span>
+                    </div>
+                    <button type="button" id="btn-toggle-sintomas-bloco" 
+                            style="padding:7px 16px; font-size:11.5px; border-radius:12px; font-weight:800; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(236,72,153,0.25);"
+                            onclick="window.alternarSecaoComoSeSenteHoje()">
+                        Responder
+                    </button>
+                </div>
+
+                <!-- CORPO RETRÁTIL EXPANSÍVEL -->
+                <div id="bloco-corpo-sintomas-retratil" class="oculto" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
+                    <!-- 1. Estado Emocional -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🌸 Estado Emocional:</span>
+                            <strong id="badge-sint-emocional" style="font-size:10.5px; color:#581c87; background:#f3e8ff; padding:2px 8px; border-radius:6px;">Estável / Serena 🧘‍♀️</strong>
+                        </div>
+                        <input type="range" id="range-sint-emocional" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('emocional')">
+                    </div>
+
+                    <!-- 2. Conforto Físico & Dores -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🌿 Conforto Físico & Dores:</span>
+                            <strong id="badge-sint-fisico" style="font-size:10.5px; color:#047857; background:#dcfce7; padding:2px 8px; border-radius:6px;">Corpo Leve / Sem Dores 🌿</strong>
+                        </div>
+                        <input type="range" id="range-sint-fisico" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#10b981; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('fisico')">
+                    </div>
+
+                    <!-- 3. Disposição & Energia -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">⚡ Disposição & Energia:</span>
+                            <strong id="badge-sint-energia" style="font-size:10.5px; color:#b45309; background:#fef3c7; padding:2px 8px; border-radius:6px;">Ritmo Moderado 🌿</strong>
+                        </div>
+                        <input type="range" id="range-sint-energia" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('energia')">
+                    </div>
+
+                    <!-- 4. Comunicação & Expressão -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">💬 Comunicação & Expressão:</span>
+                            <strong id="badge-sint-comunicacao" style="font-size:10.5px; color:#1d4ed8; background:#dbeafe; padding:2px 8px; border-radius:6px;">Conversa Normal 🗣️</strong>
+                        </div>
+                        <input type="range" id="range-sint-comunicacao" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#3b82f6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('comunicacao')">
+                    </div>
+
+                    <!-- 5. Sociabilidade & Companhia -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🛋️ Sociabilidade & Companhia:</span>
+                            <strong id="badge-sint-social" style="font-size:10.5px; color:#6b21a8; background:#ede9fe; padding:2px 8px; border-radius:6px;">Neutra / Equilibrada ☕</strong>
+                        </div>
+                        <input type="range" id="range-sint-social" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#8b5cf6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('social')">
+                    </div>
+
+                    <!-- 6. Paz Mental & Clareza -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🧠 Paz Mental & Clareza:</span>
+                            <strong id="badge-sint-pazmental" style="font-size:10.5px; color:#0e7490; background:#cffafe; padding:2px 8px; border-radius:6px;">Pensamentos Sob Controle 🧘‍♀️</strong>
+                        </div>
+                        <input type="range" id="range-sint-pazmental" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#06b6d4; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('pazmental')">
+                    </div>
+
+                    <!-- 7. Paciência & Tolerância (TPM) -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🕊️ Paciência & Tolerância:</span>
+                            <strong id="badge-sint-paciencia" style="font-size:10.5px; color:#9d174d; background:#fce7f3; padding:2px 8px; border-radius:6px;">Tolerância Normal 🌿</strong>
+                        </div>
+                        <input type="range" id="range-sint-paciencia" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#ec4899; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('paciencia')">
+                    </div>
+
+                    <!-- 8. Autoestima & Amor-Próprio -->
+                    <div style="padding:8px 0; margin-bottom:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764;">👑 Autoestima & Amor-Próprio:</span>
+                            <strong id="badge-sint-autoestima" style="font-size:10.5px; color:#701a75; background:#fae8ff; padding:2px 8px; border-radius:6px;">Confortável Consigo Mesma 💃</strong>
+                        </div>
+                        <input type="range" id="range-sint-autoestima" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#d946ef; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('autoestima')">
+                    </div>
+                    
+                    <div style="display:flex; justify-content:flex-end; align-items:center; border-top:1.5px solid #d8b4fe; padding-top:10px;">
+                        <button type="button" class="btn-principal" style="width:auto; padding:8px 24px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO COM GRÁFICO TEMPORAL DE SINTOMAS & HUMOR -->
+            <div id="container-historico-sintomas-ciclos" style="margin-top:14px; display:flex; flex-direction:column; gap:8px;"></div>
+
+            <!-- 4. O SANTUÁRIO (RITUAIS & EVOLUÇÃO) -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #9333ea; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.04);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar de Feminilidade" style="width:35px; height:35px; object-fit:contain;">
-                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Radar de Feminilidade & Bem-Estar</strong>
-                    </div>
-                    <button type="button" class="btn-principal" style="padding:6px 14px; font-size:11px; border-radius:10px; width:auto; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; border:none; font-weight:800; cursor:pointer;" onclick="window.salvarRadarFeminilidadeCompleto()">Guardar</button>
-                </div>
-
-                <p style="font-size:11.5px; color:#6b21a8; margin:0 0 12px 0; line-height:1.4;">Avalie o seu estado interior de hoje com sinceridade e delicadeza:</p>
-
-                <!-- Data da Última Conexão Íntima -->
-                <div style="margin-bottom:14px;">
-                    <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
-                    <input type="date" id="slider-data-relacao-fem" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:12px; border:1.5px solid #e9d5ff; font-size:12px; background:#faf5ff; color:#3b0764; outline:none; font-weight:600;">
-                </div>
-
-                <!-- Slider 1: Vitalidade & Brilho -->
-                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
-                            <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:18px; height:18px; object-fit:contain;">
-                            Vitalidade & Brilho:
-                        </span>
-                        <strong id="badge-vitalidade-valor" style="font-size:11.5px; color:#581c87; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Equilíbrio)</strong>
-                    </div>
-                    <input type="range" id="range-vitalidade-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('vitalidade')">
-                </div>
-
-                <!-- Slider 2: Paz Mental & Carga Emocional -->
-                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
-                            <img src="./icone/icone-estresse.png" alt="Paz Mental" style="width:18px; height:18px; object-fit:contain;">
-                            Paz Mental & Leveza:
-                        </span>
-                        <strong id="badge-pazmental-valor" style="font-size:11.5px; color:#7e22ce; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Serena)</strong>
-                    </div>
-                    <input type="range" id="range-pazmental-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#a855f7; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('paz_mental')">
-                </div>
-
-                <!-- Slider 3: Afeto & Libido / Conexão (com love.png) -->
-                <div style="background:#faf5ff; border:1px solid #ede9fe; padding:12px; border-radius:14px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:12px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
-                            <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Afeto" style="width:18px; height:18px; object-fit:contain;">
-                            Afeto & Magnetismo:
-                        </span>
-                        <strong id="badge-afeto-valor" style="font-size:11.5px; color:#9333ea; background:#ede9fe; padding:2px 8px; border-radius:8px;">Nota 5 (Conexão Serena)</strong>
-                    </div>
-                    <input type="range" id="range-afeto-fem" min="1" max="10" value="5" step="1" style="width:100%; accent-color:#9333ea; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('afeto_libido')">
-                </div>
-
-                <!-- Histórico Confidencial Retrátil do Radar -->
-                <div style="border-top:1px dashed #e9d5ff; padding-top:10px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-historico-radar-fem', 'seta-hist-radar-fem')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #ede9fe;">
-                        <span style="font-size:11.5px; font-weight:800; color:#581c87; display:inline-flex; align-items:center; gap:6px;">
-                            <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Love" style="width:15px; height:15px; object-fit:contain;">
-                            Histórico do Radar (<span id="contador-historico-radar-fem">0</span>)
-                        </span>
-                        <span id="seta-hist-radar-fem" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
-                    </div>
-                    <div id="bloco-historico-radar-fem" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
-                        <div id="lista-historico-radar-fem" style="display:flex; flex-direction:column; gap:6px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- QUADRO: O SANTUÁRIO -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #9333ea; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
                         <img src="./icone/icone-mulher.png" alt="Rituais" style="width:24px; height:24px; object-fit:contain;">
-                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">O Santuário (Rituais Diários)</strong>
+                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">O Santuário (Rituais & Evolução)</strong>
                     </div>
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#6b21a8; background:#f3e8ff; padding:3px 8px; border-radius:8px; border:1px solid #e9d5ff; display:inline-flex; align-items:center; gap:4px;">
+                        <span id="streak-rituais-mulher" style="font-size:11.5px; font-weight:800; color:#6b21a8; background:#f3e8ff; padding:3px 8px; border-radius:8px; border:1px solid #d8b4fe; display:inline-flex; align-items:center; gap:4px;">
                             <img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> 0 dias
                         </span>
-                        <button type="button" style="background:#faf5ff; border:1px solid #e9d5ff; color:#581c87; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">
+                        <button type="button" style="background:#faf5ff; border:1px solid #d8b4fe; color:#581c87; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="window.abrirModalEditarMetasMulher()" title="Editar metas">
                             <img src="./icone/icones-configuracao.png" alt="Configuração" style="width:16px; height:16px; object-fit:contain;">
                         </button>
                     </div>
                 </div>
 
-                <div style="background:#faf5ff; border:1px solid #ede9fe; border-radius:14px; padding:10px 12px; margin-bottom:12px;">
+                <!-- Grau de Florescimento & XP -->
+                <div id="painel-nivel-mulher" style="margin-bottom:14px; padding-bottom:12px; border-bottom:1.5px solid #d8b4fe;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span id="badge-titulo-rituais" style="font-size:11.5px; font-weight:800; color:#3b0764;">Desperte a Alma (0/6)</span>
-                        <strong id="badge-pct-rituais" style="font-size:11.5px; font-weight:800; color:#7c3aed;">0%</strong>
+                        <div>
+                            <span style="font-size:10px; font-weight:800; color:#6b21a8; text-transform:uppercase;">Grau de Constância:</span>
+                            <h4 id="lbl-nome-nivel-mulher" style="margin:2px 0 0 0; font-size:13.5px; color:#3b0764; font-weight:900;">Despertar Serena</h4>
+                        </div>
+                        <span id="lbl-xp-mulher" style="font-size:11px; font-weight:800; color:#7c3aed; background:#ede9fe; padding:2px 8px; border-radius:6px; border:1px solid #d8b4fe;">0 XP</span>
                     </div>
-                    <div style="background:#e9d5ff; border-radius:10px; height:7px; width:100%; overflow:hidden;">
-                        <div id="barra-progresso-rituais" style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:0%; border-radius:10px; transition:width 0.3s ease;"></div>
+                    <div style="background:#f3e8ff; border-radius:8px; height:6px; width:100%; overflow:hidden; margin-bottom:4px;">
+                        <div id="barra-xp-mulher" style="background:linear-gradient(90deg, #a855f7, #6b21a8); height:100%; width:0%; transition:width 0.4s ease;"></div>
+                    </div>
+                    <span id="lbl-info-prox-nivel-mulher" style="font-size:10px; color:#581c87; display:block; text-align:right; font-weight:600;">Faltam 0 XP para o próximo nível</span>
+                </div>
+
+                <!-- Métricas Semanal e Mensal Integradas -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; padding-bottom:12px; border-bottom:1.5px solid #d8b4fe;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; display:block; margin-bottom:4px;">🎯 Meta Semanal</span>
+                        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+                            <strong id="lbl-meta-sem-mulher" style="font-size:12.5px; color:#3b0764;">0 / 25</strong>
+                            <span id="lbl-meta-sem-mulher-pct" style="font-size:11px; font-weight:800; color:#7c3aed;">0%</span>
+                        </div>
+                        <div style="background:#f3e8ff; border-radius:6px; height:5px; width:100%; overflow:hidden;">
+                            <div id="barra-meta-sem-mulher" style="background:#7c3aed; height:100%; width:0%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#059669; text-transform:uppercase; display:block; margin-bottom:4px;">📊 Desempenho Mês</span>
+                        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                            <strong id="lbl-stats-rituais-mes" style="font-size:12.5px; color:#3b0764;">0 rituais</strong>
+                            <span id="lbl-stats-perfeitos-mes" style="font-size:10px; font-weight:800; color:#059669; background:#ecfdf5; padding:2px 6px; border-radius:6px; border:1px solid #a7f3d0;">0 dias 100%</span>
+                        </div>
+                        <span id="lbl-stats-taxa-mes-mulher" style="font-size:10px; color:#047857; display:block; margin-top:4px; font-weight:600;">Taxa: 0% de adesão</span>
                     </div>
                 </div>
 
-                <div id="container-grid-metas-mulher" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+                <!-- 6 METAS DE HOJE -->
+                <div id="container-grid-metas-mulher" style="display:flex; flex-direction:column; gap:2px;"></div>
 
-                <div style="margin-top:14px; border-top:1px dashed #ede9fe; padding-top:10px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-historico-rituais', 'seta-hist-rituais')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #e9d5ff;">
+                <!-- Insígnias & Conquistas Retrátil -->
+                <div style="margin-top:14px;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-conquistas-mulher', 'seta-conquistas-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 2px; border-top:1.5px solid #d8b4fe;">
+                        <span style="font-size:11.5px; font-weight:800; color:#581c87;">🌸 Insígnias de Florescimento (<span id="contador-conquistas-mulher">0/6</span>)</span>
+                        <span id="seta-conquistas-mulher" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
+                    </div>
+                    <div id="bloco-conquistas-mulher" class="oculto" style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px;"></div>
+                </div>
+
+                <!-- Histórico Retrátil dos Rituais -->
+                <div style="margin-top:6px;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-historico-rituais', 'seta-hist-rituais')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 2px; border-top:1.5px solid #d8b4fe;">
                         <span style="font-size:11.5px; font-weight:800; color:#581c87;">Histórico dos Rituais (<span id="contador-historico-rituais">0</span>)</span>
                         <span id="seta-hist-rituais" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
                     </div>
@@ -373,43 +881,175 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </div>
             </div>
 
-            <!-- QUADRO: CURADORIA DE FILMES & SÉRIES DINÂMICA (ROTAÇÃO DIÁRIA + DUAS GAVETAS) -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-left:4px solid #6b21a8; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.05);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <!-- 5. RADAR DE FEMINILIDADE -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #7c3aed; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Radar de Feminilidade" style="width:32px; height:32px; object-fit:contain;">
+                        <div>
+                            <strong style="font-size:13.5px; color:#3b0764; font-weight:800; display:block;">Radar de Feminilidade</strong>
+                            <span style="font-size:11px; color:#6b21a8; font-weight:600;">Um espaço para demonstrar suas sensações e emoções.</span>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-toggle-radar-bloco" 
+                            style="padding:7px 16px; font-size:11.5px; border-radius:12px; font-weight:800; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(124,58,237,0.25);"
+                            onclick="window.alternarSecaoRadarFeminilidade()">
+                        Responder
+                    </button>
+                </div>
+
+                <!-- CORPO RETRÁTIL DO RADAR DE FEMINILIDADE -->
+                <div id="bloco-corpo-radar-retratil" class="oculto" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
+                        <input type="date" id="slider-data-relacao-fem" style="width:100%; box-sizing:border-box; padding:8px 12px; border-radius:12px; border:1px solid #d8b4fe; font-size:12px; background:#faf5ff; color:#3b0764; outline:none; font-weight:600;">
+                    </div>
+
+                    <!-- Slider 1: Vitalidade & Brilho -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                                <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:16px; height:16px; object-fit:contain;">
+                                Vitalidade & Brilho:
+                            </span>
+                            <strong id="badge-vitalidade-valor" style="font-size:10.5px; color:#581c87; background:#ede9fe; padding:2px 8px; border-radius:6px;">Equilíbrio / Estável</strong>
+                        </div>
+                        <input type="range" id="range-vitalidade-fem" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('vitalidade')">
+                    </div>
+
+                    <!-- Slider 2: Paz Mental & Carga Emocional -->
+                    <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                                <img src="./icone/icone-estresse.png" alt="Paz Mental" style="width:16px; height:16px; object-fit:contain;">
+                                Paz Mental & Leveza:
+                            </span>
+                            <strong id="badge-pazmental-valor" style="font-size:10.5px; color:#7e22ce; background:#ede9fe; padding:2px 8px; border-radius:6px;">Serena / Em Paz</strong>
+                        </div>
+                        <input type="range" id="range-pazmental-fem" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#a855f7; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('paz_mental')">
+                    </div>
+
+                    <!-- Slider 3: Afeto & Libido / Conexão -->
+                    <div style="padding:8px 0; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#3b0764; display:flex; align-items:center; gap:6px;">
+                                <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Afeto" style="width:16px; height:16px; object-fit:contain;">
+                                Afeto & Magnetismo:
+                            </span>
+                            <strong id="badge-afeto-valor" style="font-size:10.5px; color:#9333ea; background:#ede9fe; padding:2px 8px; border-radius:6px;">Conexão Serena</strong>
+                        </div>
+                        <input type="range" id="range-afeto-fem" min="1" max="5" value="3" step="1" style="width:100%; accent-color:#9333ea; cursor:pointer;" oninput="window.atualizarRotuloSliderFeminilidade('afeto_libido')">
+                    </div>
+
+                    <div style="text-align:right; margin-bottom:12px;">
+                        <button type="button" class="btn-principal" style="padding:8px 20px; font-size:12px; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; border:none; font-weight:800; cursor:pointer;" onclick="window.salvarRadarFeminilidadeCompleto()">Registar</button>
+                    </div>
+
+                    <!-- DIAGNÓSTICO E CURVAS TEMPORAIS (SVG) -->
+                    <div style="border-top:1.5px solid #d8b4fe; padding-top:10px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:11px; font-weight:800; color:#581c87;">Curva Biológica & Emocional (Últimos 7):</span>
+                            <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
+                                <span style="color:#7c3aed;">● Vitalidade</span>
+                                <span style="color:#e11d48;">● Sobrecarga/TPM</span>
+                            </div>
+                        </div>
+                        <div id="container-grafico-svg-mulher" style="width:100%; height:80px; display:flex; align-items:center; justify-content:center;"></div>
+                    </div>
+
+                    <!-- Comparativo de Semanas Integrado -->
+                    <div id="bloco-comparativo-semanas-mulher" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;"></div>
+
+                    <!-- Insight de Tendências -->
+                    <div id="texto-insight-tendencia-mulher" style="font-size:11.5px; color:#3b0764; line-height:1.45; font-weight:600; padding:8px 10px; border-left:3px solid #7c3aed; margin-bottom:12px;">
+                        Registe as suas avaliações diárias para identificar tendências biológicas e padrões emocionais.
+                    </div>
+
+                    <!-- Histórico Confidencial Retrátil do Radar -->
+                    <div style="border-top:1.5px solid #d8b4fe; padding-top:8px;">
+                        <div onclick="window.alternarRetratilGenerico('bloco-historico-radar-fem', 'seta-hist-radar-fem')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:6px 2px;">
+                            <span style="font-size:11.5px; font-weight:800; color:#581c87; display:inline-flex; align-items:center; gap:6px;">
+                                <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-coracao.png';" alt="Love" style="width:14px; height:14px; object-fit:contain;">
+                                Histórico do Radar (<span id="contador-historico-radar-fem">0</span>)
+                            </span>
+                            <span id="seta-hist-radar-fem" style="font-size:11px; color:#7c3aed; transition:transform 0.2s ease;">▼</span>
+                        </div>
+                        <div id="bloco-historico-radar-fem" class="oculto" style="margin-top:6px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
+                            <div id="lista-historico-radar-fem" style="display:flex; flex-direction:column; gap:6px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. CURADORIA DE FILMES & SÉRIES -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #6b21a8; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <img src="./icone/icone-filme.png" alt="Filmes" style="width:24px; height:24px; object-fit:contain;">
-                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Curadoria: Filmes & Séries</strong>
+                        <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Curadoria de Obras</strong>
                     </div>
-                    <div style="display:flex; gap:4px; background:#f3e8ff; padding:3px; border-radius:10px; border:1px solid #e9d5ff;">
-                        <button type="button" id="btn-aba-filmes-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#7c3aed; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes</button>
-                        <button type="button" id="btn-aba-series-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#581c87;" onclick="window.alternarAbaMidiaMulher('series')">Séries</button>
+                    <div style="display:flex; gap:4px; background:#f3e8ff; padding:2px; border-radius:10px;">
+                        <button type="button" id="btn-aba-filmes-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#7c3aed; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes (${listaFilmes || 200})</button>
+                        <button type="button" id="btn-aba-series-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#581c87;" onclick="window.alternarAbaMidiaMulher('series')">Séries (${listaSeries || 250})</button>
                     </div>
                 </div>
 
-                <div id="card-carrossel-midia-mulher" style="background:linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border:1px solid #e9d5ff; border-radius:16px; padding:14px; position:relative; min-height:120px; display:flex; flex-direction:column; justify-content:space-between;">
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <span id="midia-mulher-categoria" style="font-size:10px; font-weight:800; background:#ede9fe; color:#581c87; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
-                            <span id="midia-mulher-tempo" style="font-size:11px; font-weight:700; color:#7e22ce;">-</span>
+                <div id="card-carrossel-midia-mulher" style="border-radius:16px; overflow:hidden;">
+                    <div style="position:relative; width:100%; height:220px; background:#2e1065; overflow:hidden; display:flex; align-items:center; justify-content:center; border-radius:16px;">
+                        <img id="midia-mulher-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80" alt="Capa da Obra" 
+                             style="width:100%; height:100%; object-fit:cover; display:block; transition:opacity 0.3s ease;">
+                        
+                        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(46,16,101,0.1) 0%, rgba(46,16,101,0.92) 100%); pointer-events:none;"></div>
+                        
+                        <div style="position:absolute; bottom:12px; left:14px; right:14px; z-index:2;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <span id="midia-mulher-categoria" style="font-size:9.5px; font-weight:800; background:#f3e8ff; color:#581c87; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
+                                <span id="midia-mulher-tempo" style="font-size:11px; font-weight:700; color:#faf5ff;">-</span>
+                            </div>
+                            <h3 id="midia-mulher-titulo" style="margin:0; font-size:17.5px; color:#ffffff; font-weight:900; line-height:1.2;">Título</h3>
                         </div>
-                        <h3 id="midia-mulher-titulo" style="margin:6px 0 4px 0; font-size:16px; color:#3b0764; font-weight:900;">Título</h3>
-                        <p id="midia-mulher-desc" style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">Descrição da obra e reflexão.</p>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px dashed #d8b4fe; padding-top:10px; flex-wrap:wrap; gap:8px;">
-                        <div style="display:flex; gap:6px;">
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #e9d5ff; color:#6b21a8;" onclick="window.navegarCarrosselMidiaMulher(-1)">◄</button>
-                            <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #e9d5ff; color:#6b21a8;" onclick="window.navegarCarrosselMidiaMulher(1)">►</button>
+                    <div style="padding:12px 2px 2px 2px;">
+                        <div id="box-momento-mulher" style="border-left:3px solid #a855f7; padding-left:8px; margin-bottom:10px;">
+                            <span style="font-size:9.5px; font-weight:800; color:#7c3aed; text-transform:uppercase; display:block;">Recomendação do Acervo</span>
+                            <p id="midia-mulher-momento" style="font-size:11.5px; color:#3b0764; margin:1px 0 0 0; line-height:1.4; font-weight:600;"></p>
                         </div>
-                        <div style="display:flex; gap:6px; align-items:center;">
-                            <!-- Botão Quero Assistir -->
-                            <button type="button" id="btn-quero-ver-mulher" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#ede9fe; color:#581c87; border:1px solid #c084fc; cursor:pointer;" onclick="window.alternarQueroAssistirMulher()">
-                                📌 Quero Assistir
-                            </button>
-                            <!-- Botão Já Assisti -->
-                            <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#7c3aed; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidiaMulher()">
-                                <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
-                            </button>
+
+                        <p id="midia-mulher-desc" style="font-size:12px; color:#4c1d95; margin:0 0 10px 0; line-height:1.45;">Carregando sinopse...</p>
+
+                        <!-- PAINEL ONDE ASSISTIR COM LOGOS E LINKS DIRETOS -->
+                        <div id="container-onde-assistir-mulher" style="background:#faf5ff; border:1px solid #d8b4fe; padding:10px 12px; border-radius:12px; margin-bottom:12px; display:none;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span style="font-size:10px; font-weight:800; color:#6b21a8; text-transform:uppercase;">📺 Onde Assistir (Toque para Abrir):</span>
+                                <a id="midia-mulher-link-justwatch" href="#" target="_blank" rel="noopener noreferrer" style="font-size:10px; font-weight:700; color:#7c3aed; text-decoration:none;">Mais opções ↗</a>
+                            </div>
+                            <div id="provedores-streaming-mulher" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;"></div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                            <div id="midia-mulher-generos" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+                            <div id="midia-mulher-posicao-contador" style="font-size:10px; font-weight:800; color:#6b21a8; background:#f3e8ff; padding:2px 8px; border-radius:6px; border:1px solid #d8b4fe;">1 / 200</div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1.5px solid #d8b4fe; padding-top:10px; flex-wrap:wrap; gap:8px;">
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #d8b4fe; color:#6b21a8; cursor:pointer;" onclick="window.navegarCarrosselMidiaMulher(-1)" title="Obra Anterior">◄</button>
+                                <button type="button" class="btn-secundario" style="padding:0 12px; height:34px; border-radius:10px; font-size:11.5px; font-weight:800; background:#f3e8ff; color:#581c87; border:1px solid #d8b4fe; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.sortearMidiaMulherAleatoria()" title="Sortear Aleatório">
+                                    <span>🔀</span>
+                                    <span>Aleatório</span>
+                                </button>
+                                <button type="button" class="btn-secundario" style="width:34px; height:34px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; background:#fff; border:1px solid #d8b4fe; color:#6b21a8; cursor:pointer;" onclick="window.navegarCarrosselMidiaMulher(1)" title="Próxima Obra">►</button>
+                            </div>
+                            
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" id="btn-quero-ver-mulher" style="padding:7px 11px; font-size:11px; border-radius:10px; font-weight:800; background:#ede9fe; color:#581c87; border:1px solid #c084fc; cursor:pointer;" onclick="window.alternarQueroAssistirMulher()">
+                                    📌 Quero Assistir
+                                </button>
+                                <button type="button" id="btn-marcar-assistido-mulher" style="padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:800; background:#7c3aed; color:#fff; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="window.abrirModalAvaliacaoMidiaMulher()">
+                                    <img src="./icone/icone-check.png" alt="Assistido" style="width:16px; height:16px; object-fit:contain;"> Já Assisti
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -423,21 +1063,21 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(4)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                         <button type="button" onclick="window.confirmarAvaliacaoMidiaMulher(5)" style="font-size:22px; background:none; border:none; cursor:pointer; color:#f59e0b;">★</button>
                     </div>
-                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; border-radius:8px; color:#581c87;" onclick="document.getElementById('caixa-avaliacao-midia-mulher').classList.add('oculto')">Cancelar</button>
+                    <button type="button" class="btn-secundario" style="padding:4px 10px; font-size:10.5px; border-radius:8px; color:#581c87; border:1px solid #d8b4fe;" onclick="document.getElementById('caixa-avaliacao-midia-mulher').classList.add('oculto')">Cancelar</button>
                 </div>
 
                 <!-- GAVETA 1: QUERO ASSISTIR (RETRÁTIL) -->
                 <div style="margin-top:14px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-quero-ver-mulher', 'seta-quero-ver-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #e9d5ff;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-quero-ver-mulher', 'seta-quero-ver-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 2px; border-top:1.5px solid #d8b4fe;">
                         <span style="font-size:11.5px; font-weight:800; color:#3b0764;">📌 Quero Assistir (<span id="contador-quero-ver-mulher">0</span>)</span>
                         <span id="seta-quero-ver-mulher" style="font-size:11px; color:#6b21a8; transition:transform 0.2s ease;">▼</span>
                     </div>
                     <div id="bloco-quero-ver-mulher" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
                 </div>
 
-                <!-- GAVETA 2: OBRAS ASSISTIDAS E AVALIADAS (RETRÁTIL) -->
-                <div style="margin-top:8px;">
-                    <div onclick="window.alternarRetratilGenerico('bloco-assistidos-mulher', 'seta-assistidos-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#faf5ff; padding:8px 12px; border-radius:10px; border:1px solid #e9d5ff;">
+                <!-- GAVETA 2: OBRAS AVALIADAS (RETRÁTIL) -->
+                <div style="margin-top:6px;">
+                    <div onclick="window.alternarRetratilGenerico('bloco-assistidos-mulher', 'seta-assistidos-mulher')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 2px; border-top:1.5px solid #d8b4fe;">
                         <span style="font-size:11.5px; font-weight:800; color:#3b0764;">⭐ Obras Avaliadas (<span id="contador-assistidos-mulher">0</span>) • Mais Bem Avaliadas</span>
                         <span id="seta-assistidos-mulher" style="font-size:11px; color:#6b21a8; transition:transform 0.2s ease;">▼</span>
                     </div>
@@ -445,38 +1085,52 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 </div>
             </div>
 
-            <!-- COMO SE SENTE HOJE -->
-            <div class="cartao-geral" style="background:#ffffff; border:1px solid #e9d5ff; border-radius:20px; margin-top:14px; padding:14px 16px; box-shadow:0 4px 12px rgba(88,28,135,0.04);">
-                <h4 style="font-size:13.5px; font-weight:800; color:#3b0764; margin:0 0 10px 0;">Como se sente hoje? (Pode marcar vários)</h4>
-                
-                <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:6px;">Humor / Ânimo</label>
-                <div id="grupo-tags-humor" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-                    <button type="button" class="tag-opcao-humor" data-valor="calma" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Calma / Leve</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="energica" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Com Energia</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="sensivel" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Sensível / Doce</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="irritada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Irritada / Intensa</button>
-                    <button type="button" class="tag-opcao-humor" data-valor="cansada" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cansada / Fadigada</button>
+            <!-- 7. INDICAÇÕES DE PLAYLIST E YOUTUBE -->
+            <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #10b981; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(16,185,129,0.05);">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                    <span style="font-size:18px;">🎧</span>
+                    <strong style="font-size:13.5px; color:#065f46; font-weight:800;">Refúgio Sonoro & Bem-Estar</strong>
                 </div>
 
-                <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:6px;">Sensação Física / Sintomas</label>
-                <div id="grupo-tags-sintoma" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
-                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_leve" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Leve</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="colica_forte" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Cólica Forte</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="dor_cabeca" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Dor de Cabeça</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="seios_sensiveis" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Seios Sensíveis</button>
-                    <button type="button" class="tag-opcao-sintoma" data-valor="inchaco" onclick="window.toggleTagSelecao(this)" style="padding:6px 12px; border-radius:12px; border:1.5px solid #e9d5ff; background:#faf5ff; color:#3b0764; font-size:11.5px; font-weight:700; cursor:pointer;">Inchaço</button>
+                <span style="font-size:10.5px; font-weight:800; color:#059669; text-transform:uppercase; display:block; margin-bottom:6px; letter-spacing:0.5px;">🎵 Playlists de Equilíbrio (Spotify)</span>
+                <div style="display:flex; flex-direction:column; margin-bottom:14px;">
+                    ${window.CatalogoPlaylistsSpotifyMulher.map((p, idx) => `
+                        <div style="padding:9px 0; border-bottom:${idx === window.CatalogoPlaylistsSpotifyMulher.length - 1 ? 'none' : '1px solid #d8b4fe'}; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                            <div style="min-width:0;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span style="font-size:13px;">${p.icone}</span>
+                                    <strong style="font-size:12px; color:#064e3b;">${p.titulo}</strong>
+                                    <span style="font-size:9.5px; font-weight:800; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:6px; border:1px solid #bbf7d0;">${p.tag}</span>
+                                </div>
+                                <span style="font-size:11px; color:#047857; display:block; margin-top:1px;">${p.subtitulo}</span>
+                            </div>
+                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" style="background:#10b981; color:#ffffff; text-decoration:none; padding:5px 11px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                                Ouvir ↗
+                            </a>
+                        </div>
+                    `).join('')}
                 </div>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #ede9fe; padding-top:10px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#7c3aed; font-weight:800; cursor:pointer;">
-                        <input type="checkbox" id="check-menstruando-hoje" style="width:18px; height:18px; accent-color:#7c3aed; border-radius:6px;">
-                        Menstruando hoje
-                    </label>
-                    <button type="button" class="btn-principal" style="width:auto; padding:8px 16px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
+
+                <span style="font-size:10.5px; font-weight:800; color:#7c3aed; text-transform:uppercase; display:block; margin-bottom:6px; letter-spacing:0.5px; border-top:1.5px solid #d8b4fe; padding-top:10px;">📺 Canais de Saúde & Inspiração (YouTube)</span>
+                <div style="display:flex; flex-direction:column;">
+                    ${window.CatalogoCanaisYoutubeMulher.map((c, idx) => `
+                        <div style="padding:9px 0; border-bottom:${idx === window.CatalogoCanaisYoutubeMulher.length - 1 ? 'none' : '1px solid #d8b4fe'}; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                            <div style="min-width:0;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span style="font-size:13px;">${c.icone}</span>
+                                    <strong style="font-size:12px; color:#3b0764;">${c.titulo}</strong>
+                                </div>
+                                <span style="font-size:10px; font-weight:700; color:#7c3aed; display:block; margin-top:1px;">${c.categoria}</span>
+                                <span style="font-size:11px; color:#581c87; display:block; margin-top:1px;">${c.desc}</span>
+                            </div>
+                            <a href="${c.link}" target="_blank" rel="noopener noreferrer" style="background:#7c3aed; color:#ffffff; text-decoration:none; padding:5px 11px; border-radius:8px; font-size:11px; font-weight:800; flex-shrink:0;">
+                                Acessar ↗
+                            </a>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
 
-            <div id="container-historico-sintomas-ciclos" style="margin-top:14px; display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
         <!-- ================================================================= -->
@@ -504,7 +1158,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                 <div style="background:#f5eedc; border:1px solid #d8c6aa; border-radius:12px; padding:10px 12px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <span style="font-size:11px; font-weight:800; color:#5c4426; text-transform:uppercase; letter-spacing:0.5px;">Sensação Física Hoje:</span>
-                        <strong id="badge-termo-fisico-diario" style="font-size:12px; font-weight:800; color:#7c3aed; background:#ede3ce; padding:2px 8px; border-radius:8px;">Nota 7 (Mulherão 💃)</strong>
+                        <strong id="badge-termo-fisico-diario" style="font-size:12px; font-weight:800; color:#7c3aed; background:#ede3ce; padding:2px 8px; border-radius:8px;">Mulherão 💃</strong>
                     </div>
                     <input type="range" id="range-termo-fisico-diario" min="0" max="10" value="7" step="1" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloTermoFisicoDiario(this.value)">
                     <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#78593a; margin-top:3px;">
@@ -557,7 +1211,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
             <div style="margin-top:22px;">
                 <h4 style="font-size:13.5px; font-weight:800; color:#3b0764; margin:0 0 10px 4px; text-transform:uppercase; letter-spacing:0.5px;">Capítulos Gravados Anteriores</h4>
                 <div id="container-lista-diario-mulher" style="display:flex; flex-direction:column; gap:10px;">
-                    <span style="font-size:11px; color:#6b21a8;">A carregar diário...</span>
+                    <span style="font-size:11.5px; color:#6b21a8;">A carregar diário...</span>
                 </div>
             </div>
         </div>
@@ -596,38 +1250,85 @@ window.renderizarEsqueletoEspacoMulher = function() {
         </div>
 
         <div id="modal-registro-ciclo-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000050; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:24px; border-radius:28px; border:1.5px solid #e9d5ff; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #ede9fe; padding-bottom:8px;">
+            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:24px; border-radius:28px; border:1.5px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1.5px solid #d8b4fe; padding-bottom:8px;">
                     <h3 style="margin:0; font-size:17px; font-weight:900; color:#3b0764;">Registar Ciclo Menstrual</h3>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #e9d5ff; background:#faf5ff; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #d8b4fe; background:#faf5ff; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
                 </div>
-                <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="flex-direction:column; gap:12px; display:flex;">
                     <div>
                         <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Primeiro dia do ciclo</label>
-                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #e9d5ff; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
                     </div>
                     <div>
                         <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Duração do sangramento (dias)</label>
-                        <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #e9d5ff; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:20px;">
-                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #e9d5ff; color:#581c87; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
+                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #d8b4fe; color:#581c87; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
                     <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarCicloHistorico()">Confirmar</button>
                 </div>
             </div>
         </div>
 
+
+        <!-- MODAL COMPLETO: ORIENTAÇÕES E DICAS PARA LIDAR COM A FASE -->
+        <div id="modal-orientacoes-estagio-fase" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.65); z-index:1000100; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:14px; box-sizing:border-box;">
+            <div style="background:#ffffff; width:100%; max-width:440px; max-height:88vh; padding:20px; border-radius:26px; border:1.8px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.28); display:flex; flex-direction:column; position:relative; overflow:hidden; text-align:left;">
+                
+                <!-- Cabeçalho do Modal -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1.5px solid #d8b4fe; padding-bottom:10px;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span id="modal-fase-emoji" style="font-size:20px;">🌸</span>
+                            <h3 id="modal-fase-titulo" style="margin:0; font-size:16.5px; font-weight:900; color:#3b0764; line-height:1.2;">Fase do Ciclo</h3>
+                        </div>
+                        <span id="modal-fase-subtitulo" style="font-size:11px; color:#7c3aed; font-weight:700; display:block; margin-top:2px;">Estação & Dias de Referência</span>
+                    </div>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #d8b4fe; background:#faf5ff; font-weight:800; cursor:pointer;" onclick="window.fecharModalOrientacoesFase()">✕</button>
+                </div>
+
+                <!-- Seletor Rápido das 4 Fases (Stepper Compacto) -->
+                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; margin-bottom:10px; background:#faf5ff; padding:3px; border-radius:12px; border:1px solid #e9d5ff;">
+                    <button type="button" id="btn-modal-fase-1" onclick="window.trocarFaseModalOrientacoes(1)" style="border:none; padding:6px 2px; font-size:10.5px; font-weight:800; border-radius:8px; cursor:pointer; background:#ffffff; color:#3b0764; box-shadow:0 1px 3px rgba(0,0,0,0.06);">1. Menstrual</button>
+                    <button type="button" id="btn-modal-fase-2" onclick="window.trocarFaseModalOrientacoes(2)" style="border:none; padding:6px 2px; font-size:10.5px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#6b21a8;">2. Folicular</button>
+                    <button type="button" id="btn-modal-fase-3" onclick="window.trocarFaseModalOrientacoes(3)" style="border:none; padding:6px 2px; font-size:10.5px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#6b21a8;">3. Ovulatória</button>
+                    <button type="button" id="btn-modal-fase-4" onclick="window.trocarFaseModalOrientacoes(4)" style="border:none; padding:6px 2px; font-size:10.5px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#6b21a8;">4. Lútea</button>
+                </div>
+
+                <!-- Filtro de Tópicos (Pílulas Rápidas) -->
+                <div style="display:flex; gap:5px; margin-bottom:12px; overflow-x:auto; padding-bottom:2px;">
+                    <button type="button" id="btn-modal-topico-geral" onclick="window.trocarTopicoModalOrientacoes('geral')" style="padding:5px 10px; border-radius:20px; font-size:11px; font-weight:800; border:none; cursor:pointer; background:#7c3aed; color:#fff; white-space:nowrap;">✨ Visão Geral</button>
+                    <button type="button" id="btn-modal-topico-fertilidade" onclick="window.trocarTopicoModalOrientacoes('fertilidade')" style="padding:5px 10px; border-radius:20px; font-size:11px; font-weight:800; border:1px solid #d8b4fe; cursor:pointer; background:#ffffff; color:#581c87; white-space:nowrap;">🍼 Fertilidade</button>
+                    <button type="button" id="btn-modal-topico-libido" onclick="window.trocarTopicoModalOrientacoes('libido')" style="padding:5px 10px; border-radius:20px; font-size:11px; font-weight:800; border:1px solid #d8b4fe; cursor:pointer; background:#ffffff; color:#581c87; white-space:nowrap;">🔥 Libido</button>
+                    <button type="button" id="btn-modal-topico-energia" onclick="window.trocarTopicoModalOrientacoes('energia')" style="padding:5px 10px; border-radius:20px; font-size:11px; font-weight:800; border:1px solid #d8b4fe; cursor:pointer; background:#ffffff; color:#581c87; white-space:nowrap;">⚡ Energia</button>
+                </div>
+
+                <!-- Corpo com Rolagem Suave -->
+                <div id="modal-conteudo-orientacoes-corpo" style="flex:1; overflow-y:auto; padding-right:4px;">
+                    <!-- Preenchido dinamicamente via JavaScript -->
+                </div>
+
+                <!-- Rodapé com Botão Fechar -->
+                <div style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:10.5px; color:#7e22ce; font-weight:600;">Autoconhecimento Biológico & Bem-Estar</span>
+                    <button type="button" class="btn-principal" style="padding:8px 18px; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.fecharModalOrientacoesFase()">Entendido</button>
+                </div>
+            </div>
+        </div>
+
+
         <div id="modal-config-metas-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000060; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:390px; max-height:86vh; overflow-y:auto; padding:24px; border-radius:28px; border:1.5px solid #e9d5ff; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #ede9fe; padding-bottom:8px;">
+            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:390px; max-height:86vh; overflow-y:auto; padding:24px; border-radius:28px; border:1.5px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1.5px solid #d8b4fe; padding-bottom:8px;">
                     <h3 style="margin:0; font-size:16.5px; font-weight:900; color:#3b0764;">Personalizar 6 Metas</h3>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #e9d5ff; background:#faf5ff; font-weight:800;" onclick="window.fecharModalEditarMetasMulher()">✕</button>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #d8b4fe; background:#faf5ff; font-weight:800;" onclick="window.fecharModalEditarMetasMulher()">✕</button>
                 </div>
                 <p style="font-size:11.5px; color:#6b21a8; margin:0 0 14px 0; line-height:1.4;">Defina os seus rituais inegociáveis de autocuidado diário:</p>
                 <div id="container-inputs-editar-metas-mulher" style="display:flex; flex-direction:column; gap:8px;"></div>
                 <div style="display:flex; gap:8px; margin-top:16px;">
-                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #e9d5ff; color:#581c87; font-weight:700;" onclick="window.fecharModalEditarMetasMulher()">Cancelar</button>
+                    <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #d8b4fe; color:#581c87; font-weight:700;" onclick="window.fecharModalEditarMetasMulher()">Cancelar</button>
                     <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarNovasMetasConfiguradasMulher()">Guardar</button>
                 </div>
             </div>
@@ -641,9 +1342,9 @@ window.renderizarEsqueletoEspacoMulher = function() {
 
 window.obterDescricaoTermoFisicoDiario = function(valor) {
     const v = parseInt(valor, 10);
-    if (v <= 3) return `Nota ${v} (Borocochô 🥀)`;
-    if (v <= 7) return `Nota ${v} (Mulherão 💃)`;
-    return `Nota ${v} (Deusa ✨)`;
+    if (v <= 3) return `Borocochô 🥀`;
+    if (v <= 7) return `Mulherão 💃`;
+    return `Deusa ✨`;
 };
 
 window.atualizarRotuloTermoFisicoDiario = function(val) {
@@ -672,29 +1373,42 @@ window.selecionarHumorDiario = function(btn) {
 };
 
 // =========================================================================
-// 3. RADAR DE FEMINILIDADE & BEM-ESTAR (SLIDERS 1 A 10 E HISTÓRICO)
+// 3. RADAR DE FEMINILIDADE (5 NÍVEIS, SEM NOTA, CORPO RETRÁTIL)
 // =========================================================================
+
+window.alternarSecaoRadarFeminilidade = function() {
+    const bloco = document.getElementById('bloco-corpo-radar-retratil');
+    const btn = document.getElementById('btn-toggle-radar-bloco');
+    if (!bloco) return;
+
+    bloco.classList.toggle('oculto');
+    if (btn) {
+        btn.textContent = bloco.classList.contains('oculto') ? 'Responder' : 'Recolher';
+    }
+};
 
 window.obterDescricaoNotaFeminilidade = function(tipo, valor) {
     const v = parseInt(valor, 10);
     if (tipo === 'vitalidade') {
-        if (v <= 2) return `Nota ${v} (Exaustão / Bateria Baixa)`;
-        if (v <= 4) return `Nota ${v} (Pedindo Repouso)`;
-        if (v <= 6) return `Nota ${v} (Equilíbrio / Estável)`;
-        if (v <= 8) return `Nota ${v} (Vitalidade Ativa)`;
-        return `Nota ${v} (Plenitude & Radiante)`;
+        if (v === 1) return `Exaustão / Bateria Baixa`;
+        if (v === 2) return `Pedindo Repouso`;
+        if (v === 3) return `Equilíbrio / Estável`;
+        if (v === 4) return `Vitalidade Ativa`;
+        return `Plenitude & Radiante`;
     } else if (tipo === 'paz_mental') {
-        if (v <= 2) return `Nota ${v} (Serenidade Total)`;
-        if (v <= 4) return `Nota ${v} (Leveza / Em Paz)`;
-        if (v <= 6) return `Nota ${v} (Emoções Oscilantes)`;
-        if (v <= 8) return `Nota ${v} (Mente Inquieta / Tensa)`;
-        return `Nota ${v} (Sobrecarga / Pedindo Pausa)`;
+        if (v === 1) return `Serenidade Total`;
+        if (v === 2) return `Serena / Em Paz`;
+        if (v === 3) return `Emoções Oscilantes`;
+        if (v === 4) return `Mente Inquieta / Tensa`;
+        return `Sobrecarga / Pedindo Pausa`;
     } else if (tipo === 'afeto_libido') {
-        if (v <= 3) return `Nota ${v} (Recolhimento / Em Si)`;
-        if (v <= 7) return `Nota ${v} (Conexão Serena)`;
-        return `Nota ${v} (Desejo Vivo & Magnetismo)`;
+        if (v === 1) return `Recolhimento / Em Si`;
+        if (v === 2) return `Acolhimento Suave`;
+        if (v === 3) return `Conexão Serena`;
+        if (v === 4) return `Magnetismo Ativo`;
+        return `Desejo Vivo & Magnetismo`;
     }
-    return `Nota ${v}`;
+    return `Nível ${v}`;
 };
 
 window.atualizarRotuloSliderFeminilidade = function(tipo) {
@@ -717,9 +1431,9 @@ window.atualizarRotuloSliderFeminilidade = function(tipo) {
 
 window.salvarRadarFeminilidadeCompleto = async function() {
     const dtRelacao = document.getElementById('slider-data-relacao-fem')?.value || null;
-    const vVit = parseInt(document.getElementById('range-vitalidade-fem')?.value || '5', 10);
-    const vPaz = parseInt(document.getElementById('range-pazmental-fem')?.value || '5', 10);
-    const vAfeto = parseInt(document.getElementById('range-afeto-fem')?.value || '5', 10);
+    const vVit = parseInt(document.getElementById('range-vitalidade-fem')?.value || '3', 10);
+    const vPaz = parseInt(document.getElementById('range-pazmental-fem')?.value || '3', 10);
+    const vAfeto = parseInt(document.getElementById('range-afeto-fem')?.value || '3', 10);
     const hojeStr = new Date().toISOString().split('T')[0];
 
     const novoRegistro = {
@@ -750,6 +1464,9 @@ window.salvarRadarFeminilidadeCompleto = async function() {
 
     localStorage.setItem('suiri_radar_fem', JSON.stringify(window.dadosRadarFeminilidade));
     window.renderizarHistoricoRadarFeminilidade();
+    window.renderizarGraficoETendenciasFeminilidade();
+
+    window.alternarSecaoRadarFeminilidade();
 
     if (typeof window.mostrarToast === 'function') {
         window.mostrarToast("Radar de Feminilidade guardado com sucesso!", "sucesso");
@@ -790,17 +1507,17 @@ window.renderizarHistoricoRadarFeminilidade = function() {
         const infoRelacao = reg.ultima_relacao ? ` • Conexão: ${reg.ultima_relacao.split('-').slice(1).reverse().join('/')}` : '';
 
         return `
-            <div style="background:#ffffff; border:1px solid #ede9fe; padding:8px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="background:#ffffff; border:1px solid #d8b4fe; padding:8px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <span style="font-size:10px; font-weight:800; color:#581c87; display:block;">${dataFmt}${infoRelacao}</span>
                     <span style="font-size:11px; color:#3b0764; font-weight:700; display:flex; align-items:center; gap:6px; margin-top:2px;">
-                        <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:18px; height:18px; object-fit:contain;"> ${reg.txtVit} | 
-                        <img src="./icone/icone-estresse.png" alt="Paz" style="width:18px; height:18px; object-fit:contain;"> ${reg.txtPaz}
+                        <img src="./icone/icone-energia.png" alt="Vitalidade" style="width:16px; height:16px; object-fit:contain;"> ${reg.txtVit} | 
+                        <img src="./icone/icone-estresse.png" alt="Paz" style="width:16px; height:16px; object-fit:contain;"> ${reg.txtPaz}
                     </span>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span style="font-size:10.5px; font-weight:800; color:#7c3aed; background:#f3e8ff; padding:3px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:3px;">
-                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Afeto" style="width:18px; height:18px; object-fit:contain;"> ${reg.txtAfeto}
+                    <span style="font-size:10.5px; font-weight:800; color:#7c3aed; background:#f3e8ff; padding:2px 6px; border-radius:6px; border:1px solid #d8b4fe; display:inline-flex; align-items:center; gap:3px;">
+                        <img src="./icone/love.png" onerror="this.onerror=null; this.src='./icone/icone-fogo.png';" alt="Afeto" style="width:16px; height:16px; object-fit:contain;"> ${reg.txtAfeto}
                     </span>
                     <button type="button" onclick="window.removerItemHistoricoRadarFeminilidade('${reg.id}')" style="background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center;" title="Remover registo">
                         <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
@@ -816,6 +1533,7 @@ window.removerItemHistoricoRadarFeminilidade = function(id) {
     window.dadosRadarFeminilidade.historico = window.dadosRadarFeminilidade.historico.filter(r => r.id !== id);
     localStorage.setItem('suiri_radar_fem', JSON.stringify(window.dadosRadarFeminilidade));
     window.renderizarHistoricoRadarFeminilidade();
+    window.renderizarGraficoETendenciasFeminilidade();
 };
 
 window.carregarRadarFeminilidadeNuvem = async function() {
@@ -834,9 +1552,9 @@ window.carregarRadarFeminilidadeNuvem = async function() {
 
         if (data) {
             window.dadosRadarFeminilidade.ultima_relacao = data.ultima_relacao;
-            window.dadosRadarFeminilidade.vitalidade = data.vitalidade || 5;
-            window.dadosRadarFeminilidade.paz_mental = data.paz_mental || 5;
-            window.dadosRadarFeminilidade.afeto_libido = data.afeto_libido || 5;
+            window.dadosRadarFeminilidade.vitalidade = data.vitalidade > 5 ? Math.round(data.vitalidade / 2) : (data.vitalidade || 3);
+            window.dadosRadarFeminilidade.paz_mental = data.paz_mental > 5 ? Math.round(data.paz_mental / 2) : (data.paz_mental || 3);
+            window.dadosRadarFeminilidade.afeto_libido = data.afeto_libido > 5 ? Math.round(data.afeto_libido / 2) : (data.afeto_libido || 3);
 
             const inDt = document.getElementById('slider-data-relacao-fem');
             const rngVit = document.getElementById('range-vitalidade-fem');
@@ -844,20 +1562,252 @@ window.carregarRadarFeminilidadeNuvem = async function() {
             const rngAfeto = document.getElementById('range-afeto-fem');
 
             if (inDt) inDt.value = data.ultima_relacao || '';
-            if (rngVit) rngVit.value = data.vitalidade || 5;
-            if (rngPaz) rngPaz.value = data.paz_mental || 5;
-            if (rngAfeto) rngAfeto.value = data.afeto_libido || 5;
+            if (rngVit) rngVit.value = window.dadosRadarFeminilidade.vitalidade;
+            if (rngPaz) rngPaz.value = window.dadosRadarFeminilidade.paz_mental;
+            if (rngAfeto) rngAfeto.value = window.dadosRadarFeminilidade.afeto_libido;
 
             window.atualizarRotuloSliderFeminilidade('vitalidade');
             window.atualizarRotuloSliderFeminilidade('paz_mental');
             window.atualizarRotuloSliderFeminilidade('afeto_libido');
+            window.renderizarGraficoETendenciasFeminilidade();
         }
     } catch (e) {}
 };
 
+// Renderização dos Gráficos SVG & Tendências do Radar
+window.renderizarGraficoETendenciasFeminilidade = function() {
+    const contGraf = document.getElementById('container-grafico-svg-mulher');
+    const contComp = document.getElementById('bloco-comparativo-semanas-mulher');
+    const elInsight = document.getElementById('texto-insight-tendencia-mulher');
+
+    if (!contGraf) return;
+
+    const histRadar = window.dadosRadarFeminilidade.historico || [];
+
+    if (histRadar.length < 2) {
+        contGraf.innerHTML = '<span style="font-size:11px; color:#6b21a8; text-align:center;">Registe pelo menos 2 avaliações no Radar para traçar as curvas.</span>';
+        if (contComp) contComp.innerHTML = '<span style="font-size:11px; color:#6b21a8; grid-column:span 2; text-align:center;">Aguardando dados comparativos.</span>';
+        return;
+    }
+
+    const pontos = [...histRadar.slice(0, 7)].reverse();
+    const w = 320;
+    const h = 75;
+    const pad = 14;
+    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
+
+    const normalizar5 = (val) => val > 5 ? (val / 2) : val;
+    const calcY = (val) => h - pad - (((normalizar5(val) - 1) / 4) * (h - (pad * 2)));
+
+    const ptsVitalidade = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.vitalidade || 3)}`).join(' ');
+    const ptsPaz = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.paz_mental || 3)}`).join(' ');
+
+    contGraf.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
+            <line x1="${pad}" y1="${calcY(3)}" x2="${w - pad}" y2="${calcY(3)}" stroke="#d8b4fe" stroke-dasharray="3,3" stroke-width="1" />
+            <polyline fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsVitalidade}" />
+            <polyline fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsPaz}" />
+            ${pontos.map((p, idx) => `
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.vitalidade || 3)}" r="3" fill="#7c3aed" />
+                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.paz_mental || 3)}" r="3" fill="#e11d48" />
+            `).join('')}
+        </svg>
+    `;
+
+    const semAtual = histRadar.slice(0, 7);
+    const semAnt = histRadar.slice(7, 14);
+
+    const calcMedia = (arr, prop) => arr.length ? (arr.reduce((acc, c) => acc + normalizar5(c[prop] || 3), 0) / arr.length).toFixed(1) : null;
+
+    const medV_Atu = calcMedia(semAtual, 'vitalidade') || "3.0";
+    const medP_Atu = calcMedia(semAtual, 'paz_mental') || "3.0";
+    const medV_Ant = calcMedia(semAnt, 'vitalidade');
+    const medP_Ant = calcMedia(semAnt, 'paz_mental');
+
+    if (contComp) {
+        contComp.innerHTML = `
+            <div style="background:#faf5ff; border:1px solid #d8b4fe; padding:7px 10px; border-radius:10px;">
+                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">Semana Atual:</span>
+                <span style="font-size:11.5px; color:#3b0764; font-weight:700; display:block; margin-top:2px;">
+                    🌸 ${medV_Atu} | 🧘‍♀️ ${medP_Atu}
+                </span>
+            </div>
+            <div style="background:#faf5ff; border:1px solid #d8b4fe; padding:7px 10px; border-radius:10px;">
+                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">Semana Anterior:</span>
+                <span style="font-size:11.5px; color:#3b0764; font-weight:700; display:block; margin-top:2px;">
+                    ${medV_Ant ? `🌸 ${medV_Ant} | 🧘‍♀️ ${medP_Ant}` : '<em style="color:#94a3b8; font-size:10.5px;">Sem histórico</em>'}
+                </span>
+            </div>
+        `;
+    }
+
+    if (elInsight) {
+        if (parseFloat(medP_Atu) >= 4.0) {
+            elInsight.innerHTML = `🍵 <strong>Período de Sobrecarga / Tensão:</strong> O seu índice de tensão emocional está elevado (${medP_Atu}/5). Use o <em>Modo Alívio</em> e priorize o descanso hoje.`;
+        } else if (parseFloat(medV_Atu) >= 4.0) {
+            elInsight.innerHTML = `✨ <strong>Fase Radiante:</strong> Vitalidade e brilho em alta (${medV_Atu}/5). Excelente momento para conexões, novos projetos e magnetismo a dois!`;
+        } else {
+            elInsight.innerHTML = `🌿 <strong>Ritmo Suave & Equilíbrio:</strong> Mantenha a hidratação e os rituais do Santuário para sustentar o seu bem-estar corporal.`;
+        }
+    }
+};
+
 // =========================================================================
-// 4. LÓGICA DAS 6 METAS DIÁRIAS (O SANTUÁRIO)
+// 4. LÓGICA DAS 6 METAS DIÁRIAS (O SANTUÁRIO COM NÍVEIS XP & METAS)
 // =========================================================================
+
+window.niveisFemininos = [
+    { nivel: 1, nome: "Despertar Serena", minXP: 0, maxXP: 300 },
+    { nivel: 2, nome: "Harmonia & Flor", minXP: 300, maxXP: 700 },
+    { nivel: 3, nome: "Constância Serena", minXP: 700, maxXP: 1400 },
+    { nivel: 4, nome: "Guardiã do Próprio Lar", minXP: 1400, maxXP: 2500 },
+    { nivel: 5, nome: "Plenitude Radiante", minXP: 2500, maxXP: 4000 },
+    { nivel: 6, nome: "Soberana de Si Mesma", minXP: 4000, maxXP: 99999 }
+];
+
+window.calcularEvolucaoSantuario = function() {
+    let totalRituaisCumpridos = 0;
+    let totalDiasPerfeitos = 0;
+    let xpTotal = 0;
+
+    const datas = Object.keys(window.dadosRituaisFemininos);
+    datas.forEach(dt => {
+        const reg = window.dadosRituaisFemininos[dt];
+        const qtd = reg.totalCumpridas || 0;
+        totalRituaisCumpridos += qtd;
+        xpTotal += (qtd * 10);
+        if (qtd === 6) {
+            totalDiasPerfeitos++;
+            xpTotal += 40;
+        }
+    });
+
+    let nivelAtual = window.niveisFemininos[0];
+    for (let n of window.niveisFemininos) {
+        if (xpTotal >= n.minXP) nivelAtual = n;
+    }
+
+    const ofensiva = window.obterOfensivaMulher();
+    const conquistasDef = [
+        { id: "cf1", titulo: "Primeiro Despertar", desc: "Completou o 1º ritual de autocuidado", desbloqueada: totalRituaisCumpridos >= 1 },
+        { id: "cf2", titulo: "Trinca Serena", desc: "3 dias seguidos de constância", desbloqueada: ofensiva >= 3 },
+        { id: "cf3", titulo: "Plenitude Total", desc: "Completou 100% (6/6) dos rituais num dia", desbloqueada: totalDiasPerfeitos >= 1 },
+        { id: "cf4", titulo: "Semana Radiante", desc: "7 dias seguidos cuidando de si", desbloqueada: ofensiva >= 7 },
+        { id: "cf5", titulo: "Harmonia de Ciclo", desc: "14 dias seguidos de rituais", desbloqueada: ofensiva >= 14 },
+        { id: "cf6", titulo: "Flor da Constância", desc: "Alcançou 30 rituais concluídos", desbloqueada: totalRituaisCumpridos >= 30 }
+    ];
+
+    return {
+        totalRituais: totalRituaisCumpridos,
+        diasPerfeitos: totalDiasPerfeitos,
+        xp: xpTotal,
+        nivel: nivelAtual,
+        conquistas: conquistasDef
+    };
+};
+
+window.obterOfensivaMulher = function() {
+    let ofensiva = 0;
+    const datas = Object.keys(window.dadosRituaisFemininos).sort().reverse();
+    for (let dt of datas) {
+        const item = window.dadosRituaisFemininos[dt];
+        if (item.totalCumpridas && item.totalCumpridas > 0) {
+            ofensiva++;
+        } else {
+            break;
+        }
+    }
+    return ofensiva;
+};
+
+window.renderizarPainelEvolucaoSantuario = function() {
+    const dados = window.calcularEvolucaoSantuario();
+
+    const elNivel = document.getElementById('lbl-nome-nivel-mulher');
+    const elXP = document.getElementById('lbl-xp-mulher');
+    const elBarraXP = document.getElementById('barra-xp-mulher');
+    const elProx = document.getElementById('lbl-info-prox-nivel-mulher');
+
+    if (elNivel) elNivel.textContent = `Grau ${dados.nivel.nivel}: ${dados.nivel.nome}`;
+    if (elXP) elXP.textContent = `${dados.xp} XP`;
+
+    const spanNivel = dados.nivel.maxXP - dados.nivel.minXP;
+    const progressoNoNivel = dados.xp - dados.nivel.minXP;
+    const pctNivel = Math.min(100, Math.round((progressoNoNivel / spanNivel) * 100));
+
+    if (elBarraXP) elBarraXP.style.width = `${pctNivel}%`;
+    if (elProx) {
+        if (dados.nivel.nivel === 6) {
+            elProx.textContent = "Ápice Alcançado: Plenitude Soberana!";
+        } else {
+            elProx.textContent = `Faltam ${dados.nivel.maxXP - dados.xp} XP para o próximo nível (${pctNivel}%)`;
+        }
+    }
+
+    const agora = new Date();
+    let rituaisSemana = 0;
+    for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(agora.getDate() - i);
+        const dStr = d.toISOString().split('T')[0];
+        const reg = window.dadosRituaisFemininos[dStr];
+        if (reg) rituaisSemana += (reg.totalCumpridas || 0);
+    }
+    const metaAlvoSemana = 25;
+    const pctSemana = Math.min(100, Math.round((rituaisSemana / metaAlvoSemana) * 100));
+
+    const elMetaSem = document.getElementById('lbl-meta-sem-mulher');
+    const elMetaSemPct = document.getElementById('lbl-meta-sem-mulher-pct');
+    const elBarraSem = document.getElementById('barra-meta-sem-mulher');
+
+    if (elMetaSem) elMetaSem.textContent = `${rituaisSemana} / ${metaAlvoSemana}`;
+    if (elMetaSemPct) elMetaSemPct.textContent = `${pctSemana}%`;
+    if (elBarraSem) elBarraSem.style.width = `${pctSemana}%`;
+
+    const mesAtual = agora.getMonth();
+    const anoAtual = agora.getFullYear();
+    let rituaisMes = 0;
+    let diasPerfeitosMes = 0;
+
+    Object.keys(window.dadosRituaisFemininos).forEach(dt => {
+        const [ano, mes] = dt.split('-').map(Number);
+        if (ano === anoAtual && (mes - 1) === mesAtual) {
+            const reg = window.dadosRituaisFemininos[dt];
+            const qtd = reg.totalCumpridas || 0;
+            rituaisMes += qtd;
+            if (qtd === 6) diasPerfeitosMes++;
+        }
+    });
+
+    const diasDecorridos = agora.getDate();
+    const totalPossivel = diasDecorridos * 6;
+    const taxaMes = totalPossivel > 0 ? Math.round((rituaisMes / totalPossivel) * 100) : 0;
+
+    const elStatsRituais = document.getElementById('lbl-stats-rituais-mes');
+    const elStatsPerfeitos = document.getElementById('lbl-stats-perfeitos-mes');
+    const elStatsTaxa = document.getElementById('lbl-stats-taxa-mes-mulher');
+
+    if (elStatsRituais) elStatsRituais.textContent = `${rituaisMes} rituais`;
+    if (elStatsPerfeitos) elStatsPerfeitos.textContent = `${diasPerfeitosMes} dias 100%`;
+    if (elStatsTaxa) elStatsTaxa.textContent = `Taxa: ${taxaMes}% de adesão`;
+
+    const contConquistas = document.getElementById('bloco-conquistas-mulher');
+    const elContadorConquistas = document.getElementById('contador-conquistas-mulher');
+    if (contConquistas) {
+        const desbloqueadas = dados.conquistas.filter(c => c.desbloqueada).length;
+        if (elContadorConquistas) elContadorConquistas.textContent = `${desbloqueadas}/${dados.conquistas.length}`;
+
+        contConquistas.innerHTML = dados.conquistas.map(c => `
+            <div style="background:${c.desbloqueada ? '#faf5ff' : '#ffffff'}; border:1px solid ${c.desbloqueada ? '#d8b4fe' : '#ede9fe'}; padding:7px 9px; border-radius:10px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:13px;">${c.desbloqueada ? '🌸' : '🔒'}</span>
+                    <strong style="font-size:11px; color:${c.desbloqueada ? '#3b0764' : '#6b21a8'};">${c.titulo}</strong>
+                </div>
+                <span style="font-size:9.5px; color:#581c87; display:block; margin-top:2px;">${c.desc}</span>
+            </div>
+        `).join('');
+    }
+};
 
 window.alternarRetratilGenerico = function(conteudoId, setaId) {
     const el = document.getElementById(conteudoId);
@@ -871,12 +1821,13 @@ window.alternarRetratilGenerico = function(conteudoId, setaId) {
 
 window.obterTituloRituaisMulher = function(qtd) {
     if (qtd === 0) return "Desperte a Alma";
-    if (qtd <= 2) return "Semente Plantada";
-    if (qtd <= 4) return "Em Florescimento";
-    if (qtd === 5) return "Equilíbrio Radiante";
-    return "Plenitude & Luz";
+    if (qtd <= 2) return "Semente Plantada 🌱";
+    if (qtd <= 4) return "Em Florescimento 🌸";
+    if (qtd === 5) return "Equilíbrio Radiante ✨";
+    return "Plenitude & Luz 💖";
 };
 
+// 6 METAS DIÁRIAS EM FORMATO VERTICAL FLUIDO
 window.sincronizarCheckboxesRituaisHoje = function() {
     const containerGrid = document.getElementById('container-grid-metas-mulher');
     if (!containerGrid) return;
@@ -887,9 +1838,9 @@ window.sincronizarCheckboxesRituaisHoje = function() {
     containerGrid.innerHTML = window.configMetasFemininas.map((meta, idx) => {
         const checked = !!registroHoje[`meta_${idx}`];
         return `
-            <label style="display:flex; align-items:center; justify-content:space-between; background:#faf5ff; padding:10px 12px; border-radius:12px; border:1px solid #ede9fe; cursor:pointer;">
-                <span style="font-size:11.5px; font-weight:700; color:#3b0764; line-height:1.3; overflow:hidden; text-overflow:ellipsis;">${meta}</span>
-                <input type="checkbox" id="check-ritual-fem-${idx}" onchange="window.salvarCheckinRitualMulher(${idx})" ${checked ? 'checked' : ''} style="width:16px; height:16px; accent-color:#7c3aed; flex-shrink:0;">
+            <label style="display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:1px solid #d8b4fe; cursor:pointer;">
+                <span style="font-size:12px; font-weight:700; color:#3b0764; line-height:1.3; white-space:normal; word-break:break-word; padding-right:10px;">${meta}</span>
+                <input type="checkbox" id="check-ritual-fem-${idx}" onchange="window.salvarCheckinRitualMulher(${idx})" ${checked ? 'checked' : ''} style="width:18px; height:18px; accent-color:#7c3aed; flex-shrink:0; cursor:pointer;">
             </label>
         `;
     }).join('');
@@ -912,8 +1863,14 @@ window.salvarCheckinRitualMulher = async function(idx) {
     window.dadosRituaisFemininos[hojeStr].pct = Math.round((cumpridas / 6) * 100);
 
     localStorage.setItem('suiri_rituais_fem', JSON.stringify(window.dadosRituaisFemininos));
-    window.calcularOfensivaERendimentoRituais();
+    
+    window.renderizarPainelEvolucaoSantuario();
     window.renderizarHistoricoRituaisRetratil();
+
+    const elStreak = document.getElementById('streak-rituais-mulher');
+    if (elStreak) {
+        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${window.obterOfensivaMulher()} dias`;
+    }
 
     const supabase = obterClienteSupabaseSeguro();
     const usuarioId = obterUsuarioIdSeguro();
@@ -926,41 +1883,6 @@ window.salvarCheckinRitualMulher = async function(idx) {
                 percentual: window.dadosRituaisFemininos[hojeStr].pct
             }, { onConflict: 'usuario_id, data_registro' });
         } catch (e) {}
-    }
-};
-
-window.calcularOfensivaERendimentoRituais = function() {
-    const hojeStr = new Date().toISOString().split('T')[0];
-    const regHoje = window.dadosRituaisFemininos[hojeStr] || {};
-    
-    let cumpridas = 0;
-    for (let i = 0; i < 6; i++) {
-        if (regHoje[`meta_${i}`]) cumpridas++;
-    }
-
-    const pct = Math.round((cumpridas / 6) * 100);
-    const barra = document.getElementById('barra-progresso-rituais');
-    const badgeTitulo = document.getElementById('badge-titulo-rituais');
-    const badgePct = document.getElementById('badge-pct-rituais');
-
-    if (barra) barra.style.width = `${pct}%`;
-    if (badgeTitulo) badgeTitulo.textContent = `${window.obterTituloRituaisMulher(cumpridas)} (${cumpridas}/6)`;
-    if (badgePct) badgePct.textContent = `${pct}%`;
-
-    let ofensiva = 0;
-    const datas = Object.keys(window.dadosRituaisFemininos).sort().reverse();
-    for (let dt of datas) {
-        const item = window.dadosRituaisFemininos[dt];
-        if (item.totalCumpridas && item.totalCumpridas > 0) {
-            ofensiva++;
-        } else {
-            break;
-        }
-    }
-
-    const elStreak = document.getElementById('streak-rituais-mulher');
-    if (elStreak) {
-        elStreak.innerHTML = `<img src="./icone/icone-fogo.png" alt="Fogo" style="width:15px; height:15px; object-fit:contain;"> ${ofensiva} dias`;
     }
 };
 
@@ -986,11 +1908,9 @@ window.renderizarHistoricoRituaisRetratil = function() {
         const titulo = window.obterTituloRituaisMulher(total);
 
         return `
-            <div style="background:#ffffff; border:1px solid #ede9fe; border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:12px; padding:9px 12px; display:flex; flex-direction:column; gap:5px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <strong style="font-size:12px; color:#3b0764;">${dataFormatada} • ${titulo}</strong>
-                    </div>
+                    <strong style="font-size:11.5px; color:#3b0764;">${dataFormatada} • ${titulo}</strong>
                     <span style="font-size:11px; font-weight:800; color:#7c3aed;">${total}/6 (${pct}%)</span>
                 </div>
                 <div style="background:#ede9fe; border-radius:8px; height:5px; width:100%; overflow:hidden;">
@@ -1009,7 +1929,7 @@ window.abrirModalEditarMetasMulher = function() {
     container.innerHTML = window.configMetasFemininas.map((meta, i) => `
         <div>
             <label style="font-size:10.5px; font-weight:800; color:#581c87; display:block; margin-bottom:2px;">Meta ${i + 1}</label>
-            <input type="text" id="input-edit-meta-mulher-${i}" value="${meta}" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:10px; border:1.5px solid #e9d5ff; background:#faf5ff; font-size:12px; font-weight:600; color:#3b0764;">
+            <input type="text" id="input-edit-meta-mulher-${i}" value="${meta}" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:10px; border:1.5px solid #d8b4fe; background:#faf5ff; font-size:12px; font-weight:600; color:#3b0764;">
         </div>
     `).join('');
 
@@ -1038,38 +1958,15 @@ window.salvarNovasMetasConfiguradasMulher = function() {
 };
 
 // =========================================================================
-// 5. CURADORIA DE FILMES & SÉRIES (SORTEIO DIÁRIO, QUERO ASSISTIR & AVALIADOS)
+// 5. CURADORIA DE FILMES & SÉRIES (COM LOGOS E LINKS DIRETOS AOS STREAMERS)
 // =========================================================================
 
-function obterSementeDataHoje() {
-    const hoje = new Date();
-    const str = `${hoje.getFullYear()}-${hoje.getMonth() + 1}-${hoje.getDate()}`;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
+window.obterListaMidiaMulherAtual = function() {
+    if (window.abaMidiaMulherAtiva === 'filmes') {
+        return window.CatalogoFilmesMasculinos || [];
+    } else {
+        return window.CatalogoSeriesMasculinas || [];
     }
-    return Math.abs(hash);
-}
-
-window.obterCatalogoDiarioMulher = function(tipo) {
-    const base = tipo === 'filmes'
-        ? (window.CatalogoFilmesMulher || [])
-        : (window.CatalogoSeriesMulher || []);
-    
-    if (base.length === 0) return [];
-
-    let seed = obterSementeDataHoje();
-    const copia = [...base];
-    
-    for (let i = copia.length - 1; i > 0; i--) {
-        seed = (seed * 9301 + 49297) % 233280;
-        const rnd = seed / 233280;
-        const j = Math.floor(rnd * (i + 1));
-        [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-
-    return copia;
 };
 
 window.alternarAbaMidiaMulher = function(aba) {
@@ -1077,20 +1974,54 @@ window.alternarAbaMidiaMulher = function(aba) {
     const btnF = document.getElementById('btn-aba-filmes-mulher');
     const btnS = document.getElementById('btn-aba-series-mulher');
 
+    const listaFilmesQtd = (window.CatalogoFilmesMasculinos && window.CatalogoFilmesMasculinos.length) || 200;
+    const listaSeriesQtd = (window.CatalogoSeriesMasculinas && window.CatalogoSeriesMasculinas.length) || 250;
+
     if (aba === 'filmes') {
-        if (btnF) { btnF.style.background = '#7c3aed'; btnF.style.color = '#fff'; }
-        if (btnS) { btnS.style.background = 'transparent'; btnS.style.color = '#581c87'; }
+        if (btnF) { 
+            btnF.style.background = '#7c3aed'; 
+            btnF.style.color = '#fff'; 
+            btnF.textContent = `Filmes (${listaFilmesQtd})`;
+        }
+        if (btnS) { 
+            btnS.style.background = 'transparent'; 
+            btnS.style.color = '#581c87'; 
+            btnS.textContent = `Séries (${listaSeriesQtd})`;
+        }
     } else {
-        if (btnS) { btnS.style.background = '#7c3aed'; btnS.style.color = '#fff'; }
-        if (btnF) { btnF.style.background = 'transparent'; btnF.style.color = '#581c87'; }
+        if (btnS) { 
+            btnS.style.background = '#7c3aed'; 
+            btnS.style.color = '#fff'; 
+            btnS.textContent = `Séries (${listaSeriesQtd})`;
+        }
+        if (btnF) { 
+            btnF.style.background = 'transparent'; 
+            btnF.style.color = '#581c87'; 
+            btnF.textContent = `Filmes (${listaFilmesQtd})`;
+        }
     }
 
     window.indiceMidiaMulher[aba] = 0;
     window.atualizarVisualizacaoMidiaMulher();
 };
 
-window.obterListaMidiaMulherAtual = function() {
-    return window.obterCatalogoDiarioMulher(window.abaMidiaMulherAtiva);
+window.sortearMidiaMulherAleatoria = function() {
+    const lista = window.obterListaMidiaMulherAtual();
+    if (!lista || lista.length === 0) return;
+
+    let idxAtual = window.indiceMidiaMulher[window.abaMidiaMulherAtiva] || 0;
+    let novoIdx;
+    do {
+        novoIdx = Math.floor(Math.random() * lista.length);
+    } while (lista.length > 1 && novoIdx === idxAtual);
+
+    window.indiceMidiaMulher[window.abaMidiaMulherAtiva] = novoIdx;
+    window.atualizarVisualizacaoMidiaMulher();
+
+    if (typeof window.mostrarToast === 'function') {
+        const item = lista[novoIdx];
+        window.mostrarToast(`Sorteado: "${item.titulo || item.tituloOriginal}" 🔀`, "info");
+    }
 };
 
 window.navegarCarrosselMidiaMulher = function(dir) {
@@ -1105,6 +2036,102 @@ window.navegarCarrosselMidiaMulher = function(dir) {
     window.atualizarVisualizacaoMidiaMulher();
 };
 
+// Integração TMDb com Cache no LocalStorage V3 (Provedores com Logo e Link)
+window.buscarDadosTmdbMidiaMulher = async function(item) {
+    if (!item) return null;
+    const chaveItem = item.imdbId || (item.tituloOriginal || item.titulo || '').toLowerCase().trim();
+    if (window.cacheTmdbMulher[chaveItem]) {
+        return window.cacheTmdbMulher[chaveItem];
+    }
+
+    if (!window.TMDB_API_KEY) return null;
+
+    try {
+        let tmdbId = null;
+        let tipoMidia = window.abaMidiaMulherAtiva === 'filmes' ? 'movie' : 'tv';
+        let dadosObra = null;
+
+        if (item.imdbId) {
+            const resFind = await fetch(`https://api.themoviedb.org/3/find/${item.imdbId}?api_key=${window.TMDB_API_KEY}&external_source=imdb_id&language=pt-BR`);
+            const dataFind = await resFind.json();
+            if (dataFind.movie_results && dataFind.movie_results.length > 0) {
+                dadosObra = dataFind.movie_results[0];
+                tipoMidia = 'movie';
+                tmdbId = dadosObra.id;
+            } else if (dataFind.tv_results && dataFind.tv_results.length > 0) {
+                dadosObra = dataFind.tv_results[0];
+                tipoMidia = 'tv';
+                tmdbId = dadosObra.id;
+            }
+        }
+
+        if (!dadosObra) {
+            const termo = encodeURIComponent(item.tituloOriginal || item.titulo);
+            const resBusca = await fetch(`https://api.themoviedb.org/3/search/${tipoMidia}?api_key=${window.TMDB_API_KEY}&query=${termo}&language=pt-BR&page=1`);
+            const dataBusca = await resBusca.json();
+            if (dataBusca.results && dataBusca.results.length > 0) {
+                dadosObra = dataBusca.results[0];
+                tmdbId = dadosObra.id;
+            }
+        }
+
+        if (dadosObra) {
+            let provedoresBR = [];
+            let linkJustWatch = `https://www.themoviedb.org/${tipoMidia}/${tmdbId}/watch?locale=BR`;
+
+            if (tmdbId) {
+                try {
+                    const resWatch = await fetch(`https://api.themoviedb.org/3/${tipoMidia}/${tmdbId}/watch/providers?api_key=${window.TMDB_API_KEY}`);
+                    const dataWatch = await resWatch.json();
+                    if (dataWatch.results && dataWatch.results.BR) {
+                        const regiaoBR = dataWatch.results.BR;
+                        linkJustWatch = regiaoBR.link || linkJustWatch;
+
+                        const listaFlatrate = regiaoBR.flatrate || [];
+                        const listaRent = regiaoBR.rent || [];
+                        const listaBuy = regiaoBR.buy || [];
+
+                        const mapProvedores = new Map();
+                        listaFlatrate.forEach(p => mapProvedores.set(p.provider_name, {
+                            nome: p.provider_name,
+                            logo: p.logo_path ? `https://image.tmdb.org/t/p/w92${p.logo_path}` : null
+                        }));
+                        listaRent.forEach(p => {
+                            if (!mapProvedores.has(p.provider_name)) mapProvedores.set(p.provider_name, {
+                                nome: p.provider_name,
+                                logo: p.logo_path ? `https://image.tmdb.org/t/p/w92${p.logo_path}` : null
+                            });
+                        });
+                        listaBuy.forEach(p => {
+                            if (!mapProvedores.has(p.provider_name)) mapProvedores.set(p.provider_name, {
+                                nome: p.provider_name,
+                                logo: p.logo_path ? `https://image.tmdb.org/t/p/w92${p.logo_path}` : null
+                            });
+                        });
+
+                        provedoresBR = Array.from(mapProvedores.values()).slice(0, 5);
+                    }
+                } catch (errProv) {}
+            }
+
+            const info = {
+                poster: dadosObra.poster_path ? `https://image.tmdb.org/t/p/w780${dadosObra.poster_path}` : null,
+                plot: dadosObra.overview && dadosObra.overview.trim().length > 0 ? dadosObra.overview : null,
+                rating: dadosObra.vote_average ? dadosObra.vote_average.toFixed(1) : null,
+                provedores: provedoresBR,
+                linkJustWatch: linkJustWatch
+            };
+
+            window.cacheTmdbMulher[chaveItem] = info;
+            localStorage.setItem('suiri_tmdb_cache_mulher_v3', JSON.stringify(window.cacheTmdbMulher));
+            return info;
+        }
+    } catch (e) {
+        console.warn("TMDb fetch offline:", e);
+    }
+    return null;
+};
+
 window.atualizarVisualizacaoMidiaMulher = function() {
     const lista = window.obterListaMidiaMulherAtual();
     const idx = window.indiceMidiaMulher[window.abaMidiaMulherAtiva] || 0;
@@ -1112,19 +2139,89 @@ window.atualizarVisualizacaoMidiaMulher = function() {
 
     if (!item) return;
 
+    const elPosterImg = document.getElementById('midia-mulher-poster-img');
     const elCat = document.getElementById('midia-mulher-categoria');
     const elTempo = document.getElementById('midia-mulher-tempo');
     const elTitulo = document.getElementById('midia-mulher-titulo');
+    const elMomento = document.getElementById('midia-mulher-momento');
     const elDesc = document.getElementById('midia-mulher-desc');
+    const contGen = document.getElementById('midia-mulher-generos');
+    const contPosicao = document.getElementById('midia-mulher-posicao-contador');
+    const boxOndeAssistir = document.getElementById('container-onde-assistir-mulher');
+    const provStreaming = document.getElementById('provedores-streaming-mulher');
+    const linkJustWatch = document.getElementById('midia-mulher-link-justwatch');
     const btnAcao = document.getElementById('btn-marcar-assistido-mulher');
     const btnQueroVer = document.getElementById('btn-quero-ver-mulher');
 
-    if (elCat) elCat.textContent = item.categoria || window.abaMidiaMulherAtiva.toUpperCase();
-    if (elTempo) elTempo.textContent = item.ano || item.temporadas || '';
-    if (elTitulo) elTitulo.textContent = item.titulo || '';
-    if (elDesc) elDesc.textContent = item.desc || '';
+    const capaFallback = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80';
+    if (elPosterImg) elPosterImg.src = item.capa || capaFallback;
 
-    const naListaQueroVer = window.dadosMidiaMulherQueroVer.some(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    if (elCat) elCat.textContent = item.categoria || (item.generos ? item.generos[0] : window.abaMidiaMulherAtiva.toUpperCase());
+    if (elTempo) elTempo.textContent = item.ano || item.temporadas || '';
+    if (elTitulo) elTitulo.textContent = item.titulo || item.tituloOriginal || '';
+    if (elMomento) {
+        elMomento.textContent = item.momento || 'Recomendação consagrada do acervo familiar.';
+    }
+    if (elDesc) elDesc.textContent = item.desc || 'Carregando sinopse oficial em português...';
+
+    if (contPosicao) {
+        contPosicao.textContent = `${idx + 1} / ${lista.length}`;
+    }
+
+    if (boxOndeAssistir) boxOndeAssistir.style.display = 'none';
+
+    if (contGen) {
+        const generos = item.generos || [item.categoria || 'Geral'];
+        contGen.innerHTML = generos.slice(0, 3).map(g => `
+            <span style="font-size:9.5px; font-weight:800; background:#f3e8ff; color:#6b21a8; padding:2px 7px; border-radius:6px; border:1px solid #d8b4fe;">${g}</span>
+        `).join('');
+    }
+
+    window.buscarDadosTmdbMidiaMulher(item).then(dadosApi => {
+        if (dadosApi) {
+            const atual = window.obterListaMidiaMulherAtual()[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
+            if (atual && (atual.imdbId === item.imdbId || atual.titulo === item.titulo)) {
+                if (dadosApi.poster && elPosterImg) {
+                    elPosterImg.src = dadosApi.poster;
+                }
+                if (dadosApi.plot && elDesc) {
+                    elDesc.textContent = dadosApi.plot;
+                }
+                if (dadosApi.rating && elMomento) {
+                    elMomento.textContent = `Avaliação TMDb: ${dadosApi.rating} ★ • ${item.categoria || 'Obra em Destaque'}`;
+                }
+
+                if (linkJustWatch && dadosApi.linkJustWatch) {
+                    linkJustWatch.href = dadosApi.linkJustWatch;
+                }
+
+                if (dadosApi.provedores && dadosApi.provedores.length > 0 && boxOndeAssistir && provStreaming) {
+                    const tituloBusca = item.titulo || item.tituloOriginal || '';
+
+                    provStreaming.innerHTML = dadosApi.provedores.map(p => {
+                        const linkDireto = window.obterLinkDiretoStreamingMulher(p.nome, tituloBusca, dadosApi.linkJustWatch);
+                        const tagLogo = p.logo 
+                            ? `<img src="${p.logo}" alt="${p.nome}" style="width:18px; height:18px; border-radius:5px; object-fit:cover; display:block; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,0.12);">` 
+                            : `<span style="font-size:12px; line-height:1;">📺</span>`;
+
+                        return `
+                            <a href="${linkDireto}" target="_blank" rel="noopener noreferrer" 
+                               style="text-decoration:none; display:inline-flex; align-items:center; gap:5px; background:#ffffff; color:#3b0764; border:1px solid #d8b4fe; border-radius:8px; padding:4px 9px; box-shadow:0 1px 3px rgba(124,58,237,0.05); font-size:11px; font-weight:700; cursor:pointer;" 
+                               title="Abrir ${tituloBusca} no ${p.nome}">
+                                ${tagLogo}
+                                <span>${p.nome}</span>
+                                <span style="font-size:10px; color:#7c3aed; font-weight:800; margin-left:1px;">↗</span>
+                            </a>
+                        `;
+                    }).join('');
+                    boxOndeAssistir.style.display = 'block';
+                }
+            }
+        }
+    });
+
+    const tituloItem = item.titulo || item.tituloOriginal || '';
+    const naListaQueroVer = window.dadosMidiaMulherQueroVer.some(m => m.titulo.toLowerCase() === tituloItem.toLowerCase());
     if (btnQueroVer) {
         if (naListaQueroVer) {
             btnQueroVer.textContent = '📌 Na Minha Lista';
@@ -1139,7 +2236,7 @@ window.atualizarVisualizacaoMidiaMulher = function() {
         }
     }
 
-    const jaVisto = window.dadosMidiaMulherAssistida.find(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    const jaVisto = window.dadosMidiaMulherAssistida.find(m => m.titulo.toLowerCase() === tituloItem.toLowerCase());
     if (btnAcao) {
         if (jaVisto) {
             btnAcao.textContent = `★ ${jaVisto.estrelas} Estrelas`;
@@ -1156,25 +2253,27 @@ window.alternarQueroAssistirMulher = function(itemDireto = null) {
     const item = itemDireto || lista[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
     if (!item) return;
 
-    const idx = window.dadosMidiaMulherQueroVer.findIndex(m => m.titulo.toLowerCase() === item.titulo.toLowerCase());
+    const tituloItem = item.titulo || item.tituloOriginal;
+    const idx = window.dadosMidiaMulherQueroVer.findIndex(m => m.titulo.toLowerCase() === tituloItem.toLowerCase());
 
     if (idx >= 0) {
         window.dadosMidiaMulherQueroVer.splice(idx, 1);
         if (typeof window.mostrarToast === 'function') {
-            window.mostrarToast(`"${item.titulo}" removido de 'Quero Assistir'.`, "info");
+            window.mostrarToast(`"${tituloItem}" removido de 'Quero Assistir'.`, "info");
         }
     } else {
         window.dadosMidiaMulherQueroVer.unshift({
             id: item.id || ('quero_' + Date.now()),
-            titulo: item.titulo,
+            titulo: tituloItem,
             tipo: window.abaMidiaMulherAtiva,
             categoria: item.categoria || 'Geral',
             ano: item.ano || item.temporadas || '',
             desc: item.desc || '',
+            imdbId: item.imdbId || null,
             salvo_em: new Date().toISOString()
         });
         if (typeof window.mostrarToast === 'function') {
-            window.mostrarToast(`"${item.titulo}" adicionado à lista 'Quero Assistir'! 📌`, "sucesso");
+            window.mostrarToast(`"${tituloItem}" adicionado à lista 'Quero Assistir'! 📌`, "sucesso");
         }
     }
 
@@ -1193,13 +2292,14 @@ window.confirmarAvaliacaoMidiaMulher = function(estrelas, itemParam = null) {
     const item = itemParam || lista[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
     if (!item) return;
 
-    window.dadosMidiaMulherQueroVer = window.dadosMidiaMulherQueroVer.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    const tituloItem = item.titulo || item.tituloOriginal;
+    window.dadosMidiaMulherQueroVer = window.dadosMidiaMulherQueroVer.filter(m => m.titulo.toLowerCase() !== tituloItem.toLowerCase());
     localStorage.setItem('suiri_midia_mulher_quero_ver', JSON.stringify(window.dadosMidiaMulherQueroVer));
 
-    window.dadosMidiaMulherAssistida = window.dadosMidiaMulherAssistida.filter(m => m.titulo.toLowerCase() !== item.titulo.toLowerCase());
+    window.dadosMidiaMulherAssistida = window.dadosMidiaMulherAssistida.filter(m => m.titulo.toLowerCase() !== tituloItem.toLowerCase());
     window.dadosMidiaMulherAssistida.push({
         id: item.id || ('mid_fem_' + Date.now()),
-        titulo: item.titulo,
+        titulo: tituloItem,
         tipo: window.abaMidiaMulherAtiva,
         categoria: item.categoria,
         estrelas: parseInt(estrelas, 10),
@@ -1232,7 +2332,7 @@ window.renderizarHistoricoQueroVerMulher = function() {
     }
 
     cont.innerHTML = lista.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #ede9fe; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #d8b4fe; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0; flex:1;">
                 <strong style="font-size:12.5px; color:#3b0764; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
                 <span style="font-size:10px; color:#6b21a8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
@@ -1270,7 +2370,7 @@ window.renderizarHistoricoAssistidosMulher = function() {
     }
 
     cont.innerHTML = ordenados.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #ede9fe; padding:8px 12px; border-radius:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #d8b4fe; padding:8px 12px; border-radius:10px;">
             <div style="min-width:0;">
                 <strong style="font-size:12.5px; color:#3b0764; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.titulo}</strong>
                 <span style="font-size:10px; color:#6b21a8; text-transform:uppercase;">${item.tipo} • ${item.categoria || ''}</span>
@@ -1293,19 +2393,81 @@ window.removerMidiaMulherAssistida = function(id) {
 };
 
 // =========================================================================
-// 6. MÚLTIPLA ESCOLHA DE HUMOR E SINTOMAS
+// 6. COMO SE SENTE HOJE: 8 BARRAS (5 NÍVEIS, SEM NOTA NO RÓTULO)
 // =========================================================================
 
-window.toggleTagSelecao = function(btn) {
-    btn.classList.toggle('selecionado');
-    if (btn.classList.contains('selecionado')) {
-        btn.style.background = '#f3e8ff';
-        btn.style.borderColor = '#7c3aed';
-        btn.style.color = '#3b0764';
-    } else {
-        btn.style.background = '#faf5ff';
-        btn.style.borderColor = '#e9d5ff';
-        btn.style.color = '#3b0764';
+window.alternarSecaoComoSeSenteHoje = function() {
+    const bloco = document.getElementById('bloco-corpo-sintomas-retratil');
+    const btn = document.getElementById('btn-toggle-sintomas-bloco');
+    if (!bloco) return;
+
+    bloco.classList.toggle('oculto');
+    if (btn) {
+        btn.textContent = bloco.classList.contains('oculto') ? 'Responder' : 'Recolher';
+    }
+};
+
+window.obterDescricaoNotaBarraSintomas = function(tipo, val) {
+    const v = parseInt(val, 10);
+    switch(tipo) {
+        case 'emocional':
+            if (v === 1) return `Depressiva / Triste 🌧️`;
+            if (v === 2) return `Sensível / Emotiva 💧`;
+            if (v === 3) return `Estável / Serena 🧘‍♀️`;
+            if (v === 4) return `Alegre & Confiante 🌸`;
+            return `Super Feliz & Radiante ✨`;
+        case 'fisico':
+            if (v === 1) return `Dores Fortes / Cólica 🥀`;
+            if (v === 2) return `Incômodo / Inchaço 🌧️`;
+            if (v === 3) return `Corpo Leve / Sem Dores 🌿`;
+            if (v === 4) return `Disposta & Flexível 💃`;
+            return `Bem-Estar Total & Plena ✨`;
+        case 'energia':
+            if (v === 1) return `Desânimo / Exaustão 😴`;
+            if (v === 2) return `Energia Baixa / Lenta ☕`;
+            if (v === 3) return `Ritmo Moderado 🌿`;
+            if (v === 4) return `Disposta & Produtiva ⚡`;
+            return `Revigorada / Pico de Vigor 🔥`;
+        case 'comunicacao':
+            if (v === 1) return `Silenciosa / Fechada 🤫`;
+            if (v === 2) return `Monossilábica / Poupando Voz 💭`;
+            if (v === 3) return `Conversa Normal 🗣️`;
+            if (v === 4) return `Comunicativa & Sociável 💬`;
+            return `Ativa Verbalmente & Expressiva ✨`;
+        case 'social':
+            if (v === 1) return `Querendo Ficar Só / Ninho 🛋️`;
+            if (v === 2) return `Preferindo Silêncio / Calma 📖`;
+            if (v === 3) return `Neutra / Equilibrada ☕`;
+            if (v === 4) return `Aberta a Conversas / Saídas 👭`;
+            return `Querendo Companhia / Socializar 🎉`;
+        case 'pazmental':
+            if (v === 1) return `Sobrecarga / Mente Ansiosa 🌪️`;
+            if (v === 2) return `Pensamentos Acelerados ⚡`;
+            if (v === 3) return `Pensamentos Sob Controle 🧘‍♀️`;
+            if (v === 4) return `Mente Tranquila & Clara 🌿`;
+            return `Paz Absoluta & Clareza Serena 🕊️`;
+        case 'paciencia':
+            if (v === 1) return `Pavio Curto / Irritada ⚡`;
+            if (v === 2) return `Sensível a Barulho / Ruídos 🔊`;
+            if (v === 3) return `Tolerância Normal 🌿`;
+            if (v === 4) return `Serena & Gentil 🌸`;
+            return `Paciência Doce & Compreensiva 💖`;
+        case 'autoestima':
+            if (v === 1) return `Autocrítica / Borocochô 🥀`;
+            if (v === 2) return `Insegura / Vulnerável 💧`;
+            if (v === 3) return `Confortável Consigo Mesma 💃`;
+            if (v === 4) return `Bonita, Segura & Forte ✨`;
+            return `Deusa / Amor-Próprio Radiante 👑`;
+        default:
+            return `Nível ${v}`;
+    }
+};
+
+window.atualizarRotuloBarraSintomas = function(tipo) {
+    const rng = document.getElementById(`range-sint-${tipo}`);
+    const badge = document.getElementById(`badge-sint-${tipo}`);
+    if (rng && badge) {
+        badge.textContent = window.obterDescricaoNotaBarraSintomas(tipo, rng.value);
     }
 };
 
@@ -1314,23 +2476,34 @@ window.salvarRegistroSintomaDiario = async function() {
     const usuarioId = obterUsuarioIdSeguro();
     if (!supabase || !usuarioId) return;
 
-    const humoresSelecionados = Array.from(document.querySelectorAll('.tag-opcao-humor.selecionado')).map(b => b.getAttribute('data-valor'));
-    const sintomasSelecionados = Array.from(document.querySelectorAll('.tag-opcao-sintoma.selecionado')).map(b => b.getAttribute('data-valor'));
-    const sangrando = document.getElementById('check-menstruando-hoje')?.checked;
+    const valores = {
+        emocional: parseInt(document.getElementById('range-sint-emocional')?.value || '3', 10),
+        fisico: parseInt(document.getElementById('range-sint-fisico')?.value || '3', 10),
+        energia: parseInt(document.getElementById('range-sint-energia')?.value || '3', 10),
+        comunicacao: parseInt(document.getElementById('range-sint-comunicacao')?.value || '3', 10),
+        social: parseInt(document.getElementById('range-sint-social')?.value || '3', 10),
+        pazmental: parseInt(document.getElementById('range-sint-pazmental')?.value || '3', 10),
+        paciencia: parseInt(document.getElementById('range-sint-paciencia')?.value || '3', 10),
+        autoestima: parseInt(document.getElementById('range-sint-autoestima')?.value || '3', 10)
+    };
 
-    if (humoresSelecionados.length === 0 && sintomasSelecionados.length === 0 && !sangrando) {
-        return typeof window.mostrarToast === 'function' ? window.mostrarToast("Selecione pelo menos uma opção.", "erro") : alert("Selecione algo.");
-    }
+    const sangrando = false;
 
     const hojeObj = new Date();
     const hojeStr = hojeObj.getFullYear() + "-" + String(hojeObj.getMonth() + 1).padStart(2, '0') + "-" + String(hojeObj.getDate()).padStart(2, '0');
+
+    const mediaEmocional = ((valores.emocional + valores.paciencia + valores.autoestima) / 3).toFixed(1);
+    const mediaFisica = ((valores.fisico + valores.energia + valores.pazmental) / 3).toFixed(1);
+
+    const descHumorTexto = `Emocional: ${valores.emocional}/5, Paciência: ${valores.paciencia}/5, Autoestima: ${valores.autoestima}/5 (Média: ${mediaEmocional})`;
+    const descFisicoTexto = `Físico: ${valores.fisico}/5, Energia: ${valores.energia}/5, Paz: ${valores.pazmental}/5, Social: ${valores.social}/5, Fala: ${valores.comunicacao}/5 (Média: ${mediaFisica})`;
 
     try {
         const payload = {
             usuario_id: usuarioId,
             data_registro: hojeStr,
-            humor: humoresSelecionados.length > 0 ? humoresSelecionados.join(', ') : null,
-            sintoma_fisico: sintomasSelecionados.length > 0 ? sintomasSelecionados.join(', ') : 'nenhum',
+            humor: descHumorTexto,
+            sintoma_fisico: descFisicoTexto,
             sangramento_ativo: sangrando
         };
 
@@ -1339,11 +2512,148 @@ window.salvarRegistroSintomaDiario = async function() {
         if (error) {
             window.mostrarToast("Erro ao guardar: " + error.message, "erro");
         } else {
-            if (typeof window.mostrarToast === 'function') window.mostrarToast("Registo diário salvo com sucesso!", "sucesso");
-            
-            document.querySelectorAll('.tag-opcao-humor.selecionado, .tag-opcao-sintoma.selecionado').forEach(b => window.toggleTagSelecao(b));
-            if (document.getElementById('check-menstruando-hoje')) document.getElementById('check-menstruando-hoje').checked = false;
-            
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast("As 8 dimensões de hoje foram guardadas com sucesso!", "sucesso");
+            }
+            window.alternarSecaoComoSeSenteHoje();
+            await window.carregarHistoricoSintomas();
+        }
+    } catch (err) { 
+        console.error(err); 
+    }
+};
+
+window.carregarHistoricoSintomas = async function() {
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    if (!supabase || !usuarioId) return;
+
+    const limiteObj = new Date();
+    limiteObj.setDate(limiteObj.getDate() - 30);
+    const dataLimite = limiteObj.getFullYear() + "-" + String(limiteObj.getMonth() + 1).padStart(2, '0') + "-" + String(limiteObj.getDate()).padStart(2, '0');
+
+    try {
+        const { data, error } = await supabase
+            .from('saude_sintomas')
+            .select('*')
+            .eq('usuario_id', usuarioId)
+            .gte('data_registro', dataLimite)
+            .order('data_registro', { ascending: false });
+
+        if (!error && data) {
+            window.dadosSintomasDiarios = data;
+            window.renderizarHistoricoSintomas();
+        }
+    } catch (err) {}
+};
+
+function extrairMediaNumericaSintoma(texto, padrao = 3.0) {
+    if (!texto) return padrao;
+    const match = String(texto).match(/Média:\s*([\d\.]+)/i);
+    if (match) {
+        let val = parseFloat(match[1]);
+        if (val > 5) val = val / 2;
+        return val;
+    }
+    const matchNota = String(texto).match(/Nota\s*(\d+)/i);
+    if (matchNota) {
+        let val = parseFloat(matchNota[1]);
+        if (val > 5) val = val / 2;
+        return val;
+    }
+    return padrao;
+}
+
+window.renderizarHistoricoSintomas = function() {
+    const container = document.getElementById('container-historico-sintomas-ciclos');
+    if (!container) return;
+
+    const lista = window.dadosSintomasDiarios || [];
+
+    if (lista.length === 0) {
+        container.innerHTML = `
+            <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:18px; padding:14px; text-align:center;">
+                <span style="font-size:11.5px; color:#6b21a8; font-weight:600;">Sem registos recentes. Toque em 'Responder' para registar o seu dia.</span>
+            </div>
+        `;
+        return;
+    }
+
+    const pontosGrafico = [...lista.slice(0, 10)].reverse();
+    let svgGraficoHtml = '';
+
+    if (pontosGrafico.length >= 2) {
+        const w = 320;
+        const h = 80;
+        const pad = 14;
+        const dx = (w - (pad * 2)) / Math.max(1, pontosGrafico.length - 1);
+        const calcY = (val) => h - pad - (((val - 1) / 4) * (h - (pad * 2)));
+
+        const ptsEmocional = pontosGrafico.map((p, idx) => `${pad + (idx * dx)},${calcY(extrairMediaNumericaSintoma(p.humor, 3.0))}`).join(' ');
+        const ptsFisico = pontosGrafico.map((p, idx) => `${pad + (idx * dx)},${calcY(extrairMediaNumericaSintoma(p.sintoma_fisico, 3.0))}`).join(' ');
+
+        svgGraficoHtml = `
+            <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:18px; padding:12px 14px; margin-bottom:10px; box-shadow:0 3px 10px rgba(124,58,237,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:11px; font-weight:800; color:#581c87; text-transform:uppercase;">Curva das 8 Dimensões</span>
+                    <div style="display:flex; gap:10px; font-size:10px; font-weight:800;">
+                        <span style="color:#7c3aed;">● Emocional</span>
+                        <span style="color:#10b981;">● Vitalidade</span>
+                    </div>
+                </div>
+                <div style="width:100%; height:80px;">
+                    <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
+                        <line x1="${pad}" y1="${calcY(3)}" x2="${w - pad}" y2="${calcY(3)}" stroke="#d8b4fe" stroke-dasharray="3,3" stroke-width="1" />
+                        <polyline fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsEmocional}" />
+                        <polyline fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsFisico}" />
+                        ${pontosGrafico.map((p, idx) => `
+                            <circle cx="${pad + (idx * dx)}" cy="${calcY(extrairMediaNumericaSintoma(p.humor, 3.0))}" r="3" fill="#7c3aed" />
+                            <circle cx="${pad + (idx * dx)}" cy="${calcY(extrairMediaNumericaSintoma(p.sintoma_fisico, 3.0))}" r="3" fill="#10b981" />
+                        `).join('')}
+                    </svg>
+                </div>
+            </div>
+        `;
+    }
+
+    const htmlLista = lista.map(reg => {
+        const partesData = reg.data_registro.split('-');
+        const dataFormatada = `${partesData[2]}/${partesData[1]}`;
+        const humorTxt = reg.humor || '-';
+        const fisicoTxt = reg.sintoma_fisico || '-';
+        const gota = reg.sangramento_ativo ? ' • 🩸 Sangramento Ativo' : '';
+
+        return `
+            <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:14px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(88,28,135,0.03);">
+                <div style="display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; margin-right:8px;">
+                    <strong style="font-size:12px; color:#3b0764;">${dataFormatada}${gota}</strong>
+                    <span style="font-size:11px; color:#581c87; font-weight:600; line-height:1.35;">${humorTxt}</span>
+                    <span style="font-size:10.5px; color:#047857; font-weight:600; line-height:1.35;">${fisicoTxt}</span>
+                </div>
+                <button type="button" style="background:#fef2f2; border:1px solid #fecaca; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;" onclick="window.excluirRegistroSintoma('${reg.id}')" title="Excluir">
+                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        ${svgGraficoHtml}
+        <h4 style="font-size:12px; color:#581c87; margin:6px 0 8px 2px; text-transform:uppercase; font-weight:800;">Histórico dos Registos Diários</h4>
+        ${htmlLista}
+    `;
+};
+
+window.excluirRegistroSintoma = async function(idSintoma) {
+    const supabase = obterClienteSupabaseSeguro();
+    if (!supabase || !idSintoma) return;
+
+    if (!confirm("Deseja mesmo eliminar este registo diário?")) return;
+
+    try {
+        const { error } = await supabase.from('saude_sintomas').delete().eq('id', idSintoma);
+        if (!error) {
+            window.mostrarToast("Registo removido com sucesso!", "sucesso");
             await window.carregarHistoricoSintomas();
         }
     } catch (err) { console.error(err); }
@@ -1610,9 +2920,9 @@ window.carregarDiarioMulher = async function() {
 
                         <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
                             <span style="font-size:10px; font-weight:800; background:#ede3ce; color:#5c4426; padding:2px 7px; border-radius:6px; border:1px solid #d5c3a5;">
-                                ${descFisicaCurta} (${meta.fisico}/10)
+                                ${descFisicaCurta}
                             </span>
-                            <span style="font-size:10px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:2px 7px; border-radius:6px; border:1px solid #e9d5ff;">
+                            <span style="font-size:10px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:2px 7px; border-radius:6px; border:1px solid #d8b4fe;">
                                 Humor: ${meta.humor || 'Feliz'}
                             </span>
                         </div>
@@ -1673,9 +2983,9 @@ window.abrirLeitorCapituloDiario = function(idCapitulo) {
         const descFisicaCurta = meta.fisico <= 3 ? 'Borocochô 🥀' : (meta.fisico <= 7 ? 'Mulherão 💃' : 'Deusa ✨');
         elBadges.innerHTML = `
             <span style="font-size:10.5px; font-weight:800; background:#ede3ce; color:#5c4426; padding:3px 8px; border-radius:6px; border:1px solid #d5c3a5;">
-                Física: ${descFisicaCurta} (${meta.fisico}/10)
+                Física: ${descFisicaCurta}
             </span>
-            <span style="font-size:10.5px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:3px 8px; border-radius:6px; border:1px solid #e9d5ff;">
+            <span style="font-size:10.5px; font-weight:800; background:#f3e8ff; color:#7c3aed; padding:3px 8px; border-radius:6px; border:1px solid #d8b4fe;">
                 Humor: ${meta.humor || 'Feliz'}
             </span>
         `;
@@ -1741,7 +3051,7 @@ window.excluirPaginaDiario = async function(idDiario) {
 };
 
 // =========================================================================
-// 8. MINUTO ZEN (VÍDEO ZEN.MP4 TELA CHEIA COM SOM E LOOP) E MODO ALÍVIO
+// 8. MINUTO ZEN (VÍDEO ZEN.MP4 TELA CHEIA) E MODO ALÍVIO
 // =========================================================================
 
 window.abrirModalMinutoZen = function() {
@@ -1753,7 +3063,6 @@ window.abrirModalMinutoZen = function() {
         modal.innerHTML = `
             <video id="video-zen-reprodutor" loop playsinline webkit-playsinline preload="auto" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; pointer-events:auto;"></video>
             
-            <!-- Botão de Fechar no Topo Elegante -->
             <button type="button" onclick="window.fecharModalMinutoZen()" 
                     style="position:absolute; top:24px; right:20px; z-index:10; width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,0.55); border:1.5px solid rgba(255,255,255,0.7); color:#ffffff; font-size:20px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,0.4); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);">
                 ✕
@@ -1767,17 +3076,14 @@ window.abrirModalMinutoZen = function() {
 
     const vid = document.getElementById('video-zen-reprodutor');
     if (vid) {
-        // Vinculação de src do vídeo
         if (!vid.src || !vid.src.includes('zen.mp4')) {
             vid.src = 'zen.mp4';
         }
 
-        // Atributos de compatibilidade iOS WebKit (Safari no iPhone)
         vid.setAttribute('playsinline', '');
         vid.setAttribute('webkit-playsinline', '');
         vid.loop = true;
 
-        // Ativação do áudio permitida pelo toque físico do usuário no botão
         vid.muted = false;
         vid.defaultMuted = false;
         vid.volume = 1.0;
@@ -1788,7 +3094,6 @@ window.abrirModalMinutoZen = function() {
         const promessa = vid.play();
         if (promessa !== undefined) {
             promessa.catch(() => {
-                // Se a restrição do iPhone bloquear áudio sem toque prévio, reproduz com som destravado via touch
                 vid.play().catch(() => {});
             });
         }
@@ -1811,7 +3116,6 @@ window.fecharModalMinutoZen = function() {
     }
 };
 
-// Aliases para retrocompatibilidade
 window.abrirModalRespiracaoGuiada = window.abrirModalMinutoZen;
 window.fecharModalRespiracao = window.fecharModalMinutoZen;
 
@@ -1823,13 +3127,13 @@ window.abrirModoAcolhimentoEmergencia = function() {
         modal.className = 'modal-overlay';
         modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000200; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;';
         modal.innerHTML = `
-            <div style="background:#ffffff; width:100%; max-width:420px; max-height:86vh; padding:24px; border-radius:30px; border:1.5px solid #e9d5ff; overflow-y:auto; box-shadow:0 25px 60px rgba(59,7,100,0.22); text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #ede9fe; padding-bottom:10px;">
+            <div style="background:#ffffff; width:100%; max-width:420px; max-height:86vh; padding:24px; border-radius:30px; border:1.5px solid #d8b4fe; overflow-y:auto; box-shadow:0 25px 60px rgba(59,7,100,0.22); text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid #d8b4fe; padding-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <img src="./icone/medita.png" onerror="this.onerror=null; this.src='./icone/icone-mulher.png';" alt="Acolhimento" style="width:29px; height:29px; object-fit:contain;">
                         <h3 style="margin:0; font-size:18px; font-weight:900; color:#3b0764;">Modo Acolhimento</h3>
                     </div>
-                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; font-weight:800; color:#581c87; background:#faf5ff; border:1px solid #e9d5ff;" onclick="window.fecharModoAcolhimento()">✕</button>
+                    <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; font-weight:800; color:#581c87; background:#faf5ff; border:1px solid #d8b4fe;" onclick="window.fecharModoAcolhimento()">✕</button>
                 </div>
 
                 <p style="font-size:12.5px; color:#581c87; line-height:1.5; margin:0 0 16px 0; font-weight:600;">
@@ -1837,7 +3141,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                 </p>
 
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                    <div style="background:#faf5ff; border:1px solid #d8b4fe; border-radius:16px; padding:14px;">
                         <strong style="font-size:13px; color:#3b0764; display:block; margin-bottom:5px;">Posições de Alívio (Cólica)</strong>
                         <p style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">
                             • <strong>Postura da Criança:</strong> Ajoelhe-se, encoste os glúteos nos calcanhares e estique os braços à frente no chão.<br>
@@ -1845,7 +3149,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                         </p>
                     </div>
 
-                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                    <div style="background:#faf5ff; border:1px solid #d8b4fe; border-radius:16px; padding:14px;">
                         <strong style="font-size:13px; color:#581c87; display:block; margin-bottom:5px;">Filmes & Séries Reconfortantes</strong>
                         <p style="font-size:12px; color:#4c1d95; margin:0; line-height:1.45;">
                             • O Fabuloso Destino de Amélie Poulain<br>
@@ -1854,7 +3158,7 @@ window.abrirModoAcolhimentoEmergencia = function() {
                         </p>
                     </div>
 
-                    <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:14px;">
+                    <div style="background:#faf5ff; border:1px solid #d8b4fe; border-radius:16px; padding:14px;">
                         <strong style="font-size:13px; color:#7e22ce; display:block; margin-bottom:5px;">Poesia de Acolhimento</strong>
                         <blockquote style="font-size:12px; color:#3b0764; font-style:italic; margin:0; line-height:1.45;">
                             “Não há mal que dure sempre, nem cansaço que o descanso não cure. Permita-se recolher, aquecer a alma e esperar a nova primavera.”
@@ -1878,17 +3182,26 @@ window.fecharModoAcolhimento = function() {
 };
 
 // =========================================================================
-// 9. PREVISÕES, CICLOS E SINCRONIZAÇÃO
+// 9. PREVISÕES, CICLOS, INSPIRAÇÃO E REGISTRO RÁPIDO
 // =========================================================================
+
+window.registrarMenstruacaoHojeRapido = function() {
+    window.abrirModalRegistroCiclo();
+    const dtInicio = document.getElementById('input-data-inicio-ciclo');
+    if (dtInicio) {
+        const hojeObj = new Date();
+        dtInicio.value = hojeObj.getFullYear() + '-' + String(hojeObj.getMonth() + 1).padStart(2, '0') + '-' + String(hojeObj.getDate()).padStart(2, '0');
+    }
+};
 
 window.abrirModalRegistroCiclo = function() {
     const modal = document.getElementById('modal-registro-ciclo-mulher');
     if (modal) {
         modal.classList.remove('oculto');
         const dtInicio = document.getElementById('input-data-inicio-ciclo');
-        if (dtInicio) {
+        if (dtInicio && !dtInicio.value) {
             const h = new Date();
-            dtInicio.value = h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0') + '-' + String(h.getDate()).padStart(2,'0');
+            dtInicio.value = h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0') + '-' + String(h.getDate()).padStart(2, '0');
         }
     }
 };
@@ -1915,6 +3228,32 @@ window.carregarDadosCicloMulher = async function() {
     window.processarEExibirPrevisao();
 };
 
+window.atualizarInspiracaoDiaria = function(sortearOutra = false) {
+    const elInspiracao = document.getElementById('txt-inspiracao-diaria');
+    if (!elInspiracao) return;
+
+    let catalogo = (window.AcervoBemEstarMulher && window.AcervoBemEstarMulher.length > 0)
+        ? window.AcervoBemEstarMulher
+        : INSPIRACOES_FALLBACK;
+
+    if (!catalogo || catalogo.length === 0) {
+        catalogo = INSPIRACOES_FALLBACK;
+    }
+
+    if (sortearOutra) {
+        const idxSorteio = Math.floor(Math.random() * catalogo.length);
+        elInspiracao.innerHTML = catalogo[idxSorteio];
+        if (typeof window.mostrarToast === 'function') {
+            window.mostrarToast("Nova inspiração da alma sorteada! 🌸", "info");
+        }
+    } else {
+        const hoje = obterHoje();
+        const inicioAno = criarDataAbsoluta(hoje.getFullYear(), 1, 1);
+        const diaDoAno = Math.max(0, calcularDiffDias(hoje, inicioAno));
+        elInspiracao.innerHTML = catalogo[diaDoAno % catalogo.length];
+    }
+};
+
 window.processarEExibirPrevisao = function() {
     const elFase = document.getElementById('display-fase-ciclo-atual');
     const elPrevisao = document.getElementById('txt-previsao-proxima-menstruacao');
@@ -1923,24 +3262,18 @@ window.processarEExibirPrevisao = function() {
     const elBarra = document.getElementById('barra-progresso-ciclo');
     const elTxtDia = document.getElementById('txt-dia-ciclo-atual');
     const elTxtFinal = document.getElementById('txt-dia-ciclo-final');
-    const elInspiracao = document.getElementById('txt-inspiracao-diaria');
 
     const hoje = obterHoje();
     const inicioAno = criarDataAbsoluta(hoje.getFullYear(), 1, 1);
     const diaDoAno = Math.max(0, calcularDiffDias(hoje, inicioAno));
 
-    if (elInspiracao) {
-        let catalogoInspiracao = (window.AcervoBemEstarMulher && window.AcervoBemEstarMulher.length > 0)
-            ? window.AcervoBemEstarMulher
-            : INSPIRACOES_FALLBACK;
-        elInspiracao.innerHTML = catalogoInspiracao[diaDoAno % catalogoInspiracao.length];
-    }
+    window.atualizarInspiracaoDiaria(false);
 
     const ciclosValidosPassados = window.dadosCicloMulher ? window.dadosCicloMulher.filter(c => parseData(c.data_inicio).getTime() <= hoje.getTime()) : [];
 
     if (ciclosValidosPassados.length === 0) {
         if (elFase) elFase.textContent = "Ciclo Natural (Bem-Estar)";
-        if (elPrevisao) elPrevisao.textContent = "Toque em '+ Ciclo' para acompanhar a sua previsão.";
+        if (elPrevisao) elPrevisao.textContent = "Toque em '+ Ciclo' ou 'Menstruei hoje' para iniciar.";
         if (elDataBase) elDataBase.textContent = "Sem histórico inicial registado";
         
         let dicaGenerica = "A sua energia e criatividade renovam-se a cada dia. Respeite os seus limites e cuide de si com carinho.";
@@ -1951,6 +3284,8 @@ window.processarEExibirPrevisao = function() {
         if (elBarra) elBarra.style.width = "40%";
         if (elTxtDia) elTxtDia.textContent = "Dia 1";
         if (elTxtFinal) elTxtFinal.textContent = "Dia 28";
+
+        window.renderizarRoteiroEstagiosCiclo(1, 28, 5, false);
         return;
     }
 
@@ -1982,7 +3317,7 @@ window.processarEExibirPrevisao = function() {
     const diasParaProxima = calcularDiffDias(proximaMenstruacao, hoje);
 
     const diaOvulacaoEstimado = mediaCiclo - 14; 
-    const inicioJanelaFertil = diaOvulacaoEstimado - 4;
+    const inicioJanelaFertil = Math.max(duracaoSangramento + 1, diaOvulacaoEstimado - 4);
     const fimJanelaFertil = diaOvulacaoEstimado + 1;
 
     let faseTexto = "";
@@ -2046,7 +3381,373 @@ window.processarEExibirPrevisao = function() {
         elTxtDia.textContent = `Dia ${diaAtualDoCiclo}`;
         elTxtFinal.textContent = diaAtualDoCiclo > mediaCiclo ? `Atraso` : `Dia ${mediaCiclo}`;
     }
+
+    // Renderiza o Roteiro em Linha dos 4 Estágios com a Previsão de Chegada
+    window.renderizarRoteiroEstagiosCiclo(diaAtualDoCiclo, mediaCiclo, duracaoSangramento, true);
 };
+
+window.renderizarRoteiroEstagiosCiclo = function(diaAtual, mediaCiclo, duracaoSangramento, cicloAtivo) {
+    duracaoSangramento = duracaoSangramento || 5;
+    mediaCiclo = mediaCiclo || 28;
+
+    const diaOvulacao = mediaCiclo - 14;
+    const inicioFertil = Math.max(duracaoSangramento + 1, diaOvulacao - 4);
+    const fimFertil = diaOvulacao + 1;
+
+    const fimMenstrual = duracaoSangramento;
+    const inicioFolicular = duracaoSangramento + 1;
+    const fimFolicular = inicioFertil - 1;
+    const inicioOvulacao = inicioFertil;
+    const fimOvulacao = fimFertil;
+    const inicioLutea = fimFertil + 1;
+    const fimLutea = mediaCiclo;
+
+    // Atualiza os subtítulos de dias de cada marco na interface
+    const elSub1 = document.getElementById('sub-estagio-1');
+    const elSub2 = document.getElementById('sub-estagio-2');
+    const elSub3 = document.getElementById('sub-estagio-3');
+    const elSub4 = document.getElementById('sub-estagio-4');
+
+    if (elSub1) elSub1.textContent = `Dia 1-${fimMenstrual}`;
+    if (elSub2) elSub2.textContent = `Dia ${inicioFolicular}-${fimFolicular}`;
+    if (elSub3) elSub3.textContent = `Dia ${inicioOvulacao}-${fimOvulacao}`;
+    if (elSub4) elSub4.textContent = `Dia ${inicioLutea}-${fimLutea}`;
+
+    if (!cicloAtivo) {
+        const lblResumo = document.getElementById('lbl-status-estagio-resumo');
+        const txtEst = document.getElementById('txt-estimativa-proximo-estagio');
+        if (lblResumo) lblResumo.textContent = 'Ciclo Padrão (28 Dias)';
+        if (txtEst) txtEst.innerHTML = 'Registe a sua data em <strong>Ciclo</strong> para mapear o seu estágio atual e a previsão em tempo real.';
+        return;
+    }
+
+    window.estagioCicloAtualDetectado = 1;
+    let estagioAtual = 1;
+    let nomeEstagioAtual = "Fase Menstrual";
+    let proximoEstagioNome = "";
+    let diaChegadaProximo = 0;
+    let diasParaProximo = 0;
+    let progressoLinha = 12;
+
+    if (diaAtual <= fimMenstrual) {
+        estagioAtual = 1;
+        nomeEstagioAtual = "Fase Menstrual";
+        proximoEstagioNome = "Fase Folicular";
+        diaChegadaProximo = inicioFolicular;
+        diasParaProximo = diaChegadaProximo - diaAtual;
+        progressoLinha = 12;
+    } else if (diaAtual <= fimFolicular) {
+        estagioAtual = 2;
+        nomeEstagioAtual = "Fase Folicular";
+        proximoEstagioNome = "Fase Ovulatória";
+        diaChegadaProximo = inicioOvulacao;
+        diasParaProximo = diaChegadaProximo - diaAtual;
+        progressoLinha = 38;
+    } else if (diaAtual <= fimOvulacao) {
+        estagioAtual = 3;
+        nomeEstagioAtual = "Fase Ovulatória";
+        proximoEstagioNome = "Fase Lútea";
+        diaChegadaProximo = inicioLutea;
+        diasParaProximo = diaChegadaProximo - diaAtual;
+        progressoLinha = 65;
+    } else if (diaAtual <= mediaCiclo) {
+        estagioAtual = 4;
+        nomeEstagioAtual = "Fase Lútea";
+        proximoEstagioNome = "Fase Menstrual (Novo Ciclo)";
+        diaChegadaProximo = mediaCiclo + 1;
+        diasParaProximo = mediaCiclo - diaAtual + 1;
+        progressoLinha = 92;
+    } else {
+        estagioAtual = 4;
+        nomeEstagioAtual = "Fase Lútea (Atraso)";
+        proximoEstagioNome = "Novo Ciclo Menstrual";
+        diaChegadaProximo = mediaCiclo + 1;
+        diasParaProximo = 0;
+        progressoLinha = 100;
+    }
+
+    window.estagioCicloAtualDetectado = estagioAtual;
+
+    // Atualiza a linha de conexão com animação fluida
+    const elLinha = document.getElementById('linha-progresso-estagios');
+    if (elLinha) {
+        elLinha.style.width = `${progressoLinha}%`;
+    }
+
+    // Atualiza visualmente os 4 marcos (bolinhas)
+    for (let i = 1; i <= 4; i++) {
+        const marco = document.getElementById(`marco-estagio-${i}`);
+        if (!marco) continue;
+        const bolinha = marco.querySelector('.bolinha-estagio');
+        const titulo = marco.querySelector('strong');
+        const subtitulo = marco.querySelector('span');
+
+        if (i === estagioAtual) {
+            // Estágio Ativo
+            bolinha.style.background = 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)';
+            bolinha.style.borderColor = '#c084fc';
+            bolinha.style.color = '#ffffff';
+            bolinha.style.boxShadow = '0 0 0 4px rgba(124, 58, 237, 0.22), 0 4px 10px rgba(124, 58, 237, 0.3)';
+            bolinha.style.transform = 'scale(1.15)';
+            if (titulo) titulo.style.color = '#581c87';
+            if (subtitulo) subtitulo.style.color = '#7c3aed';
+        } else if (i < estagioAtual) {
+            // Estágio Concluído
+            bolinha.style.background = '#10b981';
+            bolinha.style.borderColor = '#059669';
+            bolinha.style.color = '#ffffff';
+            bolinha.style.boxShadow = 'none';
+            bolinha.style.transform = 'scale(1)';
+            bolinha.innerHTML = '✓';
+            if (titulo) titulo.style.color = '#047857';
+            if (subtitulo) subtitulo.style.color = '#059669';
+        } else {
+            // Estágio Futuro
+            bolinha.style.background = '#ffffff';
+            bolinha.style.borderColor = '#d8b4fe';
+            bolinha.style.color = '#94a3b8';
+            bolinha.style.boxShadow = 'none';
+            bolinha.style.transform = 'scale(1)';
+            bolinha.textContent = i;
+            if (titulo) titulo.style.color = '#64748b';
+            if (subtitulo) subtitulo.style.color = '#94a3b8';
+        }
+    }
+
+    // Atualiza o resumo no topo do cartão
+    const lblResumo = document.getElementById('lbl-status-estagio-resumo');
+    if (lblResumo) {
+        lblResumo.textContent = `Estágio ${estagioAtual} • ${nomeEstagioAtual}`;
+    }
+
+    // Atualiza a caixa de estimativa do próximo estágio
+    const txtEst = document.getElementById('txt-estimativa-proximo-estagio');
+    if (txtEst) {
+        if (diasParaProximo <= 0) {
+            txtEst.innerHTML = `Transição iminente: a <strong>${proximoEstagioNome}</strong> deve começar hoje ou a qualquer momento.`;
+        } else if (diasParaProximo === 1) {
+            txtEst.innerHTML = `A <strong>${proximoEstagioNome}</strong> está prevista para começar <strong>amanhã</strong> (por volta do Dia ${diaChegadaProximo} do ciclo).`;
+        } else {
+            txtEst.innerHTML = `O próximo estágio (<strong>${proximoEstagioNome}</strong>) chega em média no <strong>Dia ${diaChegadaProximo}</strong> — faltam cerca de <strong>${diasParaProximo} dia(s)</strong>.`;
+        }
+    }
+
+    // Atualiza Painel Biológico: Fertilidade, Libido e Energia
+    const badgeFert = document.getElementById('badge-bio-fertilidade');
+    const subFert = document.getElementById('sub-bio-fertilidade');
+    const badgeLib = document.getElementById('badge-bio-libido');
+    const subLib = document.getElementById('sub-bio-libido');
+    const badgeEnergia = document.getElementById('badge-bio-energia');
+    const subEnergia = document.getElementById('sub-bio-energia');
+
+    let dadosBio = {
+        fert: "Mínima",
+        subFert: "Pouco propenso",
+        corFert: "#be185d",
+        lib: "Em recolhimento",
+        subLib: "Foco em carinho",
+        corLib: "#7c3aed",
+        energia: "Bateria Baixa",
+        subEnergia: "Repouso & Ninho",
+        corEnergia: "#ca8a04"
+    };
+
+    if (estagioAtual === 1) { // Menstrual
+        dadosBio = {
+            fert: "Muito Baixa",
+            subFert: "Improvável engravidar",
+            corFert: "#9d174d",
+            lib: "Introspectiva",
+            subLib: "Conforto & Aconchego",
+            corLib: "#6b21a8",
+            energia: "Bateria Baixa",
+            subEnergia: "Repouso & Descanso",
+            corEnergia: "#e11d48"
+        };
+    } else if (estagioAtual === 2) { // Folicular
+        dadosBio = {
+            fert: "Média-Baixa",
+            subFert: "Fertilidade subindo",
+            corFert: "#b45309",
+            lib: "Despertando",
+            subLib: "Energia em ascensão",
+            corLib: "#7c3aed",
+            energia: "Em Alta ⚡",
+            subEnergia: "Criatividade & Pique",
+            corEnergia: "#16a34a"
+        };
+    } else if (estagioAtual === 3) { // Ovulatória
+        dadosBio = {
+            fert: "PICO MÁXIMO",
+            subFert: "Altamente propensa",
+            corFert: "#e11d48",
+            lib: "Ápice & Fogo 🔥",
+            subLib: "Magnetismo no auge",
+            corLib: "#c026d3",
+            energia: "Radiante / 100%",
+            subEnergia: "Força & Vigor Total",
+            corEnergia: "#d97706"
+        };
+    } else { // Lútea
+        dadosBio = {
+            fert: "Infértil / Baixa",
+            subFert: "Pouco propensa",
+            corFert: "#64748b",
+            lib: "Calma & Suave",
+            subLib: "Afeto e conexão serena",
+            corLib: "#581c87",
+            energia: "Desacelerando",
+            subEnergia: "Pede pausas & calma",
+            corEnergia: "#64748b"
+        };
+    }
+
+    if (badgeFert) {
+        badgeFert.textContent = dadosBio.fert;
+        badgeFert.style.color = dadosBio.corFert;
+    }
+    if (subFert) subFert.textContent = dadosBio.subFert;
+    if (badgeLib) {
+        badgeLib.textContent = dadosBio.lib;
+        badgeLib.style.color = dadosBio.corLib;
+    }
+    if (subLib) subLib.textContent = dadosBio.subLib;
+    if (badgeEnergia) {
+        badgeEnergia.textContent = dadosBio.energia;
+        badgeEnergia.style.color = dadosBio.corEnergia;
+    }
+    if (subEnergia) subEnergia.textContent = dadosBio.subEnergia;
+
+};
+
+
+// =========================================================================
+// MOTOR DO MODAL DE ORIENTAÇÕES E DICAS POR FASE DO CICLO
+// =========================================================================
+window.estagioModalAtivoAtual = 1;
+window.topicoModalAtivoAtual = 'geral';
+
+window.abrirModalOrientacoesFase = function(topico = 'geral', estagioNum = null) {
+    let modal = document.getElementById('modal-orientacoes-estagio-fase');
+    if (!modal) return;
+
+    if (estagioNum !== null && estagioNum !== undefined) {
+        window.estagioModalAtivoAtual = parseInt(estagioNum, 10);
+    } else {
+        window.estagioModalAtivoAtual = window.estagioCicloAtualDetectado || 1;
+    }
+
+    window.topicoModalAtivoAtual = topico || 'geral';
+    window.renderizarConteudoModalOrientacoes();
+    modal.classList.remove('oculto');
+};
+
+window.fecharModalOrientacoesFase = function() {
+    const modal = document.getElementById('modal-orientacoes-estagio-fase');
+    if (modal) modal.classList.add('oculto');
+};
+
+window.trocarFaseModalOrientacoes = function(numFase) {
+    window.estagioModalAtivoAtual = numFase;
+    window.renderizarConteudoModalOrientacoes();
+};
+
+window.trocarTopicoModalOrientacoes = function(topico) {
+    window.topicoModalAtivoAtual = topico;
+    window.renderizarConteudoModalOrientacoes();
+};
+
+window.renderizarConteudoModalOrientacoes = function() {
+    const numFase = window.estagioModalAtivoAtual || 1;
+    const topico = window.topicoModalAtivoAtual || 'geral';
+    const dados = window.ORIENTACOES_FASES_CICLO ? window.ORIENTACOES_FASES_CICLO[numFase] : null;
+    if (!dados) return;
+
+    const elEmoji = document.getElementById('modal-fase-emoji');
+    const elTitulo = document.getElementById('modal-fase-titulo');
+    const elSubtitulo = document.getElementById('modal-fase-subtitulo');
+
+    if (elEmoji) elEmoji.textContent = dados.emoji;
+    if (elTitulo) elTitulo.textContent = dados.nome;
+    if (elSubtitulo) elSubtitulo.textContent = `${dados.estacao} • ${dados.dias_ref}`;
+
+    for (let i = 1; i <= 4; i++) {
+        const btnFase = document.getElementById(`btn-modal-fase-${i}`);
+        if (!btnFase) continue;
+        if (i === numFase) {
+            btnFase.style.background = '#ffffff';
+            btnFase.style.color = '#3b0764';
+            btnFase.style.boxShadow = '0 2px 6px rgba(124, 58, 237, 0.15)';
+            btnFase.style.fontWeight = '900';
+        } else {
+            btnFase.style.background = 'transparent';
+            btnFase.style.color = '#6b21a8';
+            btnFase.style.boxShadow = 'none';
+            btnFase.style.fontWeight = '700';
+        }
+    }
+
+    ['geral', 'fertilidade', 'libido', 'energia'].forEach(t => {
+        const btnTopico = document.getElementById(`btn-modal-topico-${t}`);
+        if (!btnTopico) return;
+        if (t === topico) {
+            btnTopico.style.background = '#7c3aed';
+            btnTopico.style.color = '#ffffff';
+            btnTopico.style.border = 'none';
+        } else {
+            btnTopico.style.background = '#ffffff';
+            btnTopico.style.color = '#581c87';
+            btnTopico.style.border = '1px solid #d8b4fe';
+        }
+    });
+
+    const container = document.getElementById('modal-conteudo-orientacoes-corpo');
+    if (!container) return;
+
+    let html = '';
+
+    if (topico === 'geral') {
+        html += `
+            <div style="background:#faf5ff; border:1.5px solid #d8b4fe; border-left:4px solid #7c3aed; border-radius:14px; padding:12px; margin-bottom:12px;">
+                <span style="font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:3px;">Sua Vibe & Fisiologia Nesta Fase:</span>
+                <p style="margin:0; font-size:12px; color:#3b0764; font-weight:600; line-height:1.45;">${dados.resumo_vibe}</p>
+            </div>
+        `;
+    }
+
+    const chavesCards = (topico === 'geral') ? ['fertilidade', 'libido', 'energia'] : [topico];
+
+    chavesCards.forEach(chave => {
+        const c = dados.cards[chave];
+        if (!c) return;
+
+        html += `
+            <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:16px; padding:12px 14px; margin-bottom:10px; box-shadow:0 3px 8px rgba(88,28,135,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #f3e8ff; padding-bottom:6px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:16px;">${c.icone}</span>
+                        <strong style="font-size:12.5px; color:#3b0764;">${c.titulo}</strong>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:800; background:#faf5ff; color:${c.cor}; border:1px solid #d8b4fe; padding:2px 8px; border-radius:8px;">${c.badge}</span>
+                </div>
+
+                <div style="font-size:11.5px; color:#581c87; margin-bottom:8px; line-height:1.4; background:#fdf4ff; border-radius:8px; padding:7px 9px;">
+                    <strong>O que acontece no seu corpo:</strong> ${c.fisiologia}
+                </div>
+
+                <div style="font-size:11.5px; color:#3b0764; line-height:1.45;">
+                    <strong style="font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; display:block; margin-bottom:4px;">Como lidar da melhor forma:</strong>
+                    <ul style="margin:0; padding-left:16px; display:flex; flex-direction:column; gap:4px;">
+                        ${c.como_lidar.map(item => `<li style="font-size:11px;">${item}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+};
+
 
 window.salvarCicloHistorico = async function() {
     const supabase = obterClienteSupabaseSeguro();
@@ -2068,80 +3769,26 @@ window.salvarCicloHistorico = async function() {
         if (error) {
             window.mostrarToast("Erro ao guardar ciclo: " + error.message, "erro");
         } else {
-            window.mostrarToast("Início do ciclo atualizado!", "sucesso");
+            window.mostrarToast("Início do ciclo atualizado com sucesso! 🩸", "sucesso");
             window.fecharModalRegistroCiclo();
             await window.carregarDadosCicloMulher();
         }
     } catch (err) { console.error(err); }
 };
 
-window.carregarHistoricoSintomas = async function() {
-    const supabase = obterClienteSupabaseSeguro();
-    const usuarioId = obterUsuarioIdSeguro();
-    if (!supabase || !usuarioId) return;
-
-    const limiteObj = new Date();
-    limiteObj.setDate(limiteObj.getDate() - 15);
-    const dataLimite = limiteObj.getFullYear() + "-" + String(limiteObj.getMonth() + 1).padStart(2, '0') + "-" + String(limiteObj.getDate()).padStart(2, '0');
-
-    try {
-        const { data, error } = await supabase
-            .from('saude_sintomas')
-            .select('*')
-            .eq('usuario_id', usuarioId)
-            .gte('data_registro', dataLimite)
-            .order('data_registro', { ascending: false });
-
-        if (!error && data) {
-            window.dadosSintomasDiarios = data;
-            window.renderizarHistoricoSintomas();
+// =========================================================================
+// 10. GATILHO DE AUTO-INICIALIZAÇÃO SEGURO NA CARGA DA TELA
+// =========================================================================
+(function inicializarEspacoMulherAutomatico() {
+    const disparar = () => {
+        if (typeof window.abrirEspacoMulher === 'function') {
+            window.abrirEspacoMulher();
         }
-    } catch (err) {}
-};
+    };
 
-window.renderizarHistoricoSintomas = function() {
-    const container = document.getElementById('container-historico-sintomas-ciclos');
-    if (!container) return;
-
-    if (!window.dadosSintomasDiarios || window.dadosSintomasDiarios.length === 0) {
-        container.innerHTML = '<span style="font-size:11.5px; color:#6b21a8; text-align:center; display:block; padding:12px; font-weight:600;">Sem registos recentes.</span>';
-        return;
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', disparar);
+    } else {
+        setTimeout(disparar, 60);
     }
-
-    const htmlLista = window.dadosSintomasDiarios.map(reg => {
-        const partesData = reg.data_registro.split('-');
-        const dataFormatada = `${partesData[2]}/${partesData[1]}`;
-        const humorTxt = reg.humor || '-';
-        const fisicoTxt = reg.sintoma_fisico || '-';
-        const gota = reg.sangramento_ativo ? ' • Sangramento Ativo' : '';
-
-        return `
-            <div style="background:#ffffff; border:1px solid #ede9fe; border-radius:14px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; flex-direction:column; gap:2px;">
-                    <strong style="font-size:12.5px; color:#3b0764;">${dataFormatada}${gota}</strong>
-                    <span style="font-size:11px; color:#581c87; font-weight:500;">Humor: ${humorTxt} • Física: ${fisicoTxt}</span>
-                </div>
-                <button type="button" style="background:#fef2f2; border:none; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="window.excluirRegistroSintoma('${reg.id}')" title="Excluir">
-                    <img src="./icone/icone-lixo.png" alt="Excluir" style="width:16px; height:16px; object-fit:contain;">
-                </button>
-            </div>
-        `;
-    }).join('');
-
-    container.innerHTML = `<h4 style="font-size:12px; color:#581c87; margin: 6px 0 8px 2px; text-transform:uppercase; font-weight:800;">Últimos Registos</h4>` + htmlLista;
-};
-
-window.excluirRegistroSintoma = async function(idSintoma) {
-    const supabase = obterClienteSupabaseSeguro();
-    if (!supabase || !idSintoma) return;
-
-    if (!confirm("Deseja mesmo eliminar este registo?")) return;
-
-    try {
-        const { error } = await supabase.from('saude_sintomas').delete().eq('id', idSintoma);
-        if (!error) {
-            window.mostrarToast("Registo removido com sucesso!", "sucesso");
-            await window.carregarHistoricoSintomas();
-        }
-    } catch (err) { console.error(err); }
-};
+})();

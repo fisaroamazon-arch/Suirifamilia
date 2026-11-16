@@ -171,7 +171,8 @@
             transition: background 2.5s ease, backdrop-filter 2.5s ease, -webkit-backdrop-filter 2.5s ease, box-shadow 2.5s ease, border-color 2.5s ease !important;
         }
 
-        .cartao-geral div[style*="background"],
+        /* Aplica vidro aos elementos internos, EXCLUINDO o bloco do cartaz de filmes */
+        .cartao-geral div[style*="background"]:not(#card-carrossel-midia-mulher *),
         .cartao-geral input[type="text"],
         .cartao-geral input[type="date"],
         .cartao-geral input[type="number"],
@@ -190,7 +191,7 @@
             box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08) !important;
         }
 
-        body.modo-vidro .cartao-geral div[style*="background"],
+        body.modo-vidro .cartao-geral div[style*="background"]:not(#card-carrossel-midia-mulher *),
         body.modo-vidro .cartao-geral label[style*="background"] {
             background: rgba(255, 255, 255, 0.75) !important;
             border-color: rgba(233, 213, 255, 0.75) !important;
@@ -204,6 +205,27 @@
             border-color: rgba(233, 213, 255, 0.75) !important;
             backdrop-filter: blur(8px) !important;
             -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        /* =========================================================================
+           PROTEÇÃO BLINDADA DO PÔSTER DE FILMES (ELIMINA O BRANCO OPACO)
+           ========================================================================= */
+        #card-carrossel-midia-mulher div[style*="linear-gradient"] {
+            background: linear-gradient(180deg, rgba(46, 16, 101, 0.15) 0%, rgba(46, 16, 101, 0.92) 100%) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        #card-carrossel-midia-mulher div[style*="#2e1065"] {
+            background: #2e1065 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        #card-carrossel-midia-mulher img#midia-mulher-poster-img {
+            filter: none !important;
+            -webkit-filter: none !important;
+            opacity: 1 !important;
         }
 
         .cartao-geral p, .cartao-geral span, .cartao-geral strong, .cartao-geral h2, .cartao-geral h3, .cartao-geral h4 {
@@ -433,8 +455,9 @@
     <!-- LÊ EXATAMENTE O MESMO CATÁLOGO DE MÚSICAS DO HOMEM.HTML (song/ e lista-musicas.js) -->
     <script src="lista-musicas.js"></script>
     <script src="app-saude-dicas.js"></script>
+    <!-- CATÁLOGO GERAL MESTRE CARREGADO ANTES DE APP-SAUDE-MULHER.JS -->
+    <script src="app-dicas-masculinas.js"></script>
     <script src="app-saude-mulher.js"></script>
-
     <script>
         // =========================================================================
         // MOTOR DE MÚSICA DO ESPAÇO MULHER (100% IDÊNTICO AO MOTOR DE HOMEM.HTML)

@@ -13,6 +13,9 @@ window.cacheTransacoesExtrato = [];
 let itemParaExcluirAgendaId = null;
 let reconhecimentoVozMercado = null;
 
+// Chave local para memorização de escopo padrão em Finanças
+const CHAVE_PREF_ESCOPO_FINANCAS = 'suiri_pref_escopo_financas';
+
 // Dicionário local para classificar termos não cadastrados
 const DICIONARIO_SEGMENTOS_MERCADO = {
     'Açougue': ['carne', 'frango', 'alcatra', 'picanha', 'patinho', 'linguiça', 'peixe', 'tilapia', 'bisteca', 'coxa', 'moída', 'bacon', 'costela', 'bife'],
@@ -46,6 +49,56 @@ function obterUsuarioId() {
 function obterChaveGemini() {
     return localStorage.getItem('suiri_gemini_api_key') || "";
 }
+
+// =========================================================================
+// GESTÃO DE PREFERÊNCIA DE ESCOPO (MEMÓRIA: COMPARTILHADO VS PRIVADO)
+// Primeiro uso padrão: 'casa' (compartilhado)
+// =========================================================================
+
+window.obterEscopoPadraoFinancas = function() {
+    const prefSalva = localStorage.getItem(CHAVE_PREF_ESCOPO_FINANCAS);
+    // Se não houver nada gravado no primeiro uso, o padrão absoluto é 'casa' (compartilhado)
+    return prefSalva ? prefSalva : 'casa';
+};
+
+window.salvarPreferenciaEscopoFinancas = function(novoEscopo) {
+    if (novoEscopo === 'casa' || novoEscopo === 'pessoal') {
+        localStorage.setItem(CHAVE_PREF_ESCOPO_FINANCAS, novoEscopo);
+    }
+};
+
+window.aplicarPreferenciaEscopoFormulario = function() {
+    const escopoPadrao = window.obterEscopoPadraoFinancas();
+    const selEscopo = document.getElementById('select-fin-escopo');
+    if (selEscopo) {
+        selEscopo.value = escopoPadrao;
+        if (!selEscopo.dataset.ouvinteMemoria) {
+            selEscopo.dataset.ouvinteMemoria = "true";
+            selEscopo.addEventListener('change', function() {
+                window.salvarPreferenciaEscopoFinancas(this.value);
+            });
+        }
+    }
+    
+    // Suporte caso seja utilizado radio buttons
+    const radioCasa = document.getElementById('radio-escopo-casa');
+    const radioPessoal = document.getElementById('radio-escopo-pessoal');
+    if (radioCasa && radioPessoal) {
+        if (escopoPadrao === 'pessoal') {
+            radioPessoal.checked = true;
+        } else {
+            radioCasa.checked = true;
+        }
+        if (!radioCasa.dataset.ouvinteMemoria) {
+            radioCasa.dataset.ouvinteMemoria = "true";
+            radioCasa.addEventListener('change', () => window.salvarPreferenciaEscopoFinancas('casa'));
+        }
+        if (!radioPessoal.dataset.ouvinteMemoria) {
+            radioPessoal.dataset.ouvinteMemoria = "true";
+            radioPessoal.addEventListener('change', () => window.salvarPreferenciaEscopoFinancas('pessoal'));
+        }
+    }
+};
 
 window.identificarSegmentoItem = function(nomeItem) {
     if (!nomeItem) return 'Mercearia';
@@ -96,6 +149,7 @@ window.carregarExtratoPeriodo = async function() {
     if (!container || !window.familiaAtualId || !cli) return;
 
     window.garantirBarraBuscaExtrato();
+    window.aplicarPreferenciaEscopoFormulario();
 
     let dtInicio = document.getElementById('extrato-filtro-inicio')?.value;
     let dtFim = document.getElementById('extrato-filtro-fim')?.value;
@@ -156,11 +210,12 @@ window.filtrarListaExtratoMemoria = function() {
     const listaFiltrada = (window.cacheTransacoesExtrato || []).filter(t => {
         const ehMeuLancamento = (t.membro_id === usuarioConectadoId);
         const ehPrivativo = (t.escopo === 'pessoal' || t.eh_privado === true);
+        const ehEntrada = t.tipo === 'entrada' || (t.valor > 0 && t.tipo !== 'saida');
 
         let descVisivel = t.descricao || 'Sem descrição';
         let catVisivel = t.categoria || 'Geral';
         if (ehPrivativo && !ehMeuLancamento) {
-            descVisivel = t.tipo === 'entrada' ? 'Entrada Particular' : 'Gasto Pessoal';
+            descVisivel = ehEntrada ? 'Entrada Privada' : 'Gasto Privado';
             catVisivel = 'Privativo';
         }
 
@@ -193,7 +248,7 @@ window.filtrarListaExtratoMemoria = function() {
         item.className = 'cartao-geral';
         item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 14px; margin-bottom:8px; border-radius:14px;';
 
-        const ehEntrada = t.tipo === 'entrada';
+        const ehEntrada = t.tipo === 'entrada' || (t.valor > 0 && t.tipo !== 'saida');
         const cor = ehEntrada ? 'var(--cor-sucesso, #10b981)' : 'var(--cor-erro, #f43f5e)';
         const sinal = ehEntrada ? '+' : '-';
         const dataFmt = t.data_transacao ? t.data_transacao.split('-').reverse().slice(0, 2).join('/') : '--/--';
@@ -215,8 +270,9 @@ window.filtrarListaExtratoMemoria = function() {
         let descricaoVisivel = t.descricao || 'Sem descrição';
         let categoriaVisivel = t.categoria || 'Geral';
 
+        // REGRA DE EXIBIÇÃO: Se for privado de outro usuário, define se é Entrada Privada ou Gasto Privado
         if (ehPrivativo && !ehMeuLancamento) {
-            descricaoVisivel = ehEntrada ? 'Entrada Particular' : 'Gasto Pessoal';
+            descricaoVisivel = ehEntrada ? 'Entrada Privada' : 'Gasto Privado';
             categoriaVisivel = 'Privativo';
         }
 
@@ -229,6 +285,18 @@ window.filtrarListaExtratoMemoria = function() {
             : `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; color:var(--texto-suave);"><img src="./icone/icone-casa-escopo.png" alt="Casa" style="width:12px; height:12px; object-fit:contain;"> Casa</span>`;
 
         const descSegura = window.esc ? window.esc(descricaoVisivel) : descricaoVisivel;
+
+        // TRAVA RIGOROSA: Somente o dono do lançamento pode ver botões de editar e excluir
+        const botoesAcaoHtml = ehMeuLancamento ? `
+            <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarTransacao('${tCodificado}')" title="Editar">
+                <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
+            </button>
+            <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.excluirTransacaoCarteira('${t.id}')" title="Excluir">
+                <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
+            </button>
+        ` : `
+            <span style="font-size:10px; color:var(--texto-suave, #94a3b8); font-style:italic; padding:0 4px;">Leitura</span>
+        `;
 
         item.innerHTML = `
             <div style="flex:1; min-width:0; padding-right:8px;">
@@ -246,14 +314,7 @@ window.filtrarListaExtratoMemoria = function() {
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                 <strong style="color:${cor}; font-size:13px; white-space:nowrap;">${sinal} R$ ${Number(t.valor || 0).toFixed(2)}</strong>
-                ${(ehMeuLancamento || window.perfilAtual?.papel === 'adm') ? `
-                    <button type="button" class="btn-secundario" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarTransacao('${tCodificado}')" title="Editar">
-                        <img src="./icone/icone-editar.png" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
-                    </button>
-                    <button type="button" class="btn-erro" style="padding:6px 8px; font-size:11px; display:inline-flex; align-items:center;" onclick="window.excluirTransacaoCarteira('${t.id}')" title="Excluir">
-                        <img src="./icone/icone-lixo.png" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
-                    </button>
-                ` : ''}
+                ${botoesAcaoHtml}
             </div>
         `;
         container.appendChild(item);
@@ -263,6 +324,12 @@ window.filtrarListaExtratoMemoria = function() {
 window.abrirModalEditarTransacao = function(tJson) {
     const t = typeof tJson === 'string' ? JSON.parse(decodeURIComponent(tJson)) : tJson;
     if (!t) return;
+
+    const usuarioConectadoId = obterUsuarioId();
+    // Trava de segurança: impede edição de lançamento de terceiros
+    if (t.membro_id && t.membro_id !== usuarioConectadoId) {
+        return window.mostrarToast ? window.mostrarToast("Acesso restrito: você não pode alterar o lançamento de outro familiar.", "erro") : alert("Acesso negado.");
+    }
 
     const elId = document.getElementById('edit-transacao-id');
     const elDesc = document.getElementById('edit-transacao-descricao');
@@ -296,11 +363,18 @@ window.salvarEdicaoTransacao = async function() {
     const categoria = document.getElementById('edit-transacao-categoria')?.value || 'Geral';
     const data_transacao = document.getElementById('edit-transacao-data')?.value;
     const cli = obterClienteSupabase();
+    const usuarioConectadoId = obterUsuarioId();
 
     if (!descricao || isNaN(valor) || valor <= 0) {
         return window.mostrarToast("Informe descrição e valor válidos.", "erro");
     }
     if (!cli) return window.mostrarToast("Erro de conexão.", "erro");
+
+    // Trava no array em cache
+    const transacaoOriginal = window.cacheTransacoesExtrato?.find(t => t.id === id);
+    if (transacaoOriginal && transacaoOriginal.membro_id !== usuarioConectadoId) {
+        return window.mostrarToast("Acesso restrito: você só pode alterar os seus próprios lançamentos.", "erro");
+    }
 
     const payload = {
         descricao: descricao,
@@ -312,10 +386,15 @@ window.salvarEdicaoTransacao = async function() {
         data_transacao: data_transacao
     };
 
-    let { error } = await cli.from('transacoes').update(payload).eq('id', id);
+    // Atualização com filtro explícito por membro_id para segurança
+    let query = cli.from('transacoes').update(payload).eq('id', id);
+    if (usuarioConectadoId) query = query.eq('membro_id', usuarioConectadoId);
+    let { error } = await query;
 
     if (error && error.message && error.message.includes('relation "public.transacoes" does not exist')) {
-        const res = await cli.from('transacoes_financeiras').update(payload).eq('id', id);
+        let queryFallback = cli.from('transacoes_financeiras').update(payload).eq('id', id);
+        if (usuarioConectadoId) queryFallback = queryFallback.eq('membro_id', usuarioConectadoId);
+        const res = await queryFallback;
         error = res.error;
     }
 
@@ -331,6 +410,14 @@ window.salvarEdicaoTransacao = async function() {
 };
 
 window.excluirTransacaoCarteira = async function(id) {
+    const usuarioConectadoId = obterUsuarioId();
+    const transacaoAlvo = window.cacheTransacoesExtrato?.find(t => t.id === id);
+
+    // Bloqueio rigoroso de exclusão de gastos/entradas de outros usuários
+    if (transacaoAlvo && transacaoAlvo.membro_id !== usuarioConectadoId) {
+        return window.mostrarToast ? window.mostrarToast("Ação não permitida: você só pode excluir suas próprias transações.", "erro") : alert("Acesso negado.");
+    }
+
     const confirmou = window.confirmarAcaoSuiri
         ? await window.confirmarAcaoSuiri("Deseja realmente remover este lançamento da sua carteira?", "Confirmar Exclusão")
         : confirm("Deseja realmente remover este lançamento da sua carteira?");
@@ -339,10 +426,14 @@ window.excluirTransacaoCarteira = async function(id) {
     const cli = obterClienteSupabase();
     if (!cli) return;
 
-    let { error } = await cli.from('transacoes').delete().eq('id', id);
+    let query = cli.from('transacoes').delete().eq('id', id);
+    if (usuarioConectadoId) query = query.eq('membro_id', usuarioConectadoId);
+    let { error } = await query;
 
     if (error && error.message && error.message.includes('relation "public.transacoes" does not exist')) {
-        const res = await cli.from('transacoes_financeiras').delete().eq('id', id);
+        let queryFallback = cli.from('transacoes_financeiras').delete().eq('id', id);
+        if (usuarioConectadoId) queryFallback = queryFallback.eq('membro_id', usuarioConectadoId);
+        const res = await queryFallback;
         error = res.error;
     }
 
@@ -651,7 +742,7 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
     let achouQtd = false;
 
     for (const [palavra, valorNum] of Object.entries(numerosExtenso)) {
-        const regExtenso = new RegExp(`\\b${palavra}\\b`, 'i');
+        const regExtenso = new RegExp(`\b${palavra}\b`, 'i');
         if (regExtenso.test(frase)) {
             qtd = valorNum;
             achouQtd = true;
@@ -669,8 +760,8 @@ window.processarItemMercadoLocalFallback = async function(fraseOriginal) {
     }
 
     let nomeLimpo = frase
-        .replace(/\b(unidades|unidade|pct|pacotes|kg|quilos|latas|garrafas|caixas)\b/gi, '')
-        .replace(/\b(por|custou|de|valor|cada|r\$|reais|real|conto|peguei|comprei|coloquei)\b/gi, '')
+        .replace(/(unidades|unidade|pct|pacotes|kg|quilos|latas|garrafas|caixas)/gi, '')
+        .replace(/(por|custou|de|valor|cada|r\$|reais|real|conto|peguei|comprei|coloquei)/gi, '')
         .replace(/[^a-zà-ú\s]/gi, ' ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -810,7 +901,10 @@ window.processarCupomFiscalIA = async function(evento) {
         if (inVal && cupomExtraido.total) inVal.value = Number(cupomExtraido.total).toFixed(2);
         if (selCat && cupomExtraido.categoria) selCat.value = cupomExtraido.categoria;
         if (selTipo) selTipo.value = 'saida';
-        if (selEscopo) selEscopo.value = 'casa';
+        if (selEscopo) {
+            // Mantém a preferência memorizada pelo usuário
+            selEscopo.value = window.obterEscopoPadraoFinancas ? window.obterEscopoPadraoFinancas() : 'casa';
+        }
 
         if (Array.isArray(cupomExtraido.itens) && cupomExtraido.itens.length > 0) {
             const registros = cupomExtraido.itens.map(item => {

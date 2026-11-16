@@ -1,8 +1,10 @@
 // =========================================================================
 // SUIRI GESTÃO FAMILIAR - APP-SAUDE-DICAS.JS (100% COMPLETO E INTEGRAL)
-// Acervo Local de Saúde Feminina, Flow e Curadoria Literária (365 Dias)
+// Acervo Biológico (365 Dias por Fase), Repertório Literário & Alma,
+// e Curadoria Digital Expandida: Filmes, Séries, Spotify e YouTube
 // =========================================================================
 
+// 1. CONSELHOS BIOLÓGICOS DIÁRIOS POR FASE DO CICLO (365 DIAS)
 window.AcervoDicasMulher = {
     menstrual: [
         "O seu corpo está a trabalhar muito. A energia pode estar baixa. É um excelente momento para descanso e tarefas leves.",
@@ -374,6 +376,7 @@ window.AcervoDicasMulher = {
     ]
 };
 
+// 2. REPERTÓRIO LITERÁRIO & ALMA (365 REFLEXÕES DE BEM-ESTAR)
 window.AcervoBemEstarMulher = [
     "📖 Dica de Leitura: 'Quarto de Despejo' (Carolina Maria de Jesus). A força crua e real de uma mulher que não se curvou à vida.",
     "✨ Citação: 'Não sou alegre, nem sou triste: sou poeta.' — Cecília Meireles",
@@ -573,3 +576,270 @@ while (dicasBemEstar.length < 366) {
     dicasBemEstar = dicasBemEstar.concat(dicasBemEstar);
 }
 window.AcervoBemEstarMulher = dicasBemEstar;
+
+// 3. CURADORIA DE FILMES COM CAPAS, STREAMING E REFLEXÃO
+window.CatalogoFilmesMulher = [
+    { 
+        id: "fm1", 
+        titulo: "Comer, Rezar, Amar", 
+        ano: "2010", 
+        categoria: "Autodescoberta", 
+        generos: ["Drama", "Romance", "Biografia"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500&auto=format&fit=crop&q=80",
+        momento: "Para momentos de transição em que o coração precisa reencontrar o prazer e a espiritualidade.",
+        desc: "A coragem de romper uma rotina vazia para redescobrir o apetite pela vida na Itália, a paz interior na Índia e o amor equilibrado em Bali." 
+    },
+    { 
+        id: "fm2", 
+        titulo: "O Fabuloso Destino de Amélie Poulain", 
+        ano: "2001", 
+        categoria: "Sensibilidade & Afeto", 
+        generos: ["Comédia", "Romance"],
+        streaming: ["Prime Video"],
+        capa: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80",
+        momento: "Para aquecer a alma e enxergar a magia escondida nos pequenos detalhes quotidianos.",
+        desc: "A delicadeza em transformar pequenos gestos anónimos em poesia visual, aprendendo que cuidar dos outros só é pleno quando nos permitimos viver o próprio amor." 
+    },
+    { 
+        id: "fm3", 
+        titulo: "Estrelas Além do Tempo", 
+        ano: "2016", 
+        categoria: "Superação & Força", 
+        generos: ["Biografia", "Drama", "Histórico"],
+        streaming: ["Disney+"],
+        capa: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&auto=format&fit=crop&q=80",
+        momento: "Para renovar a confiança no seu intelecto e na sua capacidade de liderar.",
+        desc: "A mente brilhante de três matemáticas pioneiras que romperam barreiras históricas com dignidade, rigor e competência técnica na NASA." 
+    },
+    { 
+        id: "fm4", 
+        titulo: "Adoráveis Mulheres (Little Women)", 
+        ano: "2019", 
+        categoria: "Irmandade & Independência", 
+        generos: ["Drama", "Romance"],
+        streaming: ["Netflix", "Prime Video"],
+        capa: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=500&auto=format&fit=crop&q=80",
+        momento: "Para celebrar os laços familiares e a liberdade de escolher o próprio destino.",
+        desc: "Quatro irmãs crescendo em tempos desafiadores, provando que ambição criativa, amor e cumplicidade feminina constroem mulheres donas da própria história." 
+    },
+    { 
+        id: "fm5", 
+        titulo: "Erin Brockovich", 
+        ano: "2000", 
+        categoria: "Coragem & Determinação", 
+        generos: ["Biografia", "Drama"],
+        streaming: ["Max"],
+        capa: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=500&auto=format&fit=crop&q=80",
+        momento: "Para despertar a sua leoa interior perante as adversidades da vida.",
+        desc: "Uma mulher determinada que desafiou uma corporação multimilionária para defender dezenas de famílias sem perder a sua autenticidade." 
+    },
+    { 
+        id: "fm6", 
+        titulo: "Coco Antes de Chanel", 
+        ano: "2009", 
+        categoria: "Autenticidade & Estilo", 
+        generos: ["Biografia", "Drama"],
+        streaming: ["Apple TV"],
+        capa: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&auto=format&fit=crop&q=80",
+        momento: "Para recordar que o estilo verdadeiro nasce de ser fiel a si mesma.",
+        desc: "A trajetória da mulher visionária que quebrou amarras sociais e revolucionou o vestuário feminino trazendo liberdade e conforto ao corpo." 
+    },
+    { 
+        id: "fm7", 
+        titulo: "Histórias Cruzadas", 
+        ano: "2011", 
+        categoria: "Sororidade & Voz", 
+        generos: ["Drama"],
+        streaming: ["Disney+"],
+        capa: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80",
+        momento: "Para honrar a força de mulheres que uniram as suas vozes para mudar a sociedade.",
+        desc: "Mulheres extraordinárias que romperam o silêncio histórico com coragem, afeto e a verdade irrefutável dos seus relatos." 
+    },
+    { 
+        id: "fm8", 
+        titulo: "Julie & Julia", 
+        ano: "2009", 
+        categoria: "Culinária & Paixão", 
+        generos: ["Biografia", "Comédia", "Drama"],
+        streaming: ["Max"],
+        capa: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&auto=format&fit=crop&q=80",
+        momento: "Para reencontrar o prazer na rotina da cozinha e celebrar pequenas conquistas.",
+        desc: "Duas mulheres em épocas distintas encontrando propósito, casamento cúmplice e alegria através da arte culinária diária." 
+    },
+    { 
+        id: "fm9", 
+        titulo: "Livre (Wild)", 
+        ano: "2014", 
+        categoria: "Cura & Resiliência", 
+        generos: ["Aventura", "Biografia", "Drama"],
+        streaming: ["Disney+"],
+        capa: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&auto=format&fit=crop&q=80",
+        momento: "Para dias de reconstrução pessoal e caminhada solitária de fortalecimento.",
+        desc: "A travessia de mais de mil quilómetros a pé de uma mulher decidida a curar o luto, os erros passados e a reconciliar-se consigo mesma." 
+    },
+    { 
+        id: "fm10", 
+        titulo: "Orgulho e Preconceito", 
+        ano: "2005", 
+        categoria: "Amor & Maturidade", 
+        generos: ["Drama", "Romance"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&auto=format&fit=crop&q=80",
+        momento: "Para cultivar inteligência emocional, independência de julgamento e amor sincero.",
+        desc: "Elizabeth Bennet desafia as convenções de sua época, descobrindo que o amor genuíno nasce do respeito mútuo e da superação do ego." 
+    }
+];
+
+// 4. CURADORIA DE SÉRIES COM FOCO EM LIDERANÇA, AFETO E MAESTRIA
+window.CatalogoSeriesMulher = [
+    { 
+        id: "sm1", 
+        titulo: "The Crown", 
+        temporadas: "6 Temporadas", 
+        categoria: "Liderança & Dever", 
+        generos: ["Drama", "Histórico"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80",
+        momento: "Para refletir sobre maturidade, dever e a serenidade ao enfrentar tempestades.",
+        desc: "Os bastidores do poder, a disciplina exigida para governar e os sacrifícios pessoais de uma mulher que sustentou um legado histórico com elegância e firmeza." 
+    },
+    { 
+        id: "sm2", 
+        titulo: "Anne with an E", 
+        temporadas: "3 Temporadas", 
+        categoria: "Poesia & Imaginação", 
+        generos: ["Drama", "Família"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=500&auto=format&fit=crop&q=80",
+        momento: "Para dias em que o coração precisa ser aquecido com ternura e palavras de afeto.",
+        desc: "A força transformadora da imaginação, do amor e do intelecto na vida de uma jovem resiliente que renova o mundo ao seu redor." 
+    },
+    { 
+        id: "sm3", 
+        titulo: "O Gambito da Rainha", 
+        temporadas: "1 Temporada", 
+        categoria: "Maestria & Foco", 
+        generos: ["Drama"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=500&auto=format&fit=crop&q=80",
+        momento: "Para focar na excelência técnica, raciocínio apurado e no poder da dedicação.",
+        desc: "Uma jovem com talento lendário conquistando o mundo do xadrez com mente estratégica, elegância e foco implacável." 
+    },
+    { 
+        id: "sm4", 
+        titulo: "Downton Abbey", 
+        temporadas: "6 Temporadas", 
+        categoria: "Lealdade & Tradição", 
+        generos: ["Drama", "Romance"],
+        streaming: ["Prime Video"],
+        capa: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&auto=format&fit=crop&q=80",
+        momento: "Para apreciar a força silenciosa e a diplomacia que sustentam uma grande família.",
+        desc: "A complexidade da administração de um lar nobre em tempos de grandes transformações, onde as mulheres conduzem o destino com sabedoria." 
+    },
+    { 
+        id: "sm5", 
+        titulo: "This Is Us", 
+        temporadas: "6 Temporadas", 
+        categoria: "Família & Conexão", 
+        generos: ["Drama", "Romance"],
+        streaming: ["Prime Video", "Disney+"],
+        capa: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&auto=format&fit=crop&q=80",
+        momento: "Para fortalecer a empatia, o acolhimento materno e a ternura entre gerações.",
+        desc: "Uma crônica profunda e emocionante sobre memórias de infância, perdas, vitórias e os fios invisíveis que tecem os laços do lar." 
+    },
+    { 
+        id: "sm6", 
+        titulo: "Maravilhosa Sra. Maisel", 
+        temporadas: "5 Temporadas", 
+        categoria: "Voz & Determinação", 
+        generos: ["Comédia", "Drama"],
+        streaming: ["Prime Video"],
+        capa: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&auto=format&fit=crop&q=80",
+        momento: "Para despertar o bom humor, a oratória brilhante e a independência de espírito.",
+        desc: "Uma mulher elegante na Nova Iorque dos anos 50 descobre a sua voz afiada na comédia e recria a própria história com brilho e coragem." 
+    },
+    { 
+        id: "sm7", 
+        titulo: "Grace and Frankie", 
+        temporadas: "7 Temporadas", 
+        categoria: "Maturidade & Cumplicidade", 
+        generos: ["Comédia"],
+        streaming: ["Netflix"],
+        capa: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=500&auto=format&fit=crop&q=80",
+        momento: "Para lembrar que nunca é tarde para recomeçar, empreender e rir da vida.",
+        desc: "Duas mulheres maduras descobrem na amizade sincera o alicerce para transformar reviravoltas em novos negócios e liberdade autêntica." 
+    }
+];
+
+// 5. REFÚGIO SONORO: PLAYLISTS SPOTIFY
+window.CatalogoPlaylistsSpotifyMulher = [
+    {
+        id: "sp_f1",
+        titulo: "Manhã Serena & Autocuidado",
+        subtitulo: "Acústicos, Sons da Natureza e Despertar Suave",
+        icone: "🌿",
+        tag: "Manhã Leve",
+        link: "https://open.spotify.com/search/morning%20acoustic%20peaceful"
+    },
+    {
+        id: "sp_f2",
+        titulo: "Foco Criativo & Leveza",
+        subtitulo: "Piano Neoclássico, Lo-Fi Serena e Concentração",
+        icone: "✨",
+        tag: "Foco & Mente",
+        link: "https://open.spotify.com/search/peaceful%20piano%20study"
+    },
+    {
+        id: "sp_f3",
+        titulo: "Pilates, Treino & Vitalidade",
+        subtitulo: "Batidas Elevadas, Dança e Energia Feminina",
+        icone: "⚡",
+        tag: "Treino Radiante",
+        link: "https://open.spotify.com/search/workout%20pop%20energy"
+    },
+    {
+        id: "sp_f4",
+        titulo: "Noite Zen & Descompressão",
+        subtitulo: "Sons de Chuva, Frequências Binaurais e Spa",
+        icone: "🌙",
+        tag: "Sono Reparador",
+        link: "https://open.spotify.com/search/spa%20relaxation%20ambient"
+    }
+];
+
+// 6. REFÚGIO DIGITAL: CANAIS DE FORMAÇÃO YOUTUBE
+window.CatalogoCanaisYoutubeMulher = [
+    {
+        id: "yt_f1",
+        titulo: "Saúde da Mulher & Hormônios",
+        categoria: "Fisiologia & Ciclo Consciente",
+        desc: "Orientações sobre as 4 fases biológicas, equilíbrio hormonal e nutrição funcional.",
+        icone: "🌸",
+        link: "https://www.youtube.com/results?search_query=saude+da+mulher+e+ciclo+menstrual"
+    },
+    {
+        id: "yt_f2",
+        titulo: "Pilates, Yoga & Mobilidade",
+        categoria: "Corpo & Movimento Fluido",
+        desc: "Rotinas práticas para alívio de cólicas, postura, respiração diafragmática e força do core.",
+        icone: "🧘‍♀️",
+        link: "https://www.youtube.com/results?search_query=yoga+para+alivio+de+colica+e+estresse"
+    },
+    {
+        id: "yt_f3",
+        titulo: "Psicologia & Inteligência Emocional",
+        categoria: "Autoconhecimento & Paz",
+        desc: "Gestão da carga mental, limites saudáveis, autocuidado e fortalecimento da autoestima.",
+        icone: "📖",
+        link: "https://www.youtube.com/results?search_query=inteligencia+emocional+e+autocuidado+feminino"
+    },
+    {
+        id: "yt_f4",
+        titulo: "Literatura & Filosofia da Mulher",
+        categoria: "Reflexão & Sensibilidade",
+        desc: "Ensaios biográficos de escritoras, poetisas e pensadoras clássicas da literatura mundial.",
+        icone: "✒️",
+        link: "https://www.youtube.com/results?search_query=literatura+e+filosofia+feminina"
+    }
+];
