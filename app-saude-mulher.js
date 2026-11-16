@@ -11,6 +11,7 @@
 // =========================================================================
 
 window.dadosCicloMulher = [];
+window.cicloEdicaoId = null;
 window.dadosSintomasDiarios = [];
 window.dadosDiarioMulher = [];
 
@@ -1252,7 +1253,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
         <div id="modal-registro-ciclo-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000050; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
             <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:22px; border-radius:26px; border:1.5px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1.5px solid #d8b4fe; padding-bottom:8px;">
-                    <h3 style="margin:0; font-size:17px; font-weight:900; color:#3b0764;">Registar Ciclo Menstrual</h3>
+                    <h3 id="titulo-modal-ciclo" style="margin:0; font-size:17px; font-weight:900; color:#3b0764;">Registrar nova menstruação</h3>
                     <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #d8b4fe; background:#faf5ff; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
                 </div>
                 <div style="flex-direction:column; gap:11px; display:flex;">
@@ -1280,9 +1281,10 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <span style="font-size:10px; color:#6b21a8; display:block; margin-top:2px; line-height:1.3;">O familiar escolhido receberá um aviso gentil no mural quando a fase do seu ciclo mudar.</span>
                     </div>
                 </div>
+                <div id="historico-ciclos-edicao" style="margin-top:12px; max-height:170px; overflow-y:auto;"></div>
                 <div style="display:flex; gap:8px; margin-top:16px;">
                     <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #d8b4fe; color:#581c87; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
-                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.salvarCicloHistorico()">Confirmar</button>
+                    <button id="btn-salvar-ciclo" type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.salvarCicloHistorico()">Registrar novo ciclo</button>
                 </div>
             </div>
         </div>
@@ -3299,7 +3301,88 @@ window.enviarNotificacaoCicloParaMural = async function(faseTexto, chaveFase) {
     }
 };
 
+// Edição explícita: um registro existente nunca é substituído ao cadastrar um novo.
+window.renderizarHistoricoCiclosEdicao = function() {
+    const area = document.getElementById('historico-ciclos-edicao');
+    if (!area) return;
+    const registros = (window.dadosCicloMulher || []).filter(c => c.id != null);
+    area.replaceChildren();
+    const titulo = document.createElement('div');
+    titulo.textContent = 'Histórico de ciclos: editar ou excluir registros';
+    titulo.style.cssText = 'font-size:11px;font-weight:800;color:#581c87;margin-bottom:6px';
+    area.appendChild(titulo);
+    for (const c of registros) {
+        const linha = document.createElement('div');
+        linha.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px;border-bottom:1px solid #e9d5ff;font-size:11px;color:#581c87';
+        const data = document.createElement('span');
+        data.textContent = String(c.data_inicio).slice(0,10).split('-').reverse().join('/');
+        const botao = document.createElement('button');
+        botao.type = 'button'; botao.textContent = 'Editar';
+        botao.style.cssText = 'padding:5px 10px;border:1px solid #c084fc;border-radius:8px;background:#faf5ff;color:#581c87;font-weight:800';
+        botao.addEventListener('click', () => window.editarCicloHistorico(c.id));
+        const excluir = document.createElement('button');
+        excluir.type = 'button';
+        excluir.textContent = 'Excluir';
+        excluir.setAttribute('aria-label', 'Excluir ciclo de ' + data.textContent);
+        excluir.style.cssText = 'padding:5px 10px;border:1px solid #fecdd3;border-radius:8px;background:#fff1f2;color:#be123c;font-weight:800';
+        excluir.addEventListener('click', () => window.excluirCicloHistorico(c.id));
+        const acoes = document.createElement('div');
+        acoes.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end';
+        acoes.append(botao, excluir);
+        linha.append(data,acoes); area.appendChild(linha);
+    }
+};
+window.excluirCicloHistorico = async function(id) {
+    const registro = (window.dadosCicloMulher || []).find(c => String(c.id) === String(id));
+    if (!registro) return;
+    const data = String(registro.data_inicio).slice(0,10).split('-').reverse().join('/');
+    if (!window.confirm('Excluir o ciclo de ' + data + '?\\n\\nEsta ação é permanente e recalculará as previsões.')) return;
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    const avisar = (mensagem, tipo) => typeof window.mostrarToast === 'function' ? window.mostrarToast(mensagem, tipo) : alert(mensagem);
+    if (!supabase || !usuarioId) return avisar('Sessão indisponível. Entre novamente.', 'erro');
+    const area = document.getElementById('historico-ciclos-edicao');
+    const botoes = area ? Array.from(area.querySelectorAll('button')) : [];
+    botoes.forEach(b => b.disabled = true);
+    try {
+        const { data: excluidos, error } = await supabase.from('saude_ciclos')
+            .delete().eq('usuario_id', usuarioId).eq('id', registro.id).select('id');
+        if (error) throw error;
+        if (!excluidos || excluidos.length !== 1) {
+            throw new Error('O banco não confirmou a exclusão. Verifique a política DELETE da tabela saude_ciclos.');
+        }
+        if (String(window.cicloEdicaoId) === String(registro.id)) window.novoRegistroCiclo();
+        await window.carregarDadosCicloMulher();
+        window.renderizarHistoricoCiclosEdicao();
+        avisar('Ciclo excluído. Previsões atualizadas.', 'sucesso');
+    } catch (erro) {
+        console.error('Falha ao excluir ciclo:', erro);
+        avisar('Não foi possível excluir: ' + (erro.message || erro), 'erro');
+    } finally {
+        botoes.forEach(b => b.disabled = false);
+    }
+};
+window.editarCicloHistorico = function(id) {
+    const c = (window.dadosCicloMulher || []).find(x => String(x.id) === String(id));
+    if (!c) return;
+    window.cicloEdicaoId = c.id;
+    document.getElementById('input-data-inicio-ciclo').value = String(c.data_inicio).slice(0,10);
+    document.getElementById('input-duracao-sangramento').value = c.duracao_sangramento || 5;
+    const titulo = document.getElementById('titulo-modal-ciclo');
+    if (titulo) titulo.textContent = 'Corrigir ciclo existente';
+    const botao = document.getElementById('btn-salvar-ciclo');
+    if (botao) botao.textContent = 'Salvar correção';
+};
+window.novoRegistroCiclo = function() {
+    window.cicloEdicaoId = null;
+    const titulo = document.getElementById('titulo-modal-ciclo');
+    if (titulo) titulo.textContent = 'Registrar nova menstruação';
+    const botao = document.getElementById('btn-salvar-ciclo');
+    if (botao) botao.textContent = 'Registrar novo ciclo';
+};
+
 window.abrirModalRegistroCiclo = function() {
+    window.novoRegistroCiclo();
     const modal = document.getElementById('modal-registro-ciclo-mulher');
     if (modal) {
         modal.classList.remove('oculto');
@@ -3315,6 +3398,7 @@ window.abrirModalRegistroCiclo = function() {
         }
 
         window.carregarMembrosSeletorNotificacaoCiclo();
+        window.renderizarHistoricoCiclosEdicao();
     }
 };
 
@@ -3381,7 +3465,16 @@ window.processarEExibirPrevisao = function() {
 
     window.atualizarInspiracaoDiaria(false);
 
-    const ciclosValidosPassados = window.dadosCicloMulher ? window.dadosCicloMulher.filter(c => parseData(c.data_inicio).getTime() <= hoje.getTime()) : [];
+    const ciclosValidosPassados = (window.dadosCicloMulher || [])
+        .filter(c => c.data_inicio && parseData(c.data_inicio).getTime() <= hoje.getTime())
+        .sort((a,b) => String(b.data_inicio).localeCompare(String(a.data_inicio)));
+    // Registros duplicados da mesma data não devem distorcer a média.
+    const datasVistas = new Set();
+    const ciclosUnicos = ciclosValidosPassados.filter(c => {
+        const data = String(c.data_inicio).slice(0,10);
+        if (datasVistas.has(data)) return false;
+        datasVistas.add(data); return true;
+    });
 
     if (ciclosValidosPassados.length === 0) {
         if (elFase) elFase.textContent = "Ciclo Natural (Bem-Estar)";
@@ -3404,13 +3497,13 @@ window.processarEExibirPrevisao = function() {
     const duracaoManualSalva = parseInt(localStorage.getItem('suiri_ciclo_duracao_media_manual') || '28', 10);
     let mediaCiclo = (duracaoManualSalva >= 20 && duracaoManualSalva <= 45) ? duracaoManualSalva : 28;
 
-    if (ciclosValidosPassados.length > 1) {
+    if (ciclosUnicos.length > 1 && !localStorage.getItem('suiri_ciclo_duracao_media_manual')) {
         let somaDias = 0;
         let qtdValidos = 0;
         // Média móvel dos ciclos válidos observados (filtro biológico entre 18 e 50 dias)
-        for (let i = 0; i < Math.min(ciclosValidosPassados.length - 1, 6); i++) {
-            const dataAtual = parseData(ciclosValidosPassados[i].data_inicio);
-            const dataAnt = parseData(ciclosValidosPassados[i+1].data_inicio);
+        for (let i = 0; i < Math.min(ciclosUnicos.length - 1, 6); i++) {
+            const dataAtual = parseData(ciclosUnicos[i].data_inicio);
+            const dataAnt = parseData(ciclosUnicos[i+1].data_inicio);
             const diff = calcularDiffDias(dataAtual, dataAnt);
             
             if (diff >= 18 && diff <= 50) {
@@ -3423,7 +3516,7 @@ window.processarEExibirPrevisao = function() {
         }
     }
 
-    const ultimoCiclo = ciclosValidosPassados[0];
+    const ultimoCiclo = ciclosUnicos[0];
     const dataInicioUltimo = parseData(ultimoCiclo.data_inicio);
     const duracaoSangramento = parseInt(ultimoCiclo.duracao_sangramento || 5, 10);
 
@@ -3611,6 +3704,7 @@ window.renderizarRoteiroEstagiosCiclo = function(diaAtual, mediaCiclo, duracaoSa
             bolinha.style.color = '#ffffff';
             bolinha.style.boxShadow = '0 0 0 4px rgba(124, 58, 237, 0.22), 0 4px 10px rgba(124, 58, 237, 0.3)';
             bolinha.style.transform = 'scale(1.15)';
+            bolinha.textContent = i;
             if (titulo) titulo.style.color = '#581c87';
             if (subtitulo) subtitulo.style.color = '#7c3aed';
         } else if (i < estagioAtual) {
@@ -3874,39 +3968,41 @@ window.renderizarConteudoModalOrientacoes = function() {
 window.salvarCicloHistorico = async function() {
     const supabase = obterClienteSupabaseSeguro();
     const usuarioId = obterUsuarioIdSeguro();
-    
     const dataInicio = document.getElementById('input-data-inicio-ciclo')?.value;
-    const duracao = parseInt(document.getElementById('input-duracao-sangramento')?.value || '5', 10);
-    const duracaoMediaCiclo = parseInt(document.getElementById('input-duracao-media-ciclo')?.value || '28', 10);
-    const membroNotificarId = document.getElementById('select-membro-notificar-ciclo')?.value || '';
-
-    if (!supabase || !usuarioId) return;
-    if (!dataInicio) return typeof window.mostrarToast === 'function' ? window.mostrarToast("Informe a data de início.", "erro") : alert("Falta a data.");
-
-    // Salva a duração média informada pela usuária e a preferência de compartilhamento
-    localStorage.setItem('suiri_ciclo_duracao_media_manual', duracaoMediaCiclo.toString());
-    localStorage.setItem('suiri_ciclo_notificar_membro_id', membroNotificarId);
-
+    const duracao = Number(document.getElementById('input-duracao-sangramento')?.value);
+    const media = Number(document.getElementById('input-duracao-media-ciclo')?.value);
+    const membro = document.getElementById('select-membro-notificar-ciclo')?.value || '';
+    const avisar = (mensagem, tipo) => typeof window.mostrarToast === 'function' ? window.mostrarToast(mensagem, tipo) : alert(mensagem);
+    if (!supabase || !usuarioId) return avisar('Sessão indisponível. Entre novamente.', 'erro');
+    const hojeISO = [obterHoje().getFullYear(), String(obterHoje().getMonth()+1).padStart(2,'0'), String(obterHoje().getDate()).padStart(2,'0')].join('-');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio || '') || parseData(dataInicio).getTime() > obterHoje().getTime()) return avisar('Informe uma data válida, não futura.', 'erro');
+    if (!Number.isInteger(duracao) || duracao < 1 || duracao > 15 || !Number.isInteger(media) || media < 20 || media > 45) return avisar('Confira a duração do fluxo (1 a 15) e do ciclo (20 a 45).', 'erro');
+    const editando = window.cicloEdicaoId !== null && window.cicloEdicaoId !== undefined;
+    const duplicado = (window.dadosCicloMulher || []).find(c => String(c.data_inicio).slice(0,10) === dataInicio && (!editando || String(c.id) !== String(window.cicloEdicaoId)));
+    if (duplicado) return avisar('Já existe um ciclo nesta data. Use Editar no histórico.', 'erro');
+    const payload = { data_inicio: dataInicio, duracao_sangramento: duracao };
+    const botao = document.getElementById('btn-salvar-ciclo');
+    if (botao) botao.disabled = true;
     try {
-        const payload = {
-            usuario_id: usuarioId,
-            data_inicio: dataInicio,
-            duracao_sangramento: duracao
-        };
-
-        const { error } = await supabase.from('saude_ciclos').insert([payload]);
-
-        if (error) {
-            window.mostrarToast("Erro ao guardar ciclo: " + error.message, "erro");
+        let consulta;
+        if (editando) {
+            consulta = supabase.from('saude_ciclos').update(payload).eq('usuario_id', usuarioId).eq('id', window.cicloEdicaoId).select();
         } else {
-            window.mostrarToast("Início do ciclo atualizado com sucesso! 🩸", "sucesso");
-            window.fecharModalRegistroCiclo();
-            await window.carregarDadosCicloMulher();
-            if (typeof window.enviarNotificacaoCicloParaMural === 'function') {
-                window.enviarNotificacaoCicloParaMural("Fase Menstrual 🩸", "menstrual");
-            }
+            consulta = supabase.from('saude_ciclos').insert([{...payload, usuario_id: usuarioId}]).select();
         }
-    } catch (err) { console.error(err); }
+        const {data, error} = await consulta;
+        if (error) throw error;
+        if (!data || data.length !== 1) throw new Error('O banco não confirmou a alteração. Confira permissões da tabela saude_ciclos.');
+        localStorage.setItem('suiri_ciclo_duracao_media_manual', String(media));
+        localStorage.setItem('suiri_ciclo_notificar_membro_id', membro);
+        await window.carregarDadosCicloMulher();
+        window.novoRegistroCiclo();
+        window.fecharModalRegistroCiclo();
+        avisar(editando ? 'Data corrigida e previsões recalculadas.' : 'Novo ciclo registrado e previsões atualizadas.', 'sucesso');
+    } catch (erro) {
+        console.error('Falha ao salvar ciclo:', erro);
+        avisar('Não foi possível salvar: ' + (erro.message || erro), 'erro');
+    } finally { if (botao) botao.disabled = false; }
 };
 
 // =========================================================================
