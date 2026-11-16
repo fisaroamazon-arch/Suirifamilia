@@ -1250,24 +1250,39 @@ window.renderizarEsqueletoEspacoMulher = function() {
         </div>
 
         <div id="modal-registro-ciclo-mulher" class="modal-overlay oculto" style="position:fixed; inset:0; width:100%; height:100%; background:rgba(30,14,51,0.55); z-index:1000050; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:16px; box-sizing:border-box;">
-            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:24px; border-radius:28px; border:1.5px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
+            <div class="modal-conteudo" style="background:#ffffff; width:100%; max-width:360px; padding:22px; border-radius:26px; border:1.5px solid #d8b4fe; box-shadow:0 25px 60px rgba(59,7,100,0.22);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1.5px solid #d8b4fe; padding-bottom:8px;">
                     <h3 style="margin:0; font-size:17px; font-weight:900; color:#3b0764;">Registar Ciclo Menstrual</h3>
                     <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px; color:#581c87; border:1px solid #d8b4fe; background:#faf5ff; font-weight:800;" onclick="window.fecharModalRegistroCiclo()">✕</button>
                 </div>
-                <div style="flex-direction:column; gap:12px; display:flex;">
+                <div style="flex-direction:column; gap:11px; display:flex;">
                     <div>
-                        <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Primeiro dia do ciclo</label>
-                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:4px; display:block;">Primeiro dia do ciclo (início do fluxo):</label>
+                        <input type="date" id="input-data-inicio-ciclo" style="border-radius:12px; width:100%; box-sizing:border-box; padding:10px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
                     </div>
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:800; color:#581c87; margin-bottom:4px; display:block;">Dias de Fluxo:</label>
+                            <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:12px; width:100%; box-sizing:border-box; padding:10px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:800; color:#581c87; margin-bottom:4px; display:block;">Duração do Ciclo:</label>
+                            <input type="number" id="input-duracao-media-ciclo" value="28" min="20" max="45" placeholder="ex: 28" style="border-radius:12px; width:100%; box-sizing:border-box; padding:10px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        </div>
+                    </div>
+
                     <div>
-                        <label style="font-size:11.5px; font-weight:800; color:#581c87; margin-bottom:5px; display:block;">Duração do sangramento (dias)</label>
-                        <input type="number" id="input-duracao-sangramento" value="5" min="1" max="15" style="border-radius:14px; width:100%; box-sizing:border-box; padding:11px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none;">
+                        <label style="font-size:11px; font-weight:800; color:#7c3aed; margin-bottom:4px; display:block;">📢 Notificar membro no Mural da Casa:</label>
+                        <select id="select-membro-notificar-ciclo" style="border-radius:12px; width:100%; box-sizing:border-box; padding:10px; border:1.5px solid #d8b4fe; background:#faf5ff; font-weight:700; color:#3b0764; outline:none; font-size:12px;">
+                            <option value="">🔒 Apenas para mim (Privado)</option>
+                        </select>
+                        <span style="font-size:10px; color:#6b21a8; display:block; margin-top:2px; line-height:1.3;">O familiar escolhido receberá um aviso gentil no mural quando a fase do seu ciclo mudar.</span>
                     </div>
                 </div>
-                <div style="display:flex; gap:8px; margin-top:20px;">
+                <div style="display:flex; gap:8px; margin-top:16px;">
                     <button type="button" class="btn-secundario" style="flex:1; border-radius:14px; padding:11px; border:1px solid #d8b4fe; color:#581c87; font-weight:700;" onclick="window.fecharModalRegistroCiclo()">Cancelar</button>
-                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none;" onclick="window.salvarCicloHistorico()">Confirmar</button>
+                    <button type="button" class="btn-principal" style="flex:1.2; border-radius:14px; padding:11px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; font-weight:800; border:none; cursor:pointer;" onclick="window.salvarCicloHistorico()">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -3194,6 +3209,96 @@ window.registrarMenstruacaoHojeRapido = function() {
     }
 };
 
+// Carrega os membros familiares cadastrados para o seletor de notificação
+window.carregarMembrosSeletorNotificacaoCiclo = function() {
+    const select = document.getElementById('select-membro-notificar-ciclo');
+    if (!select) return;
+
+    let membros = [];
+    try {
+        membros = JSON.parse(localStorage.getItem('suiri_membros_familia_cache') || '[]');
+        if ((!membros || membros.length === 0) && window.listaMembrosFamilia) {
+            membros = window.listaMembrosFamilia;
+        }
+        if ((!membros || membros.length === 0) && window.listaMembrosCadastrados) {
+            membros = window.listaMembrosCadastrados;
+        }
+    } catch (e) {
+        membros = [];
+    }
+
+    const usuarioId = obterUsuarioIdSeguro();
+    const membrosFiltrados = membros.filter(m => m.id !== usuarioId);
+    const valorSalvo = localStorage.getItem('suiri_ciclo_notificar_membro_id') || '';
+
+    let html = `<option value="">🔒 Apenas para mim (Privado)</option>`;
+    membrosFiltrados.forEach(m => {
+        const nomeMembro = (m.nome || m.nome_completo || 'Familiar').split(' ')[0];
+        const parentesco = m.parentesco ? ` (${m.parentesco})` : '';
+        const selected = m.id === valorSalvo ? 'selected' : '';
+        html += `<option value="${m.id}" ${selected}>👤 ${nomeMembro}${parentesco}</option>`;
+    });
+
+    select.innerHTML = html;
+};
+
+// Dispara mensagem sutil no Mural do Lar (recados_lar) para o familiar escolhido
+window.enviarNotificacaoCicloParaMural = async function(faseTexto, chaveFase) {
+    const destinatarioId = localStorage.getItem('suiri_ciclo_notificar_membro_id');
+    if (!destinatarioId) return;
+
+    const supabase = obterClienteSupabaseSeguro();
+    const usuarioId = obterUsuarioIdSeguro();
+    if (!supabase || !usuarioId) return;
+
+    let nomeMulher = 'Ela';
+    try {
+        const raw = localStorage.getItem('suiri_perfil_ativo') || localStorage.getItem('suiri_ultimo_perfil');
+        if (raw) {
+            const p = JSON.parse(raw);
+            if (p && p.nome) nomeMulher = p.nome.split(' ')[0];
+        }
+    } catch (e) {}
+
+    let mensagem = "";
+    if (chaveFase === 'menstrual') {
+        mensagem = `🌸 Aviso com carinho: A ${nomeMulher} iniciou a fase menstrual hoje. Um período que pede mais descanso, acolhimento e apoio nas tarefas do lar. ☕`;
+    } else if (chaveFase === 'lutea') {
+        mensagem = `🧘‍♀️ Aviso com carinho: A ${nomeMulher} entrou na fase lútea (pré-menstrual). Compreensão extra, diálogo sereno e acolhimento fazem toda a diferença hoje. 💖`;
+    } else if (chaveFase === 'ovulatoria') {
+        mensagem = `✨ Aviso com carinho: A ${nomeMulher} está na fase ovulatória. Vitalidade, boa disposição e energia em alta! 🌸`;
+    } else {
+        mensagem = `🌿 Aviso com carinho: A ${nomeMulher} entrou na fase folicular. Criatividade e renovação de energia para o lar. 🌱`;
+    }
+
+    const hojeStr = new Date().toISOString().split('T')[0];
+    const chaveAntiDuplicado = `suiri_aviso_ciclo_${usuarioId}_${chaveFase}_${hojeStr}`;
+    if (localStorage.getItem(chaveAntiDuplicado)) return;
+
+    let familiaId = null;
+    try {
+        const rawP = localStorage.getItem('suiri_perfil_ativo');
+        if (rawP) familiaId = JSON.parse(rawP).familia_id || null;
+    } catch (e) {}
+
+    try {
+        const payload = {
+            autor_id: usuarioId,
+            destinatario_id: destinatarioId,
+            mensagem: mensagem,
+            familia_id: familiaId,
+            lido_por: []
+        };
+
+        const { error } = await supabase.from('recados_lar').insert([payload]);
+        if (!error) {
+            localStorage.setItem(chaveAntiDuplicado, 'true');
+        }
+    } catch (err) {
+        console.warn("Aviso no mural ignorado ou coluna pendente:", err);
+    }
+};
+
 window.abrirModalRegistroCiclo = function() {
     const modal = document.getElementById('modal-registro-ciclo-mulher');
     if (modal) {
@@ -3203,6 +3308,13 @@ window.abrirModalRegistroCiclo = function() {
             const h = new Date();
             dtInicio.value = h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0') + '-' + String(h.getDate()).padStart(2, '0');
         }
+
+        const inputMedia = document.getElementById('input-duracao-media-ciclo');
+        if (inputMedia) {
+            inputMedia.value = localStorage.getItem('suiri_ciclo_duracao_media_manual') || '28';
+        }
+
+        window.carregarMembrosSeletorNotificacaoCiclo();
     }
 };
 
@@ -3289,21 +3401,26 @@ window.processarEExibirPrevisao = function() {
         return;
     }
 
-    let mediaCiclo = 28;
+    const duracaoManualSalva = parseInt(localStorage.getItem('suiri_ciclo_duracao_media_manual') || '28', 10);
+    let mediaCiclo = (duracaoManualSalva >= 20 && duracaoManualSalva <= 45) ? duracaoManualSalva : 28;
+
     if (ciclosValidosPassados.length > 1) {
         let somaDias = 0;
         let qtdValidos = 0;
-        for (let i = 0; i < ciclosValidosPassados.length - 1; i++) {
+        // Média móvel dos ciclos válidos observados (filtro biológico entre 18 e 50 dias)
+        for (let i = 0; i < Math.min(ciclosValidosPassados.length - 1, 6); i++) {
             const dataAtual = parseData(ciclosValidosPassados[i].data_inicio);
             const dataAnt = parseData(ciclosValidosPassados[i+1].data_inicio);
             const diff = calcularDiffDias(dataAtual, dataAnt);
             
-            if (diff >= 20 && diff <= 45) {
+            if (diff >= 18 && diff <= 50) {
                 somaDias += diff;
                 qtdValidos++;
             }
         }
-        if (qtdValidos > 0) mediaCiclo = Math.round(somaDias / qtdValidos);
+        if (qtdValidos > 0) {
+            mediaCiclo = Math.round(somaDias / qtdValidos);
+        }
     }
 
     const ultimoCiclo = ciclosValidosPassados[0];
@@ -3380,6 +3497,11 @@ window.processarEExibirPrevisao = function() {
         elBarra.style.background = corGradiente;
         elTxtDia.textContent = `Dia ${diaAtualDoCiclo}`;
         elTxtFinal.textContent = diaAtualDoCiclo > mediaCiclo ? `Atraso` : `Dia ${mediaCiclo}`;
+    }
+
+    // Sincroniza notificação opcional no mural caso a usuária tenha configurado familiar
+    if (typeof window.enviarNotificacaoCicloParaMural === 'function') {
+        window.enviarNotificacaoCicloParaMural(faseTexto, chaveFase);
     }
 
     // Renderiza o Roteiro em Linha dos 4 Estágios com a Previsão de Chegada
@@ -3755,16 +3877,24 @@ window.salvarCicloHistorico = async function() {
     
     const dataInicio = document.getElementById('input-data-inicio-ciclo')?.value;
     const duracao = parseInt(document.getElementById('input-duracao-sangramento')?.value || '5', 10);
+    const duracaoMediaCiclo = parseInt(document.getElementById('input-duracao-media-ciclo')?.value || '28', 10);
+    const membroNotificarId = document.getElementById('select-membro-notificar-ciclo')?.value || '';
 
     if (!supabase || !usuarioId) return;
-    if (!dataInicio) return typeof window.mostrarToast === 'function' ? window.mostrarToast("Informe a data.", "erro") : alert("Falta a data.");
+    if (!dataInicio) return typeof window.mostrarToast === 'function' ? window.mostrarToast("Informe a data de início.", "erro") : alert("Falta a data.");
+
+    // Salva a duração média informada pela usuária e a preferência de compartilhamento
+    localStorage.setItem('suiri_ciclo_duracao_media_manual', duracaoMediaCiclo.toString());
+    localStorage.setItem('suiri_ciclo_notificar_membro_id', membroNotificarId);
 
     try {
-        const { error } = await supabase.from('saude_ciclos').insert([{
+        const payload = {
             usuario_id: usuarioId,
             data_inicio: dataInicio,
             duracao_sangramento: duracao
-        }]);
+        };
+
+        const { error } = await supabase.from('saude_ciclos').insert([payload]);
 
         if (error) {
             window.mostrarToast("Erro ao guardar ciclo: " + error.message, "erro");
@@ -3772,6 +3902,9 @@ window.salvarCicloHistorico = async function() {
             window.mostrarToast("Início do ciclo atualizado com sucesso! 🩸", "sucesso");
             window.fecharModalRegistroCiclo();
             await window.carregarDadosCicloMulher();
+            if (typeof window.enviarNotificacaoCicloParaMural === 'function') {
+                window.enviarNotificacaoCicloParaMural("Fase Menstrual 🩸", "menstrual");
+            }
         }
     } catch (err) { console.error(err); }
 };
