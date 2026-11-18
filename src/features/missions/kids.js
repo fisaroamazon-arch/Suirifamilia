@@ -100,23 +100,41 @@ window.carregarMissoesDoDia = async function() {
     const supabase = obterClienteSupabase();
     if (!window.familiaAtualId || !supabase) return;
 
-    const familiaConsultada=window.familiaAtualId, perfilConsultado=obterUsuarioId();
-    const { data, error } = await supabase
-        .from('missoes')
-        .select('*')
-        .eq('familia_id', familiaConsultada)
-        .order('prioridade', { ascending: true })
-        .order('criado_em', { ascending: false });
-
-    if(familiaConsultada!==window.familiaAtualId||perfilConsultado!==obterUsuarioId())return;
-    if (!error) {
+    const familiaConsultada = window.familiaAtualId;
+    const perfilConsultado = obterUsuarioId();
+    const consulta = ++versaoCarregamentoMissoes;
+    const consultaAtiva = () => consulta === versaoCarregamentoMissoes &&
+        familiaConsultada === window.familiaAtualId && perfilConsultado === obterUsuarioId();
+    try {
+        const { data, error } = await supabase
+            .from('missoes')
+            .select('*')
+            .eq('familia_id', familiaConsultada)
+            .order('prioridade', { ascending: true })
+            .order('criado_em', { ascending: false });
+        if (!consultaAtiva()) return;
+        if (error) throw error;
         cacheMissoes = (data || []).map(window.normalizarMissaoColetivaSuiri)
             .filter(m => !ehMissaoPessoalSuiri(m) || responsavelMissaoSuiri(m) === perfilConsultado);
-        window.verificarReativacaoAutomaticaMissoes();
-        window.renderizarMissoesTela();
-        window.carregarMissoesKidsExclusiva();
-        window.renderizarHistoricoMissoesKidsADM();
+    } catch (erro) {
+        if (!consultaAtiva()) return;
+        if (window.modoKidsAtivo) {
+            const container = document.getElementById('lista-missoes-kids-container');
+            if (container) {
+                container.innerHTML = '<p role="status">Não foi possível carregar suas missões.</p><button type="button" class="btn-secundario">Tentar de novo</button>';
+                container.querySelector('button').onclick = window.carregarMissoesDoDia;
+            }
+            const contador = document.getElementById('contador-missoes-kids-pendentes');
+            if (contador) contador.textContent = '—';
+        }
+        console.warn('Falha ao carregar missões', erro);
+        return;
     }
+
+    window.verificarReativacaoAutomaticaMissoes();
+    window.carregarMissoesKidsExclusiva();
+    window.renderizarMissoesTela();
+    window.renderizarHistoricoMissoesKidsADM();
 };
 
 // =========================================================================
@@ -131,14 +149,17 @@ window.carregarMissoesKidsExclusiva = function() {
     container.innerHTML = '';
     const meuId = obterUsuarioId();
 
+    if (String(window.perfilAtual?.permissoes?.missoes).toLowerCase() === 'false') {
+        if (lblContador) lblContador.textContent = '—';
+        container.textContent = 'As missões estão desativadas para este perfil.';
+        return;
+    }
     const missoesKids = cacheMissoes.filter(m => missaoVisivelNoPainelKids(m, meuId));
 
-    const pendentes = missoesKids.filter(m => {
-        if (m.destinatario_kids === 'todos_kids' && Array.isArray(m.concluidos_por_array)) {
-            return !m.concluidos_por_array.includes(meuId);
-        }
-        return m.status === 'pendente';
-    });
+    const estaPendente = m => m.destinatario_kids === 'todos_kids'
+        ? !m.concluidos_por_array?.includes(meuId) && !m.falhados_por_array?.includes(meuId)
+        : m.status === 'pendente';
+    const pendentes = missoesKids.filter(estaPendente);
 
     if (lblContador) {
         lblContador.textContent = `${pendentes.length} tarefa${pendentes.length === 1 ? '' : 's'}`;
@@ -156,10 +177,8 @@ window.carregarMissoesKidsExclusiva = function() {
     }
 
     const missoesKidsOrdenadas = [...missoesKids].sort((a, b) => {
-        const aPendente = (a.destinatario_kids === 'todos_kids' && Array.isArray(a.concluidos_por_array)) ? !a.concluidos_por_array.includes(meuId) : (a.status === 'pendente');
-        const bPendente = (b.destinatario_kids === 'todos_kids' && Array.isArray(b.concluidos_por_array)) ? !b.concluidos_por_array.includes(meuId) : (b.status === 'pendente');
-        if (aPendente && !bPendente) return -1;
-        if (!aPendente && bPendente) return 1;
+        const ordemEstado = Number(estaPendente(b)) - Number(estaPendente(a));
+        if (ordemEstado) return ordemEstado;
         return (a.prioridade || 2) - (b.prioridade || 2);
     });
 
@@ -369,11 +388,22 @@ window.toggleSubitemMissao = async function(missaoId, subitemId) {
     const sub = missao.subitens.find(s => s.id === subitemId);
     if (!sub) return;
 
-    sub.concluido = !sub.concluido;
-
-    await supabase.from('missoes')
-        .update({ subitens: missao.subitens })
-        .eq('id', missaoId);
+    const familiaId = window.familiaAtualId;
+    const perfilId = obterUsuarioId();
+    const subitens = missao.subitens.map(item => item === sub ? { ...item, concluido: !item.concluido } : item);
+    try {
+        Suiri.check(await supabase.from('missoes').update({ subitens })
+            .eq('id', missaoId).eq('familia_id', familiaId).select('id'), 1);
+    } catch (erro) {
+        if (obterUsuarioId() === perfilId) {
+            Suiri.notifyError(erro);
+            window.renderizarMissoesTela();
+            window.carregarMissoesKidsExclusiva();
+        }
+        return;
+    }
+    if (obterUsuarioId() !== perfilId || window.familiaAtualId !== familiaId) return;
+    missao.subitens = subitens;
 
     window.renderizarMissoesTela();
     window.carregarMissoesKidsExclusiva();

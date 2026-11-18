@@ -383,7 +383,15 @@ window.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         window.TamagotchiKids.fecharMenuGeladeira();
     });
-    window.addEventListener('pageshow', () => {
-        if (window.modoKidsAtivo) window.TamagotchiKids.montarWidgetNaTela();
+    document.getElementById('btn-acao-sala')?.addEventListener('click', () => {
+        window.TamagotchiKids.fecharCasinha();
+    });
+    window.addEventListener('pageshow', event => {
+        if (!window.modoKidsAtivo) return;
+        if (event.persisted) {
+            window.TamagotchiKids.fecharCasinha();
+            window.carregarMissoesDoDia?.();
+        }
+        window.TamagotchiKids.montarWidgetNaTela();
     });
 });

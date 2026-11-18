@@ -79,6 +79,78 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  await test('painel criado e recriado depois do carregamento recebe gestos',async()=>{
   const modal=d.createElement('div');modal.id='modal-dinamico-teste';modal.className='modal-overlay';modal.innerHTML='<div class="modal-conteudo"><p>Teste</p></div>';d.body.append(modal);await new Promise(r=>setTimeout(r,10));assert.equal(modal.querySelectorAll('.sheet-drag-handle').length,1);modal.innerHTML='<div class="modal-conteudo"><p>Outro painel</p></div>';await new Promise(r=>setTimeout(r,10));assert.equal(modal.querySelectorAll('.sheet-drag-handle').length,1);modal.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));assert(modal.classList.contains('oculto'));modal.remove();
  });
+ await test('perfil Kids conclui missão coletiva antiga e atualiza lista e XP',async()=>{
+  const kid=w.__tables.membros[1];
+  const mission={id:'kids-legado',familia_id:fam,escopo:'kids',titulo:'Guardar brinquedos',
+   atribuido_a:null,status:'pendente',concluidos_por_array:[],falhados_por_array:[]};
+  w.__tables.missoes=[mission];
+  const rpc=w.__cli.rpc;
+  w.__cli.rpc=async(name,args)=>{
+   if(name!=='suiri_operacao_v7')return rpc(name,args);
+   assert.equal(args.p_member_id,kid.id);
+   assert.equal(args.p_payload.action,'complete');
+   return {data:{ok:true,mission:{...mission,concluidos_por_array:[kid.id]},xp:40,delta:20},error:null};
+  };
+  w.perfilAtual=kid;w.aplicarRegrasPerfilKidsOuAdulto();await w.carregarMissoesDoDia();
+  const list=d.getElementById('lista-missoes-kids-container');
+  list.querySelector('button[onclick*="concluirMissaoDomestica"]').click();
+  await new Promise(resolve=>setTimeout(resolve,25));
+  assert.match(list.querySelector('#container-concluidas-kids').textContent,/Guardar brinquedos/);
+  assert.equal(d.getElementById('contador-xp-kids').textContent,'40 XP');
+  assert.equal(d.getElementById('contador-missoes-kids-pendentes').textContent,'0 tarefas');
+ });
+ await test('voltar dos jogos fecha a Casinha e recarrega as missões Kids', async()=>{
+  const modal=d.getElementById('modal-casinha-chuiri');
+  modal.setAttribute('open','');
+  modal.close=()=>modal.removeAttribute('open');
+  const reload=w.carregarMissoesDoDia;
+  let loaded=0;
+  w.carregarMissoesDoDia=async()=>{loaded++;};
+  try{
+   w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));
+   assert.equal(modal.open,false);
+   assert.equal(loaded,1);
+  }finally{w.carregarMissoesDoDia=reload;}
+ });
+ await test('consulta anterior à conclusão não repõe a missão nas pendentes',async()=>{
+  const kid=w.__tables.membros[1];
+  const mission={id:'kids-concorrente',familia_id:fam,escopo:'casa',titulo:'Levar o prato à pia',
+   atribuido_a:kid.id,status:'pendente',concluidos_por_array:[],falhados_por_array:[]};
+  w.__tables.missoes=[mission];
+  await w.carregarMissoesDoDia();
+  const from=w.__cli.from, rpc=w.__cli.rpc;
+  let release;
+  const response=new Promise(resolve=>{release=resolve;});
+  const pending={select:()=>pending,eq:()=>pending,order:()=>pending,then:(ok,fail)=>response.then(ok,fail)};
+  w.__cli.from=table=>table==='missoes'?pending:from(table);
+  w.__cli.rpc=async()=>({data:{ok:true,mission:{...mission,status:'concluida',concluido_por:kid.id},xp:60,delta:20},error:null});
+  try{
+   const loadBeforeCompletion=w.carregarMissoesDoDia();
+   await w.concluirMissaoDomestica(mission.id);
+   release({data:[mission],error:null});
+   await loadBeforeCompletion;
+   assert.match(d.querySelector('#container-concluidas-kids').textContent,/Levar o prato à pia/);
+   assert.equal(d.getElementById('contador-missoes-kids-pendentes').textContent,'0 tarefas');
+  }finally{w.__cli.from=from;w.__cli.rpc=rpc;}
+ });
+ await test('falha na comemoração do Chuíri não desfaz a missão confirmada',async()=>{
+  const kid=w.__tables.membros[1], rpc=w.__cli.rpc, toast=w.mostrarToast;
+  const comemorar=w.TamagotchiKids.aoCompletarMissao;
+  const mission={id:'kids-comemoracao',familia_id:fam,escopo:'casa',titulo:'Organizar os livros',
+   atribuido_a:kid.id,status:'pendente'};
+  const notifications=[];
+  w.__tables.missoes=[mission];
+  w.__cli.rpc=async()=>({data:{ok:true,mission:{...mission,status:'concluida',concluido_por:kid.id},xp:80,delta:20},error:null});
+  w.TamagotchiKids.aoCompletarMissao=()=>{throw new Error('Falha sintética do mascote');};
+  w.mostrarToast=(text,type)=>notifications.push([text,type]);
+  try{
+   await w.carregarMissoesDoDia();
+   await w.concluirMissaoDomestica(mission.id);
+   assert.equal(d.getElementById('contador-xp-kids').textContent,'80 XP');
+   assert.match(d.querySelector('#container-concluidas-kids').textContent,/Organizar os livros/);
+   assert.deepEqual(notifications,[['Missão confirmada! +20 XP.',undefined]]);
+  } finally {w.__cli.rpc=rpc;w.mostrarToast=toast;w.TamagotchiKids.aoCompletarMissao=comemorar;}
+ });
  assert.deepEqual(main.errors,[]);main.dom.window.close();
  const loaded=await load('mulher.html'),a=loaded.w,doc=a.document;
  a.renderizarEsqueletoEspacoMulher();await new Promise(r=>setTimeout(r,30));
@@ -96,12 +168,12 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  await test('modo foco preservado e vídeo usa somente sequência de quadros originais',()=>{
   a.escolherModoMulherSuiri('foco');assert.equal(doc.documentElement.dataset.womenMode,'foco');assert.equal(doc.querySelector('meta[name="theme-color"]').content,'#21142e');a.escolherModoMulherSuiri('normal');assert.equal(doc.documentElement.dataset.womenMode,'normal');assert(doc.querySelector('#video-cenario-fundo source').src.includes('flores-ida-volta-original.mp4'));
  });
- await test('bem-estar feminino edita o dia, deixa lacunas no gráfico e compara o mês anterior',async()=>{
+ await test('bem-estar feminino edita o dia, liga registros e mostra as oito respostas',async()=>{
   const hoje='2026-03-31';a.Suiri.today=(date)=>date ? `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` : hoje;
   a.__tables.saude_sintomas=[
    {id:'anterior',usuario_id:uid,data_registro:'2026-02-23',humor:'Nota 4',sintoma_fisico:'Nota 2'},
    {id:'fora-do-periodo',usuario_id:uid,data_registro:'2026-02-21',humor:'Nota 1',sintoma_fisico:'Nota 1'},
-   {id:'anteontem',usuario_id:uid,data_registro:'2026-03-29',humor:'Nota 4',sintoma_fisico:'Nota 4'}
+   {id:'anteontem',usuario_id:uid,data_registro:'2026-03-29',humor:'Emocional: 4/5, Paciência: 2/5, Autoestima: 4/5 (Média: 3.3)',sintoma_fisico:'Físico: 4/5, Energia: 1/5, Paz: 2/5, Social: 5/5, Fala: 4/5 (Média: 2.3)'}
   ];
   await a.carregarHistoricoSintomas();
   const hist=doc.getElementById('container-historico-sintomas-ciclos');
@@ -117,8 +189,9 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   await a.salvarRegistroSintomaDiario();
   assert.equal(a.__tables.saude_sintomas.filter(item=>item.data_registro===hoje).length,1);
   assert.match(a.__tables.saude_sintomas.find(item=>item.data_registro===hoje).humor,/Emocional: 5/);
-  assert.equal(hist.querySelectorAll('circle').length,4);
-  assert.equal(hist.querySelectorAll('line[stroke]').length,0);
+  assert.equal(hist.querySelectorAll('circle').length,16);
+  assert.equal(hist.querySelectorAll('polyline').length,8);
+  assert.match(hist.querySelector('svg').textContent,/29\/03 · Sociabilidade 5\/5/);
   assert.match(hist.textContent,/2 de 35 dias com registro/);
  });
  const men=await load('homem.html'),m=men.w,md=m.document;
@@ -140,6 +213,41 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   assert.equal(m.dadosEstadoDiario.historico[0].humor,8);
   assert.equal(estado.querySelectorAll('circle').length,4);
   assert.match(estado.textContent,/1 de 30 dias com registro/);
+ });
+ await test('metas, disposição e radar abrem e recolhem nos dois espaços',()=>{
+  const titulos=['Metas','Como esteve sua disposição hoje?','Como foi sua última experiência amorosa?'];
+  for(const document of [md,doc]){
+   const buttons=[...document.querySelectorAll('.botao-painel-pessoal')];
+   assert.deepEqual(buttons.map(button=>button.textContent.trim()).sort(), [...titulos].sort());
+   for(const button of buttons){
+    const panel=document.getElementById(button.getAttribute('aria-controls'));
+    assert(panel.classList.contains('oculto'));
+    button.click();
+    assert.equal(button.getAttribute('aria-expanded'),'true');
+    assert(!panel.classList.contains('oculto'));
+    button.click();
+    assert.equal(button.getAttribute('aria-expanded'),'false');
+    assert(panel.classList.contains('oculto'));
+   }
+  }
+ });
+ await test('radares registram as três respostas, inclusive o primeiro ponto, e conectam datas distintas',()=>{
+  for(const [page,container,render,state,fields,label] of [
+    [m,'container-grafico-svg-radar','renderizarGraficoETendenciasRadar','dadosRadarIntimo',{libido:2,realizacao:5,parceira:9},'Parceira'],
+    [a,'container-grafico-svg-mulher','renderizarGraficoETendenciasFeminilidade','dadosRadarFeminilidade',{vitalidade:2,paz_mental:5,afeto_libido:1},'Afeto e magnetismo']
+   ]){
+    const hist=[{data:page.Suiri.today(),...fields}];
+    page[state].historico=hist;
+    page[render]();
+    const chart=page.document.getElementById(container);
+    assert.equal(chart.querySelectorAll('circle').length,3);
+    assert.equal(chart.querySelectorAll('polyline').length,0);
+    assert(chart.querySelector('svg').textContent.includes(label));
+    hist.push({data:page.Suiri.shiftDay(page.Suiri.today(),-4),...fields});
+    page[render]();
+    assert.equal(chart.querySelectorAll('circle').length,6);
+    assert.equal(chart.querySelectorAll('polyline').length,3);
+   }
  });
  await test('atalhos masculinos apontam para os cartões corretos e mantêm a seleção do console',()=>{
   const nav=md.querySelector('.navegacao-espacos');

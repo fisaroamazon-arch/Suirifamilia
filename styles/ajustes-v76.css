@@ -440,3 +440,37 @@ html[data-theme] body .apoio-semanal, html[data-theme] body .aviso-privacidade {
 .apoio-semanal label { display: block; font-size: 12px; font-weight: 750; margin-bottom: 6px; }
 #apoio-chave-pix { width: 100%; margin-bottom: 10px; font: 14px monospace !important; padding-inline: 9px !important; }
 #apoio-status-pix:empty { display: none; }
+
+.botao-painel-pessoal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 1px solid var(--v73-line, #cbd5e1);
+    border-radius: 12px;
+    background: var(--v73-surface2, #f8fafc);
+    color: var(--v73-ink, #0f172a);
+    text-align: left;
+    font: inherit;
+    font-size: .875rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+.botao-painel-pessoal::after {
+    content: '';
+    flex: 0 0 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    margin: 0 2px 3px 0;
+}
+.botao-painel-pessoal[aria-expanded="true"]::after {
+    transform: rotate(225deg);
+    margin-bottom: -3px;
+}
+#secao-espaco-mulher .botao-painel-pessoal { margin-top: 8px; }
+.corpo-painel-pessoal { margin-top: 12px; }

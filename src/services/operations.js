@@ -60,23 +60,38 @@
             try{
                 const m = cacheMissoes.find(x => x.id === id);
                 const perfilId = window.perfilAtual?.id;
-                if (!m || !podeOperarMissaoSuiri(m)) return;
+                if (!m || !podeOperarMissaoSuiri(m)) {
+                    window.mostrarToast('Esta missão não está disponível para o seu perfil.', 'erro');
+                    return;
+                }
                 if(action==='fail'&&!await window.confirmarAcaoSuiri('Marcar esta missão como não realizada? A regra de pontos será aplicada uma vez.'))return;
                 if (window.perfilAtual?.id !== perfilId) return;
                 const r=await S.operation('mission',{id,action},`${id}:${perfilId}:${m.suiri_ocorrencia||0}:${action}`);
                 if (window.perfilAtual?.id !== perfilId) return;
-                Object.assign(m,r.mission);window.perfilAtual.xp_total=r.xp;
+                const atual = cacheMissoes.find(item => item.id === id);
+                if (atual && (atual.suiri_ocorrencia || 0) <= (r.mission.suiri_ocorrencia || 0)) {
+                    ++versaoCarregamentoMissoes;
+                    Object.assign(atual, window.normalizarMissaoColetivaSuiri(r.mission));
+                }
+                window.perfilAtual.xp_total=r.xp;
                 if(r.streak!==undefined)window.perfilAtual.ofensiva_atual=r.streak;
                 window.renderizarMissoesTela();window.carregarMissoesKidsExclusiva();window.renderizarHistoricoMissoesKidsADM();
                 const xp=document.getElementById('contador-xp-kids');if(xp)xp.textContent=`${r.xp} XP`;
-                const streak=document.getElementById('contador-ofensiva-topo');if(streak)streak.textContent=r.streak||0;
-                if(action==='complete'&&!r.repeated){
-                    window.SonsSuiri?.sucessoMissao?.();window.TamagotchiKids?.aoCompletarMissao?.();
-                    window.SistemaEmblemas?.adicionarProgresso('primeiro_passo',1);
-                    if(['🧹','🧽','vassoura','louca'].includes(m.icone))window.SistemaEmblemas?.adicionarProgresso('guardiao_limpeza',1);
-                    window.SistemaEmblemas?.avaliarEmblemas();
-                }
+                const streak=document.getElementById('contador-ofensiva-topo');if(streak && r.streak!==undefined)streak.textContent=r.streak;
                 window.mostrarToast(r.repeated?'Esta ação já foi registrada nesta ocorrência.':action==='reopen'?'Missão reaberta; a recompensa desta ocorrência não será duplicada.':action==='complete'?`Missão confirmada! ${r.delta>0?'+':''}${r.delta} XP.`:'Resultado da missão confirmado.');
+                if (action === 'complete' && !r.repeated) {
+                    try {
+                        window.SonsSuiri?.sucessoMissao?.();
+                        window.TamagotchiKids?.aoCompletarMissao?.();
+                        window.SistemaEmblemas?.adicionarProgresso('primeiro_passo', 1);
+                        if (['🧹', '🧽', 'vassoura', 'louca'].includes(m.icone)) {
+                            window.SistemaEmblemas?.adicionarProgresso('guardiao_limpeza', 1);
+                        }
+                        window.SistemaEmblemas?.avaliarEmblemas();
+                    } catch (error) {
+                        console.warn('Missão confirmada, mas houve falha na comemoração.', error);
+                    }
+                }
             }catch(error){S.notifyError(error);}
         });
     }
@@ -105,7 +120,8 @@
                 if (!r || !perfilContinuaAtivo()) continue;
                 const atual = cacheMissoes.find(item => item.id === m.id);
                 if (atual && (atual.suiri_ocorrencia || 0) === ocorrencia && atual.proxima_execucao === proximaExecucao) {
-                    Object.assign(atual, r.mission);
+                    ++versaoCarregamentoMissoes;
+                    Object.assign(atual, window.normalizarMissaoColetivaSuiri({ ...atual, ...r.mission }));
                     alterou = true;
                 }
             } catch (error) {

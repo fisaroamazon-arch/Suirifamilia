@@ -3,6 +3,16 @@ const camposSintomas = {
     emocional: 'Emocional', fisico: 'Físico', energia: 'Energia', comunicacao: 'Fala',
     social: 'Social', pazmental: 'Paz', paciencia: 'Paciência', autoestima: 'Autoestima'
 };
+const curvasSintomas = [
+    ['emocional', 'Emocional', '#7c3aed'],
+    ['fisico', 'Conforto físico', '#059669'],
+    ['energia', 'Energia', '#b45309'],
+    ['comunicacao', 'Comunicação', '#2563eb'],
+    ['social', 'Sociabilidade', '#a855f7'],
+    ['pazmental', 'Paz mental', '#0891b2'],
+    ['paciencia', 'Paciência', '#db2777'],
+    ['autoestima', 'Autoestima', '#be123c']
+];
 let versaoHistoricoSintomas = 0;
 
 window.alternarSecaoComoSeSenteHoje = function() {
@@ -10,21 +20,14 @@ window.alternarSecaoComoSeSenteHoje = function() {
     const btn = document.getElementById('btn-toggle-sintomas-bloco');
     if (!bloco) return;
 
-    bloco.classList.toggle('oculto');
-    if (!bloco.classList.contains('oculto')) {
+    if (btn && Suiri.togglePanel(btn)) {
         const hoje = registroSintomasPorDia().get(Suiri.today());
-        const notas = `${hoje?.humor || ''} ${hoje?.sintoma_fisico || ''}`;
-        for (const [campo, rotulo] of Object.entries(camposSintomas)) {
+        for (const campo of Object.keys(camposSintomas)) {
             const input = document.getElementById(`range-sint-${campo}`);
-            const nota = notas.match(new RegExp(`${rotulo}: ([1-5])/5`));
             if (!input) continue;
-            input.value = nota?.[1] || '3';
+            input.value = extrairNotaSintoma(hoje, campo) ?? '3';
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }
-    }
-    btn?.setAttribute('aria-expanded', String(!bloco.classList.contains('oculto')));
-    if (btn) {
-        btn.textContent = bloco.classList.contains('oculto') ? 'Responder' : 'Recolher';
     }
 };
 
@@ -199,6 +202,12 @@ function extrairMediaNumericaSintoma(texto, padrao = null) {
     return padrao;
 }
 
+function extrairNotaSintoma(registro, campo) {
+    const notas = `${registro?.humor || ''} ${registro?.sintoma_fisico || ''}`;
+    const nota = notas.match(new RegExp(`${camposSintomas[campo]}:\\s*([1-5])/5`));
+    return nota ? Number(nota[1]) : null;
+}
+
 function registroSintomasPorDia() {
     const porDia = new Map();
     for (const item of window.dadosSintomasDiarios || []) {
@@ -216,16 +225,25 @@ window.renderizarHistoricoSintomas = function() {
     const porDia = registroSintomasPorDia();
     const dias = Array.from({ length: 35 }, (_, index) => Suiri.shiftDay(hoje, index - 34));
     const lista = dias.map(dia => porDia.get(dia)).filter(Boolean).reverse();
-    const curvas = [
-        { campo: 'humor', label: 'Emocional', color: '#a274eb' },
-        { campo: 'sintoma_fisico', label: 'Vitalidade', color: '#32b89a' }
-    ];
-    const series = curvas.map(curva => ({
-        ...curva, values: dias.map(dia => extrairMediaNumericaSintoma(porDia.get(dia)?.[curva.campo]))
+    const series = curvasSintomas.map(([campo, label, color]) => ({
+        label, color, values: dias.map(dia => extrairNotaSintoma(porDia.get(dia), campo))
     }));
+    const resumos = [
+        { campo: 'humor', label: 'Emocional', color: '#7c3aed', respostas: ['emocional', 'paciencia', 'autoestima'] },
+        { campo: 'sintoma_fisico', label: 'Vitalidade', color: '#059669', respostas: ['fisico', 'energia', 'pazmental', 'social', 'comunicacao'] }
+    ];
+    const seriesLegadas = resumos.map(({ campo, label, color, respostas }) => ({
+        label: `${label} (resumo antigo)`, color,
+        values: dias.map(dia => {
+            const registro = porDia.get(dia);
+            return respostas.some(chave => extrairNotaSintoma(registro, chave) !== null)
+                ? null : extrairMediaNumericaSintoma(registro?.[campo]);
+        })
+    })).filter(({ values }) => values.some(Number.isFinite));
+    series.push(...seriesLegadas);
     const { inicio, fim } = periodoVibeAnterior(hoje);
     const registrosAnteriores = [...porDia.values()].filter(reg => reg.data_registro >= inicio && reg.data_registro <= fim);
-    const medias = curvas.map(({ campo, label }) => {
+    const medias = resumos.map(({ campo, label }) => {
         const valores = registrosAnteriores.map(reg => extrairMediaNumericaSintoma(reg[campo])).filter(Number.isFinite);
         if (!valores.length) return '';
         const media = valores.reduce((total, valor) => total + valor, 0) / valores.length;
@@ -257,11 +275,11 @@ window.renderizarHistoricoSintomas = function() {
             <div class="titulo-grafico-diario">
                 <strong>Últimos 35 dias</strong>
                 <div class="legenda-grafico-diario">
-                    ${curvas.map(({ label, color }) => `<span style="--cor-curva:${color}">${label}</span>`).join('')}
+                    ${series.map(({ label, color }) => `<span style="--cor-curva:${color}">${label}</span>`).join('')}
                 </div>
             </div>
             ${Suiri.dailyChart(dias, series, 1, 5)}
-            <small id="status-historico-sintomas">${lista.length ? `${lista.length} de 35 dias com registro.` : 'Toque em Responder para registrar o seu dia.'}</small>
+            <small id="status-historico-sintomas">${lista.length ? `${lista.length} de 35 dias com registro.` : 'Abra o check-in para registrar o seu dia.'}</small>
         </div>
         <section class="painel-grafico-diario" aria-labelledby="titulo-vibe-anterior">
             <strong id="titulo-vibe-anterior">Como era sua vibe na fase anterior?</strong>

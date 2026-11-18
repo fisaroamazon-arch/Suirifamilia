@@ -31,22 +31,59 @@
     };
     S.shortDay = dateISO => `${dateISO.slice(8, 10)}/${dateISO.slice(5, 7)}`;
     S.dailyChart = (days, series, min, max) => {
-        const x = index => 22 + index * 276 / (days.length - 1);
+        const x = index => days.length === 1 ? 160 : 22 + index * 276 / (days.length - 1);
         const y = value => 82 - (value - min) * 66 / (max - min);
         const grid = [min, Math.ceil((min + max) / 2), max].map(value =>
             `<line x1="22" x2="298" y1="${y(value)}" y2="${y(value)}" class="grafico-diario-linha"/>
              <text x="16" y="${y(value) + 3}" text-anchor="end">${value}</text>`).join('');
-        const marks = series.map(({ label, color, values }) => values.map((value, index) => {
-            if (!Number.isFinite(value)) return '';
-            const previous = values[index - 1];
-            const segment = Number.isFinite(previous)
-                ? `<line x1="${x(index - 1)}" y1="${y(previous)}" x2="${x(index)}" y2="${y(value)}" stroke="${color}" stroke-width="2"/>`
-                : '';
-            return `${segment}<circle cx="${x(index)}" cy="${y(value)}" r="2.6" fill="${color}"><title>${S.shortDay(days[index])} · ${label} ${value}/${max}</title></circle>`;
+        const plotted = series.map(({ label, color, values }) => ({
+            label, color,
+            points: values.flatMap((value, index) =>
+                Number.isFinite(value) && value >= min && value <= max ? [{ value, index }] : [])
+        }));
+        const lines = plotted.map(({ color, points }) => points.length < 2 ? '' :
+            `<polyline fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${points.map(({ value, index }) => `${x(index)},${y(value)}`).join(' ')}"/>`).join('');
+        const overlapping = new Map();
+        for (const { points } of plotted) {
+            for (const point of points) {
+                const key = `${point.index}:${point.value}`;
+                overlapping.set(key, (overlapping.get(key) || 0) + 1);
+            }
+        }
+        const marks = plotted.map(({ label, color, points }) => points.map(({ value, index }) => {
+            const key = `${index}:${value}`;
+            const count = overlapping.get(key);
+            overlapping.set(key, count - 1);
+            const radius = 2.6 + (count - 1) * 0.85;
+            return `<circle cx="${x(index)}" cy="${y(value)}" r="${radius}" fill="${color}"><title>${S.shortDay(days[index])} · ${label} ${value}/${max}</title></circle>`;
         }).join('')).join('');
-        const ticks = [0, Math.floor(days.length / 2), days.length - 1].map((index, i) =>
-            `<text x="${x(index)}" y="100" text-anchor="${['start', 'middle', 'end'][i]}">${S.shortDay(days[index])}</text>`).join('');
-        return `<svg class="grafico-diario" viewBox="0 0 320 108" role="img" aria-label="Histórico diário de ${S.shortDay(days[0])} a ${S.shortDay(days.at(-1))}">${grid}${marks}${ticks}</svg>`;
+        const tickIndexes = [...new Set([0, Math.floor(days.length / 2), days.length - 1])];
+        const ticks = tickIndexes.map(index => {
+            const align = days.length === 1 ? 'middle' : index === 0 ? 'start' : index === days.length - 1 ? 'end' : 'middle';
+            return `<text x="${x(index)}" y="100" text-anchor="${align}">${S.shortDay(days[index])}</text>`;
+        }).join('');
+        return `<svg class="grafico-diario" viewBox="0 0 320 108" role="img" aria-label="Histórico diário de ${S.shortDay(days[0])} a ${S.shortDay(days.at(-1))}">${grid}${lines}${marks}${ticks}</svg>`;
+    };
+    S.togglePanel = (button, open = button.getAttribute('aria-expanded') !== 'true') => {
+        const panel = document.getElementById(button.getAttribute('aria-controls'));
+        if (!panel) return false;
+        panel.classList.toggle('oculto', !open);
+        button.setAttribute('aria-expanded', String(open));
+        return open;
+    };
+    S.radarPeriods = records => {
+        const today = S.today();
+        const weekStart = S.shiftDay(today, -6);
+        const previousStart = S.shiftDay(today, -13);
+        const chartStart = S.shiftDay(today, -29);
+        const points = records.filter(({ data }) =>
+            typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data) && data >= chartStart && data <= today
+        ).reverse().sort((a, b) => a.data.localeCompare(b.data));
+        return {
+            points,
+            current: points.filter(({ data }) => data >= weekStart),
+            previous: points.filter(({ data }) => data >= previousStart && data < weekStart)
+        };
     };
     S.money = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
     S.number = value => {

@@ -35,15 +35,9 @@ window.selecionarHumorDiario = function(btn) {
 // 3. RADAR DE FEMINILIDADE (5 NÍVEIS, SEM NOTA, CORPO RETRÁTIL)
 // =========================================================================
 
-window.alternarSecaoRadarFeminilidade = function() {
-    const bloco = document.getElementById('bloco-corpo-radar-retratil');
+window.alternarSecaoRadarFeminilidade = function(aberto) {
     const btn = document.getElementById('btn-toggle-radar-bloco');
-    if (!bloco) return;
-
-    bloco.classList.toggle('oculto');
-    if (btn) {
-        btn.textContent = bloco.classList.contains('oculto') ? 'Responder' : 'Recolher';
-    }
+    if (btn) Suiri.togglePanel(btn, aberto);
 };
 
 window.obterDescricaoNotaFeminilidade = function(tipo, valor) {
@@ -125,7 +119,7 @@ window.salvarRadarFeminilidadeCompleto = async function() {
     window.renderizarHistoricoRadarFeminilidade();
     window.renderizarGraficoETendenciasFeminilidade();
 
-    window.alternarSecaoRadarFeminilidade();
+    window.alternarSecaoRadarFeminilidade(false);
 
     if (typeof window.mostrarToast === 'function') {
         window.mostrarToast("Radar de Feminilidade guardado com sucesso!", "sucesso");
@@ -243,65 +237,59 @@ window.renderizarGraficoETendenciasFeminilidade = function() {
 
     const histRadar = window.dadosRadarFeminilidade.historico || [];
 
-    if (histRadar.length < 2) {
-        contGraf.innerHTML = '<span style="font-size:11px; color:#6b21a8; text-align:center;">Registe pelo menos 2 avaliações no Radar para traçar as curvas.</span>';
-        if (contComp) contComp.innerHTML = '<span style="font-size:11px; color:#6b21a8; grid-column:span 2; text-align:center;">Aguardando dados comparativos.</span>';
+    const { points, current: semAtual, previous: semAnt } = Suiri.radarPeriods(histRadar);
+    if (!points.length) {
+        contGraf.textContent = 'Nenhum registro nos últimos 30 dias.';
+        if (contComp) contComp.textContent = 'Sem registros para comparação.';
+        if (elInsight) elInsight.textContent = 'Registre suas avaliações para acompanhar sua evolução.';
         return;
     }
 
-    const pontos = [...histRadar.slice(0, 7)].reverse();
-    const w = 320;
-    const h = 75;
-    const pad = 14;
-    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
+    const nota = (reg, campo) => {
+        const valor = Number(reg[campo]);
+        return valor >= 1 && valor <= 10 ? (valor > 5 ? valor / 2 : valor) : null;
+    };
+    const series = [
+        ['vitalidade', 'Vitalidade', '#7c3aed'],
+        ['paz_mental', 'Tensão emocional', '#e11d48'],
+        ['afeto_libido', 'Afeto e magnetismo', '#0f766e']
+    ].map(([campo, label, color]) => ({
+        label, color, values: points.map(reg => nota(reg, campo))
+    }));
+    contGraf.innerHTML = Suiri.dailyChart(points.map(reg => reg.data), series, 1, 5);
 
-    const normalizar5 = (val) => val > 5 ? (val / 2) : val;
-    const calcY = (val) => h - pad - (((normalizar5(val) - 1) / 4) * (h - (pad * 2)));
-
-    const ptsVitalidade = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.vitalidade || 3)}`).join(' ');
-    const ptsPaz = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.paz_mental || 3)}`).join(' ');
-
-    contGraf.innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
-            <line x1="${pad}" y1="${calcY(3)}" x2="${w - pad}" y2="${calcY(3)}" stroke="#d8b4fe" stroke-dasharray="3,3" stroke-width="1" />
-            <polyline fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsVitalidade}" />
-            <polyline fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsPaz}" />
-            ${pontos.map((p, idx) => `
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.vitalidade || 3)}" r="3" fill="#7c3aed" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.paz_mental || 3)}" r="3" fill="#e11d48" />
-            `).join('')}
-        </svg>
-    `;
-
-    const semAtual = histRadar.slice(0, 7);
-    const semAnt = histRadar.slice(7, 14);
-
-    const calcMedia = (arr, prop) => arr.length ? (arr.reduce((acc, c) => acc + normalizar5(c[prop] || 3), 0) / arr.length).toFixed(1) : null;
-
-    const medV_Atu = calcMedia(semAtual, 'vitalidade') || "3.0";
-    const medP_Atu = calcMedia(semAtual, 'paz_mental') || "3.0";
+    const calcMedia = (arr, prop) => {
+        const valores = arr.map(reg => nota(reg, prop)).filter(Number.isFinite);
+        return valores.length ? (valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(1) : null;
+    };
+    const medV_Atu = calcMedia(semAtual, 'vitalidade');
+    const medP_Atu = calcMedia(semAtual, 'paz_mental');
+    const medA_Atu = calcMedia(semAtual, 'afeto_libido');
     const medV_Ant = calcMedia(semAnt, 'vitalidade');
     const medP_Ant = calcMedia(semAnt, 'paz_mental');
+    const medA_Ant = calcMedia(semAnt, 'afeto_libido');
 
     if (contComp) {
         contComp.innerHTML = `
             <div style="background:#faf5ff; border:1px solid #d8b4fe; padding:7px 10px; border-radius:10px;">
-                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">Semana Atual:</span>
+                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">Últimos 7 dias:</span>
                 <span style="font-size:11.5px; color:#3b0764; font-weight:700; display:block; margin-top:2px;">
-                    🌸 ${medV_Atu} | 🧘‍♀️ ${medP_Atu}
+                    🌸 ${medV_Atu ?? '—'} | 🧘‍♀️ ${medP_Atu ?? '—'} | ❤️ ${medA_Atu ?? '—'}
                 </span>
             </div>
             <div style="background:#faf5ff; border:1px solid #d8b4fe; padding:7px 10px; border-radius:10px;">
-                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">Semana Anterior:</span>
+                <span style="font-size:10px; color:#6b21a8; font-weight:800; text-transform:uppercase; display:block;">7 dias anteriores:</span>
                 <span style="font-size:11.5px; color:#3b0764; font-weight:700; display:block; margin-top:2px;">
-                    ${medV_Ant ? `🌸 ${medV_Ant} | 🧘‍♀️ ${medP_Ant}` : '<em style="color:#94a3b8; font-size:10.5px;">Sem histórico</em>'}
+                    ${(medV_Ant || medP_Ant || medA_Ant) ? `🌸 ${medV_Ant ?? '—'} | 🧘‍♀️ ${medP_Ant ?? '—'} | ❤️ ${medA_Ant ?? '—'}` : '<em style="color:#94a3b8; font-size:10.5px;">Sem histórico</em>'}
                 </span>
             </div>
         `;
     }
 
     if (elInsight) {
-        if (parseFloat(medP_Atu) >= 4.0) {
+        if (!semAtual.length) {
+            elInsight.textContent = 'Registre uma avaliação para acompanhar os últimos 7 dias.';
+        } else if (parseFloat(medP_Atu) >= 4.0) {
             elInsight.innerHTML = `🍵 <strong>Período de Sobrecarga / Tensão:</strong> O seu índice de tensão emocional está elevado (${medP_Atu}/5). Use o <em>Modo Alívio</em> e priorize o descanso hoje.`;
         } else if (parseFloat(medV_Atu) >= 4.0) {
             elInsight.innerHTML = `✨ <strong>Fase Radiante:</strong> Vitalidade e brilho em alta (${medV_Atu}/5). Excelente momento para conexões, novos projetos e magnetismo a dois!`;

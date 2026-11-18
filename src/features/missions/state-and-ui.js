@@ -9,6 +9,7 @@
 // =========================================================================
 
 let cacheMissoes = [];
+let versaoCarregamentoMissoes = 0;
 let filtroMissoesAtivo = 'todas';
 let reconhecimentoVoz = null;
 let canalRealtimeMissoes = null;
@@ -194,7 +195,7 @@ window.audienciaMissaoSuiri = function(m) {
     const assigned=String(m.atribuido_a||'').trim().toLowerCase();
     const child=(window.listaMembrosFamilia||[]).find(p=>p.id===m.atribuido_a);
     if(ehMissaoPessoalSuiri(m))return 'individual';
-    if(m.destinatario_kids==='todos_kids'||assigned==='todos_kids'||scope==='kids')return 'kids';
+    if(m.destinatario_kids==='todos_kids'||assigned==='todos_kids'||['kids','todos_kids'].includes(scope))return 'kids';
     if(child&&(child.eh_kids===true||child.papel==='dependente'))return 'kids-individual';
     if((!assigned||['todos','todos_adultos','casa','familia'].includes(assigned))&&['','casa','todos','todos_adultos','familia'].includes(scope))return 'adultos';
     return 'individual';
@@ -202,7 +203,7 @@ window.audienciaMissaoSuiri = function(m) {
 window.normalizarMissaoColetivaSuiri = function(m) {
     const item={...m},tipo=window.audienciaMissaoSuiri(m);
     if(tipo==='adultos'){item.escopo='casa';item.atribuido_a=null;}
-    if(tipo==='kids'&&(!item.atribuido_a||item.atribuido_a==='todos_kids')){item.escopo='kids';item.destinatario_kids='todos_kids';item.atribuido_a=null;}
+    if(tipo==='kids'&&(!item.atribuido_a||String(item.atribuido_a).trim().toLowerCase()==='todos_kids')){item.escopo='kids';item.destinatario_kids='todos_kids';item.atribuido_a=null;}
     return item;
 };
 

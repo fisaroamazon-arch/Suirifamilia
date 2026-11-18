@@ -467,6 +467,8 @@ window.renderizarEsqueletoEspacoMasculino = function() {
         <!-- 2. A FORJA (MISSÕES, NÍVEIS E XP) -->
         <!-- ============================================================= -->
         <div id="cartao-forja" class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ea580c; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <button type="button" class="botao-painel-pessoal" aria-expanded="false" aria-controls="painel-metas-homem" onclick="Suiri.togglePanel(this)">Metas</button>
+            <div id="painel-metas-homem" class="oculto corpo-painel-pessoal">
             <div class="cabecalho-forja">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="assets/icons-modern/icone-fogo.svg" alt="" style="width:30px; height:30px; object-fit:contain;">
@@ -570,10 +572,13 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 </div>
                 <div id="bloco-historico-forja-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
+            </div>
         </div>
 
             <!-- CHECK-IN DO ESTADO DIÁRIO -->
         <section id="cartao-estado-diario" class="cartao-geral" aria-labelledby="titulo-estado-diario">
+            <button type="button" class="botao-painel-pessoal" aria-expanded="false" aria-controls="painel-disposicao-homem" onclick="Suiri.togglePanel(this)">Como esteve sua disposição hoje?</button>
+            <div id="painel-disposicao-homem" class="oculto corpo-painel-pessoal">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:16px;">⚡</span>
@@ -677,6 +682,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                         </div>
                     </div>
                 </div>
+            </div>
         </section>
 
         <!-- ============================================================= -->
@@ -700,6 +706,8 @@ window.renderizarEsqueletoEspacoMasculino = function() {
         <!-- 4. RADAR PESSOAL & VIDA A DOIS -->
         <!-- ============================================================= -->
         <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #e11d48; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <button type="button" class="botao-painel-pessoal" aria-expanded="false" aria-controls="painel-radar-homem" onclick="Suiri.togglePanel(this)">Como foi sua última experiência amorosa?</button>
+            <div id="painel-radar-homem" class="oculto corpo-painel-pessoal">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="assets/icons-modern/love.svg" onerror="this.onerror=null; this.src='assets/icons-modern/love.svg';" alt="Radar Íntimo" style="width:35px; height:35px; object-fit:contain;">
@@ -793,15 +801,15 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                     </div>
 
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:14px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span style="font-size:11px; font-weight:800; color:#0f172a;">Curva dos Últimos Registros (1 a 10):</span>
-                            <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
-                                <span style="color:#e11d48;">● Libido</span>
-                                <span style="color:#0284c7;">● Performance</span>
-                                <span style="color:#d97706;">● Parceira</span>
+                        <div class="titulo-grafico-diario">
+                            <span style="font-size:11px; font-weight:800; color:#0f172a;">Últimos 30 dias · escala de 1 a 10</span>
+                            <div class="legenda-grafico-diario">
+                                <span style="--cor-curva:#e11d48">Libido</span>
+                                <span style="--cor-curva:#0284c7">Performance</span>
+                                <span style="--cor-curva:#d97706">Parceira</span>
                             </div>
                         </div>
-                        <div id="container-grafico-svg-radar" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="container-grafico-svg-radar"></div>
                     </div>
                 </div>
             </div>
@@ -818,6 +826,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <div id="bloco-historico-radar-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
                     <div id="lista-historico-radar-notas" style="display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -1687,45 +1696,30 @@ window.renderizarGraficoETendenciasRadar = function() {
 
     if (!contGraf) return;
 
-    if (hist.length < 2) {
-        contGraf.innerHTML = '<span style="font-size:11px; color:#64748b; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas da Vida a Dois.</span>';
-        if (contComp) contComp.innerHTML = '<span style="font-size:11px; color:#64748b; grid-column:span 2; text-align:center;">Sem dados semanais suficientes para comparação.</span>';
-        if (elInsight) elInsight.textContent = "Faça seu check-in após os momentos a dois para acompanhar a evolução da cumplicidade e satisfação mútua.";
+    const { points, current: semAtual, previous: semAnterior } = Suiri.radarPeriods(hist);
+    if (!points.length) {
+        contGraf.textContent = 'Nenhum registro nos últimos 30 dias.';
+        if (contComp) contComp.textContent = 'Sem registros para comparação.';
+        if (elInsight) elInsight.textContent = 'Registre um momento a dois para acompanhar sua evolução.';
         return;
     }
 
-    const pontos = [...hist.slice(0, 7)].reverse();
-    const w = 320;
-    const h = 90;
-    const pad = 16;
-    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
-
-    const calcY = (val) => h - pad - (((val - 1) / 9) * (h - (pad * 2)));
-
-    const ptsLibido = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.libido || 5)}`).join(' ');
-    const ptsRealizacao = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.realizacao || p.energia || 5)}`).join(' ');
-    const ptsParceira = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.parceira || p.estresse || 5)}`).join(' ');
-
-    contGraf.innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
-            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#e2e8f0" stroke-dasharray="3,3" stroke-width="1" />
-            <polyline fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsLibido}" />
-            <polyline fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsRealizacao}" />
-            <polyline fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${ptsParceira}" />
-            ${pontos.map((p, idx) => `
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.libido || 5)}" r="3" fill="#e11d48" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.realizacao || p.energia || 5)}" r="3" fill="#0284c7" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.parceira || p.estresse || 5)}" r="3" fill="#d97706" />
-            `).join('')}
-        </svg>
-    `;
-
-    const semAtual = hist.slice(0, 7);
-    const semAnterior = hist.slice(7, 14);
+    const nota = (reg, campo, fallback) => {
+        const valor = Number(reg[campo] ?? reg[fallback]);
+        return valor >= 1 && valor <= 10 ? valor : null;
+    };
+    const series = [
+        ['libido', 'Libido', '#e11d48', 'libido'],
+        ['realizacao', 'Performance', '#0284c7', 'energia'],
+        ['parceira', 'Parceira', '#d97706', 'estresse']
+    ].map(([campo, label, color, fallback]) => ({
+        label, color, values: points.map(reg => nota(reg, campo, fallback))
+    }));
+    contGraf.innerHTML = Suiri.dailyChart(points.map(reg => reg.data), series, 1, 10);
 
     const calcMedia = (arr, campo, fallback) => {
-        if (!arr.length) return null;
-        return (arr.reduce((acc, cur) => acc + (cur[campo] || cur[fallback] || 5), 0) / arr.length).toFixed(1);
+        const valores = arr.map(reg => nota(reg, campo, fallback)).filter(Number.isFinite);
+        return valores.length ? (valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(1) : null;
     };
 
     const medL_Atu = calcMedia(semAtual, 'libido', 'libido');
@@ -1739,22 +1733,24 @@ window.renderizarGraficoETendenciasRadar = function() {
     if (contComp) {
         contComp.innerHTML = `
             <div style="background:#ffffff; padding:8px 10px; border-radius:10px; border:1px solid #fecdd3;">
-                <span style="font-size:10px; color:#be123c; font-weight:800; text-transform:uppercase; display:block;">Semana Atual:</span>
+                <span style="font-size:10px; color:#be123c; font-weight:800; text-transform:uppercase; display:block;">Últimos 7 dias:</span>
                 <span style="font-size:11.5px; color:#0f172a; font-weight:700; display:block; margin-top:3px;">
-                    🔥 ${medL_Atu} | ⚡ ${medR_Atu} | ❤️ ${medP_Atu}
+                    🔥 ${medL_Atu ?? '—'} | ⚡ ${medR_Atu ?? '—'} | ❤️ ${medP_Atu ?? '—'}
                 </span>
             </div>
             <div style="background:#ffffff; padding:8px 10px; border-radius:10px; border:1px solid #fecdd3;">
-                <span style="font-size:10px; color:#be123c; font-weight:800; text-transform:uppercase; display:block;">Semana Anterior:</span>
+                <span style="font-size:10px; color:#be123c; font-weight:800; text-transform:uppercase; display:block;">7 dias anteriores:</span>
                 <span style="font-size:11.5px; color:#0f172a; font-weight:700; display:block; margin-top:3px;">
-                    ${medL_Ant ? `🔥 ${medL_Ant} | ⚡ ${medR_Ant} | ❤️ ${medP_Ant}` : '<em style="color:#64748b; font-size:10.5px;">Sem dados</em>'}
+                    ${(medL_Ant || medR_Ant || medP_Ant) ? `🔥 ${medL_Ant ?? '—'} | ⚡ ${medR_Ant ?? '—'} | ❤️ ${medP_Ant ?? '—'}` : '<em style="color:#64748b; font-size:10.5px;">Sem dados</em>'}
                 </span>
             </div>
         `;
     }
 
     if (elInsight) {
-        if (parseFloat(medP_Atu) >= 7.5 && parseFloat(medR_Atu) >= 7.5) {
+        if (!semAtual.length) {
+            elInsight.textContent = 'Registre um momento para acompanhar os últimos 7 dias.';
+        } else if (parseFloat(medP_Atu) >= 7.5 && parseFloat(medR_Atu) >= 7.5) {
             elInsight.innerHTML = `❤️ <strong>Alta Sintonia:</strong> Excelente harmonia e satisfação mútua no casal. As atenções e a presença estão a gerar conexão genuína.`;
         } else if (parseFloat(medL_Atu) >= 7.0 && parseFloat(medR_Atu) <= 5.0) {
             elInsight.innerHTML = `💡 <strong>Ajuste de Ritmo:</strong> Disposição em alta, porém a performance/realização sentida ficou moderada. Reduza a pressa e priorize o clima de cumplicidade.`;

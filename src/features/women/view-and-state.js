@@ -662,15 +662,11 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <h4 style="font-size:14px; font-weight:900; color:#3b0764; margin:0;">Como se sente hoje</h4>
                         <span style="font-size:11.5px; color:#6b21a8; font-weight:600; display:block; margin-top:2px;">Um espaço para demonstrar suas sensações e emoções.</span>
                     </div>
-                    <button type="button" id="btn-toggle-sintomas-bloco" aria-expanded="false" aria-controls="bloco-corpo-sintomas-retratil" 
-                            style="padding:7px 16px; font-size:11.5px; border-radius:12px; font-weight:800; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(236,72,153,0.25);"
-                            onclick="window.alternarSecaoComoSeSenteHoje()">
-                        Responder
-                    </button>
                 </div>
+                <button type="button" id="btn-toggle-sintomas-bloco" class="botao-painel-pessoal" aria-expanded="false" aria-controls="bloco-corpo-sintomas-retratil" onclick="window.alternarSecaoComoSeSenteHoje()">Como esteve sua disposição hoje?</button>
 
                 <!-- CORPO RETRÁTIL EXPANSÍVEL -->
-                <div id="bloco-corpo-sintomas-retratil" class="oculto" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
+                <div id="bloco-corpo-sintomas-retratil" class="oculto corpo-painel-pessoal" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
                     <!-- 1. Estado Emocional -->
                     <div style="padding:8px 0; border-bottom:1px solid #d8b4fe;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
@@ -756,6 +752,8 @@ window.renderizarEsqueletoEspacoMulher = function() {
 
             <!-- 4. O SANTUÁRIO (RITUAIS & EVOLUÇÃO) -->
             <div class="cartao-geral" style="background:#ffffff; border:1.5px solid #d8b4fe; border-left:4px solid #9333ea; margin-top:14px; padding:16px 18px; border-radius:20px; box-shadow:0 6px 16px rgba(88,28,135,0.04);">
+                <button type="button" class="botao-painel-pessoal" aria-expanded="false" aria-controls="painel-metas-mulher" onclick="Suiri.togglePanel(this)">Metas</button>
+                <div id="painel-metas-mulher" class="oculto corpo-painel-pessoal">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <img src="assets/icons-modern/icone-mulher.svg" alt="Rituais" style="width:24px; height:24px; object-fit:contain;">
@@ -829,6 +827,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                     </div>
                     <div id="bloco-historico-rituais" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
+                </div>
             </div>
 
             <!-- 5. RADAR DE FEMINILIDADE -->
@@ -841,15 +840,11 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11px; color:#6b21a8; font-weight:600;">Um espaço para demonstrar suas sensações e emoções.</span>
                         </div>
                     </div>
-                    <button type="button" id="btn-toggle-radar-bloco" 
-                            style="padding:7px 16px; font-size:11.5px; border-radius:12px; font-weight:800; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); color:#fff; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(124,58,237,0.25);"
-                            onclick="window.alternarSecaoRadarFeminilidade()">
-                        Responder
-                    </button>
                 </div>
+                <button type="button" id="btn-toggle-radar-bloco" class="botao-painel-pessoal" aria-expanded="false" aria-controls="bloco-corpo-radar-retratil" onclick="window.alternarSecaoRadarFeminilidade()">Como foi sua última experiência amorosa?</button>
 
                 <!-- CORPO RETRÁTIL DO RADAR DE FEMINILIDADE -->
-                <div id="bloco-corpo-radar-retratil" class="oculto" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
+                <div id="bloco-corpo-radar-retratil" class="oculto corpo-painel-pessoal" style="margin-top:12px; border-top:1.5px solid #d8b4fe; padding-top:10px;">
                     <div style="margin-bottom:12px;">
                         <label style="font-size:11px; font-weight:800; color:#581c87; display:block; margin-bottom:4px;">Última Conexão Íntima a Dois:</label>
                         <input type="date" id="slider-data-relacao-fem" style="width:100%; box-sizing:border-box; padding:8px 12px; border-radius:12px; border:1px solid #d8b4fe; font-size:12px; background:#faf5ff; color:#3b0764; outline:none; font-weight:600;">
@@ -897,14 +892,15 @@ window.renderizarEsqueletoEspacoMulher = function() {
 
                     <!-- DIAGNÓSTICO E CURVAS TEMPORAIS (SVG) -->
                     <div style="border-top:1.5px solid #d8b4fe; padding-top:10px; margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <span style="font-size:11px; font-weight:800; color:#581c87;">Curva Biológica & Emocional (Últimos 7):</span>
-                            <div style="display:flex; gap:8px; font-size:10px; font-weight:700;">
-                                <span style="color:#7c3aed;">● Vitalidade</span>
-                                <span style="color:#e11d48;">● Sobrecarga/TPM</span>
+                        <div class="titulo-grafico-diario">
+                            <span style="font-size:11px; font-weight:800; color:#581c87;">Últimos 30 dias · escala de 1 a 5</span>
+                            <div class="legenda-grafico-diario">
+                                <span style="--cor-curva:#7c3aed">Vitalidade</span>
+                                <span style="--cor-curva:#e11d48">Tensão emocional</span>
+                                <span style="--cor-curva:#0f766e">Afeto e magnetismo</span>
                             </div>
                         </div>
-                        <div id="container-grafico-svg-mulher" style="width:100%; height:80px; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="container-grafico-svg-mulher"></div>
                     </div>
 
                     <!-- Comparativo de Semanas Integrado -->
