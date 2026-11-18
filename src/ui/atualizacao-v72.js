@@ -1,4 +1,4 @@
-/* Suiri Família 7.2 · acesso, navegação visual e apoio semanal. */
+/* Suiri Família 7.2 · acesso, navegação visual e apoio voluntário. */
 (function(){
     const S=window.Suiri;
     function genero(){
@@ -57,30 +57,30 @@
     // A área feminina usa este nome no módulo legado.
     const women=document.getElementById('secao-espaco-mulher');
     if(women)new MutationObserver(()=>{if(women.querySelector('.cartao-geral')&&!women.querySelector('.navegacao-espacos'))decorar(women,'mulher');}).observe(women,{childList:true});
+    const intervaloApoio = 2 * 24 * 60 * 60 * 1000;
     let reminderTimer;
-    function apoioSemanal(){
-        if(!S.isHome||!window.perfilAtual?.id||window.modoKidsAtivo||window.perfilAtual.eh_kids||window.perfilAtual.papel==='dependente')return;
-        const key='suiri:v72:apoio:'+window.perfilAtual.id;
-        const last=Number(localStorage.getItem(key)||0),now=Date.now();
-        if(now-last<7*24*60*60*1000)return;
-        if(document.hidden||document.querySelector('.modal-overlay:not(.oculto),[data-suiri-menu-aberto]')){
-            clearTimeout(reminderTimer);reminderTimer=setTimeout(apoioSemanal,30000);return;
-        }
-        let modal=document.getElementById('modal-apoio-semanal');
-        if(!modal){
-            modal=document.createElement('div');modal.id='modal-apoio-semanal';modal.className='modal-overlay oculto';
-            modal.innerHTML='<div class="modal-conteudo apoio-semanal"><span class="apoio-simbolo" aria-hidden="true">♡</span><p class="apoio-sobretitulo">FEITO PARA A SUA FAMÍLIA</p><h2>Está gostando do Suiri?</h2><p>Faça sua contribuição e ajude o projeto a continuar crescendo. Cada apoio faz diferença para melhorar o Suiri e cuidar de novas ideias.</p><p class="apoio-pix-aviso"></p><button type="button" class="btn-principal apoio-contribuir">Fazer minha contribuição</button><button type="button" class="btn-secundario apoio-depois">Agora não</button><small>Contribuição voluntária. Este convite aparece no máximo a cada 7 dias neste dispositivo.</small></div>';
-            document.body.append(modal);
-            modal.querySelector('.apoio-depois').onclick=()=>S.closeModal(modal.id);
-            modal.querySelector('.apoio-contribuir').onclick=()=>window.abrirModalApoioPix();
-        }
-        const configured=Boolean(window.SuiriConfig?.pix);
-        modal.querySelector('.apoio-contribuir').hidden=!configured;
-        modal.querySelector('.apoio-pix-aviso').textContent=configured?'Ao contribuir, você pode copiar a chave Pix do projeto.':'A contribuição via Pix estará disponível quando a chave do projeto for configurada.';
-        S.openModal(modal.id);localStorage.setItem(key,String(now));
+    function agendarApoio(atraso) {
+        clearTimeout(reminderTimer);
+        reminderTimer = setTimeout(mostrarConviteApoio, atraso);
     }
-    document.addEventListener('suiri:session-ready',()=>{acesso();clearTimeout(reminderTimer);reminderTimer=setTimeout(apoioSemanal,1600);});
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)apoioSemanal();});
+    function mostrarConviteApoio() {
+        clearTimeout(reminderTimer);
+        const perfil = window.perfilAtual;
+        if (!S.isHome || !perfil?.id || window.modoKidsAtivo || perfil.eh_kids || perfil.papel === 'dependente' || !window.SuiriConfig?.pix) return;
+        if (document.hidden) return;
+        const key = 'suiri:v72:apoio:' + perfil.id;
+        const restante = intervaloApoio - (Date.now() - Number(localStorage.getItem(key) || 0));
+        if (restante > 0) {
+            agendarApoio(Math.min(restante, intervaloApoio));
+        } else if (document.querySelector('.modal-overlay:not(.oculto),[data-suiri-menu-aberto]')) {
+            agendarApoio(30000);
+        } else if (window.abrirModalApoioPix()) {
+            localStorage.setItem(key, String(Date.now()));
+            agendarApoio(intervaloApoio);
+        }
+    }
+    document.addEventListener('suiri:session-ready', () => { acesso(); agendarApoio(1600); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) mostrarConviteApoio(); });
     // O arsenal mantém a mesma mensagem ao reabrir no mesmo dia e muda na virada.
     let lastDay=S.today();setInterval(()=>{const day=S.today();if(day===lastDay)return;lastDay=day;
         window.renderizarReflexaoEstoica?.(false);
