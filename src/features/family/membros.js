@@ -474,7 +474,8 @@ window.salvarNovoFamiliar = async function() {
                     options: {
                         data: {
                             nome: nome,
-                            familia_id: window.familiaAtualId
+                            familia_id: window.familiaAtualId,
+                            suiri_mostrar_aviso_privacidade: true
                         }
                     }
                 });
