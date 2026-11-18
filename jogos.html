@@ -6,10 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
-    <link rel="stylesheet" href="styles/pages/jogos.css?v=d407a0114aa7">
+    <link rel="stylesheet" href="styles/pages/jogos.css?v=cc28d764db45">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
 </head>
-<body>
+<body class="arcade-page">
 
     <div id="app-container">
         <!-- BARRA DO TOPO (Ocultada nos modos 2 Jogadores) -->
@@ -32,6 +32,11 @@
                 <img src="assets/images/animated/padrao.gif" alt="" decoding="async">
             </div>
 
+            <a class="entrada-arte" href="arte.html">
+                <svg aria-hidden="true" viewBox="0 0 32 32"><path d="M16 4a12 12 0 1 0 0 24h1a2.6 2.6 0 0 0 1.9-4.4 1.9 1.9 0 0 1 1.4-3.2H24a4 4 0 0 0 4-4.1A12 12 0 0 0 16 4Z"/><circle cx="10" cy="14" r="1.6"/><circle cx="15" cy="10" r="1.6"/><circle cx="21" cy="12" r="1.6"/><circle cx="9.5" cy="20" r="1.6"/></svg>
+                <span><strong>Espaço Arte</strong><small>Desenhe com o dedo ou escolha uma página para colorir.</small></span>
+                <span class="entrada-arte-seta" aria-hidden="true">›</span>
+            </a>
             <div class="grade-menu-arcade">
                 <!-- JOGO 1: FLAPPY -->
                 <button type="button" class="card-jogo-grade card-flappy" data-arcade-jogo="flappy" onclick="GerenciadorArcade.abrirJogo('flappy')">
@@ -170,8 +175,24 @@
 
             <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
             <div class="painel-aprendizado-musica" id="painel-aprendizado-box">
-                <select id="seletor-musica-alvo" class="seletor-musicas-select" onchange="MotorMusica.selecionarMusica(this.value)">
-                </select>
+                <div class="piano-repertorio">
+                        <label>Estilo
+                            <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
+                                <option value="infantil">Infantil · 20</option>
+                                <option value="classicas">Clássicas · 20</option>
+                                <option value="pop">Pop · 20</option>
+                            </select>
+                        </label>
+                        <label>Música
+                            <select id="seletor-musica-alvo" onchange="MotorMusica.selecionarMusica(this.value)"></select>
+                        </label>
+                    </div>
+                    <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                    <div class="piano-banda" role="group" aria-label="Acompanhamento">
+                        <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
+                        <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
+                        <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
+                    </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:4px;">
                     <div class="painel-velocidade-bichinhos" id="botoes-velocidade-solo">
@@ -202,12 +223,16 @@
                     <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
                 </div>
 
-                <div class="barra-progresso-musica-dots" id="dots-progresso-musica"></div>
+                <div class="piano-placar">
+                    <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
+                    <span data-erros-piano role="status">0/3 erros</span>
+                </div>
             </div>
 
             <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
-            <div class="pista-esteira-piano-box" id="pista-esteira-box">
+            <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira. Mire na linha laranja. A faixa tracejada mostra a margem de acerto.">
                 <canvas id="cv-esteira-piano"></canvas>
+                <span class="piano-legenda-faixa" aria-hidden="true">Mire no laranja</span>
             </div>
 
             <!-- TECLADO SOLO (OITAVA 4) -->
@@ -230,8 +255,13 @@
 
             <!-- PAINEL SUPERIOR DO MODO LIVRE -->
             <div class="painel-livre-box" id="painel-livre-box" style="display:none; padding:6px 12px; background:rgba(255,255,255,0.94); border:2px solid #38bdf8; border-radius:20px; max-width:420px; margin:4px auto 6px auto;">
-                <p style="font-size:12px; color:#0f172a; font-weight:900;">🎹 Modo Livre 4/8ª Clássico (C2 a C6)</p>
-                <p style="font-size:11px; color:#64748b; font-weight:700; margin-top:2px;">Escolha o timbre de cada oitava individualmente nas faixas abaixo:</p>
+                <p style="font-size:12px; color:#0f172a; font-weight:900;">Modo Livre · quatro oitavas</p>
+                <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                <label class="piano-opcao"><input type="checkbox" onchange="MotorMusica.alterarDesafioLivre(this.checked)"> Desafio de notas</label>
+                <div class="piano-desafio-livre">
+                    <span id="alvo-desafio-livre" aria-live="polite" hidden></span>
+                    <span id="erros-livre-piano" data-erros-piano hidden>0/3 erros</span>
+                </div>
             </div>
 
             <!-- COLUNA DAS 4 OITAVAS INDEPENDENTES (MODO LIVRE: C2 A C6) -->
@@ -384,11 +414,28 @@
                     </div>
                 </div>
 
-                <div style="background:rgba(255,255,255,0.96); border:2px solid #fbbf24; border-radius:16px; padding:5px 8px; margin:3px 0; box-shadow:0 4px 12px rgba(0,0,0,0.18); flex-shrink:0;">
-                    <select id="seletor-musica-dueto" class="seletor-musicas-select" style="margin-bottom:4px; font-size:12px; padding:5px 8px; width:100%;" onchange="MotorMusica.selecionarMusica(this.value)">
-                    </select>
+                <div class="piano-painel-dueto">
+                    <div class="piano-repertorio">
+                        <label>Estilo
+                            <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
+                                <option value="infantil">Infantil · 20</option>
+                                <option value="classicas">Clássicas · 20</option>
+                                <option value="pop">Pop · 20</option>
+                            </select>
+                        </label>
+                        <label>Música
+                            <select id="seletor-musica-dueto" onchange="MotorMusica.selecionarMusica(this.value)"></select>
+                        </label>
+                    </div>
+                    <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                    <div class="piano-banda" role="group" aria-label="Acompanhamento">
+                        <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
+                        <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
+                        <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
+                    </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                    <span data-erros-piano role="status" class="piano-erros-dueto">0/3 erros</span>
+                    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px;">
                         <div class="painel-velocidade-bichinhos" id="botoes-velocidade-dueto" style="margin-bottom:0; padding:2px 4px;">
                             <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5, this)" style="padding:3px 6px; font-size:10.5px;">🐢 50%</button>
                             <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75, this)" style="padding:3px 6px; font-size:10.5px;">🐶 75%</button>
@@ -441,12 +488,12 @@
 
             <div id="over-simon" class="overlay-jogo" style="display:none;">
                 <div class="painel-dialogo-arcade">
-                    <h2 style="color:#10b981;">🎉 Parabéns!</h2>
+                    <h2 id="titulo-resultado-piano">Música concluída!</h2>
                     <p id="txt-msg-conclusao-musica" style="font-size:13.5px; color:#334155; margin:10px 0 16px 0; line-height:1.45;">
                         Incrível! Concluiu a canção e faturou +5 Moedas! 🪙
                     </p>
-                    <button class="btn-acao-jogo" onclick="MotorMusica.avancarProximaMusica()">Próxima Canção</button>
-                    <button class="btn-link-voltar" onclick="MotorMusica.fecharModalConclusao()">Continuar nesta Canção</button>
+                    <button id="btn-proxima-piano" class="btn-acao-jogo" onclick="MotorMusica.avancarProximaMusica()">Próxima música</button>
+                    <button id="btn-repetir-piano" class="btn-link-voltar" onclick="MotorMusica.repetirPartida()">Tocar novamente</button>
                 </div>
             </div>
         </div>
@@ -545,9 +592,12 @@
     <script src="src/data/musicas.js?v=ac86a220bd3b"></script>
     <script src="src/data/partituras.js?v=6f903d6da520"></script>
 
-    <!-- MOTOR DO PIANO E ESTEIRAS -->
-    <script src="src/features/kids/piano.js?v=bf80dc5fc3eb"></script>
+    <script src="src/data/partituras-extras.js?v=c8c93a99f1dd"></script>
 
-    <script src="src/pages/arcade.js?v=d407261d786e"></script>
+    <!-- MOTOR DO PIANO E ESTEIRAS -->
+    <script src="src/features/kids/piano-banda.js?v=0f1afd3d00d2"></script>
+    <script src="src/features/kids/piano.js?v=23df28514270"></script>
+
+    <script src="src/pages/arcade.js?v=21296f36210b"></script>
 </body>
 </html>

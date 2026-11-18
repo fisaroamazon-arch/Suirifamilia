@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#221732">
+    <title>Espaço Arte · Suiri Família</title>
+    <link rel="stylesheet" href="styles/pages/arte.css?v=a7780e7dd6f6">
+    <script src="src/pages/arte.js?v=3dc03c495f89" defer></script>
+</head>
+<body>
+    <main class="atelier">
+        <header class="cabecalho">
+            <a href="jogos.html" class="voltar">‹ Arcade</a>
+            <h1>Espaço Arte</h1>
+        </header>
+
+        <section class="ferramentas" aria-label="Ferramentas de desenho">
+            <div class="linha">
+                <div class="pinceis" role="group" aria-label="Tipo de pincel">
+                    <button type="button" data-pincel="lapis" aria-pressed="false">Lápis</button>
+                    <button type="button" data-pincel="pincel" aria-pressed="true" title="Pincel de cerdas">Cerdas</button>
+                    <button type="button" data-pincel="marca" aria-pressed="false">Marcador</button>
+                    <button type="button" data-pincel="spray" aria-pressed="false">Spray</button>
+                    <button type="button" data-pincel="borracha" aria-pressed="false">Borracha</button>
+                </div>
+                <label class="espessura">Traço <input id="espessura" type="range" min="2" max="48" value="12"></label>
+            </div>
+            <div class="paleta" role="group" aria-label="Paleta de cores">
+                <button type="button" aria-label="Roxo" data-cor="#7847c9" style="--cor:#7847c9" aria-pressed="true"></button>
+                <button type="button" aria-label="Rosa" data-cor="#e45085" style="--cor:#e45085" aria-pressed="false"></button>
+                <button type="button" aria-label="Vermelho" data-cor="#df4545" style="--cor:#df4545" aria-pressed="false"></button>
+                <button type="button" aria-label="Laranja" data-cor="#f18839" style="--cor:#f18839" aria-pressed="false"></button>
+                <button type="button" aria-label="Amarelo" data-cor="#f3d14d" style="--cor:#f3d14d" aria-pressed="false"></button>
+                <button type="button" aria-label="Verde" data-cor="#45af79" style="--cor:#45af79" aria-pressed="false"></button>
+                <button type="button" aria-label="Azul" data-cor="#3899ed" style="--cor:#3899ed" aria-pressed="false"></button>
+                <button type="button" aria-label="Preto" data-cor="#252030" style="--cor:#252030" aria-pressed="false"></button>
+                <label class="personalizada" title="Escolher outra cor">
+                    <span aria-hidden="true">+</span>
+                    <input id="cor-livre" type="color" value="#7847c9" aria-label="Escolher outra cor">
+                </label>
+            </div>
+        </section>
+
+        <div class="folha" id="folha">
+            <canvas id="papel" width="640" height="640" aria-label="Área de desenho. Use o dedo ou o mouse para desenhar."></canvas>
+        </div>
+
+        <div class="acoes" role="group" aria-label="Ações do desenho">
+            <button id="desfazer" type="button" disabled>↶ Desfazer</button>
+            <button id="refazer" type="button" disabled>↷ Refazer</button>
+            <button id="folha-nova" type="button">Folha em branco</button>
+            <button id="baixar-arte" type="button">Salvar PNG</button>
+        </div>
+
+        <section class="caderno" aria-labelledby="titulo-caderno">
+            <header>
+                <h2 id="titulo-caderno">Caderno de colorir</h2>
+                <div class="importar-arte">
+                    <label class="importar">Usar imagem<input id="imagem-arte" type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="somente-leitor"></label>
+                    <label class="importar">Foto em contorno<input id="foto-contorno-arte" type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="somente-leitor"></label>
+                </div>
+            </header>
+            <p id="arte-aviso" role="status"></p>
+            <div class="paginas" id="paginas"></div>
+        </section>
+    </main>
+</body>
+</html>
