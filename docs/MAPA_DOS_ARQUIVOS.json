@@ -1,0 +1,517 @@
+{
+  "app-gestao.js": [
+    "src/core/feature-state.js",
+    "src/features/finances/extrato.js",
+    "src/features/shopping/mercado.js",
+    "src/features/agenda/recorrencia.js"
+  ],
+  "app-operacional.js": [
+    "src/features/missions/state-and-ui.js",
+    "src/features/missions/kids.js",
+    "src/core/swipe.js",
+    "src/features/missions/missoes.js",
+    "src/ui/emoji-selector.js",
+    "src/features/finances/voice-and-entry.js",
+    "src/features/finances/wallet.js",
+    "src/features/savings/cofres.js",
+    "src/features/notices/recados.js",
+    "src/features/goals/metas-anuais.js",
+    "src/core/lifecycle.js"
+  ],
+  "app-painel.js": [
+    "src/features/family/membros.js",
+    "src/features/agenda/calendario.js",
+    "src/features/notifications/painel.js",
+    "src/core/realtime.js"
+  ],
+  "app-saude-mulher.js": [
+    "src/features/women/view-and-state.js",
+    "src/features/women/radar.js",
+    "src/features/women/rituais.js",
+    "src/features/women/media.js",
+    "src/features/women/sintomas.js",
+    "src/features/women/diario.js",
+    "src/features/women/relaxamento.js",
+    "src/features/women/ciclo.js"
+  ],
+  "app-core.js": [
+    "src/core/session.js"
+  ],
+  "config.js": [
+    "src/core/config.js"
+  ],
+  "foundation.js": [
+    "src/core/foundation.js"
+  ],
+  "offline.js": [
+    "src/core/offline.js"
+  ],
+  "personal-state.js": [
+    "src/core/personal-state.js"
+  ],
+  "navigation.js": [
+    "src/core/navigation.js"
+  ],
+  "operations.js": [
+    "src/services/operations.js"
+  ],
+  "transactions.js": [
+    "src/services/transactions.js"
+  ],
+  "app-game.js": [
+    "src/features/rewards/gamificacao.js"
+  ],
+  "app-meuespaco.js": [
+    "src/features/personal/meu-espaco.js"
+  ],
+  "app-relatorios.js": [
+    "src/features/reports/relatorios.js"
+  ],
+  "app-instrucao.js": [
+    "src/features/help/tour.js"
+  ],
+  "app-tamagotchi.js": [
+    "src/features/kids/mascote.js"
+  ],
+  "app-piano.js": [
+    "src/features/kids/piano.js"
+  ],
+  "app-sugestoes.js": [
+    "src/features/missions/sugestoes.js"
+  ],
+  "app-icones.js": [
+    "src/ui/icons.js"
+  ],
+  "app-saude-dicas.js": [
+    "src/data/dicas-mulher.js"
+  ],
+  "app-dicas-masculinas.js": [
+    "src/data/dicas-e-curadoria.js"
+  ],
+  "musicas-piano.js": [
+    "src/data/partituras.js"
+  ],
+  "lista-musicas.js": [
+    "src/data/musicas.js"
+  ],
+  "app-espaco-masculino.js": [
+    "src/features/men/espaco-masculino.js"
+  ],
+  "css-base.css": [
+    "styles/base.css"
+  ],
+  "css-modulos.css": [
+    "styles/modulos.css"
+  ],
+  "css-modais.css": [
+    "styles/modais.css"
+  ],
+  "theme.css": [
+    "styles/themes.css"
+  ],
+  "icone.jpg": [
+    "assets/images/icone.jpg"
+  ],
+  "banho.gif": [
+    "assets/images/animated/banho.gif"
+  ],
+  "gato.gif": [
+    "assets/images/animated/gato.gif"
+  ],
+  "flores.mp4": [
+    "assets/video/flores.mp4"
+  ],
+  "Noite.jpg": [
+    "assets/images/noite.jpg"
+  ],
+  "espacomulher.png": [
+    "assets/images/espacomulher.png"
+  ],
+  "padrao.gif": [
+    "assets/images/animated/padrao.gif"
+  ],
+  "Tarde.jpg": [
+    "assets/images/tarde.jpg"
+  ],
+  "feliz.gif": [
+    "assets/images/animated/feliz.gif"
+  ],
+  "triste.gif": [
+    "assets/images/animated/triste.gif"
+  ],
+  "logo.jpg": [
+    "assets/images/logo.jpg"
+  ],
+  "zen.mp4": [
+    "assets/video/zen.mp4"
+  ],
+  "comendo.gif": [
+    "assets/images/animated/comendo.gif"
+  ],
+  "Amanhecer.jpg": [
+    "assets/images/amanhecer.jpg"
+  ],
+  "dormindo.gif": [
+    "assets/images/animated/dormindo.gif"
+  ],
+  "dormir.gif": [
+    "assets/images/animated/dormir.gif"
+  ],
+  "voando.gif": [
+    "assets/images/animated/voando.gif"
+  ],
+  "espacomasculino.png": [
+    "assets/images/espacomasculino.png"
+  ],
+  "fogo.mp4": [
+    "assets/video/fogo.mp4"
+  ],
+  "casa.gif": [
+    "assets/images/animated/casa.gif"
+  ],
+  "interna.jpg": [
+    "assets/images/interna.jpg"
+  ],
+  "Icone/love.png": [
+    "assets/icons/love.png"
+  ],
+  "Icone/icone-estresse.png": [
+    "assets/icons/icone-estresse.png"
+  ],
+  "Icone/icone-relogio.png": [
+    "assets/icons/icone-relogio.png"
+  ],
+  "Icone/flores.gif": [
+    "assets/images/animated/flores.gif"
+  ],
+  "Icone/logo_suiri.png": [
+    "assets/icons/logo_suiri.png"
+  ],
+  "Icone/icone-casa-escopo.png": [
+    "assets/icons/icone-casa-escopo.png"
+  ],
+  "Icone/icone-escudo.png": [
+    "assets/icons/icone-escudo.png"
+  ],
+  "Icone/icone-alfinete.png": [
+    "assets/icons/icone-alfinete.png"
+  ],
+  "Icone/icone-mulher.png": [
+    "assets/icons/icone-mulher.png"
+  ],
+  "Icone/icone-check.png": [
+    "assets/icons/icone-check.png"
+  ],
+  "Icone/icone-pessoa-escopo.png": [
+    "assets/icons/icone-pessoa-escopo.png"
+  ],
+  "Icone/zen.png": [
+    "assets/icons/zen.png"
+  ],
+  "Icone/icone-familia.png": [
+    "assets/icons/icone-familia.png"
+  ],
+  "Icone/icone-mercado.png": [
+    "assets/icons/icone-mercado.png"
+  ],
+  "Icone/icone-oficina.png": [
+    "assets/icons/icone-oficina.png"
+  ],
+  "Icone/alivio.png": [
+    "assets/icons/alivio.png"
+  ],
+  "Icone/icones-missao.png": [
+    "assets/icons/icones-missao.png"
+  ],
+  "Icone/icone-microfone.png": [
+    "assets/icons/icone-microfone.png"
+  ],
+  "Icone/icone-porta-sair.png": [
+    "assets/icons/icone-porta-sair.png"
+  ],
+  "Icone/Ciclo.png": [
+    "assets/icons/ciclo.png"
+  ],
+  "Icone/icone-calendario.png": [
+    "assets/icons/icone-calendario.png"
+  ],
+  "Icone/icone-fogo.png": [
+    "assets/icons/icone-fogo.png"
+  ],
+  "Icone/medita.png": [
+    "assets/icons/medita.png"
+  ],
+  "Icone/icone-forte.png": [
+    "assets/icons/icone-forte.png"
+  ],
+  "Icone/icone-filme.png": [
+    "assets/icons/icone-filme.png"
+  ],
+  "Icone/trocar.png": [
+    "assets/icons/trocar.png"
+  ],
+  "Icone/icone-xis.png": [
+    "assets/icons/icone-xis.png"
+  ],
+  "Icone/icone-carteira.png": [
+    "assets/icons/icone-carteira.png"
+  ],
+  "Icone/icones-camera.png": [
+    "assets/icons/icones-camera.png"
+  ],
+  "Icone/icone-loja.png": [
+    "assets/icons/icone-loja.png"
+  ],
+  "Icone/icone-joinha-baixo.png": [
+    "assets/icons/icone-joinha-baixo.png"
+  ],
+  "Icone/icone-joinha.png": [
+    "assets/icons/icone-joinha.png"
+  ],
+  "Icone/icones-configuracao.png": [
+    "assets/icons/icones-configuracao.png"
+  ],
+  "Icone/icone-lixo.png": [
+    "assets/icons/icone-lixo.png"
+  ],
+  "Icone/videofogo.mp4": [
+    "assets/video/videofogo.mp4"
+  ],
+  "Icone/diario.png": [
+    "assets/icons/diario.png"
+  ],
+  "Icone/icone-editar.png": [
+    "assets/icons/icone-editar.png"
+  ],
+  "Icone/icone-energia.png": [
+    "assets/icons/icone-energia.png"
+  ],
+  "Icone/icone-financas.png": [
+    "assets/icons/icone-financas.png"
+  ],
+  "Icone/icone-lampada-pense.png": [
+    "assets/icons/icone-lampada-pense.png"
+  ],
+  "Icone/mulher.html": [
+    "docs/legacy/mulher-prototipo.html.txt"
+  ],
+  "Icone/icone-manual.png": [
+    "assets/icons/icone-manual.png"
+  ],
+  "audios/saudacao/3.mp3": [
+    "assets/audio/pet/saudacao/3.mp3"
+  ],
+  "audios/saudacao/1.mp3": [
+    "assets/audio/pet/saudacao/1.mp3"
+  ],
+  "audios/saudacao/2.mp3": [
+    "assets/audio/pet/saudacao/2.mp3"
+  ],
+  "audios/consolo/3.mp3": [
+    "assets/audio/pet/consolo/3.mp3"
+  ],
+  "audios/consolo/1.mp3": [
+    "assets/audio/pet/consolo/1.mp3"
+  ],
+  "audios/consolo/2.mp3": [
+    "assets/audio/pet/consolo/2.mp3"
+  ],
+  "audios/estilo/1.mp3": [
+    "assets/audio/pet/estilo/1.mp3"
+  ],
+  "audios/instrucao/guia_geral_5.mp3": [
+    "assets/audio/help/guia_geral_5.mp3"
+  ],
+  "audios/instrucao/guia_familia_3.mp3": [
+    "assets/audio/help/guia_familia_3.mp3"
+  ],
+  "audios/instrucao/guia_geral_2.mp3": [
+    "assets/audio/help/guia_geral_2.mp3"
+  ],
+  "audios/instrucao/guia_familia_2.mp3": [
+    "assets/audio/help/guia_familia_2.mp3"
+  ],
+  "audios/instrucao/guia_geral_7.mp3": [
+    "assets/audio/help/guia_geral_7.mp3"
+  ],
+  "audios/instrucao/guia_geral_3.mp3": [
+    "assets/audio/help/guia_geral_3.mp3"
+  ],
+  "audios/instrucao/guia_financas_3.mp3": [
+    "assets/audio/help/guia_financas_3.mp3"
+  ],
+  "audios/instrucao/guia_geral_1.mp3": [
+    "assets/audio/help/guia_geral_1.mp3"
+  ],
+  "audios/instrucao/guia_calendario_1.mp3": [
+    "assets/audio/help/guia_calendario_1.mp3"
+  ],
+  "audios/instrucao/guia_financas_1.mp3": [
+    "assets/audio/help/guia_financas_1.mp3"
+  ],
+  "audios/instrucao/guia_familia_1.mp3": [
+    "assets/audio/help/guia_familia_1.mp3"
+  ],
+  "audios/instrucao/guia_geral_8.mp3": [
+    "assets/audio/help/guia_geral_8.mp3"
+  ],
+  "audios/instrucao/guia_mercado_3.mp3": [
+    "assets/audio/help/guia_mercado_3.mp3"
+  ],
+  "audios/instrucao/guia_geral_6.mp3": [
+    "assets/audio/help/guia_geral_6.mp3"
+  ],
+  "audios/instrucao/guia_final_agradecimento.mp3": [
+    "assets/audio/help/guia_final_agradecimento.mp3"
+  ],
+  "audios/instrucao/guia_geral_4.mp3": [
+    "assets/audio/help/guia_geral_4.mp3"
+  ],
+  "audios/instrucao/guia_mercado_1.mp3": [
+    "assets/audio/help/guia_mercado_1.mp3"
+  ],
+  "audios/instrucao/guia_calendario_2.mp3": [
+    "assets/audio/help/guia_calendario_2.mp3"
+  ],
+  "audios/instrucao/guia_financas_2.mp3": [
+    "assets/audio/help/guia_financas_2.mp3"
+  ],
+  "audios/instrucao/guia_mercado_2.mp3": [
+    "assets/audio/help/guia_mercado_2.mp3"
+  ],
+  "audios/instrucao/guia_calendario_3.mp3": [
+    "assets/audio/help/guia_calendario_3.mp3"
+  ],
+  "audios/instrucao/guia_mercado_4.mp3": [
+    "assets/audio/help/guia_mercado_4.mp3"
+  ],
+  "audios/instrucao/guia_financas_4.mp3": [
+    "assets/audio/help/guia_financas_4.mp3"
+  ],
+  "audios/delicia/1.mp3": [
+    "assets/audio/pet/delicia/1.mp3"
+  ],
+  "audios/parabens/3.mp3": [
+    "assets/audio/pet/parabens/3.mp3"
+  ],
+  "audios/parabens/1.mp3": [
+    "assets/audio/pet/parabens/1.mp3"
+  ],
+  "audios/parabens/2.mp3": [
+    "assets/audio/pet/parabens/2.mp3"
+  ],
+  "audios/amigo/8.mp3": [
+    "assets/audio/pet/amigo/8.mp3"
+  ],
+  "audios/amigo/3.mp3": [
+    "assets/audio/pet/amigo/3.mp3"
+  ],
+  "audios/amigo/7.mp3": [
+    "assets/audio/pet/amigo/7.mp3"
+  ],
+  "audios/amigo/10.mp3": [
+    "assets/audio/pet/amigo/10.mp3"
+  ],
+  "audios/amigo/1.mp3": [
+    "assets/audio/pet/amigo/1.mp3"
+  ],
+  "audios/amigo/2.mp3": [
+    "assets/audio/pet/amigo/2.mp3"
+  ],
+  "audios/amigo/6.mp3": [
+    "assets/audio/pet/amigo/6.mp3"
+  ],
+  "audios/amigo/4.mp3": [
+    "assets/audio/pet/amigo/4.mp3"
+  ],
+  "audios/amigo/5.mp3": [
+    "assets/audio/pet/amigo/5.mp3"
+  ],
+  "audios/amigo/9.mp3": [
+    "assets/audio/pet/amigo/9.mp3"
+  ],
+  "song/onde_a_respira_o_descansa.mp3": [
+    "assets/audio/music/onde_a_respira_o_descansa.mp3"
+  ],
+  "song/o_ltimo_pulsar_do_destino.mp3": [
+    "assets/audio/music/o_ltimo_pulsar_do_destino.mp3"
+  ],
+  "song/lanterns_in_the_common_room.mp3": [
+    "assets/audio/music/lanterns_in_the_common_room.mp3"
+  ],
+  "song/before_the_sun_wakes.mp3": [
+    "assets/audio/music/before_the_sun_wakes.mp3"
+  ],
+  "song/glass_grove_morning.mp3": [
+    "assets/audio/music/glass_grove_morning.mp3"
+  ],
+  "song/resting_at_the_fountain.mp3": [
+    "assets/audio/music/resting_at_the_fountain.mp3"
+  ],
+  "song/aether_et_tellus_in_unum.mp3": [
+    "assets/audio/music/aether_et_tellus_in_unum.mp3"
+  ],
+  "song/lullaby_for_a_lost_realm.mp3": [
+    "assets/audio/music/lullaby_for_a_lost_realm.mp3"
+  ],
+  "song/walk_through_the_cloister.mp3": [
+    "assets/audio/music/walk_through_the_cloister.mp3"
+  ],
+  "song/under_the_celestial_spire.mp3": [
+    "assets/audio/music/under_the_celestial_spire.mp3"
+  ],
+  "song/summit_of_the_silver_blade.mp3": [
+    "assets/audio/music/summit_of_the_silver_blade.mp3"
+  ],
+  "song/before_the_final_ring.mp3": [
+    "assets/audio/music/before_the_final_ring.mp3"
+  ],
+  "song/beneath_the_cloud-piercing_peaks.mp3": [
+    "assets/audio/music/beneath_the_cloud-piercing_peaks.mp3"
+  ],
+  "song/sunlight_on_stone.mp3": [
+    "assets/audio/music/sunlight_on_stone.mp3"
+  ],
+  "song/spires_of_ancient_stone.mp3": [
+    "assets/audio/music/spires_of_ancient_stone.mp3"
+  ],
+  "song/geometria_do_amanhecer.mp3": [
+    "assets/audio/music/geometria_do_amanhecer.mp3"
+  ],
+  "song/one_more_leap.mp3": [
+    "assets/audio/music/one_more_leap.mp3"
+  ],
+  "song/beneath_the_glowing_canopy.mp3": [
+    "assets/audio/music/beneath_the_glowing_canopy.mp3"
+  ],
+  "song/beneath_the_canopy.mp3": [
+    "assets/audio/music/beneath_the_canopy.mp3"
+  ],
+  "index.html#script-1": [
+    "src/pages/profile-menu.js"
+  ],
+  "index.html#style-0": [
+    "styles/pages/index.css"
+  ],
+  "mulher.html#script-1": [
+    "src/pages/women-player.js"
+  ],
+  "mulher.html#style-0": [
+    "styles/pages/mulher.css"
+  ],
+  "homem.html#script-1": [
+    "src/pages/men-player.js"
+  ],
+  "homem.html#script-2": [
+    "src/pages/men-page.js"
+  ],
+  "homem.html#style-0": [
+    "styles/pages/homem.css"
+  ],
+  "jogos.html#script-1": [
+    "src/pages/arcade.js"
+  ],
+  "jogos.html#style-0": [
+    "styles/pages/jogos.css"
+  ]
+}

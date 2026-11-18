@@ -1,0 +1,25 @@
+{
+  "engine": "DOM simulado; áudio simulado, sem comprovar saída sonora real",
+  "checks": [
+    {
+      "name": "os botões Todas/Minhas mudam a lista e indicam a seleção e as contagens",
+      "passed": true
+    },
+    {
+      "name": "ícones funcionais usam os novos SVGs e a marca permanece",
+      "passed": true
+    },
+    {
+      "name": "Normal mantém o vídeo; Foco pausa e a escolha fica isolada por membro",
+      "passed": true
+    },
+    {
+      "name": "player feminino: play/pausa, avanço, posição, volume, favoritas e erro limitado",
+      "passed": true
+    },
+    {
+      "name": "player masculino: play/pausa, avanço, posição, volume, favoritas e erro limitado",
+      "passed": true
+    }
+  ]
+}

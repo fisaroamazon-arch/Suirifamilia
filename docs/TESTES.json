@@ -1,0 +1,417 @@
+{
+  "version": "7.1.0",
+  "date": "2026-11-17",
+  "migration_02_revision": "Políticas de propriedade e família aceitam UUID/TEXT/VARCHAR sem conversão de dados. Regressão text = uuid reproduzida e corrigida.",
+  "scope": "Testes locais sem credenciais reais, Supabase real, navegador visual ou sessões PostgreSQL concorrentes reais.",
+  "dom": {
+    "engine": "JSDOM, IndexedDB sintético e Supabase simulado; não é navegador visual",
+    "pages": [
+      {
+        "page": "index.html",
+        "errors": []
+      },
+      {
+        "page": "mulher.html",
+        "errors": []
+      },
+      {
+        "page": "homem.html",
+        "errors": []
+      },
+      {
+        "page": "jogos.html",
+        "errors": []
+      }
+    ],
+    "checks": [
+      {
+        "name": "bootstrap mostra o lar somente após sessão e perfil",
+        "passed": true
+      },
+      {
+        "name": "zero IDs duplicados após renderização",
+        "passed": true
+      },
+      {
+        "name": "todos os handlers estáticos têm função definida",
+        "passed": true
+      },
+      {
+        "name": "todas as seis seções abrem e histórico acompanha",
+        "passed": true
+      },
+      {
+        "name": "tema claro/escuro/sistema persistente e configurações abrem",
+        "passed": true
+      },
+      {
+        "name": "dados pessoais isolados entre pessoas",
+        "passed": true
+      },
+      {
+        "name": "crop confirma sem variáveis indefinidas",
+        "passed": true
+      },
+      {
+        "name": "rejeição do banco não anuncia baixa bem-sucedida",
+        "passed": true
+      },
+      {
+        "name": "cofre com HTML é exibido como texto",
+        "passed": true
+      },
+      {
+        "name": "argumentos de evento suportam apóstrofo sem injeção",
+        "passed": true
+      },
+      {
+        "name": "fila offline mantém pendência quando o banco recusa",
+        "passed": true
+      },
+      {
+        "name": "datas mensais e meia-noite corretas",
+        "passed": true
+      },
+      {
+        "name": "recuperação de senha tem fluxo de envio",
+        "passed": true
+      },
+      {
+        "name": "páginas gerais não carregam módulos íntimos",
+        "passed": true
+      },
+      {
+        "name": "transferência aceita vírgula e bloqueia toque duplo enquanto aguarda confirmação",
+        "passed": true
+      },
+      {
+        "name": "queda de conexão recupera valor, destinatário e identificador ao reabrir a janela",
+        "passed": true
+      },
+      {
+        "name": "resposta sem confirmação não fecha a janela nem anuncia sucesso",
+        "passed": true
+      },
+      {
+        "name": "falha ao recarregar o extrato não é apresentada como falha da transferência já confirmada",
+        "passed": true
+      },
+      {
+        "name": "troca de conta durante a chamada não exibe confirmação no perfil seguinte",
+        "passed": true
+      },
+      {
+        "name": "sem sessão, painel fica oculto e login disponível",
+        "passed": true
+      }
+    ]
+  },
+  "database_v7_with_v71_installed": {
+    "engine": "PGlite/PostgreSQL em memória; schema de teste compatível, não o Supabase real",
+    "checks": [
+      {
+        "name": "políticas pessoais aceitam UUID, TEXT e VARCHAR sem expor outros proprietários",
+        "passed": true
+      },
+      {
+        "name": "diário com proprietário TEXT permite inserir somente para a própria conta",
+        "passed": true
+      },
+      {
+        "name": "atualizar e excluir diário respeitam o dono e impedem trocar a autoria",
+        "passed": true
+      },
+      {
+        "name": "autenticado sem auth.uid e anônimo não recebem registros pessoais",
+        "passed": true
+      },
+      {
+        "name": "limite familiar também aceita coluna TEXT em tabela opcional",
+        "passed": true
+      },
+      {
+        "name": "baixa e lançamento atômicos; repetição não duplica",
+        "passed": true
+      },
+      {
+        "name": "adulto não pode agir por outro adulto",
+        "passed": true
+      },
+      {
+        "name": "família diferente é recusada",
+        "passed": true
+      },
+      {
+        "name": "compra preserva itens e grava despesa uma vez",
+        "passed": true
+      },
+      {
+        "name": "falha na transação não marca compra como finalizada",
+        "passed": true
+      },
+      {
+        "name": "aportes somam e ficam vinculados a débitos",
+        "passed": true
+      },
+      {
+        "name": "valor negativo é recusado",
+        "passed": true
+      },
+      {
+        "name": "conclusão duplicada ou reaberta não duplica XP",
+        "passed": true
+      },
+      {
+        "name": "mesada debita XP e cria entrada na mesma transação",
+        "passed": true
+      },
+      {
+        "name": "recompensa padrão usa preço do servidor e aceita replay do mesmo ID",
+        "passed": true
+      },
+      {
+        "name": "bloqueio impede criança de operar finanças",
+        "passed": true
+      },
+      {
+        "name": "usuário autenticado não grava diretamente no ledger",
+        "passed": true
+      },
+      {
+        "name": "RPC funciona com privilégio authenticated e autorização explícita",
+        "passed": true
+      },
+      {
+        "name": "extrato mascara detalhes privados no servidor",
+        "passed": true
+      },
+      {
+        "name": "RLS restringe consulta direta mesmo com política antiga permissiva",
+        "passed": true
+      },
+      {
+        "name": "cota de IA aceita 20 reservas e recusa a próxima",
+        "passed": true
+      },
+      {
+        "name": "política anônima antiga não expõe dados familiares",
+        "passed": true
+      },
+      {
+        "name": "esquema incompatível aborta sem criar estruturas novas",
+        "passed": true
+      },
+      {
+        "name": "nova tentativa permite concluir após falha sem repetir crédito ou penalidade",
+        "passed": true
+      },
+      {
+        "name": "migração é reaplicável sem perder dados",
+        "passed": true
+      }
+    ]
+  },
+  "transfers_client": {
+    "engine": "JavaScript/VM com armazenamento e RPC simulados; não é teste do PostgREST real",
+    "checks": [
+      {
+        "name": "valores em reais e centavos são normalizados sem arredondar frações",
+        "passed": true
+      },
+      {
+        "name": "perfil ativo diferente da conta autenticada não envia transferência",
+        "passed": true
+      },
+      {
+        "name": "identificador é persistido antes da chamada e removido após confirmação explícita",
+        "passed": true
+      },
+      {
+        "name": "envios simultâneos no mesmo contexto compartilham a mesma solicitação",
+        "passed": true
+      },
+      {
+        "name": "envio simultâneo com outro valor não recebe confirmação da primeira solicitação",
+        "passed": true
+      },
+      {
+        "name": "resposta nula preserva pendência e a próxima consulta reutiliza o ID",
+        "passed": true
+      },
+      {
+        "name": "confirmação perdida e recarga retomam a operação sem novo efeito financeiro",
+        "passed": true
+      },
+      {
+        "name": "trocar valor enquanto há pendência não cria uma nova operação",
+        "passed": true
+      },
+      {
+        "name": "recusa explícita do servidor libera a pendência e apresenta erro",
+        "passed": true
+      },
+      {
+        "name": "RPC ainda não instalada mantém o mesmo identificador para a próxima consulta",
+        "passed": true
+      },
+      {
+        "name": "pendência corrompida não é descartada nem gera envio",
+        "passed": true
+      },
+      {
+        "name": "falha no armazenamento impede envio sem identificador recuperável",
+        "passed": true
+      },
+      {
+        "name": "resposta de outra operação não anuncia confirmação e preserva pendência",
+        "passed": true
+      },
+      {
+        "name": "pendência fica separada quando outra conta acessa o mesmo dispositivo",
+        "passed": true
+      },
+      {
+        "name": "Web Locks é usado quando disponível para coordenar abas do navegador",
+        "passed": true
+      }
+    ]
+  },
+  "transfers_database": {
+    "engine": "PGlite/PostgreSQL; esquema representativo baseado nas colunas recebidas. Sem sessões concorrentes reais.",
+    "checks": [
+      {
+        "name": "migração instala com as colunas recebidas, sem depender da migração V7",
+        "passed": true
+      },
+      {
+        "name": "sessão ausente não transfere",
+        "passed": true
+      },
+      {
+        "name": "remetente diferente da conta autenticada é recusado",
+        "passed": true
+      },
+      {
+        "name": "família informada diferente da conta é recusada",
+        "passed": true
+      },
+      {
+        "name": "destinatário de outro lar e transferência para si são recusados",
+        "passed": true
+      },
+      {
+        "name": "NULL, valores especiais, negativos, zero e frações de centavo são recusados",
+        "passed": true
+      },
+      {
+        "name": "cache maior e saldo legado não autorizam gasto além do extrato",
+        "passed": true
+      },
+      {
+        "name": "saída, entrada, confirmação e caches são consistentes",
+        "passed": true
+      },
+      {
+        "name": "repetir a mesma operação retorna a confirmação anterior sem novos lançamentos",
+        "passed": true
+      },
+      {
+        "name": "reutilizar identificador com outro valor ou destinatário não transfere",
+        "passed": true
+      },
+      {
+        "name": "revogação de permissão bloqueia novos envios e ainda permite reconsultar confirmação",
+        "passed": true
+      },
+      {
+        "name": "perfil infantil autenticado não faz débito",
+        "passed": true
+      },
+      {
+        "name": "saldo zero não aciona a tabela antiga",
+        "passed": true
+      },
+      {
+        "name": "a transferência não depende da existência da tabela antiga",
+        "passed": true
+      },
+      {
+        "name": "uma segunda operação distinta é reavaliada pelo saldo atualizado",
+        "passed": true
+      },
+      {
+        "name": "extrato com tipo desconhecido, valor negativo ou subcentavo é recusado",
+        "passed": true
+      },
+      {
+        "name": "falha no crédito reverte também débito e registro da operação",
+        "passed": true
+      },
+      {
+        "name": "falha no cache do destinatário reverte os dois lançamentos e o cache do remetente",
+        "passed": true
+      },
+      {
+        "name": "trigger preexistente que atualiza cache não causa débito ou crédito duplicado",
+        "passed": true
+      },
+      {
+        "name": "trigger legado incompatível falha sem deixar transferência parcial",
+        "passed": true
+      },
+      {
+        "name": "cliente antigo recebe recusa explícita e não movimenta saldo",
+        "passed": true
+      },
+      {
+        "name": "anônimo não pode executar as RPCs de transferência",
+        "passed": true
+      },
+      {
+        "name": "autenticado executa a RPC, mas não grava no registro de confirmações",
+        "passed": true
+      },
+      {
+        "name": "confirmações são visíveis apenas à conta remetente",
+        "passed": true
+      },
+      {
+        "name": "trigger de bloqueio também funciona em INSERT, UPDATE e DELETE diretos",
+        "passed": true
+      },
+      {
+        "name": "isolamento sem leitura atualizada é recusado antes das alterações",
+        "passed": true
+      },
+      {
+        "name": "migração reaplicada preserva confirmações e mantém apenas o próprio trigger",
+        "passed": true
+      },
+      {
+        "name": "consultas de conciliação e de triggers retornam diagnóstico sem alterar lançamentos",
+        "passed": true
+      },
+      {
+        "name": "esquema incompleto cancela a migração antes de instalar a RPC",
+        "passed": true
+      }
+    ]
+  },
+  "static": {
+    "javascript_units": 58,
+    "local_references_from_static_suite": 151,
+    "delivery_references": 146,
+    "original_media_preserved": 125,
+    "passed": true
+  },
+  "total_targeted_checks": 89,
+  "sql_sha256": {
+    "02_ATUALIZAR_V7.sql": "08b7af1b01d6d688ec533dcc7b948486c2faf80b457502ac60c78a6929eed7fe",
+    "03_TRANSFERENCIAS_V71.sql": "4710fe274c7422fa278efe2eb0749819b20f3ed72bfbb103b541bfeb77004df6"
+  },
+  "limits": [
+    "Bloqueios foram implementados, mas sessões concorrentes reais ainda precisam de homologação no Supabase.",
+    "Triggers, políticas e permissões reais do projeto não foram acessados.",
+    "Nenhuma migração foi executada no banco do usuário."
+  ]
+}

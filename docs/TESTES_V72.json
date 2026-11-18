@@ -1,0 +1,37 @@
+{
+  "engine": "DOM simulado, sem navegador visual e sem banco real",
+  "checks": [
+    {
+      "name": "somente o card correspondente ao gênero do perfil aparece, inclusive após alternar",
+      "passed": true
+    },
+    {
+      "name": "cartão pode ser carregado e alterado no editor",
+      "passed": true
+    },
+    {
+      "name": "menu do avatar sai dos ancestrais e volta ao fechar",
+      "passed": true
+    },
+    {
+      "name": "menu da missão usa a mesma camada flutuante",
+      "passed": true
+    },
+    {
+      "name": "convite de apoio espera modais fecharem e respeita sete dias por perfil",
+      "passed": true
+    },
+    {
+      "name": "365 datas cobertas e ano bissexto mantém março no lugar",
+      "passed": true
+    },
+    {
+      "name": "barra do ciclo avança com o dia, mantém quatro fases e limita atraso",
+      "passed": true
+    },
+    {
+      "name": "arsenal diário é estável ao renderizar novamente e setores preservados",
+      "passed": true
+    }
+  ]
+}

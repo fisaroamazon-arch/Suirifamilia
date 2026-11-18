@@ -1,0 +1,33 @@
+{
+  "engine": "DOM, imagens/canvas, Web Audio e Supabase simulados; vídeo validado separadamente",
+  "checks": [
+    {
+      "name": "tema geral é claro, sem seletor escuro, e foto abre troca sem logout",
+      "passed": true
+    },
+    {
+      "name": "recorte permite zoom e rotação sem expor área vazia; cancelar não grava",
+      "passed": true
+    },
+    {
+      "name": "falha ao salvar mantém recorte aberto; confirmação grava o membro correto",
+      "passed": true
+    },
+    {
+      "name": "homem.html: foto do usuário no cabeçalho e controles compactos preservados",
+      "passed": true
+    },
+    {
+      "name": "homem.html: visualizador usa análise de áudio e pausa sem simulação de batidas",
+      "passed": true
+    },
+    {
+      "name": "mulher.html: foto do usuário no cabeçalho e controles compactos preservados",
+      "passed": true
+    },
+    {
+      "name": "mulher.html: visualizador usa análise de áudio e pausa sem simulação de batidas",
+      "passed": true
+    }
+  ]
+}

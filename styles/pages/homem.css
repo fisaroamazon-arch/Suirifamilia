@@ -1,0 +1,268 @@
+/* Suiri Família 7.0 · estilos da página homem.html. */
+:root {
+            /* Paleta Nobre: Papel Claro Arejado & Verde Intenso Vibrante */
+            --bg-papel: #fbf9f5;
+            --bg-card: #ffffff;
+            --texto-titulo: #0f172a;
+            --texto-corpo: #334155;
+            --texto-suave: #64748b;
+            
+            --borda-suave: #e2e8f0;
+            --borda-verde: #16a34a;
+            
+            /* Verdes Intensos */
+            --verde-intenso: #16a34a;
+            --verde-xbox-vivo: #15803d;
+            --verde-luz: #22c55e;
+            --verde-suave-bg: #f0fdf4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Fundo branco claro com textura sutil de fibra/papel */
+            background-color: #faf8f5 !important;
+            background-image: radial-gradient(#e5e0d8 0.75px, transparent 0.75px), radial-gradient(#e5e0d8 0.75px, #faf8f5 0.75px) !important;
+            background-size: 24px 24px !important;
+            background-position: 0 0, 12px 12px !important;
+            min-height: 100vh;
+            padding: 16px 12px 65px 12px;
+            color: #334155;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .container-homem {
+            width: 100%;
+            max-width: 540px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        .bottom-nav-fixa-inferior, .bottom-nav {
+            display: none !important;
+        }
+
+        /* =========================================================================
+           ESTRUTURA DOS QUADROS: BRANCO ACETINADO COM DESTAQUE VERDE INTENSO
+           ========================================================================= */
+        .cartao-geral {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-left: 4px solid #16a34a !important;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04) !important;
+            border-radius: 18px !important;
+            color: #0f172a !important;
+            padding: 18px 16px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .cartao-geral p, 
+        .cartao-geral span, 
+        .cartao-geral strong, 
+        .cartao-geral h1, 
+        .cartao-geral h3 {
+            text-shadow: none !important;
+        }
+
+        img[src*="./icone/"],
+        img[src*="icone/"],
+        .icone-svg,
+        .icone-sistema-img {
+            transform: scale(1.1);
+            transform-origin: center center;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        button img[src*="./icone/"],
+        label img[src*="./icone/"],
+        span img[src*="./icone/"] {
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+
+        /* =========================================================================
+           REPRODUTOR MUSICAL SÓBRIO & VERDE INTENSO
+           ========================================================================= */
+        .painel-player-homem {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #16a34a;
+            border-radius: 18px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+        }
+
+        .btn-ctrl-homem {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ctrl-homem:active {
+            transform: scale(0.92);
+            background: #16a34a;
+            color: #ffffff;
+        }
+
+        .btn-ctrl-homem.ativo {
+            background: #16a34a;
+            border-color: #15803d;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+        }
+    
+        /* =========================================================================
+           BARRAS DESLIZANTES ULTRA VIVAS & PULSANTES (TEMA VERDE ENERGIA)
+           ========================================================================= */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 999px;
+            outline: none;
+            border: 1px solid #86efac;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 6px 0;
+        }
+
+        input[type="range"]:focus {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+        }
+
+        /* WebKit (Chrome, Safari, Edge, Android WebView) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+            border: 3px solid #ffffff;
+            box-shadow: 0 3px 10px rgba(22, 163, 74, 0.55), 0 0 6px rgba(34, 197, 94, 0.6);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.22);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.75), 0 0 12px rgba(74, 222, 128, 0.9);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+            border: 3px solid #ffffff;
+            box-shadow: 0 3px 10px rgba(22, 163, 74, 0.55), 0 0 6px rgba(34, 197, 94, 0.6);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.22);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.75), 0 0 12px rgba(74, 222, 128, 0.9);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 999px;
+            height: 10px;
+            border: 1px solid #86efac;
+        }
+
+            /* =========================================================================
+           BARRAS DESLIZANTES FINAS, ELEGANTES & INDIVIDUAIS
+           ========================================================================= */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            margin: 6px 0;
+            transition: opacity 0.2s ease;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        /* WebKit (Android WebView, Chrome, Safari) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: currentColor;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.25);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: currentColor;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.25);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 6px;
+            border: none;
+        }

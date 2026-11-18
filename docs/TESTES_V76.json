@@ -1,0 +1,41 @@
+{
+  "engine": "DOM, gestos e Supabase simulados; sem teste visual ou aparelho físico",
+  "checks": [
+    {
+      "name": "três atalhos pertencem ao cabeçalho e troca aparece uma única vez sob a foto",
+      "passed": true
+    },
+    {
+      "name": "Pense abre painel; tocar no conteúdo não fecha, tocar no fundo fecha",
+      "passed": true
+    },
+    {
+      "name": "arrastar a alça fecha; gesto horizontal e cancelado mantêm aberto",
+      "passed": true
+    },
+    {
+      "name": "confirmação fechada pelo fundo resolve como cancelamento",
+      "passed": true
+    },
+    {
+      "name": "painel criado e recriado depois do carregamento recebe gestos",
+      "passed": true
+    },
+    {
+      "name": "quatro atalhos compactos têm ações existentes; ciclo abre registro",
+      "passed": true
+    },
+    {
+      "name": "quatro fases exibem inverno, primavera, verão e outono e selecionam a fase correta",
+      "passed": true
+    },
+    {
+      "name": "painel das fases fecha por gesto e mantém abas e rodapé na estrutura",
+      "passed": true
+    },
+    {
+      "name": "modo foco preservado e vídeo usa somente sequência de quadros originais",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "engine": "DOM e Supabase simulados; sem gravações em contas reais",
+  "checks": [
+    {
+      "name": "Pense abre preenchido e registra a data local somente ao exibir",
+      "passed": true
+    },
+    {
+      "name": "missões de todos chegam aos dois adultos, inclusive em Minhas; Kids separados",
+      "passed": true
+    },
+    {
+      "name": "estilos Xbox e PlayStation têm seleção persistida por membro",
+      "passed": true
+    },
+    {
+      "name": "barras masculinas mantêm posições fracionárias e preenchimento",
+      "passed": true
+    },
+    {
+      "name": "barras femininas usam interação contínua mantendo rótulos coerentes",
+      "passed": true
+    }
+  ]
+}

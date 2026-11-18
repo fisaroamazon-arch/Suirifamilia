@@ -1,0 +1,502 @@
+[
+  {
+    "path": "assets/images/icone.jpg",
+    "sha256": "e0a58027148652d7849c2b8adfc30f7b993e553f23fcc5454a97b50526c65661"
+  },
+  {
+    "path": "assets/images/animated/banho.gif",
+    "sha256": "e30b5f225291807359f887a44d052748713a4375b3b06151655a1fce5240765e"
+  },
+  {
+    "path": "assets/images/animated/gato.gif",
+    "sha256": "b5d7586aaec480c101902b982a743885668216abcd5ae79f053f628c132499a1"
+  },
+  {
+    "path": "assets/video/flores.mp4",
+    "sha256": "ddf7439ee0be0388aaaab61ee5ef05bb22b48a6345baa2a9c72df891f806ac84"
+  },
+  {
+    "path": "assets/images/noite.jpg",
+    "sha256": "4686c0946744adc842c580a13ab38be168e0181cf93e42aa56a3fbbae0b22dfe"
+  },
+  {
+    "path": "assets/images/espacomulher.png",
+    "sha256": "fd044021816e9af4bd22e9d00d182bf49cafea2eb3eec535a22db63e3ff4f7ea"
+  },
+  {
+    "path": "assets/images/animated/padrao.gif",
+    "sha256": "bb6abd192888daca7223b791154a18d9d7eba5c3c37d8baf0a7348618da6c70d"
+  },
+  {
+    "path": "assets/images/tarde.jpg",
+    "sha256": "765001ff57d2f1466172fa19feb8be67468604194b9bf403b452803f5f1c988d"
+  },
+  {
+    "path": "assets/images/animated/feliz.gif",
+    "sha256": "81ac32ff43f36c9021c918584f5248111f5a6aeccfdc4879457c16489d63e3d8"
+  },
+  {
+    "path": "assets/images/animated/triste.gif",
+    "sha256": "40231dacf2fb4747fd9ebab925cc978160b8690ae97abaf82e95d271c6b32968"
+  },
+  {
+    "path": "assets/images/logo.jpg",
+    "sha256": "e0a58027148652d7849c2b8adfc30f7b993e553f23fcc5454a97b50526c65661"
+  },
+  {
+    "path": "assets/video/zen.mp4",
+    "sha256": "4a1b3abf80b6b5d01cc2f994e2349d8d89b22acdf44a7d9ac25beb69caf67794"
+  },
+  {
+    "path": "assets/images/animated/comendo.gif",
+    "sha256": "975f3255062ad4b1cad9eac3a054a1a457ce231d937343b7e6412a0cbebb6cbd"
+  },
+  {
+    "path": "assets/images/amanhecer.jpg",
+    "sha256": "18ca6d48d624f8407553ff8606657486513242b8820d7773c426f7209f192a63"
+  },
+  {
+    "path": "assets/images/animated/dormindo.gif",
+    "sha256": "5b5ca5cbbefc06b5174589f18042d0cf7fcae7b209e55b92319bdbf238ca5223"
+  },
+  {
+    "path": "assets/images/animated/dormir.gif",
+    "sha256": "e706ae2efe7c37547e53b1330e5a3e4110f988af1ddafc10d5a50034fd516b1f"
+  },
+  {
+    "path": "assets/images/animated/voando.gif",
+    "sha256": "8db914f53f8cd2f492a3877c29dea6b3784f1636850932d931751f64bfc9abe7"
+  },
+  {
+    "path": "assets/images/espacomasculino.png",
+    "sha256": "6189963d4d59432b2b9d92bef825b06640ffbaf4942fd0ae89a6de5f31887d74"
+  },
+  {
+    "path": "assets/video/fogo.mp4",
+    "sha256": "3b1eed4280675d320d492ac9ded8ab2a71cad68e9dc8d14e38bb06e64cf6bb24"
+  },
+  {
+    "path": "assets/images/animated/casa.gif",
+    "sha256": "f1083aa115266ce4398b4f9f41b1e2220aaa681e8f9935d41b7d77674569d55f"
+  },
+  {
+    "path": "assets/images/interna.jpg",
+    "sha256": "be5acd584bac14fee391155340cd9bbc2b385fac8a68cb5f17e807d43f3bc8dc"
+  },
+  {
+    "path": "assets/audio/music/onde_a_respira_o_descansa.mp3",
+    "sha256": "5fa6d1c877a88a009a3a1b9583f6217c3f55aa6cec0202d023e4f43e7e670aa4"
+  },
+  {
+    "path": "assets/audio/music/o_ltimo_pulsar_do_destino.mp3",
+    "sha256": "c8e39640727b12c57ca7bb8740274816b51acc29413e1fb825fc146c57d45c63"
+  },
+  {
+    "path": "assets/audio/music/lanterns_in_the_common_room.mp3",
+    "sha256": "b394ff43b1e8d141ceae394f738994b7ec40eef586340bf1a67b2bf0c5cc500a"
+  },
+  {
+    "path": "assets/audio/music/before_the_sun_wakes.mp3",
+    "sha256": "2369fbffa177d4f60cc2452d8a0f23e92c63bceddb3a5b8ec61cfcac20ae0153"
+  },
+  {
+    "path": "assets/audio/music/glass_grove_morning.mp3",
+    "sha256": "9f56fd24bc728dfe8df0c6b10e1b3b55224dfd6d4e73d0e40d5b07a2d1d240d2"
+  },
+  {
+    "path": "assets/audio/music/resting_at_the_fountain.mp3",
+    "sha256": "a3507adc4c6942a78bd3026555b0544b1682cbea4ef16d92d7fd57eda7a41a08"
+  },
+  {
+    "path": "assets/audio/music/aether_et_tellus_in_unum.mp3",
+    "sha256": "fec09a0f10601f484e777d792636a32aa3826ea82eabc2629925dde8bc80f9bb"
+  },
+  {
+    "path": "assets/audio/music/lullaby_for_a_lost_realm.mp3",
+    "sha256": "468d8446c1c11ea419d629ef5792e2c8b4bd0ecf4074c1c07cd0abf94c94abdf"
+  },
+  {
+    "path": "assets/audio/music/walk_through_the_cloister.mp3",
+    "sha256": "582032204501c71d5ba5493b618c3ee8393c50cc166f10361a53ca6132f2d155"
+  },
+  {
+    "path": "assets/audio/music/under_the_celestial_spire.mp3",
+    "sha256": "e8cc8e74594e1205b557f2d5cb9dd5f760beae8faa28c18049a2f99b58a14b6c"
+  },
+  {
+    "path": "assets/audio/music/summit_of_the_silver_blade.mp3",
+    "sha256": "af2ce0d02318b20edfc6f482d23057177027d10750a3d871eeaf03b2312a0aa2"
+  },
+  {
+    "path": "assets/audio/music/before_the_final_ring.mp3",
+    "sha256": "970e2a01ecaf68589741b8028f657776ee3234e474e70296976fe97ebe6e867e"
+  },
+  {
+    "path": "assets/audio/music/beneath_the_cloud-piercing_peaks.mp3",
+    "sha256": "8360d8be13e4977d839a5cee3b8dbbe84a9d64ff99052c7879ea94c2af584a72"
+  },
+  {
+    "path": "assets/audio/music/sunlight_on_stone.mp3",
+    "sha256": "6a89360c2db0814d4a826d5c60f290cde4946b8828d04df26be277811e59edb0"
+  },
+  {
+    "path": "assets/audio/music/spires_of_ancient_stone.mp3",
+    "sha256": "2f8539b3a1abeec96e7c799e33e2d44580768e988739ec58fc3e37d7da83d9b7"
+  },
+  {
+    "path": "assets/audio/music/geometria_do_amanhecer.mp3",
+    "sha256": "36d1b399e9ba826db1813072f01a627668649f19046680205c90ed28433a664c"
+  },
+  {
+    "path": "assets/audio/music/one_more_leap.mp3",
+    "sha256": "2706e4df3e75a3616a81c2e24623b3447830f29cfc1f7b2aba71ca0737080c6c"
+  },
+  {
+    "path": "assets/audio/music/beneath_the_glowing_canopy.mp3",
+    "sha256": "51025f33ce6b9e3e28f14e6b80cfa1515e4c3660077ea5c9501061745a401876"
+  },
+  {
+    "path": "assets/audio/music/beneath_the_canopy.mp3",
+    "sha256": "88ab8999f5ddd1f29ee428ae366e0dda107d0f82862d81bd8ddcf3839cc83657"
+  },
+  {
+    "path": "assets/icons/love.png",
+    "sha256": "c9b8f4c0fa95c50a964b211232b9849fde21e7d129f6a8cf82d2f41efd6b7435"
+  },
+  {
+    "path": "assets/icons/icone-estresse.png",
+    "sha256": "eed963548ad8327c5080dd5964f9ee930cc3e45a2356e2db275c618c4bc0d64c"
+  },
+  {
+    "path": "assets/icons/icone-relogio.png",
+    "sha256": "90a679a85719da67c03d672cb8219684cd7b72183ce4dbbe83e80e0f708a0df8"
+  },
+  {
+    "path": "assets/images/animated/flores.gif",
+    "sha256": "a48ee7746726eab41155d6d06c51aba430e5140ee9be08b286adabd0b6a6910b"
+  },
+  {
+    "path": "assets/icons/logo_suiri.png",
+    "sha256": "d77d365974156e969e7f8ee922132a6131d71dca84de9e249c88944178178b2c"
+  },
+  {
+    "path": "assets/icons/icone-casa-escopo.png",
+    "sha256": "146fcc2f274a220e0c40f4422507a2fe43c3b96688970e963ef36c6674fc1816"
+  },
+  {
+    "path": "assets/icons/icone-escudo.png",
+    "sha256": "49aececc84977675e9d5bd28f1fc94a5759c77ea8017c66eedfa8dd94487edf1"
+  },
+  {
+    "path": "assets/icons/icone-alfinete.png",
+    "sha256": "ab12c40a22e5b150ba734bc6f35af3a02670d6ad7034f400925cc1777be36826"
+  },
+  {
+    "path": "assets/icons/icone-mulher.png",
+    "sha256": "cae1e925588e6fcb82f99936956ae3f0500ee01c215c83d3d0a7ef5019b09442"
+  },
+  {
+    "path": "assets/icons/icone-check.png",
+    "sha256": "0182e3b621932928635403f726e2f563e8da0543d5d75a1c993dfe24e77d6155"
+  },
+  {
+    "path": "assets/icons/icone-pessoa-escopo.png",
+    "sha256": "8e25a3493cab2e6422e06d4163c36f4d4fcbae3d17e3754786e61bf1b0153417"
+  },
+  {
+    "path": "assets/icons/zen.png",
+    "sha256": "ebef6ab0664c59e4692290abbcca3320cf6ced95b695388245e249d7a239a746"
+  },
+  {
+    "path": "assets/icons/icone-familia.png",
+    "sha256": "1e61de8db86175bde7856b08a59378d9ef583104ac0363334fec7e0047dd5fac"
+  },
+  {
+    "path": "assets/icons/icone-mercado.png",
+    "sha256": "1cf7a7e4c1ef0fbe0138fe71abb8294ad95ee3288858fee69166afc2ac32bd2e"
+  },
+  {
+    "path": "assets/icons/icone-oficina.png",
+    "sha256": "b0e940a2c57d43550190dc767ba5b008c3d184c0c407d5b847f365fcf2db1fb3"
+  },
+  {
+    "path": "assets/icons/alivio.png",
+    "sha256": "6f850d957ed22c9fcea63f95c6e33e207d345f743db10a3e1d03ee7e645caaf0"
+  },
+  {
+    "path": "assets/icons/icones-missao.png",
+    "sha256": "0992a874467c19449ea9df329dfc5ed67ba2fced84063e84c8bc9238531f48bc"
+  },
+  {
+    "path": "assets/icons/icone-microfone.png",
+    "sha256": "5202d9e226f3237f466815be8db57e070232787869a68cd3026b75edc86d95cf"
+  },
+  {
+    "path": "assets/icons/icone-porta-sair.png",
+    "sha256": "c769d786928570a9209471fd1fe903ec3f036cb437124449a01f28106b4adeb3"
+  },
+  {
+    "path": "assets/icons/ciclo.png",
+    "sha256": "b21b543142a613de47fada21d9f9ff4bbd3583e67d10f85b3bc6a29ca3fdefe9"
+  },
+  {
+    "path": "assets/icons/icone-calendario.png",
+    "sha256": "a13634b44c13dbf81745ca04fceb0249944bec3bd17d845a3e44796559e056a6"
+  },
+  {
+    "path": "assets/icons/icone-fogo.png",
+    "sha256": "ef23087fc4a0a3d137cf4b396c39cad81704ec7bd58ccb4bab2ba5db56f99126"
+  },
+  {
+    "path": "assets/icons/medita.png",
+    "sha256": "b641b680df0595f530c4133e405e150ad8df4fd3830975bf7960452029719e25"
+  },
+  {
+    "path": "assets/icons/icone-forte.png",
+    "sha256": "8a72f36b2d3520773039b526472216f95a44d254ad9289d4108ce748125a0e67"
+  },
+  {
+    "path": "assets/icons/icone-filme.png",
+    "sha256": "88ab9718028995561d06550e8dc0871a956a5d8403eb4749a4d2f91910346742"
+  },
+  {
+    "path": "assets/icons/trocar.png",
+    "sha256": "5efdd39b9b06ccae63db2a07f015e3f96c1bd2ec530dbc012b9fd9e26c5dd1dc"
+  },
+  {
+    "path": "assets/icons/icone-xis.png",
+    "sha256": "f5269d14d60d7437cd16373ff17ff1445a32e517e1a177f7f9a547948d70d636"
+  },
+  {
+    "path": "assets/icons/icone-carteira.png",
+    "sha256": "9d0f0a8b199305c34ad26b4459d5658c6dfa9211707cd634aa323e3bc27dba4c"
+  },
+  {
+    "path": "assets/icons/icones-camera.png",
+    "sha256": "10d19fb297740a9aefed5b53ee7335c3d7baaac8254920111dfc52deb3cd5d88"
+  },
+  {
+    "path": "assets/icons/icone-loja.png",
+    "sha256": "2be815da0926cc5897d5169ac82ad336c222ffe96c14c771da87399ca202100f"
+  },
+  {
+    "path": "assets/icons/icone-joinha-baixo.png",
+    "sha256": "14eed9a39cf66c97500b3c018a0d105a9bd2f731dbbb11f9fa38fc8434dc357f"
+  },
+  {
+    "path": "assets/icons/icone-joinha.png",
+    "sha256": "468967adb29f920ba6ad646af4c4e3a0101da5a91c016113f567013ea53d4718"
+  },
+  {
+    "path": "assets/icons/icones-configuracao.png",
+    "sha256": "1017d005d24c38fc0a396901f52a9cb81b853feeda63aa65681cad51ec8491b7"
+  },
+  {
+    "path": "assets/icons/icone-lixo.png",
+    "sha256": "b380bfdc6f4dc24cac322f922a8f7f5fb05b364e9023fe069b490bfb80f4cd76"
+  },
+  {
+    "path": "assets/video/videofogo.mp4",
+    "sha256": "6ca9a94fd231eb38a88a48df88a77af6d59bdce2a694a47c5eddbff425753ee6"
+  },
+  {
+    "path": "assets/icons/diario.png",
+    "sha256": "af79ea80ecde242b9216a121a825b7df8c29e800ba2e99a1e214a80d67ce8a26"
+  },
+  {
+    "path": "assets/icons/icone-editar.png",
+    "sha256": "b8a6e3f27090b859a8ccf0971d4f820bb7bfecea165709422a1f4422d618aae0"
+  },
+  {
+    "path": "assets/icons/icone-energia.png",
+    "sha256": "8a47b7db9ecc1700243199fab098b86cc11b6330b42ab79db7b454ec07fdd725"
+  },
+  {
+    "path": "assets/icons/icone-financas.png",
+    "sha256": "d5e086f5b0c50142144b087770cd2d0375176f9793b3213028274d097b088206"
+  },
+  {
+    "path": "assets/icons/icone-lampada-pense.png",
+    "sha256": "5d106fa0d6fc7c00955f370d980268fcf0ab4d728a093129d28c3c48ed3d8814"
+  },
+  {
+    "path": "assets/icons/icone-manual.png",
+    "sha256": "62e7b48fbc190582ce58865b58a21abb0679ddad25421ce5333002e072c89a1e"
+  },
+  {
+    "path": "assets/audio/pet/saudacao/3.mp3",
+    "sha256": "c467727faf5105c3b91a0e9685f26cd814a1a10bde8db46d023ab6981dc5a0c6"
+  },
+  {
+    "path": "assets/audio/pet/saudacao/1.mp3",
+    "sha256": "4bf033b1f70bcb65dd79ecd8fdeb8594ef5b95da7f5830cdb11b1213beb39c81"
+  },
+  {
+    "path": "assets/audio/pet/saudacao/2.mp3",
+    "sha256": "27bae00f38cdc86df0df69ccdc6e0f447411e054aa591000574f474136f9a499"
+  },
+  {
+    "path": "assets/audio/pet/consolo/3.mp3",
+    "sha256": "3772ba4e126cd20208845eb18758ca93283817a46eac55c0ba7678f3c2083b12"
+  },
+  {
+    "path": "assets/audio/pet/consolo/1.mp3",
+    "sha256": "c71b42e6030b481ff75ebc1ac65643c9108f0c18ab27e9efde28c6c6f9283d3e"
+  },
+  {
+    "path": "assets/audio/pet/consolo/2.mp3",
+    "sha256": "b830767bd0ecd6af31b88336c2901f8e8d1dcefa6e64bdc32b4ef466253dcda4"
+  },
+  {
+    "path": "assets/audio/pet/estilo/1.mp3",
+    "sha256": "3e9ce343f1bb9f7637c276b990024f975406694837da96b160b405d0976e8c6c"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_5.mp3",
+    "sha256": "5030c1f309d98dbf80f2e9749a554d416a09bb873d76907deab95fd102125425"
+  },
+  {
+    "path": "assets/audio/help/guia_familia_3.mp3",
+    "sha256": "3b43741d1ce12cc73daaeafb4db55c3aeb8f14d7d9bba140aaff4c967676e6d4"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_2.mp3",
+    "sha256": "a32d82a823356c5a03c5a0b17c039b1599d72c6112cfd1d5679042ea3353ccc2"
+  },
+  {
+    "path": "assets/audio/help/guia_familia_2.mp3",
+    "sha256": "94f4e46bc6be9f30d94bc0f9874d0b525a4c65137aa1a89e337a4f83588887bc"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_7.mp3",
+    "sha256": "4688ecdade97acb713c0a8c4ba4a0e832eb4790494edc7a0fb06fc789ebf8019"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_3.mp3",
+    "sha256": "41fe9f0b24a2cba4c47e76c04862596a30a89897c957f70fb2368e43f510ead7"
+  },
+  {
+    "path": "assets/audio/help/guia_financas_3.mp3",
+    "sha256": "9dd4da521e590c4055752cc8e4ac97bb19a025bb0ae72ae0f6358c2cc2c52f70"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_1.mp3",
+    "sha256": "87b5463014943ecb2a275c9d667b7f145f4218d2ca3fcf53162b4c8ec137d099"
+  },
+  {
+    "path": "assets/audio/help/guia_calendario_1.mp3",
+    "sha256": "5ceb7651e6c96ab1bbaaaf721741fdc9a7b132188c4fdf7f6def04d3c088098a"
+  },
+  {
+    "path": "assets/audio/help/guia_financas_1.mp3",
+    "sha256": "db5d0004d3a269754b25f4172a150196b234fbfe43100a7541307f3f1e91cbc9"
+  },
+  {
+    "path": "assets/audio/help/guia_familia_1.mp3",
+    "sha256": "af0baf73a166ce3b063373a0ed4c8e178e5b2042e9749321c111d06f6ae6e6e5"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_8.mp3",
+    "sha256": "3c5c735c3e5d7ba4a80f624725c3db680e944ec5eecdca772c9ab176860cd402"
+  },
+  {
+    "path": "assets/audio/help/guia_mercado_3.mp3",
+    "sha256": "4ef4e04fd3f0286550a641b1a5644d95679ad1e9d1f33a9cbe24261ac65bef3a"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_6.mp3",
+    "sha256": "3151c21775c40591f722fde852382d338025c6bce431a2b3aae9158ab079b1f6"
+  },
+  {
+    "path": "assets/audio/help/guia_final_agradecimento.mp3",
+    "sha256": "5c8bf8609ab4db6cedea22e18c58c3be981314950a6be94b6e4f44e8b0986b21"
+  },
+  {
+    "path": "assets/audio/help/guia_geral_4.mp3",
+    "sha256": "73d738bc1b694fff601cbd14322f65cc7a5c7e8fa1ad3db0b8fe0be81711b82a"
+  },
+  {
+    "path": "assets/audio/help/guia_mercado_1.mp3",
+    "sha256": "734c78c93639cc65742804ad6408f7aeeb8bac759ca0bd5c727a2f589b849f58"
+  },
+  {
+    "path": "assets/audio/help/guia_calendario_2.mp3",
+    "sha256": "9ee70f87aace1b5a4edba9a235d4de83831ae69a85ec476106367321fa61df84"
+  },
+  {
+    "path": "assets/audio/help/guia_financas_2.mp3",
+    "sha256": "b1347f91adf205bf90d2a0d23a74aede498e10b1f1959132f32bd7949316d19f"
+  },
+  {
+    "path": "assets/audio/help/guia_mercado_2.mp3",
+    "sha256": "c97bd4ef80d71697adfbb28bb3dd03b677304a4b4ae3beba6fccbfa238edca34"
+  },
+  {
+    "path": "assets/audio/help/guia_calendario_3.mp3",
+    "sha256": "a2a565c8c7010224c717fdce2f183bb96ffe71e64cc05663c611ce58dea4ad7d"
+  },
+  {
+    "path": "assets/audio/help/guia_mercado_4.mp3",
+    "sha256": "f0d84cb2c61e0add87be8c383f7633d749793f1e0c8d933d5d4a5a8b00a67d48"
+  },
+  {
+    "path": "assets/audio/help/guia_financas_4.mp3",
+    "sha256": "0250f4378756f82bb24cfc010d1413f3a3d24fc652a79c2faa39bc25c4c2c90a"
+  },
+  {
+    "path": "assets/audio/pet/delicia/1.mp3",
+    "sha256": "341ac6b9e41a124c772aa5af4b237820af210d71e09290449a7512c084b01523"
+  },
+  {
+    "path": "assets/audio/pet/parabens/3.mp3",
+    "sha256": "84e1c7efb206ada2d486f9ce660b4cceee1347072797aca278ce2fd2b0235e4c"
+  },
+  {
+    "path": "assets/audio/pet/parabens/1.mp3",
+    "sha256": "83ce5acdd5023679d1c17cb83ce0ce474cef4c8b29adea5f48bc512a543d9f8d"
+  },
+  {
+    "path": "assets/audio/pet/parabens/2.mp3",
+    "sha256": "77c5eba38aaffe4a9f1544a1b01e8be8f91cd16d43616ad0ef6cc50d19bf5024"
+  },
+  {
+    "path": "assets/audio/pet/amigo/8.mp3",
+    "sha256": "8c4aca5969712aefecc3f289def5a98cc7075469b42b7454a33b0d9e7cd6e28f"
+  },
+  {
+    "path": "assets/audio/pet/amigo/3.mp3",
+    "sha256": "5f5b84bcb76ace2c6a594f0170f55685f7b149d87120716b62942b5034ab5eb1"
+  },
+  {
+    "path": "assets/audio/pet/amigo/7.mp3",
+    "sha256": "8a862e40e82c8c2b29bba3b61ec8086fd8fb8a3d25e230b2e8683990c60ef42e"
+  },
+  {
+    "path": "assets/audio/pet/amigo/10.mp3",
+    "sha256": "074afad7e29926c2da4cd247c9db97d6917f6836b239ebac7f76776df9d0bb00"
+  },
+  {
+    "path": "assets/audio/pet/amigo/1.mp3",
+    "sha256": "b1a8b22f64598d844a1f824b110a4bbf9d3f877f5ddfc61ec4b0be1c70274e66"
+  },
+  {
+    "path": "assets/audio/pet/amigo/2.mp3",
+    "sha256": "1fde0cc99122bea401732b6b5b28de80d92c6e87e26850f45f09f04f9aef7558"
+  },
+  {
+    "path": "assets/audio/pet/amigo/6.mp3",
+    "sha256": "9faa71f3c9ff7916a05b689df9588b705079dd5f9fa73c2f6bd3971d2e081743"
+  },
+  {
+    "path": "assets/audio/pet/amigo/4.mp3",
+    "sha256": "71e2b350e75ccde4391e59cdb3fd00675b3c05b99aebd596288cbbe9d9cb9a85"
+  },
+  {
+    "path": "assets/audio/pet/amigo/5.mp3",
+    "sha256": "c276203154af88073b0e6bbd4920b218379b791d58506d523c9a95e38a49338c"
+  },
+  {
+    "path": "assets/audio/pet/amigo/9.mp3",
+    "sha256": "520c57f082534910a2e74b854bd579bfb3a12bb47e43867a43ee55793736eea5"
+  }
+]
