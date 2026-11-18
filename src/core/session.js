@@ -267,7 +267,7 @@ window.cadastrarNovaFamiliaADM = async function({nomeFamilia,nomeAdm,emailAdm,cp
             if(!window.validarCPF(cpfAdm))throw new Error('Confira o CPF informado.');
             if(!emailAdm?.includes('@')||!senha||senha.length<8)throw new Error('Informe e-mail e senha com pelo menos 8 caracteres.');
             const cadastro={nome_familia:nomeFamilia.trim(),nome:nomeAdm.trim(),cpf:window.limparCPF(cpfAdm),nacionalidade:nacionalidade||'BR',genero:genero||''};
-            const {data,error}=await cliente.auth.signUp({email:emailAdm.trim().toLowerCase(),password:senha,options:{emailRedirectTo:new URL('index.html',location.href).href,data:{nome:cadastro.nome,suiri_cadastro:cadastro}}});
+            const {data,error}=await cliente.auth.signUp({email:emailAdm.trim().toLowerCase(),password:senha,options:{emailRedirectTo:new URL('index.html',location.href).href,data:{nome:cadastro.nome,suiri_cadastro:cadastro,suiri_mostrar_aviso_privacidade:true}}});
             if(error)throw error;
             if(!data?.user)throw new Error('Cadastro não confirmado pelo serviço.');
             if(!data.session){window.mostrarToast('Confira seu e-mail para confirmar o cadastro. Depois entre com sua senha.', 'info');window.alternarAbaLoginCadastro('login');return false;}
@@ -753,6 +753,14 @@ window.iniciarAppFamilia = async function() {
             window.iniciarEscutaRealtimeFamilia?.();
         }
         await window.processarFilaOffline?.();
+        const contaNova = !membro || window.usuarioAtual.user_metadata?.suiri_mostrar_aviso_privacidade === true;
+        if (Suiri.isHome && contaNova && window.perfilAtual.id === window.usuarioAtual.id && !window.modoKidsAtivo) {
+            const chaveAviso = 'suiri:privacidade:v1:' + window.usuarioAtual.id;
+            if (!localStorage.getItem(chaveAviso)) {
+                window.abrirAvisoPrivacidade();
+                localStorage.setItem(chaveAviso, 'exibido');
+            }
+        }
         document.dispatchEvent(new CustomEvent('suiri:session-ready',{detail:{memberId:window.perfilAtual.id}}));
         return true;
     });

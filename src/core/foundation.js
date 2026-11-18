@@ -139,10 +139,28 @@
     window.abrirModalOpcoesCupomIA=()=>S.openModal('modal-escolha-origem-cupom');
     window.fecharModalOpcoesCupomIA=()=>S.closeModal('modal-escolha-origem-cupom');
     window.acionarOrigemCupom=origem=>{S.closeModal('modal-escolha-origem-cupom');document.getElementById(origem==='camera'?'input-camera-cupom-ia':'input-galeria-cupom-ia')?.click();};
-    window.abrirModalApoioPix=()=>{
-        const key=window.SuiriConfig?.pix;
-        if(!key)return window.mostrarToast('A chave de apoio ainda não foi configurada.', 'info');
-        navigator.clipboard?.writeText(key).then(()=>window.mostrarToast('Chave Pix copiada.')).catch(S.notifyError);
+    window.abrirAvisoPrivacidade = () => S.openModal('modal-aviso-privacidade');
+    window.abrirModalApoioPix = () => {
+        const input = document.getElementById('apoio-chave-pix');
+        const chave = window.SuiriConfig?.pix;
+        if (!input || !chave) return false;
+        input.value = chave;
+        document.getElementById('apoio-status-pix').textContent = '';
+        S.openModal('modal-apoio-semanal');
+        return true;
+    };
+    window.copiarChaveApoioPix = async () => {
+        const input = document.getElementById('apoio-chave-pix');
+        const status = document.getElementById('apoio-status-pix');
+        if (!input?.value || !status) return;
+        try {
+            await navigator.clipboard.writeText(input.value);
+            status.textContent = 'Chave Pix copiada.';
+        } catch {
+            input.focus();
+            input.select();
+            status.textContent = 'A chave está selecionada. Copie pelo menu do seu navegador.';
+        }
     };
     window.abrirConfiguracoesSuiri=()=>{S.openModal('modal-suiri-config');S.theme.apply();window.atualizarStatusOfflineSuiri?.();};
     window.alternarModoEscuroVisual=()=>window.abrirConfiguracoesSuiri();
