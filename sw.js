@@ -1,89 +1,201 @@
-const CACHE_NAME = 'suiri-cache-v1';
-
-self.addEventListener('install', (evento) => {
-    evento.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(['./', './index.html']);
-        })
-    );
-    self.skipWaiting();
+/* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
+const CACHE='suiri-family-v76-9a02c3812c12';
+const SHELL=[
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./jogos.html",
+  "./src/core/config.js?v=b161cb94c173",
+  "./src/core/foundation.js?v=71b1533e0036",
+  "./styles/pages/jogos.css?v=1ee66842df33",
+  "./styles/themes.css?v=3911cf04fce3",
+  "./src/data/musicas.js?v=ac86a220bd3b",
+  "./src/data/partituras.js?v=6f903d6da520",
+  "./src/features/kids/piano.js?v=bf80dc5fc3eb",
+  "./src/pages/arcade.js?v=e7e14193529c",
+  "./styles/base.css?v=25a15e1f91b1",
+  "./styles/modulos.css?v=8893fc8f4fa5",
+  "./styles/modais.css?v=a9d2847a1b55",
+  "./vendor/supabase-2.49.8.js?v=522e844a8554",
+  "./vendor/chart-4.4.8.js?v=e4cf4d144b22",
+  "./vendor/html2pdf-0.10.1.js?v=85e6ee9ce246",
+  "./styles/pages/index.css?v=84ae3fac1f25",
+  "./styles/atualizacao-v72.css?v=77a831311121",
+  "./styles/visual-v73.css?v=a991b6979eed",
+  "./styles/visual-v74.css?v=f5e0d587d4e2",
+  "./styles/visual-v75.css?v=c2b5c12a43ce",
+  "./styles/ajustes-v76.css?v=b2134cb977c5",
+  "./src/core/session.js?v=44d986e2494f",
+  "./src/core/offline.js?v=63b990511789",
+  "./src/ui/icons.js?v=8be3e6f08036",
+  "./src/features/rewards/gamificacao.js?v=916057bb2471",
+  "./src/services/transactions.js?v=ddea1b071483",
+  "./src/core/feature-state.js?v=02738c6f45eb",
+  "./src/services/transfers.js?v=9c22817f6ea7",
+  "./src/features/finances/extrato.js?v=69d5fc3aa505",
+  "./src/features/shopping/mercado.js?v=ec31ec76d512",
+  "./src/features/agenda/recorrencia.js?v=bbe9de936651",
+  "./src/features/missions/state-and-ui.js?v=980d3e1a1b47",
+  "./src/features/missions/kids.js?v=12b8e04fe142",
+  "./src/core/swipe.js?v=882c9d3b2682",
+  "./src/features/missions/missoes.js?v=a7f3450d4360",
+  "./src/ui/emoji-selector.js?v=51099e79ed38",
+  "./src/features/finances/voice-and-entry.js?v=9b15b379c69b",
+  "./src/features/finances/wallet.js?v=2666571ad62c",
+  "./src/features/savings/cofres.js?v=476f0fdddf3a",
+  "./src/features/notices/recados.js?v=7da866d472eb",
+  "./src/features/goals/metas-anuais.js?v=f93c6ad566c2",
+  "./src/core/lifecycle.js?v=4887334ced4f",
+  "./src/features/family/membros.js?v=0b2b5a237732",
+  "./src/features/agenda/calendario.js?v=346d86283b57",
+  "./src/features/notifications/painel.js?v=658db5d6041d",
+  "./src/core/realtime.js?v=b43020086885",
+  "./src/features/reports/relatorios.js?v=f95ceb167fd9",
+  "./src/features/help/tour.js?v=919c0eea73a4",
+  "./src/features/kids/mascote.js?v=b3e8e5ac297a",
+  "./src/features/personal/meu-espaco.js?v=4962362ae719",
+  "./src/features/missions/sugestoes.js?v=633f2cd129e1",
+  "./src/services/operations.js?v=cb4eefc01056",
+  "./src/core/personal-state.js?v=b042ebb3c4b6",
+  "./src/core/navigation.js?v=d9908f5e085b",
+  "./src/pages/profile-menu.js?v=be4aee6ffedf",
+  "./src/data/reflexoes-365.js?v=ed637e39d800",
+  "./src/ui/atualizacao-v72.js?v=8bac3638fe08",
+  "./src/ui/visual-v73.js?v=b96def4964f2",
+  "./src/ui/modern-icons.js?v=468066753641",
+  "./src/ui/visual-v74.js?v=72b00d70092d",
+  "./src/ui/player-v74.js?v=d72735c68d59",
+  "./src/ui/visual-v75.js?v=7a49cd28095e",
+  "./src/ui/photo-crop-v75.js?v=11120596c908",
+  "./src/ui/ajustes-v76.js?v=0967caac09ef",
+  "./mulher.html",
+  "./styles/pages/mulher.css?v=b4f83b48cddf",
+  "./src/data/dicas-mulher.js?v=d2e93ad47fe6",
+  "./src/data/dicas-e-curadoria.js?v=53d512bdc1a0",
+  "./src/features/women/view-and-state.js?v=d7cf2292e591",
+  "./src/features/women/radar.js?v=582dbce3156e",
+  "./src/features/women/rituais.js?v=fac9027ec08a",
+  "./src/features/women/media.js?v=373e39e31ab7",
+  "./src/features/women/sintomas.js?v=c46506777f5f",
+  "./src/features/women/diario.js?v=9440e01d92cb",
+  "./src/features/women/relaxamento.js?v=f00be19319a3",
+  "./src/features/women/ciclo.js?v=1f44271fdf9d",
+  "./src/pages/women-player.js?v=dfcd5ec6512e",
+  "./src/ui/audio-visualizer-v75.js?v=e6e2c5a731d0",
+  "./homem.html",
+  "./styles/pages/homem.css?v=fca4006fc711",
+  "./src/features/men/espaco-masculino.js?v=8fe1b52a73ae",
+  "./src/pages/men-player.js?v=e27cac66cbd4",
+  "./src/pages/men-page.js?v=ff3411215282",
+  "./assets/icons/icone-xis.png",
+  "./assets/icons/logo_suiri.png",
+  "./assets/icons/icone-microfone.png",
+  "./assets/icons/icone-forte.png",
+  "./assets/icons/icone-pessoa-escopo.png",
+  "./assets/icons/icones-camera.png",
+  "./assets/icons/zen.png",
+  "./assets/icons/icone-energia.png",
+  "./assets/icons/icones-configuracao.png",
+  "./assets/icons/icone-lixo.png",
+  "./assets/icons/icone-porta-sair.png",
+  "./assets/icons/icone-oficina.png",
+  "./assets/icons/icone-estresse.png",
+  "./assets/icons/diario.png",
+  "./assets/icons/ciclo.png",
+  "./assets/icons/icone-casa-escopo.png",
+  "./assets/icons/icone-relogio.png",
+  "./assets/icons/icone-alfinete.png",
+  "./assets/icons/icone-familia.png",
+  "./assets/icons/icone-financas.png",
+  "./assets/icons/trocar.png",
+  "./assets/icons/icone-mercado.png",
+  "./assets/icons/icone-loja.png",
+  "./assets/icons/icone-joinha.png",
+  "./assets/icons/icone-calendario.png",
+  "./assets/icons/icone-mulher.png",
+  "./assets/icons/icone-editar.png",
+  "./assets/icons/medita.png",
+  "./assets/icons/icones-missao.png",
+  "./assets/icons/icone-joinha-baixo.png",
+  "./assets/icons/icone-fogo.png",
+  "./assets/icons/icone-lampada-pense.png",
+  "./assets/icons/icone-filme.png",
+  "./assets/icons/alivio.png",
+  "./assets/icons/love.png",
+  "./assets/icons/icone-manual.png",
+  "./assets/icons/icone-check.png",
+  "./assets/icons/icone-escudo.png",
+  "./assets/icons/icone-carteira.png",
+  "./assets/images/icone.jpg",
+  "./assets/images/espacomasculino.png",
+  "./assets/images/espacomulher.png",
+  "./assets/icons-modern/icone-financas.svg",
+  "./assets/icons-modern/icone-carteira.svg",
+  "./assets/icons-modern/icone-fogo.svg",
+  "./assets/icons-modern/alivio.svg",
+  "./assets/icons-modern/icone-mulher.svg",
+  "./assets/icons-modern/icone-relogio.svg",
+  "./assets/icons-modern/icone-xis.svg",
+  "./assets/icons-modern/icone-check.svg",
+  "./assets/icons-modern/diario.svg",
+  "./assets/icons-modern/icone-porta-sair.svg",
+  "./assets/icons-modern/icones-missao.svg",
+  "./assets/icons-modern/icone-calendario.svg",
+  "./assets/icons-modern/icone-joinha-baixo.svg",
+  "./assets/icons-modern/icone-oficina.svg",
+  "./assets/icons-modern/icone-casa-escopo.svg",
+  "./assets/icons-modern/icone-microfone.svg",
+  "./assets/icons-modern/love.svg",
+  "./assets/icons-modern/ciclo.svg",
+  "./assets/icons-modern/icone-pessoa-escopo.svg",
+  "./assets/icons-modern/icone-energia.svg",
+  "./assets/icons-modern/zen.svg",
+  "./assets/icons-modern/icones-camera.svg",
+  "./assets/icons-modern/icone-escudo.svg",
+  "./assets/icons-modern/icone-forte.svg",
+  "./assets/icons-modern/medita.svg",
+  "./assets/icons-modern/icone-lampada-pense.svg",
+  "./assets/icons-modern/icone-familia.svg",
+  "./assets/icons-modern/icones-configuracao.svg",
+  "./assets/icons-modern/icone-loja.svg",
+  "./assets/icons-modern/trocar.svg",
+  "./assets/icons-modern/icone-alfinete.svg",
+  "./assets/icons-modern/icone-filme.svg",
+  "./assets/icons-modern/icone-lixo.svg",
+  "./assets/icons-modern/icone-joinha.svg",
+  "./assets/icons-modern/icone-estresse.svg",
+  "./assets/icons-modern/icone-manual.svg",
+  "./assets/icons-modern/icone-mercado.svg",
+  "./assets/icons-modern/icone-editar.svg",
+  "./assets/images/player-art-v74.png"
+];
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));});
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting();});
+self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('suiri-family-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})());});
+self.addEventListener('fetch',event=>{
+ const req=event.request,url=new URL(req.url);
+ if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs)\//.test(url.pathname))return;
+ const navigation=req.mode==='navigate';
+ const smallAsset=/\.(js|css|png|jpg|svg|json)$/.test(url.pathname);
+ if(!navigation&&!smallAsset)return;
+ event.respondWith((async()=>{
+  const cache=await caches.open(CACHE);
+  if(navigation){
+   try{const response=await fetch(req);if(response.ok)await cache.put(req,response.clone());return response;}
+   catch{const saved=await cache.match(req);if(saved)return saved;return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Suiri sem conexão</title><p>Esta página ainda não está disponível sem internet.</p><a href="./index.html">Voltar ao Suiri</a>',{headers:{'Content-Type':'text/html;charset=utf-8'}});}
+  }
+  const saved=await cache.match(req);if(saved)return saved;
+  const response=await fetch(req);if(response.ok)await cache.put(req,response.clone());return response;
+ })());
 });
-
-self.addEventListener('activate', (evento) => {
-    evento.waitUntil(
-        caches.keys().then((chaves) => {
-            return Promise.all(
-                chaves.map((chave) => {
-                    if (chave !== CACHE_NAME) return caches.delete(chave);
-                })
-            );
-        })
-    );
-    self.clients.claim();
+self.addEventListener('push',event=>{
+ let data={};try{data=event.data?.json()||{};}catch{data={corpo:event.data?.text()||''};}
+ event.waitUntil(self.registration.showNotification(data.titulo||'Suiri Família',{body:data.corpo||data.body||'Você tem uma atualização no lar.',icon:'./assets/images/icone.jpg',data:{url:data.url||'./index.html'}}));
 });
-
-self.addEventListener('fetch', (evento) => {
-    evento.respondWith(
-        fetch(evento.request).catch(() => caches.match(evento.request))
-    );
-});
-
-// =========================================================================
-// ESCUTA E EXIBIÇÃO DE NOTIFICAÇÕES PUSH NA TELA DE BLOQUEIO
-// =========================================================================
-
-self.addEventListener('push', (evento) => {
-    let dados = {};
-    
-    if (evento.data) {
-        try {
-            // Tenta processar como JSON estruturado enviado pelo backend
-            dados = evento.data.json();
-        } catch (e) {
-            // Se for apenas texto simples, assume como o corpo da mensagem
-            dados = { corpo: evento.data.text() };
-        }
-    }
-
-    const titulo = dados.titulo || 'Suiri Gestão Familiar';
-    const opcoes = {
-        body: dados.corpo || dados.body || 'Você tem uma nova notificação na família!',
-        icon: './icone.jpg',
-        badge: './icone.jpg',
-        vibrate: [200, 100, 200], // Padrão tátil de vibração
-        data: {
-            url: dados.url || './index.html' // URL a abrir quando clicado
-        }
-    };
-
-    evento.waitUntil(
-        self.registration.showNotification(titulo, opcoes)
-    );
-});
-
-// =========================================================================
-// GESTÃO DE CLIQUE NA NOTIFICAÇÃO (ABRIR OU FOCAR A APLICAÇÃO)
-// =========================================================================
-
-self.addEventListener('notificationclick', (evento) => {
-    // Fecha a notificação nativa após o toque
-    evento.notification.close();
-    
-    const urlDestino = evento.notification.data?.url || './index.html';
-
-    evento.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((janelasAbertas) => {
-            // Se o app já estiver aberto numa aba/janela, trazemos ela para a frente (foco)
-            for (let i = 0; i < janelasAbertas.length; i++) {
-                const cliente = janelasAbertas[i];
-                if (cliente.url.includes(urlDestino) && 'focus' in cliente) {
-                    return cliente.focus();
-                }
-            }
-            // Se não estiver aberto em lado nenhum, inicia o app
-            if (clients.openWindow) {
-                return clients.openWindow(urlDestino);
-            }
-        })
-    );
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ let target=new URL(event.notification.data?.url||'./index.html',self.registration.scope);
+ const scope=new URL(self.registration.scope);
+ if(target.origin!==scope.origin||!target.pathname.startsWith(scope.pathname))target=new URL('index.html',scope);
+ event.waitUntil((async()=>{for(const client of await self.clients.matchAll({type:'window',includeUncontrolled:true})){if(client.url===target.href)return client.focus();}return self.clients.openWindow(target.href);})());
 });

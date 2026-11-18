@@ -1,0 +1,17 @@
+{
+  "name": "suiri-familia",
+  "version": "7.6.0",
+  "private": true,
+  "description": "Suiri Família: site estático e verificações sem credenciais reais",
+  "scripts": {
+    "test": "node tests/static.cjs && node tests/dom.cjs && node tests/database.cjs && node tests/transfers-client.cjs && node tests/transfers-database.cjs && node tests/v72.cjs && node tests/v73.cjs && node tests/v74.cjs && node tests/v75.cjs && node tests/v76.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.16",
+    "jsdom": "26.1.0",
+    "fake-indexeddb": "6.2.8"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
