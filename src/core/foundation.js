@@ -148,7 +148,15 @@
         const heading=modal.querySelector('h2,h3');if(heading){heading.id ||= `${id}-title`;modal.setAttribute('aria-labelledby',heading.id);}
         setTimeout(()=>modal.querySelector('input:not([type="hidden"]),button,select,textarea,[tabindex="0"]')?.focus(),0);
     };
-    S.closeModal=id=>{const modal=document.getElementById(id);if(!modal)return;modal.classList.add('oculto');S.previousFocus.get(modal)?.focus?.();};
+    S.closeModal = id => {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        const cancelar = id === 'modal-confirmacao-nativo-suiri' &&
+            !modal.classList.contains('oculto') && modal.querySelector('#btn-cancelar-confirmacao-suiri');
+        if (cancelar) cancelar.click();
+        else modal.classList.add('oculto');
+        S.previousFocus.get(modal)?.focus?.();
+    };
     window.alternarSecaoRetratil=(id,seta)=>{const el=document.getElementById(id);if(!el)return;el.classList.toggle('oculto');const arrow=document.getElementById(seta);if(arrow)arrow.style.transform=el.classList.contains('oculto')?'':'rotate(180deg)';};
     window.acessarModuloMulherHTML=()=>{location.href='mulher.html';};
     window.acessarModuloHomemHTML=()=>{location.href='homem.html';};

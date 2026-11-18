@@ -229,3 +229,38 @@ function podeOperarMissaoSuiri(m, perfil = window.perfilAtual) {
         ? missaoVisivelNoPainelKids(m, perfil.id)
         : missaoVisivelNoPainelAdulto(m, perfil.id);
 }
+
+
+const funcoesDeMissaoSuiri = {
+    complete: 'concluirMissaoDomestica',
+    fail: 'falharMissaoDomestica',
+    reopen: 'reabrirMissaoDomestica'
+};
+
+document.addEventListener('click', async event => {
+    const botao = event.target.closest?.('button[data-missao-acao][data-missao-id]');
+    if (!botao || botao.disabled || !Object.hasOwn(funcoesDeMissaoSuiri, botao.dataset.missaoAcao)) return;
+    const perfil = obterUsuarioId();
+    const status = botao.closest('#tela-kids-exclusiva, #secao-inicio, #secao-meuespaco')
+        ?.querySelector('[data-missao-status]');
+    const informar = mensagem => {
+        if (!status || perfil !== obterUsuarioId()) return;
+        status.textContent = mensagem;
+        status.hidden = !mensagem;
+    };
+
+    const acao = window[funcoesDeMissaoSuiri[botao.dataset.missaoAcao]];
+    if (typeof acao !== 'function') {
+        informar('As ações das missões ainda não carregaram. Reabra o site e tente novamente.');
+        return;
+    }
+
+    botao.disabled = true;
+    botao.setAttribute('aria-busy', 'true');
+    try {
+        await acao(botao.dataset.missaoId, informar);
+    } finally {
+        botao.disabled = false;
+        botao.removeAttribute('aria-busy');
+    }
+}, true);

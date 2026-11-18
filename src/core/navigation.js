@@ -22,6 +22,7 @@
             const screen=location.hash.slice(1);window.navegarParaTela(screens.includes(screen)?screen:'inicio',{replace:true});
         });
     }
+    window.addEventListener('pagehide', () => S.closeModal('modal-confirmacao-nativo-suiri'));
     if(window.confirmarAcaoSuiri){
         const confirm=window.confirmarAcaoSuiri;let queue=Promise.resolve();
         window.confirmarAcaoSuiri=(...args)=>{const result=queue.then(()=>confirm(...args));queue=result.catch(()=>{});return result;};

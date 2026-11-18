@@ -93,7 +93,7 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   };
   w.perfilAtual=kid;w.aplicarRegrasPerfilKidsOuAdulto();await w.carregarMissoesDoDia();
   const list=d.getElementById('lista-missoes-kids-container');
-  list.querySelector('button[onclick*="concluirMissaoDomestica"]').click();
+  list.querySelector('button[data-missao-acao="complete"]').click();
   await new Promise(resolve=>setTimeout(resolve,25));
   assert.match(list.querySelector('#container-concluidas-kids').textContent,/Guardar brinquedos/);
   assert.equal(d.getElementById('contador-xp-kids').textContent,'40 XP');
@@ -150,6 +150,55 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
    assert.match(d.querySelector('#container-concluidas-kids').textContent,/Organizar os livros/);
    assert.deepEqual(notifications,[['Missão confirmada! +20 XP.',undefined]]);
   } finally {w.__cli.rpc=rpc;w.mostrarToast=toast;w.TamagotchiKids.aoCompletarMissao=comemorar;}
+ });
+ await test('Voltar cancela Não fiz e libera Fiz na mesma missão',async()=>{
+  const [adult,kid]=w.__tables.membros;
+  const rpc=w.__cli.rpc;
+  const calls=[];
+  const tick=()=>new Promise(resolve=>setTimeout(resolve,20));
+  w.__cli.rpc=async (name,args)=>{
+   assert.equal(name,'suiri_operacao_v7');
+   const {action,id}=args.p_payload;
+   const mission=w.__tables.missoes.find(row=>row.id===id);
+   calls.push([args.p_member_id,action]);
+   return {data:{ok:true,mission:{...mission,status:action==='complete'?'concluida':'falhou',concluido_por:args.p_member_id},xp:30,delta:10},error:null};
+  };
+  try{
+   for(const perfil of [kid,adult]){
+    w.perfilAtual=perfil;w.aplicarRegrasPerfilKidsOuAdulto();
+    w.__tables.missoes=['completar','falhar'].map(id=>({id,familia_id:fam,escopo:'casa',titulo:id,atribuido_a:perfil.id,status:'pendente'}));
+    await w.carregarMissoesDoDia();
+    const parent=d.getElementById(perfil.eh_kids?'lista-missoes-kids-container':'lista-missoes-dia');
+    const botao=(id,acao)=>parent.querySelector(`[data-missao-acao="${acao}"][data-missao-id="${id}"]`);
+    const fail=botao('completar','fail');
+    assert.equal(fail.getAttribute('onclick'),null);
+    fail.click();await tick();
+    const confirm=d.getElementById('modal-confirmacao-nativo-suiri');
+    assert(!confirm.classList.contains('oculto'));
+    w.dispatchEvent(new w.PopStateEvent('popstate'));
+    await tick();
+    assert(confirm.classList.contains('oculto'));
+    assert.equal(fail.disabled,false);
+    botao('completar','complete').click();await tick();
+    botao('falhar','fail').click();await tick();
+    d.getElementById('btn-concordo-confirmacao-suiri').click();await tick();
+   }
+   assert.deepEqual(calls,[[kid.id,'complete'],[kid.id,'fail'],[adult.id,'complete'],[adult.id,'fail']]);
+  } finally {w.__cli.rpc=rpc;}
+ });
+ await test('recusa do banco fica visível na lista e o botão volta a aceitar toque',async()=>{
+  const rpc=w.__cli.rpc;
+  w.__tables.missoes=[{id:'recusa',familia_id:fam,escopo:'casa',titulo:'Teste',atribuido_a:uid,status:'pendente'}];
+  w.__cli.rpc=async()=>({data:null,error:{message:'Recusa no teste',code:'42501'}});
+  try{
+   await w.carregarMissoesDoDia();
+   const botao=d.querySelector('#lista-missoes-dia [data-missao-acao="complete"]');
+   botao.click();await new Promise(resolve=>setTimeout(resolve,20));
+   const status=d.querySelector('#secao-inicio [data-missao-status]');
+   assert.equal(status.hidden,false);
+   assert.equal(status.textContent,'Recusa no teste');
+   assert.equal(botao.disabled,false);
+  } finally {w.__cli.rpc=rpc;}
  });
  assert.deepEqual(main.errors,[]);main.dom.window.close();
  const loaded=await load('mulher.html'),a=loaded.w,doc=a.document;

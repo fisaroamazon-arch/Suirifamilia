@@ -322,14 +322,14 @@ window.carregarMissoesKidsExclusiva = function() {
 
             <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:12px; border-top: 1.5px dashed ${concluida || falhada ? 'transparent' : 'rgba(249, 115, 22, 0.2)'};">
                 ${(!concluida && !falhada) ? `
-                    <button type="button" class="btn-erro" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" onclick="window.falharMissaoDomestica('${missao.id}')">
+                    <button type="button" class="btn-erro" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" data-missao-acao="fail" data-missao-id="${esc(missao.id)}">
                         ${obterIconeSeguro('joinhaInvertido')} Não fiz
                     </button>
-                    <button type="button" class="btn-sucesso" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; ${algumIrmaoJaFez ? 'background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);' : ''}" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                    <button type="button" class="btn-sucesso" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; ${algumIrmaoJaFez ? 'background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);' : ''}" data-missao-acao="complete" data-missao-id="${esc(missao.id)}">
                         ${obterIconeSeguro('joinha')} Fiz!
                     </button>
                 ` : (falhada ? `
-                    <button type="button" class="btn-secundario" style="padding:10px 16px; font-size:13px; font-weight:800; border-radius:14px; border:1.5px solid #f97316; color:#ea580c; width:100%; box-shadow: 0 2px 6px rgba(0,0,0,0.03);" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                    <button type="button" class="btn-secundario" style="padding:10px 16px; font-size:13px; font-weight:800; border-radius:14px; border:1.5px solid #f97316; color:#ea580c; width:100%; box-shadow: 0 2px 6px rgba(0,0,0,0.03);" data-missao-acao="reopen" data-missao-id="${esc(missao.id)}">
                         Tentar Novamente
                     </button>
                 ` : `

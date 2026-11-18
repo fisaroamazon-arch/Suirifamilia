@@ -389,7 +389,7 @@ window.renderizarMeuEspaco = function() {
                                     <strong style="font-size: 13px; color: var(--texto-principal, #0f172a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(m.titulo)}</strong>
                                 </div>
                                 <div style="display: flex; gap: 4px; flex-shrink: 0;">
-                                    <button type="button" class="btn-sucesso" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; border-radius: 9px; display: inline-flex; align-items: center; gap: 4px;" onclick="window.concluirMissaoDomestica('${m.id}')">
+                                    <button type="button" class="btn-sucesso" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; border-radius: 9px; display: inline-flex; align-items: center; gap: 4px;" data-missao-acao="complete" data-missao-id="${esc(m.id)}">
                                         <img src="assets/icons-modern/icone-check.svg" alt="Fiz" style="width: 13px; height: 13px; object-fit: contain;"> Fiz
                                     </button>
                                 </div>
@@ -473,7 +473,7 @@ window.renderizarMeuEspaco = function() {
                                 <strong style="font-size: 13.5px; color: var(--texto-principal, #0f172a); ${concluida ? 'text-decoration: line-through; opacity: 0.55;' : ''}">${esc(missao.titulo)}</strong>
                             </div>
                             ${!concluida ? `
-                                <button type="button" class="btn-sucesso" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 9px; display: inline-flex; align-items: center; gap: 5px;" onclick="window.concluirMissaoDomestica('${missao.id}')">
+                                <button type="button" class="btn-sucesso" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 9px; display: inline-flex; align-items: center; gap: 5px;" data-missao-acao="complete" data-missao-id="${esc(missao.id)}">
                                     <img src="assets/icons-modern/icone-check.svg" alt="Concluir" style="width: 13px; height: 13px; object-fit: contain;"> Concluir
                                 </button>
                             ` : `<span style="font-size: 11.5px; font-weight: 800; color: #15803d; background: #f0fdf4; padding: 3px 8px; border-radius: 6px;">Concluída</span>`}

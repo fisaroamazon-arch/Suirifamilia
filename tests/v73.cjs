@@ -107,7 +107,7 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
    await Promise.all([w.verificarReativacaoAutomaticaMissoes(),w.verificarReativacaoAutomaticaMissoes()]);
    assert.deepEqual(chamadas,['coletiva','minha']);
    const card=d.getElementById('card-missao-bloco-minha');
-   assert(card.querySelector('button[onclick*="concluirMissaoDomestica"]'));
+   assert(card.querySelector('button[data-missao-acao="complete"]'));
   } finally {w.Suiri.operation=operacao;}
  });
  main.dom.window.close();

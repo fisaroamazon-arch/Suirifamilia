@@ -55,17 +55,26 @@
             window.renderizarListaBeneficiosLoja?.();window.carregarERenderizarRankingTop3?.();
         }catch(error){S.notifyError(error);}
     });
-    async function mission(action,id){
+    async function mission(action,id,informar = () => {}){
         return S.once(`mission:${id}`,async()=>{
             try{
                 const m = cacheMissoes.find(x => x.id === id);
                 const perfilId = window.perfilAtual?.id;
                 if (!m || !podeOperarMissaoSuiri(m)) {
-                    window.mostrarToast('Esta missão não está disponível para o seu perfil.', 'erro');
+                    const mensagem = 'Esta missão não está disponível para o seu perfil.';
+                    informar(mensagem);
+                    window.mostrarToast(mensagem, 'erro');
                     return;
                 }
-                if(action==='fail'&&!await window.confirmarAcaoSuiri('Marcar esta missão como não realizada? A regra de pontos será aplicada uma vez.'))return;
+                if (action === 'fail') {
+                    informar('Aguardando confirmação…');
+                    if (!await window.confirmarAcaoSuiri('Marcar esta missão como não realizada? A regra de pontos será aplicada uma vez.')) {
+                        informar('');
+                        return;
+                    }
+                }
                 if (window.perfilAtual?.id !== perfilId) return;
+                informar('Salvando missão…');
                 const r=await S.operation('mission',{id,action},`${id}:${perfilId}:${m.suiri_ocorrencia||0}:${action}`);
                 if (window.perfilAtual?.id !== perfilId) return;
                 const atual = cacheMissoes.find(item => item.id === id);
@@ -78,7 +87,12 @@
                 window.renderizarMissoesTela();window.carregarMissoesKidsExclusiva();window.renderizarHistoricoMissoesKidsADM();
                 const xp=document.getElementById('contador-xp-kids');if(xp)xp.textContent=`${r.xp} XP`;
                 const streak=document.getElementById('contador-ofensiva-topo');if(streak && r.streak!==undefined)streak.textContent=r.streak;
-                window.mostrarToast(r.repeated?'Esta ação já foi registrada nesta ocorrência.':action==='reopen'?'Missão reaberta; a recompensa desta ocorrência não será duplicada.':action==='complete'?`Missão confirmada! ${r.delta>0?'+':''}${r.delta} XP.`:'Resultado da missão confirmado.');
+                const mensagem = r.repeated ? 'Esta ação já foi registrada nesta ocorrência.'
+                    : action === 'reopen' ? 'Missão reaberta; a recompensa desta ocorrência não será duplicada.'
+                    : action === 'complete' ? `Missão confirmada! ${r.delta > 0 ? '+' : ''}${r.delta} XP.`
+                    : 'Resultado da missão confirmado.';
+                informar(mensagem);
+                window.mostrarToast(mensagem);
                 if (action === 'complete' && !r.repeated) {
                     try {
                         window.SonsSuiri?.sucessoMissao?.();
@@ -92,12 +106,15 @@
                         console.warn('Missão confirmada, mas houve falha na comemoração.', error);
                     }
                 }
-            }catch(error){S.notifyError(error);}
+            } catch (error) {
+                informar(error?.message || 'Não foi possível salvar a missão. Tente novamente.');
+                S.notifyError(error);
+            }
         });
     }
-    window.concluirMissaoDomestica=id=>mission('complete',id);
-    window.falharMissaoDomestica=id=>mission('fail',id);
-    window.reabrirMissaoDomestica=id=>mission('reopen',id);
+    window.concluirMissaoDomestica=(id, informar)=>mission('complete',id,informar);
+    window.falharMissaoDomestica=(id, informar)=>mission('fail',id,informar);
+    window.reabrirMissaoDomestica=(id, informar)=>mission('reopen',id,informar);
     window.verificarReativacaoAutomaticaMissoes = async () => {
         const perfil = window.perfilAtual;
         const familiaId = window.familiaAtualId;

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <script src="src/core/config.js?v=50eb0e2f989b"></script>
-<script src="src/core/foundation.js?v=ec0a57dd1f78"></script>
+<script src="src/core/foundation.js?v=43a15d70093e"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Suiri Gestão Familiar</title>
@@ -106,6 +106,7 @@
 
                 <!-- MÓDULO 0: MEU ESPAÇO COM IMAGENS INTEGRAIS E TEXTO SOLTO -->
                 <section id="secao-meuespaco" class="secao-conteudo-app oculto">
+                    <p class="suiri-hint" data-missao-status role="status" hidden></p>
                     
                     <div id="card-acesso-espaco-mulher" role="link" tabindex="0" aria-label="Entrar no Espaço Mulher" onkeydown="if(event.key==='Enter'){window.acessarModuloMulherHTML()}" class="banner-acesso-puro-solto oculto" onclick="window.acessarModuloMulherHTML()" style="background-image: url('assets/images/espacomulher.png');">
                         <!-- Camada de texto sobreposta diretamente na imagem -->
@@ -175,6 +176,7 @@
                     </div>
 
                     <p id="descricao-filtro-missoes" class="descricao-filtro-missoes" aria-live="polite"></p>
+                    <p class="suiri-hint" data-missao-status role="status" hidden></p>
                     <div id="lista-missoes-dia" class="painel-missoes-unificado"></div>
 
                     <!-- HISTÓRICO KIDS ADM RETRÁTIL -->
@@ -567,6 +569,7 @@
                     <span id="contador-missoes-kids-pendentes" class="badge-contador-kids">0 missões</span>
                 </div>
 
+                <p class="suiri-hint" data-missao-status role="status" hidden></p>
                 <div id="lista-missoes-kids-container"></div>
             </section>
 
@@ -1585,10 +1588,10 @@
 <script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
 <script src="src/features/shopping/mercado.js?v=ec31ec76d512"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
-    <script src="src/features/missions/state-and-ui.js?v=b607ad0e9448"></script>
-<script src="src/features/missions/kids.js?v=149328e913ff"></script>
+    <script src="src/features/missions/state-and-ui.js?v=6b8c940fd034"></script>
+<script src="src/features/missions/kids.js?v=6c0015ced816"></script>
 <script src="src/core/swipe.js?v=882c9d3b2682"></script>
-<script src="src/features/missions/missoes.js?v=5d21d697e126"></script>
+<script src="src/features/missions/missoes.js?v=5c5d214daed4"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
 <script src="src/features/finances/voice-and-entry.js?v=9b15b379c69b"></script>
 <script src="src/features/finances/wallet.js?v=2666571ad62c"></script>
@@ -1603,11 +1606,11 @@
     <script src="src/features/reports/relatorios.js?v=f95ceb167fd9"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
     <script src="src/features/kids/mascote.js?v=ecb94df335ad"></script>
-    <script src="src/features/personal/meu-espaco.js?v=e668bc93e7b4"></script>
+    <script src="src/features/personal/meu-espaco.js?v=6e7d7c340acf"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
-<script src="src/services/operations.js?v=52812727dc29"></script>
+<script src="src/services/operations.js?v=c728718e6135"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
-<script src="src/core/navigation.js?v=d9908f5e085b"></script>
+<script src="src/core/navigation.js?v=a90194488572"></script>
 
     <script src="src/pages/profile-menu.js?v=be4aee6ffedf"></script>
 

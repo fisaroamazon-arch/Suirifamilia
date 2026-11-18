@@ -361,18 +361,18 @@ window.renderizarMissoesTela = function() {
                 <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                     <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
                         ${(!concluida && !falhada) ? `
-                            <button type="button" onclick="window.concluirMissaoDomestica('${missao.id}')" title="Aprovar / Fiz" style="background:none; border:none; padding:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
+                            <button type="button" data-missao-acao="complete" data-missao-id="${esc(missao.id)}" title="Aprovar / Fiz" style="background:none; border:none; padding:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
                                 ${obterIconeSeguro('check')}
                             </button>
-                            <button type="button" onclick="window.falharMissaoDomestica('${missao.id}')" title="Desaprovar / Não fiz" style="background:none; border:none; padding:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
+                            <button type="button" data-missao-acao="fail" data-missao-id="${esc(missao.id)}" title="Desaprovar / Não fiz" style="background:none; border:none; padding:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
                                 ${obterIconeSeguro('xis')}
                             </button>
                         ` : (falhada ? `
-                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; font-weight:700; color:#ea580c; border-radius:8px;" onclick="window.reabrirMissaoDomestica('${missao.id}')">
+                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; font-weight:700; color:#ea580c; border-radius:8px;" data-missao-acao="reopen" data-missao-id="${esc(missao.id)}">
                                 Tentar
                             </button>
                         ` : `
-                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; color:#64748b; border-radius:8px;" onclick="window.reabrirMissaoDomestica('${missao.id}')" title="Refazer">
+                            <button type="button" class="btn-secundario" style="padding:4px 8px; font-size:11px; color:#64748b; border-radius:8px;" data-missao-acao="reopen" data-missao-id="${esc(missao.id)}" title="Refazer">
                                 Refazer
                             </button>
                         `)}
@@ -399,7 +399,7 @@ window.renderizarMissoesTela = function() {
         `;
 
         if (!podeOperarMissaoSuiri(missao)) {
-            itemLinha.querySelectorAll('button[onclick*="concluirMissaoDomestica"],button[onclick*="falharMissaoDomestica"],button[onclick*="reabrirMissaoDomestica"]').forEach(b=>{b.disabled=true;b.title='Seu perfil não tem permissão para esta ação';b.setAttribute('aria-label','Seu perfil não tem permissão para esta ação');});
+            itemLinha.querySelectorAll('button[data-missao-acao]').forEach(b=>{b.disabled=true;b.title='Seu perfil não tem permissão para esta ação';b.setAttribute('aria-label','Seu perfil não tem permissão para esta ação');});
         }
 
         if (concluida) {
