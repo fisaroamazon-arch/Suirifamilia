@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script src="src/core/config.js?v=b161cb94c173"></script>
-<script src="src/core/foundation.js?v=6bc017c9bca2"></script>
+<script src="src/core/config.js?v=50eb0e2f989b"></script>
+<script src="src/core/foundation.js?v=e39bd522cb8c"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Suiri Gestão Familiar</title>
@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
 <link rel="stylesheet" href="styles/espaco-kids.css?v=55ac219a1218">
-    <link rel="stylesheet" href="styles/ajustes-v76.css?v=6a7ccba5bbcb">
+    <link rel="stylesheet" href="styles/ajustes-v76.css?v=18f149c13314">
 </head>
 <body>
 
@@ -75,6 +75,7 @@
                         <option value="PT">🇵🇹 Portugal (Português)</option>
                         <option value="US">🇺🇸 Estados Unidos (Inglês)</option>
                     </select>
+                    <button type="button" class="btn-secundario" onclick="window.abrirAvisoPrivacidade()">Como protegemos seus dados</button>
                     <button type="button" class="btn-sucesso" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 16px; margin-top: 6px;" onclick="window.cadastrarNovaFamiliaADM({ nomeFamilia: document.getElementById('cad-nome-familia').value, nomeAdm: document.getElementById('cad-nome-adm').value, emailAdm: document.getElementById('cad-email-adm').value, cpfAdm: document.getElementById('cad-cpf-adm').value, senha: document.getElementById('cad-senha-adm').value, nacionalidade: document.getElementById('cad-nacionalidade-adm')?.value || 'BR', genero: document.getElementById('cad-genero-adm').value })">Confirmar Cadastro</button>
                 </div>
             </div>
@@ -474,6 +475,12 @@
 
                 <!-- MÓDULO 5: FAMÍLIA E EDIÇÃO DE PERFIL -->
                 <section id="secao-familia" class="secao-conteudo-app oculto">
+                    <div id="apoio-topo-familia" class="cartao-geral">
+                        <button type="button" id="btn-doacao-familia" class="btn-principal" onclick="window.abrirModalApoioPix()">
+                            <img src="assets/icons-modern/icone-financas.svg" alt="">
+                            Fazer doação espontânea
+                        </button>
+                    </div>
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3 id="lbl-titulo-lista-membros" style="margin: 0; font-size: 15.5px; font-weight: 800;">Membros da Família</h3>
@@ -495,15 +502,6 @@
                             <span style="font-size: 11.5px; color: #64748b;">Receber alertas da família na tela de bloqueio</span>
                         </div>
                         <button type="button" id="btn-ativar-push" class="btn-secundario" style="font-size: 11.5px; padding: 7px 13px; border-radius: 10px;" onclick="window.solicitarPermissaoPush()">Ativar Alertas</button>
-                    </div>
-
-                    <div class="cartao-geral" style="text-align: center; border: 1.5px solid rgba(249, 115, 22, 0.2); background: #fffbeb;">
-                        <span style="font-size: 11.5px; font-weight: 800; color: #f97316; text-transform: uppercase; display: block; margin-bottom: 4px;">Apoie o Desenvolvimento</span>
-                        <p style="font-size: 12.5px; color: #64748b; margin: 0 0 12px 0;">O Suiri é livre de anúncios. Ajude a manter o projeto ativo e em evolução contínua!</p>
-                        <button type="button" class="btn-principal" style="font-size: 12.5px; padding: 9px 18px; border-radius: 12px; width: auto; background: #f97316; display: inline-flex; align-items: center; gap: 8px;" onclick="window.abrirModalApoioPix()">
-                            <img src="assets/icons-modern/icone-financas.svg" alt="Doação" style="width: 16px; height: 16px; object-fit: contain;">
-                            Fazer uma Contribuição (Pix)
-                        </button>
                     </div>
 
                     <div class="cartao-geral" style="text-align: center; border: 1.5px dashed #f43f5e; background: #fff1f2;">
@@ -606,12 +604,42 @@
     </section>
 </dialog>
 
+<div id="modal-apoio-semanal" class="modal-overlay modal-overlay-bottom oculto">
+    <div class="modal-conteudo modal-bottom-sheet apoio-semanal">
+        <div class="modal-header">
+            <h2>Apoie o Suiri Família</h2>
+            <button type="button" aria-label="Fechar doação" onclick="Suiri.closeModal('modal-apoio-semanal')">×</button>
+        </div>
+        <p>Sua contribuição espontânea ajuda a manter o projeto ativo.</p>
+        <label for="apoio-chave-pix">Chave Pix</label>
+        <input id="apoio-chave-pix" type="text" readonly spellcheck="false" autocomplete="off">
+        <button type="button" id="apoio-copiar-pix" class="btn-principal" onclick="window.copiarChaveApoioPix()">Copiar chave Pix</button>
+        <p id="apoio-status-pix" class="suiri-hint" role="status"></p>
+        <p class="suiri-hint">A conexão com o Supabase é criptografada. O acesso aos dados no aplicativo segue as permissões da conta e da família.</p>
+        <button type="button" class="btn-secundario" onclick="Suiri.closeModal('modal-apoio-semanal'); window.abrirAvisoPrivacidade()">Como protegemos seus dados</button>
+    </div>
+</div>
+
+<div id="modal-aviso-privacidade" class="modal-overlay modal-overlay-bottom oculto">
+    <div class="modal-conteudo modal-bottom-sheet aviso-privacidade">
+        <div class="modal-header">
+            <h2>Privacidade dos seus dados</h2>
+            <button type="button" aria-label="Fechar aviso de privacidade" onclick="Suiri.closeModal('modal-aviso-privacidade')">×</button>
+        </div>
+        <p>O Suiri usa dados pessoais para manter sua conta, organizar seu lar e oferecer os recursos que você escolhe usar.</p>
+        <p>A comunicação com o Supabase é criptografada. O Supabase também criptografa os dados e backups do banco hospedado. Informações compartilhadas no lar seguem as permissões da família. Acessos técnicos autorizados podem ocorrer para operação e segurança.</p>
+        <p>Ao usar o Cupom IA, a imagem que você enviar é processada pelo Google Gemini para ler o cupom. Alguns recursos guardam informações no dispositivo.</p>
+        <button type="button" class="btn-principal" onclick="Suiri.closeModal('modal-aviso-privacidade')">Entendi</button>
+    </div>
+</div>
+
 <div id="modal-suiri-config" class="modal-overlay oculto"><div class="modal-conteudo modal-bottom-sheet">
  <div class="modal-header"><h3>Configurações</h3><button type="button" aria-label="Fechar configurações" onclick="Suiri.closeModal('modal-suiri-config')">✕</button></div>
  <p class="suiri-hint">A interface usa o modo claro. Os espaços pessoais mantêm seus próprios estilos.</p>
  <p id="suiri-offline-status" role="status"></p><button type="button" class="btn-secundario" onclick="window.processarFilaOffline().catch(Suiri.notifyError)">Sincronizar pendências</button>
  <p class="suiri-hint">As alterações de foto e as demais gravações exigem conexão. Notificações em segundo plano dependem de configuração do serviço de envio.</p>
  <p class="suiri-hint">Dados pessoais antigos sem identificação foram preservados neste aparelho. Eles não são associados automaticamente a outra pessoa.</p>
+ <button type="button" class="btn-secundario" onclick="Suiri.closeModal('modal-suiri-config'); window.abrirAvisoPrivacidade()">Privacidade dos dados</button>
  <button type="button" class="btn-secundario" onclick="window.exportarDadosLocaisSuiri()">Exportar dados locais antigos</button>
  <button type="button" class="btn-secundario" onclick="window.importarDadosLocaisSuiri()">Importar meus dados antigos</button><p class="suiri-hint">Suiri Família 7.7 · <a href="docs/LEIA_PRIMEIRO.html" target="_blank" rel="noopener">Guia desta versão</a></p>
 </div></div>
@@ -1547,7 +1575,7 @@
     </div>
 
     <!-- Scripts Modulares -->
-    <script src="src/core/session.js?v=7c9650f82665"></script>
+    <script src="src/core/session.js?v=4ecd6a642968"></script>
 <script src="src/core/offline.js?v=63b990511789"></script>
     <script src="src/ui/icons.js?v=8be3e6f08036"></script>
     <script src="src/features/rewards/gamificacao.js?v=916057bb2471"></script>
@@ -1568,7 +1596,7 @@
 <script src="src/features/notices/recados.js?v=7da866d472eb"></script>
 <script src="src/features/goals/metas-anuais.js?v=f93c6ad566c2"></script>
 <script src="src/core/lifecycle.js?v=4887334ced4f"></script>
-    <script src="src/features/family/membros.js?v=fa8a5150f518"></script>
+    <script src="src/features/family/membros.js?v=66a1a83137fe"></script>
 <script src="src/features/agenda/calendario.js?v=346d86283b57"></script>
 <script src="src/features/notifications/painel.js?v=658db5d6041d"></script>
 <script src="src/core/realtime.js?v=b43020086885"></script>
@@ -1584,7 +1612,7 @@
     <script src="src/pages/profile-menu.js?v=be4aee6ffedf"></script>
 
 <script src="src/data/reflexoes-365.js?v=ed637e39d800"></script>
-<script src="src/ui/atualizacao-v72.js?v=9b44b82f638d"></script>
+<script src="src/ui/atualizacao-v72.js?v=06b73c13aab0"></script>
 <script src="src/ui/visual-v73.js?v=859030ba92e8"></script>
 <script src="src/ui/modern-icons.js?v=468066753641"></script>
 <script src="src/ui/visual-v74.js?v=6ec189b1d02d"></script>
