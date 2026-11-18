@@ -3,6 +3,22 @@
 Este é o projeto completo reorganizado, com as mídias originais. A entrada continua sendo index.html. As quatro páginas principais continuam na raiz: index.html, mulher.html, homem.html e jogos.html.
 
 
+## Atualização 7.10
+
+As missões da casa aparecem para todos os perfis adultos. Missões pessoais aparecem só para quem as criou. Tarefas atribuídas a alguém aparecem no painel do responsável. A reativação automática só envia operações que o perfil ativo tem permissão para executar.
+
+Para aplicar a proteção de missões pessoais no banco, execute novamente o arquivo atualizado `supabase/02_ATUALIZAR_V7.sql` no SQL Editor do seu projeto Supabase. Em seguida, publique os arquivos desta versão como nas anteriores.
+
+## Atualização 7.9
+
+O modo Foco ganhou uma paleta roxa com detalhes em dourado. O PlayStation usa azul e violeta com uma fileira de atalhos. O Xbox tem uma grade com tons verdes. Os atalhos masculinos apontam para os oito setores do espaço, incluindo Corpo & Mente. Em Finanças, Cupom IA tem um ícone que combina câmera e cupom fiscal.
+
+## Atualização 7.8
+
+A Forja e o Estado do Dia têm confirmações independentes. O gráfico de Corpo & Mente mostra 30 dias. Em Como se sente hoje, o histórico mostra 35 dias e a seção de vibe compara até sete dias do mesmo período no mês anterior. Os gráficos deixam em branco as datas sem registro.
+
+Se o site já está na versão 7.7, publique os arquivos do ZIP completo no endereço atual. Esta atualização usa as tabelas que o sistema já tinha.
+
 ## Correção da migração 02: IDs em texto
 
 Se a execução anterior informou operator does not exist: text = uuid, execute ROLLBACK; no SQL Editor e rode novamente o arquivo supabase/02_ATUALIZAR_V7.sql inteiro desta entrega. Depois execute supabase/03_TRANSFERENCIAS_V71.sql. A migração 02 agora identifica se a coluna de propriedade é UUID ou texto e compara auth.uid() no tipo correspondente. Nenhum tipo de coluna ou registro de saúde foi convertido. O JavaScript do site não mudou nesta correção.

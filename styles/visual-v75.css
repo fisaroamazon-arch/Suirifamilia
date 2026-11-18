@@ -6,9 +6,9 @@ html[data-theme] body #cabecalho-topo-usuario{background:radial-gradient(ellipse
 html[data-theme] body #cabecalho-topo-usuario :is(h3,span){color:#fff!important}
 html[data-theme] body #cabecalho-topo-usuario #nome-familia-topo{color:#e0edf5!important}
 html[data-theme] body #cabecalho-topo-usuario .header-logo-container>img{filter:none!important}
-html[data-theme] body #cabecalho-topo-usuario button:not(#btn-sino-notificacoes-topo){background:#ffffff14!important;border-color:#ffffff40!important;color:#fff!important;box-shadow:none!important}
+html[data-theme] body #cabecalho-topo-usuario .usuario-card-atalhos button{background:#ffffff14!important;border-color:#ffffff40!important;color:#fff!important;box-shadow:none!important}
 #container-avatar-perfil-topo{padding-bottom:20px}.avatar-trocar-label{position:absolute;bottom:0;left:0;right:0;display:flex!important;align-items:center;justify-content:center;gap:4px;font-size:9px!important;font-weight:750;line-height:1.2;white-space:nowrap}.avatar-trocar-label .icone-moderno{width:12px;height:12px}
-.perfil-hero-info:focus-visible{outline:2px solid #fff;outline-offset:5px;border-radius:12px}
+.perfil-hero-info:focus-visible{outline:0}.perfil-hero-info:focus-visible #img-avatar-topo{outline:2px solid #fff;outline-offset:3px}
 html[data-theme] body .avatar-espaco-moldura{width:66px!important;height:66px!important;min-width:66px;flex-shrink:0;border-radius:20px!important;padding:0!important;overflow:hidden;background:var(--v73-surface)!important;box-shadow:0 5px 15px #1c324c1a!important}
 html[data-theme] body .avatar-espaco-pessoal{width:100%!important;height:100%!important;object-fit:cover!important;display:block;transform:none!important;filter:none!important}
 .editor-foto-membro{display:flex;align-items:center;gap:14px;padding:14px 0 18px}.editor-foto-membro>img{width:70px;height:70px;border-radius:20px;object-fit:cover;border:1px solid var(--v73-line);flex-shrink:0}.editor-foto-membro>div{display:flex;flex-direction:column;gap:6px}.editor-foto-membro strong{font-size:13px}.editor-foto-membro button{font-size:12px!important;padding:8px 12px!important;min-height:38px!important}.editor-foto-membro small{font-size:10px;color:var(--v73-muted)}

@@ -1,0 +1,288 @@
+.chuiri-vila,
+.chuiri-missoes-titulo,
+.chuiri-casa {
+    color: #263d35;
+    --chuiri-papel: #fffaf0;
+    --chuiri-borda: #e8dbc4;
+    --chuiri-verde: #204c41;
+}
+
+.chuiri-avatar,
+.chuiri-conquistas {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #245851;
+    cursor: pointer;
+}
+
+#tela-kids-exclusiva .cabecalho-kids-container {
+    padding: .65rem .85rem;
+    gap: .5rem;
+}
+
+#tela-kids-exclusiva .avatar-kids-circulo {
+    width: 48px !important;
+    height: 48px !important;
+}
+
+#tela-kids-exclusiva .badge-xp-kids-topo { padding: .3rem .55rem; }
+
+.chuiri-vila {
+    overflow: hidden;
+    border: 1px solid var(--chuiri-borda);
+    border-radius: 26px;
+    background: var(--chuiri-papel);
+    box-shadow: 0 10px 24px #1c38251c;
+}
+
+.chuiri-vila-cena {
+    background: linear-gradient(180deg, #eff8eadd 0%, #eff8ea77 65%, #d3e7ba88 100%),
+        url('../assets/images/tarde.jpg') center 65% / cover;
+    padding: .95rem .95rem .7rem;
+}
+
+.chuiri-vila-cabecalho,
+.chuiri-missoes-titulo,
+.chuiri-casa-topo,
+.chuiri-geladeira header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .6rem;
+}
+
+.chuiri-vila h3,
+.chuiri-missoes-titulo h3,
+.chuiri-casa h2,
+.chuiri-casa h3 { margin: 0; font-weight: 800; }
+
+.chuiri-vila h3 { font-size: clamp(1.15rem, 4vw, 1.45rem); }
+.chuiri-vila p { font-size: .82rem; margin: .15rem 0 0; font-weight: 600; }
+
+.chuiri-moedas {
+    background: #ffe9ad;
+    border: 1px solid #e8c579;
+    border-radius: 999px;
+    color: #654509;
+    font-size: .73rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    padding: .32rem .55rem;
+    white-space: nowrap;
+}
+
+.chuiri-vila-personagens {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: .5rem;
+    max-width: 430px;
+    margin: .25rem auto 0;
+}
+
+.chuiri-vila-personagens button {
+    display: grid;
+    justify-items: center;
+    align-content: end;
+    background: transparent;
+    border: 0;
+    min-width: 0;
+    padding: .2rem;
+    cursor: pointer;
+}
+
+.chuiri-vila-personagens img {
+    display: block;
+    width: 100%;
+    height: clamp(102px, 32vw, 156px);
+    object-fit: contain;
+    filter: drop-shadow(0 6px 6px #2038264d);
+}
+
+.chuiri-vila-personagens span {
+    padding: .58rem .55rem;
+    border-radius: 999px;
+    background: var(--chuiri-verde);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+.chuiri-vila-atalhos {
+    display: grid;
+    grid-template-columns: .85fr .9fr 1.15fr;
+    gap: .35rem;
+    padding: .55rem;
+}
+
+.chuiri-vila-atalhos > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+    border: 1px solid var(--chuiri-borda);
+    border-radius: 12px;
+    background: #fff;
+    color: #263d35;
+    font: inherit;
+    font-size: .77rem;
+    font-weight: 750;
+    text-decoration: none;
+    min-height: 44px;
+    padding: .25rem;
+    cursor: pointer;
+}
+
+.chuiri-vila-atalhos img { width: 17px; height: 17px; }
+.chuiri-vila-atalhos [aria-pressed="true"] { background: #e6eeea; }
+
+.chuiri-missoes-titulo {
+    margin: 1rem 0 .6rem;
+    padding: .55rem .75rem;
+    border-radius: 14px;
+    background: var(--chuiri-papel);
+}
+
+.chuiri-missoes-titulo h3 { font-size: .98rem; }
+
+.chuiri-casa {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(440px, calc(100% - 16px));
+    max-height: calc(100dvh - 16px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: .65rem;
+    border: 1px solid var(--chuiri-borda);
+    border-radius: 22px;
+    background: var(--chuiri-papel);
+    box-shadow: 0 18px 70px #0d251b66;
+}
+
+.chuiri-casa::backdrop { background: #142b26ba; }
+.chuiri-casa h2 { font-size: clamp(.95rem, 4.3vw, 1.35rem); flex: 1; }
+
+.chuiri-fechar {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: 1px solid var(--chuiri-borda);
+    border-radius: 50%;
+    color: #25413a;
+    background: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.chuiri-barras {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .25rem .9rem;
+    margin: .45rem 0;
+    padding: .45rem .6rem;
+    background: #f0ecdf;
+    border-radius: 12px;
+}
+
+.chuiri-barras label,
+.chuiri-barras label > span { display: flex; align-items: center; gap: .35rem; }
+.chuiri-barras label { font-size: .7rem; font-weight: 750; justify-content: space-between; }
+.chuiri-barras label > span { font-variant-numeric: tabular-nums; }
+.chuiri-barras progress { width: clamp(22px, 8vw, 54px); height: .5rem; accent-color: #327660; }
+.chuiri-barras [data-chuiri-status="higiene"] { accent-color: #237598; }
+.chuiri-barras [data-chuiri-status="energia"] { accent-color: #7257a3; }
+.chuiri-barras [data-chuiri-status="felicidade"] { accent-color: #aa506c; }
+.chuiri-recado-casa { margin: .1rem 0 .45rem; font-size: .81rem; text-align: center; font-weight: 650; }
+
+.chuiri-casa-cena {
+    position: relative;
+    width: min(100%, max(230px, calc((100dvh - 165px) * .558)));
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #d1e9c3;
+}
+
+#cenario-foto-interna { display: block; width: 100%; aspect-ratio: 714 / 1280; }
+
+.chuiri-ponto {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    transform: translate(-50%, -50%);
+    min-width: 48px;
+    min-height: 44px;
+    padding: .25rem .5rem;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: var(--ponto-cor, #204c41);
+    color: #fff;
+    font: 800 .75rem/1.1 system-ui, sans-serif;
+    text-decoration: none;
+    box-shadow: 0 3px 10px #13291a66;
+    cursor: pointer;
+}
+
+#btn-acao-cama { top: 34%; left: 67%; --ponto-cor: #5d4086; }
+#btn-acao-geladeira { top: 54%; left: 24%; --ponto-cor: #82451d; }
+#btn-acao-banho { top: 59%; left: 76%; --ponto-cor: #1a5e79; }
+#btn-acao-sala { top: 82%; left: 26%; }
+
+#container-chuiri-ativo {
+    position: absolute;
+    width: 21%;
+    top: 84%;
+    left: 42%;
+    transform: translate(-50%, -70%);
+    pointer-events: none;
+    transition: left .35s ease, top .35s ease;
+}
+
+#container-chuiri-ativo img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: contain; }
+#container-chuiri-ativo[data-comodo="quarto"] { left: 48%; top: 33%; }
+#container-chuiri-ativo[data-comodo="cozinha"] { left: 44%; top: 59%; }
+#container-chuiri-ativo[data-comodo="banheiro"] { left: 68%; top: 55%; }
+
+.chuiri-geladeira {
+    position: absolute;
+    inset: auto .6rem .6rem;
+    max-height: calc(100% - 1.2rem);
+    overflow: auto;
+    padding: .6rem;
+    background: #fff9e8;
+    border: 1px solid var(--chuiri-borda);
+    border-radius: 16px;
+    box-shadow: 0 6px 32px #182b2466;
+}
+
+.chuiri-geladeira header { margin-bottom: .45rem; }
+.chuiri-geladeira h3 { font-size: 1rem; }
+#grade-cardapio-geladeira { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+
+.chuiri-lanche {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .55rem .4rem;
+    min-height: 55px;
+    border: 1px solid #dfd3ba;
+    border-radius: 10px;
+    text-align: left;
+    background: #fff;
+    color: #263d35;
+    cursor: pointer;
+}
+
+.chuiri-lanche:disabled { background: #ede9de; color: #53564b; cursor: default; }
+.chuiri-lanche strong,
+.chuiri-lanche small { display: block; font-size: .71rem; }
+.chuiri-lanche small { margin-top: .2rem; font-size: .64rem; }
+.chuiri-lanche-icone { flex: 0 0 auto; }
+
+.chuiri-vila :focus-visible,
+.chuiri-casa :focus-visible { outline: 3px solid #277596; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+    #container-chuiri-ativo { transition: none; }
+}

@@ -22,7 +22,7 @@ html[data-theme][data-women-mode="normal"] .container-mulher .cartao-geral{backg
 html[data-theme][data-women-mode="foco"] body{background:radial-gradient(ellipse at 8% 0%,#6f366e50,transparent 50%),radial-gradient(ellipse at 100% 40%,#a64f7d25,transparent 60%),var(--v73-bg)!important}
 html[data-theme][data-women-mode="foco"] :is(#container-video-fundo,#container-petalas-fundo){display:none!important}
 html[data-theme][data-women-mode="foco"] body :is(.suiri-fundo-legado-claro,.modal-conteudo,.modal-header,.btn-secundario,input:not([type="range"]),select,textarea){background:var(--v73-surface2)!important;color:var(--v73-ink)!important;border-color:var(--v73-line)!important}
-html[data-theme][data-women-mode="foco"] body #secao-espaco-mulher .cartao-geral :is(div[style*="background"],label[style*="background"]):not([id^="barra-"]):not(#linha-progresso-estagios):not(.trilha-ciclo){background:var(--v73-surface2)!important;border-color:var(--v73-line)!important}
+html[data-theme][data-women-mode="foco"] body #secao-espaco-mulher .cartao-geral :is(div[style*="background"],label[style*="background"]):not([id^="barra-"]):not(#linha-progresso-estagios):not(.trilha-ciclo,.capa-curadoria,.sombra-capa-curadoria){background:var(--v73-surface2)!important;border-color:var(--v73-line)!important}
 html[data-theme][data-women-mode="foco"] body #secao-espaco-mulher .cartao-geral .bloco-integrado{background:transparent!important}
 html[data-theme][data-women-mode="foco"] :is(p,span,label,strong,h1,h2,h3,h4,cite,small){color:var(--v73-ink)!important}
 html[data-theme][data-women-mode="foco"] input::placeholder,html[data-theme][data-women-mode="foco"] textarea::placeholder{color:var(--v73-muted)!important}

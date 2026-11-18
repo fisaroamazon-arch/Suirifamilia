@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
 <script src="src/core/config.js?v=b161cb94c173"></script>
-<script src="src/core/foundation.js?v=71b1533e0036"></script>
+<script src="src/core/foundation.js?v=6bc017c9bca2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
-    <link rel="stylesheet" href="styles/pages/jogos.css?v=1ee66842df33">
+    <link rel="stylesheet" href="styles/pages/jogos.css?v=d407a0114aa7">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
 </head>
 <body>
@@ -27,70 +27,71 @@
         <!-- MENU PRINCIPAL EM GRELHA 2 COLUNAS -->
         <div id="menu-arcade">
             <div class="titulo-arcade">
-                <h1>Arcade do Chuíri</h1>
-                <p>Jogue, aprenda músicas e conquiste moedas!</p>
+                <div><h1>Arcade do Chuíri</h1>
+                <p>Escolha uma brincadeira para jogar só ou em dupla.</p></div>
+                <img src="assets/images/animated/padrao.gif" alt="" decoding="async">
             </div>
 
             <div class="grade-menu-arcade">
                 <!-- JOGO 1: FLAPPY -->
-                <div class="card-jogo-grade card-flappy" onclick="GerenciadorArcade.abrirJogo('flappy')">
-                    <div class="icone-jogo-grade" style="color:#0284c7;">
+                <button type="button" class="card-jogo-grade card-flappy" data-arcade-jogo="flappy" onclick="GerenciadorArcade.abrirJogo('flappy')">
+                    <span class="icone-jogo-grade" style="color:#0284c7;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>
-                    </div>
-                    <h3>Chuíri Voador</h3>
-                    <p>Plane entre os troncos florestais!</p>
+                    </span>
+                    <strong class="arcade-card-titulo">Chuíri Voador</strong>
+                    <span class="arcade-card-descricao">Plane entre os troncos florestais!</span>
                     <span class="tag-premio-card">10 troncos = 1 🪙</span>
-                </div>
+                </button>
 
                 <!-- JOGO 2: QUEBRA-BLOCOS / SKATE PONG -->
-                <div class="card-jogo-grade card-quebrablocos" onclick="GerenciadorArcade.abrirJogo('quebrablocos')">
-                    <div class="icone-jogo-grade" style="color:#ef4444;">
+                <button type="button" class="card-jogo-grade card-quebrablocos" data-arcade-jogo="quebrablocos" onclick="GerenciadorArcade.abrirJogo('quebrablocos')">
+                    <span class="icone-jogo-grade" style="color:#ef4444;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><rect width="18" height="6" x="3" y="3" rx="2"/><rect width="18" height="6" x="3" y="11" rx="2"/><circle cx="12" cy="20" r="2"/></svg>
-                    </div>
-                    <h3>Quebra-Blocos & Pong</h3>
-                    <p>Solo ou Skate Pong 2P!</p>
+                    </span>
+                    <strong class="arcade-card-titulo">Quebra-Blocos & Pong</strong>
+                    <span class="arcade-card-descricao">Solo ou Skate Pong 2P!</span>
                     <span class="tag-premio-card">5 blocos = 1 🪙</span>
-                </div>
+                </button>
 
                 <!-- JOGO 3: TECLADO MÁGICO / APRENDA A TOCAR -->
-                <div class="card-jogo-grade card-simon" onclick="GerenciadorArcade.abrirJogo('simon')">
-                    <div class="icone-jogo-grade" style="color:#f59e0b;">
+                <button type="button" class="card-jogo-grade card-simon" data-arcade-jogo="simon" onclick="GerenciadorArcade.abrirJogo('simon')">
+                    <span class="icone-jogo-grade" style="color:#f59e0b;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                    </div>
-                    <h3>Piano & Dueto</h3>
-                    <p>Modo Livre, 20 Músicas ou Dueto 2P!</p>
+                    </span>
+                    <strong class="arcade-card-titulo">Piano & Dueto</strong>
+                    <span class="arcade-card-descricao">Toque livre, siga uma música ou faça um dueto.</span>
                     <span class="tag-premio-card">5 🪙 por canção</span>
-                </div>
+                </button>
 
                 <!-- JOGO 4: ESTOURAR BOLHAS -->
-                <div class="card-jogo-grade card-bolhas" onclick="GerenciadorArcade.abrirJogo('bolhas')">
-                    <div class="icone-jogo-grade" style="color:#0284c7;">
+                <button type="button" class="card-jogo-grade card-bolhas" data-arcade-jogo="bolhas" onclick="GerenciadorArcade.abrirJogo('bolhas')">
+                    <span class="icone-jogo-grade" style="color:#0284c7;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="9" r="2"/></svg>
-                    </div>
-                    <h3>Estourar Bolhas</h3>
-                    <p>1P, 2P Duelo ou Modo Rush 3 Min!</p>
+                    </span>
+                    <strong class="arcade-card-titulo">Estourar Bolhas</strong>
+                    <span class="arcade-card-descricao">1P, 2P Duelo ou Modo Rush 3 Min!</span>
                     <span class="tag-premio-card">Duelo Multitoque 🪙</span>
-                </div>
+                </button>
 
                 <!-- JOGO 5: JOGO DA VELHA TRADICIONAL -->
-                <div class="card-jogo-grade card-velha" onclick="GerenciadorArcade.abrirJogo('velha')">
-                    <div class="icone-jogo-grade" style="color:#10b981;">
+                <button type="button" class="card-jogo-grade card-velha" data-arcade-jogo="velha" onclick="GerenciadorArcade.abrirJogo('velha')">
+                    <span class="icone-jogo-grade" style="color:#10b981;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </div>
-                    <h3>Jogo da Velha</h3>
-                    <p>Jogue vs Chuíri ou em 2 Jogadores!</p>
+                    </span>
+                    <strong class="arcade-card-titulo">Jogo da Velha</strong>
+                    <span class="arcade-card-descricao">Jogue vs Chuíri ou em 2 Jogadores!</span>
                     <span class="tag-premio-card">1 vitória = 1 🪙</span>
-                </div>
+                </button>
 
                 <!-- JOGO 6: MEMÓRIA 3D -->
-                <div class="card-jogo-grade card-memoria" onclick="GerenciadorArcade.abrirJogo('memoria')">
-                    <div class="icone-jogo-grade" style="color:#8b5cf6;">
+                <button type="button" class="card-jogo-grade card-memoria" data-arcade-jogo="memoria" onclick="GerenciadorArcade.abrirJogo('memoria')">
+                    <span class="icone-jogo-grade" style="color:#8b5cf6;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    </div>
-                    <h3>Memória 3D</h3>
-                    <p>Solo ou Duelo 2P por Turnos!</p>
-                    <span class="tag-premio-card">Tabuleiro = 50 🪙</span>
-                </div>
+                    </span>
+                    <strong class="arcade-card-titulo">Memória 3D</strong>
+                    <span class="arcade-card-descricao">Solo ou Duelo 2P por Turnos!</span>
+                    <span class="tag-premio-card">De 4 a 8 pares</span>
+                </button>
             </div>
         </div>
 
@@ -489,7 +490,7 @@
             </div>
 
             <div class="painel-placar-flappy" style="position:static; transform:none; margin:4px auto 6px auto; display:inline-flex;">
-                <span id="status-velha" style="font-size:13px; color:#0f172a; font-weight:800;">Sua vez: Você joga com X (Caneta Azul)</span>
+                <span id="status-velha" role="status" style="font-size:13px; color:#0f172a; font-weight:800;">Sua vez: Você joga com X (Caneta Azul)</span>
             </div>
 
             <div class="area-velha-caderno">
@@ -512,9 +513,13 @@
                 <button type="button" class="btn-modo-som-tab" id="tab-memoria-2p" onclick="MotorMemoria.trocarModo('2p')">👥 2 Jogadores</button>
             </div>
 
-            <div class="painel-placar-flappy" id="hud-placar-memoria" style="position:static; transform:none; margin:2px auto 6px auto; display:inline-flex; gap:12px;">
+            <div id="memoria-niveis" class="alternador-modos-som" aria-label="Tamanho do tabuleiro">
+                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="4" onclick="MotorMemoria.trocarNivel(4)">4 pares</button>
+                <button type="button" class="btn-modo-som-tab ativo" aria-pressed="true" data-memoria-pares="8" onclick="MotorMemoria.trocarNivel(8)">8 pares</button>
+            </div>
+            <div class="painel-placar-flappy" id="hud-placar-memoria" role="status" style="position:static; transform:none; margin:2px auto 6px auto; display:inline-flex; gap:12px;">
                 <div id="status-memoria-solo" style="font-size:13px; font-weight:900; color:#6d28d9;">
-                    Encontre os 8 Pares Mágicos!
+                    Encontre as cartas iguais!
                 </div>
                 <div id="status-memoria-2p" style="display:none; align-items:center; gap:10px; font-size:12px; font-weight:900;">
                     <span id="memoria-placar-j1" style="color:#0284c7;"><span class="lbl-j1-nome">J1</span>: <strong>0</strong></span>
@@ -543,6 +548,6 @@
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano.js?v=bf80dc5fc3eb"></script>
 
-    <script src="src/pages/arcade.js?v=e7e14193529c"></script>
+    <script src="src/pages/arcade.js?v=d407261d786e"></script>
 </body>
 </html>

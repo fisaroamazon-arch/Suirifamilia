@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     const S = window.Suiri = window.Suiri || {};
-    S.version = '7.5.0';
+    S.version = '7.10.0';
     // A versão usa a chave Gemini apenas no servidor.
     localStorage.removeItem('suiri_gemini_api_key');
     S.page = location.pathname.split('/').pop() || 'index.html';
@@ -23,6 +23,30 @@
         const first = new Date(y,m-1+offset,1,12);
         const last = new Date(first.getFullYear(), first.getMonth()+1,0,12).getDate();
         first.setDate(Math.min(d,last)); return S.today(first);
+    };
+    S.shiftDay = (dateISO, offset) => {
+        const date = new Date(`${dateISO}T12:00:00`);
+        date.setDate(date.getDate() + offset);
+        return S.today(date);
+    };
+    S.shortDay = dateISO => `${dateISO.slice(8, 10)}/${dateISO.slice(5, 7)}`;
+    S.dailyChart = (days, series, min, max) => {
+        const x = index => 22 + index * 276 / (days.length - 1);
+        const y = value => 82 - (value - min) * 66 / (max - min);
+        const grid = [min, Math.ceil((min + max) / 2), max].map(value =>
+            `<line x1="22" x2="298" y1="${y(value)}" y2="${y(value)}" class="grafico-diario-linha"/>
+             <text x="16" y="${y(value) + 3}" text-anchor="end">${value}</text>`).join('');
+        const marks = series.map(({ label, color, values }) => values.map((value, index) => {
+            if (!Number.isFinite(value)) return '';
+            const previous = values[index - 1];
+            const segment = Number.isFinite(previous)
+                ? `<line x1="${x(index - 1)}" y1="${y(previous)}" x2="${x(index)}" y2="${y(value)}" stroke="${color}" stroke-width="2"/>`
+                : '';
+            return `${segment}<circle cx="${x(index)}" cy="${y(value)}" r="2.6" fill="${color}"><title>${S.shortDay(days[index])} · ${label} ${value}/${max}</title></circle>`;
+        }).join('')).join('');
+        const ticks = [0, Math.floor(days.length / 2), days.length - 1].map((index, i) =>
+            `<text x="${x(index)}" y="100" text-anchor="${['start', 'middle', 'end'][i]}">${S.shortDay(days[index])}</text>`).join('');
+        return `<svg class="grafico-diario" viewBox="0 0 320 108" role="img" aria-label="Histórico diário de ${S.shortDay(days[0])} a ${S.shortDay(days.at(-1))}">${grid}${marks}${ticks}</svg>`;
     };
     S.money = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
     S.number = value => {

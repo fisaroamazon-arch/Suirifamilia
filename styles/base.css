@@ -775,7 +775,7 @@ body.modo-kids-ativo #painel-adulto-container {
 
 body.modo-kids-ativo #tela-kids-exclusiva {
     display: block !important;
-    padding-bottom: 260px !important;
+    padding-bottom: 24px;
     animation: transicaoJanelaPadraoSuave 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -858,42 +858,6 @@ body.modo-kids-ativo .card-missao-kids:nth-child(4n+1) { border-left: 8px solid 
 body.modo-kids-ativo .card-missao-kids:nth-child(4n+2) { border-left: 8px solid #f472b6 !important; border-top: 1.5px solid rgba(251, 207, 232, 0.6) !important; }
 body.modo-kids-ativo .card-missao-kids:nth-child(4n+3) { border-left: 8px solid #fbbf24 !important; border-top: 1.5px solid rgba(253, 230, 138, 0.6) !important; }
 body.modo-kids-ativo .card-missao-kids:nth-child(4n+4) { border-left: 8px solid #34d399 !important; border-top: 1.5px solid rgba(167, 243, 208, 0.6) !important; }
-
-/* Tamagotchi */
-#container-tamagotchi-kids,
-.palco-flutuante-chuiri-kids {
-    position: fixed !important;
-    bottom: -2px !important;
-    right: 12px !important;
-    display: flex !important;
-    align-items: flex-end !important;
-    gap: 8px !important;
-    z-index: 999 !important;
-    user-select: none !important;
-    pointer-events: none !important;
-}
-
-#btn-casinha-tamagotchi {
-    width: 220px;
-    height: 260px;
-    cursor: pointer;
-    pointer-events: auto;
-    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-#btn-chuiri-tamagotchi {
-    width: 130px;
-    height: 130px;
-    cursor: pointer;
-    pointer-events: auto;
-    position: relative;
-    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@media (max-width: 400px) {
-    #btn-casinha-tamagotchi { width: 185px !important; height: 220px !important; }
-    #btn-chuiri-tamagotchi { width: 110px !important; height: 110px !important; }
-}
 
 /* Partículas */
 .particula-confete-suiri {

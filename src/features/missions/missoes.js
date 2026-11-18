@@ -153,31 +153,30 @@ window.renderizarMissoesTela = function() {
     if(window.modoKidsAtivo||window.perfilAtual?.eh_kids||window.perfilAtual?.papel==='dependente')return;
     const meuId = obterUsuarioId();
 
-    const missoesAutorizadas = cacheMissoes.map(window.normalizarMissaoColetivaSuiri).filter(m => {
-        const audiencia=window.audienciaMissaoSuiri(m);
-        if(audiencia.startsWith('kids'))return false;
-        const ehColetiva=audiencia==='adultos';
-        const ehMinhaPessoal=m.escopo==='pessoal'&&m.criado_por===meuId;
-        const publicaDaCasa=m.escopo!=='pessoal';
-        return ehColetiva||publicaDaCasa||ehMinhaPessoal||m.atribuido_a===meuId;
-    });
+    const missoesAutorizadas = cacheMissoes.map(window.normalizarMissaoColetivaSuiri)
+        .filter(m => missaoVisivelNoPainelAdulto(m, meuId));
+    const minhas = missoesAutorizadas.filter(m => window.audienciaMissaoSuiri(m) === 'individual');
 
     let listaExibicao = missoesAutorizadas;
-    if (filtroMissoesAtivo === 'minhas') {
-        listaExibicao = missoesAutorizadas.filter(m => m.atribuido_a === meuId || (m.escopo === 'pessoal' && m.criado_por === meuId));
-    } else if (filtroMissoesAtivo === 'casa') {
-        listaExibicao = missoesAutorizadas.filter(m => (m.escopo === 'casa' || !m.escopo) && !m.atribuido_a);
+    if (filtroMissoesAtivo === 'minhas') listaExibicao = minhas;
+    else if (filtroMissoesAtivo === 'casa') {
+        listaExibicao = missoesAutorizadas.filter(m => window.audienciaMissaoSuiri(m) === 'adultos');
     }
 
-    const totalTodas=missoesAutorizadas.length;
-    const totalMinhas=missoesAutorizadas.filter(m=>m.atribuido_a===meuId||(m.escopo==='pessoal'&&m.criado_por===meuId)).length;
+    const totalTodas = missoesAutorizadas.length;
+    const totalMinhas = minhas.length;
     for(const [id,tipo,nome,total] of [['btn-filtro-missao-todas','todas','Todas',totalTodas],['btn-filtro-missao-minhas','minhas','Minhas',totalMinhas]]){
         const btn=document.getElementById(id);if(!btn)continue;
         btn.textContent=`${nome} (${total})`;btn.setAttribute('aria-pressed',String(filtroMissoesAtivo===tipo));
         btn.setAttribute('aria-controls','lista-missoes-dia');
     }
     const explicacao=document.getElementById('descricao-filtro-missoes');
-    if(explicacao)explicacao.textContent=filtroMissoesAtivo==='minhas'?'Tarefas atribuídas a você e suas missões pessoais.':'Missões coletivas e tarefas da casa. Missões Kids ficam no espaço infantil.';
+    if (explicacao) {
+        explicacao.textContent = String(window.perfilAtual?.permissoes?.missoes).toLowerCase() === 'false'
+            ? 'Este perfil pode consultar as missões. Para marcar ou reabrir, ative Missões nas permissões do perfil.'
+            : filtroMissoesAtivo === 'minhas' ? 'Tarefas atribuídas a você e suas missões pessoais.'
+            : 'Missões para todos da casa e as suas individuais. Missões Kids ficam no espaço infantil.';
+    }
 
     if (listaExibicao.length === 0) {
         container.innerHTML = `<p class="status-texto" style="text-align:center; padding:20px 0; font-weight:600;">${filtroMissoesAtivo==='minhas'?'Você não tem missões individuais neste momento. Confira as coletivas em Todas.':'Nenhuma missão para este filtro.'}</p>`;
@@ -247,7 +246,7 @@ window.renderizarMissoesTela = function() {
             `;
         }
 
-        const ehIndividual = missao.escopo === 'pessoal' || (missao.atribuido_a && missao.atribuido_a !== 'todos');
+        const ehIndividual = window.audienciaMissaoSuiri(missao) === 'individual';
         
         let tagEscopo = '';
         let ofensivaResponsavel = 0;
@@ -399,8 +398,8 @@ window.renderizarMissoesTela = function() {
             </div>
         `;
 
-        if(missao.atribuido_a && missao.atribuido_a!==meuId){
-            itemLinha.querySelectorAll('button[onclick*="concluirMissaoDomestica"],button[onclick*="falharMissaoDomestica"],button[onclick*="reabrirMissaoDomestica"]').forEach(b=>{b.disabled=true;b.title='Tarefa atribuída a outro membro';b.setAttribute('aria-label','Tarefa atribuída a outro membro');});
+        if (!podeOperarMissaoSuiri(missao)) {
+            itemLinha.querySelectorAll('button[onclick*="concluirMissaoDomestica"],button[onclick*="falharMissaoDomestica"],button[onclick*="reabrirMissaoDomestica"]').forEach(b=>{b.disabled=true;b.title='Seu perfil não tem permissão para esta ação';b.setAttribute('aria-label','Seu perfil não tem permissão para esta ação');});
         }
 
         if (concluida) {
@@ -460,7 +459,7 @@ document.addEventListener('click', (e) => {
 
 window.iniciarEdicaoMissao = function(id) {
     const missao = cacheMissoes.find(m => m.id === id);
-    if (!missao) return;
+    if (!missao || !missaoVisivelNoPainelAdulto(missao)) return;
 
     document.getElementById(`menu-drop-missao-${id}`)?.classList.add('oculto');
     const cardPai = document.getElementById(`card-missao-bloco-${id}`);
@@ -511,7 +510,7 @@ window.iniciarEdicaoMissao = function(id) {
     
     let respSel = 'todos';
     if (missao.destinatario_kids === 'todos_kids') respSel = 'todos_kids';
-    else if (missao.escopo === 'pessoal') respSel = 'individual';
+    else if (ehMissaoPessoalSuiri(missao)) respSel = 'individual';
     else if (missao.atribuido_a) respSel = missao.atribuido_a;
     setVal('edit-missao-responsavel', respSel);
 
@@ -540,6 +539,12 @@ window.salvarEdicaoMissao = async function() {
     const iconeSimbolo = emojiVal || (document.getElementById('input-edit-missao-icone')?.value || '⭐');
 
     if (!titulo) return window.mostrarToast("O título não pode estar vazio.", "erro");
+
+    const missaoAtual = cacheMissoes.find(m => m.id === id);
+    if (!missaoAtual || !missaoVisivelNoPainelAdulto(missaoAtual)) return;
+    if (respValor === 'individual' && missaoAtual.criado_por && missaoAtual.criado_por !== obterUsuarioId()) {
+        return window.mostrarToast('Só quem criou a missão pode torná-la pessoal.', 'erro');
+    }
 
     let escopo = 'casa';
     let atribuidoA = null;

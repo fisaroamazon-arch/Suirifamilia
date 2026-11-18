@@ -26,20 +26,29 @@
     function decorar(container,tipo){
         if(!container)return;
         const cards=[...container.querySelectorAll(':scope > .cartao-geral')];
-        const labels=tipo==='homem'?['Reflexão','Missões','Arsenal','A dois','Filmes e séries','Música','Oficina']:['Meu ciclo','Inspiração','Como estou','Rituais','Radar','Filmes e séries','Relaxar'];
-        const icons=tipo==='homem'?['✦','◈','↗','♡','▶','♫','⚙']:['◒','✦','✎','❋','♡','▶','☾'];
+        const labels=tipo==='homem'?['Reflexão','Forja','Corpo & Mente','Arsenal','A dois','Filmes e séries','Música','Oficina']:['Meu ciclo','Inspiração','Como estou','Rituais','Radar','Filmes e séries','Relaxar'];
+        const icons=tipo==='homem'?['✦','◈','◎','↗','♡','▶','♫','⚙']:['◒','✦','✎','❋','♡','▶','☾'];
         const nav=document.createElement('nav');nav.className='navegacao-espacos';nav.setAttribute('aria-label','Setores do espaço');
         cards.forEach((card,i)=>{
             card.id ||= 'setor-'+tipo+'-'+i;card.classList.add('setor-espaco');
             // Remove molduras decorativas internas; mantém gráficos, barras e controles.
             [...card.querySelectorAll('div')].forEach(child=>{if(child.tagName==='DIV'&&child.style.border&&child.style.padding&&!child.hasAttribute('onclick')&&!child.id.startsWith('barra-'))child.classList.add('bloco-integrado');});
             const link=document.createElement('a');link.href='#'+card.id;
+            if(location.hash===link.hash)link.setAttribute('aria-current','location');
             const title=card.querySelector('strong,h2,h3')?.textContent?.trim();
             link.innerHTML='<span aria-hidden="true">'+(icons[i]||'✦')+'</span>';
             link.append(document.createTextNode(labels[i]||title?.slice(0,25)||'Mais'));
             nav.append(link);
         });
-        if(cards.length)cards[0].before(nav);
+        if(cards.length){
+            nav.addEventListener('click',event=>{
+                const link=event.target.closest('a');
+                if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+                nav.querySelector('[aria-current]')?.removeAttribute('aria-current');
+                link.setAttribute('aria-current','location');
+            });
+            cards[0].before(nav);
+        }
     }
     for(const [name,id,tipo] of [['renderizarEsqueletoEspacoMasculino','secao-espaco-masculino','homem'],['renderizarEsqueletoEspacoMulher','secao-espaco-mulher','mulher']]){
         const fn=window[name];if(!fn)continue;

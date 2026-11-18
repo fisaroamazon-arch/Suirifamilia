@@ -58,9 +58,13 @@
     async function mission(action,id){
         return S.once(`mission:${id}`,async()=>{
             try{
-                const m=cacheMissoes.find(x=>x.id===id);if(!m)return;
+                const m = cacheMissoes.find(x => x.id === id);
+                const perfilId = window.perfilAtual?.id;
+                if (!m || !podeOperarMissaoSuiri(m)) return;
                 if(action==='fail'&&!await window.confirmarAcaoSuiri('Marcar esta missão como não realizada? A regra de pontos será aplicada uma vez.'))return;
-                const r=await S.operation('mission',{id,action},`${id}:${window.perfilAtual.id}:${m.suiri_ocorrencia||0}:${action}`);
+                if (window.perfilAtual?.id !== perfilId) return;
+                const r=await S.operation('mission',{id,action},`${id}:${perfilId}:${m.suiri_ocorrencia||0}:${action}`);
+                if (window.perfilAtual?.id !== perfilId) return;
                 Object.assign(m,r.mission);window.perfilAtual.xp_total=r.xp;
                 if(r.streak!==undefined)window.perfilAtual.ofensiva_atual=r.streak;
                 window.renderizarMissoesTela();window.carregarMissoesKidsExclusiva();window.renderizarHistoricoMissoesKidsADM();
@@ -79,8 +83,43 @@
     window.concluirMissaoDomestica=id=>mission('complete',id);
     window.falharMissaoDomestica=id=>mission('fail',id);
     window.reabrirMissaoDomestica=id=>mission('reopen',id);
-    window.verificarReativacaoAutomaticaMissoes=async()=>{
-        const due=cacheMissoes.filter(m=>m.proxima_execucao&&new Date(m.proxima_execucao)<=new Date()&&m.recorrencia_tipo!=='nenhuma');
-        for(const m of due){try{const r=await S.operation('mission',{id:m.id,action:'reset'},`${m.id}:${m.suiri_ocorrencia||0}:reset`);Object.assign(m,r.mission);}catch(error){console.warn('Reativação pendente',error.message);}}
+    window.verificarReativacaoAutomaticaMissoes = async () => {
+        const perfil = window.perfilAtual;
+        const familiaId = window.familiaAtualId;
+        if (!perfil?.id || !window.usuarioAtual?.id || !familiaId) return;
+        const perfilContinuaAtivo = () => window.familiaAtualId === familiaId && window.perfilAtual?.id === perfil.id;
+        const agora = Date.now();
+        const recorrencias = ['diaria_24h', 'semanal_7d', 'quinzenal_15d', 'mensal_30d'];
+        const vencidas = cacheMissoes.filter(m => recorrencias.includes(m.recorrencia_tipo) &&
+            m.proxima_execucao && Date.parse(m.proxima_execucao) <= agora && podeOperarMissaoSuiri(m, perfil));
+        let alterou = false;
+        for (const m of vencidas) {
+            if (!perfilContinuaAtivo()) return;
+            const ocorrencia = m.suiri_ocorrencia || 0;
+            const proximaExecucao = m.proxima_execucao;
+            const chave = `${perfil.id}:${m.id}:${ocorrencia}:reset`;
+            try {
+                const r = await S.once(chave, () => perfilContinuaAtivo() && podeOperarMissaoSuiri(m)
+                    ? S.operation('mission', { id: m.id, action: 'reset' }, chave)
+                    : null);
+                if (!r || !perfilContinuaAtivo()) continue;
+                const atual = cacheMissoes.find(item => item.id === m.id);
+                if (atual && (atual.suiri_ocorrencia || 0) === ocorrencia && atual.proxima_execucao === proximaExecucao) {
+                    Object.assign(atual, r.mission);
+                    alterou = true;
+                }
+            } catch (error) {
+                if (!['Missões não permitidas', 'Missão ainda não pode reiniciar', 'Missão não encontrada',
+                    'Missão atribuída a outra pessoa', 'Missão do Espaço Kids', 'Missão pessoal', 'Esta missão não foi atribuída à criança'].includes(error.message)) {
+                    console.warn('Reativação pendente', error.message);
+                }
+            }
+        }
+        if (alterou && perfilContinuaAtivo()) {
+            window.renderizarMissoesTela();
+            window.carregarMissoesKidsExclusiva();
+            window.renderizarHistoricoMissoesKidsADM();
+            if (document.querySelector('#secao-meuespaco:not(.oculto)')) window.renderizarMeuEspaco?.();
+        }
     };
 })();

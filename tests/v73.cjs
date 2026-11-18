@@ -64,13 +64,51 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   const base={familia_id:fam,criado_por:uid,status:'pendente',prioridade:1,icone:'⭐',xp_recompensa:10,recorrencia_tipo:'unica',concluidos_por_array:[],falhados_por_array:[],subitens:[]};
   const kid='10000000-0000-4000-8000-000000000003',other='10000000-0000-4000-8000-000000000004';
   w.listaMembrosFamilia.push({id:other,nome:'Outro adulto',papel:'adulto',eh_kids:false});
-  w.__tables.missoes=[{...base,id:'a',titulo:'Coletiva casa',escopo:'casa',atribuido_a:null},{...base,id:'b',titulo:'Coletiva legado',escopo:'todos',atribuido_a:'todos'},{...base,id:'c',titulo:'Apenas kids',escopo:'kids',destinatario_kids:'todos_kids',atribuido_a:null},{...base,id:'d',titulo:'Infantil individual',escopo:'casa',atribuido_a:kid},{...base,id:'e',titulo:'Pessoal autor',escopo:'pessoal',atribuido_a:uid}];
+  w.__tables.missoes=[
+   {...base,id:'a',titulo:'Coletiva casa',escopo:'casa',atribuido_a:null},
+   {...base,id:'b',titulo:'Coletiva legado',escopo:'todos',atribuido_a:'todos'},
+   {...base,id:'c',titulo:'Apenas kids',escopo:'kids',destinatario_kids:'todos_kids',atribuido_a:null},
+   {...base,id:'d',titulo:'Infantil individual',escopo:'casa',atribuido_a:kid},
+   {...base,id:'e',titulo:'Pessoal autor',escopo:'pessoal',atribuido_a:uid},
+   {...base,id:'f',titulo:'Atribuída ao outro adulto',escopo:'casa',atribuido_a:other},
+   {...base,id:'g',titulo:'Pessoal do outro adulto',escopo:'individual',criado_por:other,atribuido_a:uid}
+  ];
   for(const id of [uid,other]){
    w.perfilAtual={id,familia_id:fam,papel:'adulto',eh_kids:false};w.modoKidsAtivo=false;await w.carregarMissoesDoDia();
-   for(const filtro of ['todas','minhas']){w.filtrarMissoesPorAba(filtro);const text=d.getElementById('lista-missoes-dia').textContent;if(filtro==='todas'){assert(text.includes('Coletiva casa'));assert(text.includes('Coletiva legado'));}else{assert(!text.includes('Coletiva casa'));assert(!text.includes('Coletiva legado'));}assert(!text.includes('Apenas kids'));assert(!text.includes('Infantil individual'));if(id===other)assert(!text.includes('Pessoal autor'));}
+   for(const filtro of ['todas','minhas']){
+    w.filtrarMissoesPorAba(filtro);const text=d.getElementById('lista-missoes-dia').textContent;
+    assert.equal(text.includes('Coletiva casa'),filtro==='todas');assert.equal(text.includes('Coletiva legado'),filtro==='todas');
+    assert(!text.includes('Apenas kids'));assert(!text.includes('Infantil individual'));
+    assert.equal(text.includes('Pessoal autor'),id===uid);
+    assert.equal(text.includes('Atribuída ao outro adulto'),id===other);
+    assert.equal(text.includes('Pessoal do outro adulto'),id===other);
+   }
   }
   w.perfilAtual={id:kid,familia_id:fam,papel:'dependente',eh_kids:true};w.modoKidsAtivo=true;await w.carregarMissoesDoDia();const text=d.getElementById('lista-missoes-kids-container').textContent;assert(text.includes('Apenas kids'));assert(text.includes('Infantil individual'));assert(!text.includes('Coletiva casa'));assert(!text.includes('Coletiva legado'));assert.equal(d.getElementById('lista-missoes-dia').textContent,'');
   assert.equal(w.abrirModalPilulaDia(),false);
+ });
+ await test('reativação ignora perfis sem permissão e missões de outro perfil',async()=>{
+  const perfil={id:uid,familia_id:fam,papel:'adulto',permissoes:{missoes:false}};
+  w.perfilAtual=perfil;w.modoKidsAtivo=false;
+  const vencida={familia_id:fam,status:'concluida',prioridade:1,recorrencia_tipo:'diaria_24h',proxima_execucao:'2025-01-01T04:00:00Z',suiri_ocorrencia:2};
+  w.__tables.missoes=[
+   {...vencida,id:'coletiva',titulo:'Missão vencida da casa',escopo:'casa',atribuido_a:null},
+   {...vencida,id:'alheia',titulo:'Missão vencida de outra pessoa',escopo:'casa',atribuido_a:'10000000-0000-4000-8000-000000000004'},
+   {...vencida,id:'minha',titulo:'Minha missão vencida',escopo:'pessoal',criado_por:uid,atribuido_a:uid}
+  ];
+  const chamadas=[];const operacao=w.Suiri.operation;
+  w.Suiri.operation=async(kind,payload)=>{
+   chamadas.push(payload.id);return {mission:{status:'pendente',proxima_execucao:null,suiri_ocorrencia:3}};
+  };
+  try{
+   await w.carregarMissoesDoDia();await w.verificarReativacaoAutomaticaMissoes();
+   assert.deepEqual(chamadas,[]);
+   perfil.permissoes.missoes=true;
+   await Promise.all([w.verificarReativacaoAutomaticaMissoes(),w.verificarReativacaoAutomaticaMissoes()]);
+   assert.deepEqual(chamadas,['coletiva','minha']);
+   const card=d.getElementById('card-missao-bloco-minha');
+   assert(card.querySelector('button[onclick*="concluirMissaoDomestica"]'));
+  } finally {w.Suiri.operation=operacao;}
  });
  main.dom.window.close();
  const male=await load('homem.html'),m=male.w;

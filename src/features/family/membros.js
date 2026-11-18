@@ -562,7 +562,7 @@ window.abrirModalEditarFamiliar = function(id) {
     const perms = m.permissoes || {};
     setChk('edit-perm-mercado', perms.mercado);
     setChk('edit-perm-gastos', perms.gastos);
-    setChk('edit-perm-missoes', perms.missoes);
+    setChk('edit-perm-missoes', String(perms.missoes).toLowerCase() !== 'false');
 
     document.getElementById('modal-editar-familiar')?.classList.remove('oculto');
 };

@@ -82,6 +82,20 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  });
  await test('adulto não pode agir por outro adulto',async()=>{await expectFailure(()=>op('contribution',{amount:10,destination:'pessoal'},adult));});
  await test('família diferente é recusada',async()=>{await expectFailure(()=>op('contribution',{amount:10,destination:'pessoal'},other));});
+ await test('missão pessoal exige autoria no banco e na operação; missão coletiva continua compartilhada',async()=>{
+  const particular='50000000-0000-4000-8000-000000000071',coletiva='50000000-0000-4000-8000-000000000072';
+  await db.exec('grant select,insert,update,delete on missoes to authenticated;create policy teste_missoes_legado on missoes for all to authenticated using(true)with check(true);');
+  await q("insert into missoes(id,familia_id,titulo,status,escopo,atribuido_a,criado_por,recorrencia_tipo,proxima_execucao) values($1,$3,'Pessoal','concluida','individual',$5,$4,'diaria_24h',now()-interval '1 hour'),($2,$3,'Casa','concluida','casa',null,$4,'diaria_24h',now()-interval '1 hour')",[particular,coletiva,fam,uid,adult]);
+  await q("select set_config('request.jwt.claim.sub',$1,false)",[adult]);await db.exec('set role authenticated');
+  assert.deepEqual((await q('select id from missoes order by id')).rows.map(row=>row.id),[coletiva]);
+  await expectFailure(()=>op('mission',{id:particular,action:'reset'},adult));
+  assert.equal((await op('mission',{id:coletiva,action:'reset'},adult)).mission.status,'pendente');
+  await db.exec('reset role');
+  await q("select set_config('request.jwt.claim.sub',$1,false)",[uid]);await db.exec('set role authenticated');
+  assert.equal((await q('select id from missoes')).rows.length,2);
+  assert.equal((await op('mission',{id:particular,action:'reset'})).mission.status,'pendente');
+  await db.exec('reset role');
+ });
  await q('insert into itens_mercado values($1,$2,2,3.50,7,\'Mercearia\',true,true,false,null)',[item,fam]);
  await test('compra preserva itens e grava despesa uma vez',async()=>{
   const r=await op('checkout',{ids:[item]});assert.equal(r.total,7);assert(r.purchase_id);

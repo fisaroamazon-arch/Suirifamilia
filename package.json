@@ -1,6 +1,6 @@
 {
   "name": "suiri-familia",
-  "version": "7.6.0",
+  "version": "7.10.0",
   "private": true,
   "description": "Suiri Família: site estático e verificações sem credenciais reais",
   "scripts": {

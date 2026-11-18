@@ -179,13 +179,17 @@ begin
   if coalesce((to_jsonb(actor)->'permissoes'->>'missoes')::boolean,true)=false then raise exception 'Missões não permitidas';end if;
   select * into task from public.missoes where id=(p_payload->>'id')::uuid and familia_id=owner.familia_id for update;
   if not found then raise exception 'Missão não encontrada';end if;
-  if task.atribuido_a is not null and task.atribuido_a<>actor.id then raise exception 'Missão atribuída a outra pessoa';end if;
-  if task.escopo='pessoal' and coalesce(task.atribuido_a,task.criado_por)<>actor.id then raise exception 'Missão pessoal';end if;
-  if (actor.eh_kids or actor.papel='dependente') and task.atribuido_a is null and coalesce(task.destinatario_kids,'')<>'todos_kids' then raise exception 'Esta missão não foi atribuída à criança';end if;
+  if lower(btrim(coalesce(task.escopo,''))) in ('pessoal','individual') then
+   if coalesce(task.criado_por::text,task.atribuido_a::text) is distinct from actor.id::text or actor.id<>uid then raise exception 'Missão pessoal';end if;
+  else
+   if task.atribuido_a is not null and task.atribuido_a::text<>actor.id::text then raise exception 'Missão atribuída a outra pessoa';end if;
+   if (actor.eh_kids or actor.papel='dependente') and task.atribuido_a is null and coalesce(task.destinatario_kids,'')<>'todos_kids' then raise exception 'Esta missão não foi atribuída à criança';end if;
+   if not (coalesce(actor.eh_kids,false) or actor.papel='dependente') and (task.escopo='kids' or task.destinatario_kids='todos_kids') then raise exception 'Missão do Espaço Kids';end if;
+  end if;
   select * into actor from public.membros where id=actor.id for update;
   done:=coalesce(to_jsonb(task)->'concluidos_por_array','[]');failed:=coalesce(to_jsonb(task)->'falhados_por_array','[]');
   if done='null'::jsonb then done:='[]';end if;if failed='null'::jsonb then failed:='[]';end if;
-  collective:=task.atribuido_a is null and (task.escopo='casa' or task.destinatario_kids='todos_kids');
+  collective:=task.atribuido_a is null and (lower(btrim(coalesce(task.escopo,''))) in ('','casa','todos','todos_adultos','familia') or task.destinatario_kids='todos_kids');
   action:=p_payload->>'action';
   payload:=to_jsonb(task);
   if action='reset' then
@@ -305,6 +309,11 @@ begin
   end if;
  end loop;
 end $$;
+-- A regra restritiva protege missões pessoais até diante de políticas permissivas antigas.
+drop policy if exists suiri_missoes_pessoais_v7 on public.missoes;
+create policy suiri_missoes_pessoais_v7 on public.missoes as restrictive for all to authenticated
+ using (lower(btrim(coalesce(escopo,''))) not in ('pessoal','individual') or coalesce(criado_por::text,atribuido_a::text)=auth.uid()::text)
+ with check (lower(btrim(coalesce(escopo,''))) not in ('pessoal','individual') or coalesce(criado_por::text,atribuido_a::text)=auth.uid()::text);
 drop policy if exists suiri_detalhes_privados_v7 on public.transacoes;
 create policy suiri_detalhes_privados_v7 on public.transacoes as restrictive for select to authenticated
  using(membro_id=auth.uid()or(coalesce(escopo,'casa')<>'pessoal' and not coalesce(eh_privado,false)));

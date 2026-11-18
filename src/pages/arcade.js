@@ -252,9 +252,11 @@
                         window.MotorMusica.pararMusicaEContadores();
                     }
                     MotorBolhas.parar();
-                    MotorMemoria.fecharModal();
+                    MotorVelha.parar();
+                    MotorMemoria.parar();
                     document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                     document.getElementById('menu-arcade').style.display = 'flex';
+                    document.querySelector(`[data-arcade-jogo="${this.telaAtiva}"]`)?.focus();
                     this.telaAtiva = 'menu';
                 }
             },
@@ -267,6 +269,7 @@
                 document.getElementById('menu-arcade').style.display = 'none';
                 document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                 this.telaAtiva = idJogo;
+
 
                 // Todas as fases tocam música aleatória da pasta song, menos o Piano (simon)
                 if (idJogo === 'simon') {
@@ -294,7 +297,7 @@
                     MotorVelha.iniciar();
                 } else if (idJogo === 'memoria') {
                     document.getElementById('tela-memoria').style.display = 'flex';
-                    MotorMemoria.iniciar();
+                    MotorMemoria.trocarModo(MotorMemoria.modo);
                 }
             }
         };
@@ -1792,7 +1795,12 @@
                 { linha: [2,4,6], tipo: 'd', idx: 2 }
             ],
 
+            parar: function() {
+                clearTimeout(this.timerChuiri);
+            },
+
             iniciar: function() {
+                this.parar();
                 this.tabuleiro = Array(9).fill('');
                 this.turno = 'X';
                 this.fim = false;
@@ -1811,7 +1819,9 @@
                 const g = document.getElementById('grade-velha-invisivel');
                 g.innerHTML = '';
                 for (let i = 0; i < 9; i++) {
-                    const c = document.createElement('div');
+                    const c = document.createElement('button');
+                    c.type = 'button';
+                    c.setAttribute('aria-label', `Casa ${i + 1}, vazia`);
                     c.className = 'casa-velha-livre';
                     c.id = `velha-casa-${i}`;
                     c.onclick = () => this.jogada(i);
@@ -1835,7 +1845,7 @@
 
                     this.turno = this.turno === 'X' ? 'O' : 'X';
                     const vezNome = this.turno === 'X' ? `${nomeJ1} (X)` : 'Shuiri (O)';
-                    document.getElementById('status-velha').innerHTML = `Vez de <strong>${vezNome}</strong>`;
+                    document.getElementById('status-velha').textContent = `Vez de ${vezNome}`;
                 } else {
                     if (this.turno !== 'X') return;
                     this.marcar(i, 'X');
@@ -1848,7 +1858,7 @@
 
                     this.turno = 'O';
                     document.getElementById('status-velha').textContent = 'Chuíri a riscar...';
-                    setTimeout(() => this.jogadaChuiri(), 420);
+                    this.timerChuiri = setTimeout(() => this.jogadaChuiri(), 420);
                 }
             },
 
@@ -1894,6 +1904,8 @@
                 const el = document.getElementById(`velha-casa-${i}`);
                 if (el) {
                     el.innerHTML = p === 'X' ? this.obterSvgX() : this.obterSvgO();
+                    el.setAttribute('aria-label', `Casa ${i + 1}, ${p}`);
+                    el.setAttribute('aria-disabled', 'true');
                 }
             },
 
@@ -1967,6 +1979,8 @@
         // =========================================================================
         const MotorMemoria = {
             modo: 'solo',
+            totalPares: 8,
+            jogadas: 0,
             cartas: [],
             viradas: [],
             pares: 0,
@@ -1986,8 +2000,24 @@
                 { id: 'sol',      svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#f97316;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }
             ],
 
+            trocarNivel: function(pares) {
+                this.totalPares = pares;
+                for (const botao of document.querySelectorAll('[data-memoria-pares]')) {
+                    const ativo = Number(botao.dataset.memoriaPares) === pares;
+                    botao.classList.toggle('ativo', ativo);
+                    botao.setAttribute('aria-pressed', String(ativo));
+                }
+                this.iniciar();
+            },
+
+            parar: function() {
+                clearTimeout(this.timerCartas);
+                this.fecharModal();
+            },
+
             trocarModo: function(novoModo) {
                 this.modo = novoModo;
+                this.iniciar();
                 document.getElementById('tab-memoria-solo').classList.toggle('ativo', novoModo === 'solo');
                 document.getElementById('tab-memoria-2p').classList.toggle('ativo', novoModo === '2p');
 
@@ -2001,7 +2031,6 @@
                     document.getElementById('status-memoria-solo').style.display = 'block';
                     document.getElementById('status-memoria-2p').style.display = 'none';
                 }
-                this.iniciar();
             },
 
             atualizarPlacar: function() {
@@ -2011,7 +2040,7 @@
                     const elJ2 = document.getElementById('memoria-placar-j2');
                     const elTurno = document.getElementById('memoria-turno-vez');
 
-                    if (elJ1) elJ1.innerHTML = `${nomeJ1} (Azul): <strong>${this.paresJ1}</strong>`;
+                    if (elJ1) elJ1.textContent = `${nomeJ1} (Azul): ${this.paresJ1}`;
                     if (elJ2) elJ2.innerHTML = `Shuiri (Vermelho): <strong>${this.paresJ2}</strong>`;
 
                     if (elTurno) {
@@ -2029,34 +2058,48 @@
                     }
                 } else {
                     const elSolo = document.getElementById('status-memoria-solo');
-                    if (elSolo) elSolo.textContent = `Encontre os 8 Pares Mágicos! (${this.pares}/8)`;
+                    if (elSolo) elSolo.textContent = `${this.pares}/${this.totalPares} pares · ${this.jogadas} jogadas`;
                 }
             },
 
             iniciar: function() {
                 const grade = document.getElementById('grade-memoria-arcade');
                 if (!grade) return;
-                grade.innerHTML = '';
+                this.parar();
+                grade.replaceChildren();
+                this.jogadas = 0;
                 this.viradas = [];
                 this.pares = 0;
                 this.paresJ1 = 0;
                 this.paresJ2 = 0;
                 this.turno = 1;
                 this.bloqueado = false;
-                this.fecharModal();
                 this.atualizarPlacar();
 
-                let baralho = [...this.simbolos, ...this.simbolos].sort(() => Math.random() - 0.5);
+                const simbolos = this.simbolos.slice(0, this.totalPares);
+                const baralho = [...simbolos, ...simbolos];
+                for (let i = baralho.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [baralho[i], baralho[j]] = [baralho[j], baralho[i]];
+                }
                 this.cartas = baralho;
 
-                baralho.forEach((item, idx) => {
-                    const c = document.createElement('div');
+                baralho.forEach((_, idx) => {
+                    const c = document.createElement('button');
+                    c.type = 'button';
+                    this.ocultarCarta(c, idx);
                     c.className = 'carta-arcade';
                     c.id = `carta-memoria-${idx}`;
-                    c.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
                     c.onclick = () => this.virar(idx);
                     grade.appendChild(c);
                 });
+            },
+
+            ocultarCarta: function(carta, idx) {
+                carta.textContent = '?';
+                carta.setAttribute('aria-label', `Carta ${idx + 1}, virada para baixo`);
+                carta.classList.remove('revelada');
+                carta.removeAttribute('data-v');
             },
 
             virar: function(idx) {
@@ -2066,48 +2109,40 @@
 
                 const c = this.cartas[idx];
                 el.innerHTML = c.svg;
+                el.setAttribute('aria-label', `Carta ${idx + 1}, ${c.id}`);
                 el.classList.add('revelada');
                 el.setAttribute('data-v', '1');
                 AudioMotor.tocarTom(520, 0.08);
                 this.viradas.push({ idx, id: c.id });
 
                 if (this.viradas.length === 2) {
+                    this.jogadas++;
                     const [c1, c2] = this.viradas;
                     if (c1.id === c2.id) {
                         AudioMotor.tocarTom(880, 0.18);
                         tentarVibrar(30);
 
-                        if (this.modo === '2p') {
-                            if (this.turno === 1) this.paresJ1++;
-                            else this.paresJ2++;
-                            this.atualizarPlacar();
-
-                            if (this.paresJ1 + this.paresJ2 === 8) {
-                                setTimeout(() => this.fimDeJogo(), 450);
-                            }
-                        } else {
-                            this.pares++;
-                            this.atualizarPlacar();
-
-                            if (this.pares === 8) {
-                                setTimeout(() => this.fimDeJogo(), 450);
-                            }
+                        if (this.modo === 'solo') this.pares++;
+                        else if (this.turno === 1) this.paresJ1++;
+                        else this.paresJ2++;
+                        this.atualizarPlacar();
+                        for (const carta of [c1, c2]) {
+                            const botao = document.getElementById(`carta-memoria-${carta.idx}`);
+                            botao.classList.add('pareada');
+                            botao.setAttribute('aria-disabled', 'true');
+                        }
+                        if (this.pares + this.paresJ1 + this.paresJ2 === this.totalPares) {
+                            const premio = this.totalPares === 4 ? 10 : (this.modo === '2p' ? 25 : 50);
+                            GerenciadorArcade.adicionarMoedas(premio);
+                            this.timerCartas = setTimeout(() => this.fimDeJogo(premio), 450);
                         }
                         this.viradas = [];
                     } else {
                         this.bloqueado = true;
-                        setTimeout(() => {
-                            const e1 = document.getElementById(`carta-memoria-${c1.idx}`);
-                            const e2 = document.getElementById(`carta-memoria-${c2.idx}`);
-                            if (e1) {
-                                e1.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
-                                e1.classList.remove('revelada');
-                                e1.removeAttribute('data-v');
-                            }
-                            if (e2) {
-                                e2.innerHTML = '<span style="color:#94a3b8; font-weight:900; font-size:22px;">?</span>';
-                                e2.classList.remove('revelada');
-                                e2.removeAttribute('data-v');
+                        this.atualizarPlacar();
+                        this.timerCartas = setTimeout(() => {
+                            for (const carta of [c1, c2]) {
+                                this.ocultarCarta(document.getElementById(`carta-memoria-${carta.idx}`), carta.idx);
                             }
                             if (this.modo === '2p') {
                                 this.turno = this.turno === 1 ? 2 : 1;
@@ -2120,11 +2155,11 @@
                 }
             },
 
-            fimDeJogo: function() {
+            fimDeJogo: function(premio) {
                 const ov = document.getElementById('over-memoria');
                 const cont = document.getElementById('dialogo-memoria-conteudo');
-                if (!ov || !cont) return;
-                const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
+                if (!ov || !cont || GerenciadorArcade.telaAtiva !== 'memoria') return;
+                const nomeJ1 = esc(GerenciadorArcade.obterNomeUsuario());
 
                 if (this.modo === '2p') {
                     let resultado = "Empate Perfeito!";
@@ -2136,14 +2171,13 @@
                         resultado = "🏆 Shuiri (Vermelho) Venceu!";
                         cor = "#dc2626";
                     }
-                    GerenciadorArcade.adicionarMoedas(25);
                     cont.innerHTML = `
                         <h2 style="color:${cor};">${resultado}</h2>
                         <p style="margin:10px 0 14px 0; font-size:13.5px; color:#334155; line-height:1.45;">
                             Placar de Pares:<br>
                             ${nomeJ1} (Azul): <strong>${this.paresJ1}</strong> pares<br>
                             Shuiri (Vermelho): <strong>${this.paresJ2}</strong> pares<br>
-                            <span style="color:#b45309; font-weight:900; font-size:13px; margin-top:4px; display:inline-block;">+25 Moedas conquistadas! 🪙</span>
+                            <span style="color:#b45309; font-weight:900; font-size:13px; margin-top:4px; display:inline-block;">+${premio} moedas conquistadas! 🪙</span>
                         </p>
                         <div style="display:flex; flex-direction:column; gap:8px;">
                             <button class="btn-acao-jogo" onclick="MotorMemoria.iniciar()">Jogar Outra Partida (2P)</button>
@@ -2152,12 +2186,11 @@
                         <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                     `;
                 } else {
-                    GerenciadorArcade.adicionarMoedas(50);
                     cont.innerHTML = `
                         <h2 style="color:#10b981;">🎉 Parabéns!</h2>
                         <p style="margin:10px 0 14px 0; font-size:13.5px; color:#334155; line-height:1.45;">
-                            Incrível! Encontrou todos os 8 pares mágicos!<br>
-                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+50 Moedas conquistadas! 🪙</span>
+                            Você encontrou ${this.totalPares} pares em ${this.jogadas} jogadas!<br>
+                            <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${premio} moedas conquistadas! 🪙</span>
                         </p>
                         <div style="display:flex; flex-direction:column; gap:8px;">
                             <button class="btn-acao-jogo" onclick="MotorMemoria.iniciar()">Jogar Novamente</button>
@@ -2167,6 +2200,7 @@
                     `;
                 }
                 ov.style.display = 'flex';
+                cont.querySelector('button')?.focus();
             },
 
             fecharModal: function() {

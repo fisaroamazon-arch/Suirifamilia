@@ -181,10 +181,19 @@ window.injetarPinosNosModais = function() {
 // =========================================================================
 
 
+function ehMissaoPessoalSuiri(m) {
+    return ['pessoal', 'individual'].includes(String(m.escopo || '').trim().toLowerCase());
+}
+
+function responsavelMissaoSuiri(m) {
+    return ehMissaoPessoalSuiri(m) ? m.criado_por || m.atribuido_a : m.atribuido_a;
+}
+
 window.audienciaMissaoSuiri = function(m) {
     const scope=String(m.escopo||'').trim().toLowerCase();
     const assigned=String(m.atribuido_a||'').trim().toLowerCase();
     const child=(window.listaMembrosFamilia||[]).find(p=>p.id===m.atribuido_a);
+    if(ehMissaoPessoalSuiri(m))return 'individual';
     if(m.destinatario_kids==='todos_kids'||assigned==='todos_kids'||scope==='kids')return 'kids';
     if(child&&(child.eh_kids===true||child.papel==='dependente'))return 'kids-individual';
     if((!assigned||['todos','todos_adultos','casa','familia'].includes(assigned))&&['','casa','todos','todos_adultos','familia'].includes(scope))return 'adultos';
@@ -196,3 +205,26 @@ window.normalizarMissaoColetivaSuiri = function(m) {
     if(tipo==='kids'&&(!item.atribuido_a||item.atribuido_a==='todos_kids')){item.escopo='kids';item.destinatario_kids='todos_kids';item.atribuido_a=null;}
     return item;
 };
+
+function missaoVisivelNoPainelAdulto(m, perfilId = obterUsuarioId()) {
+    if (!perfilId) return false;
+    const audiencia = window.audienciaMissaoSuiri(m);
+    return audiencia === 'adultos' || (audiencia === 'individual' && responsavelMissaoSuiri(m) === perfilId);
+}
+
+function missaoVisivelNoPainelKids(m, perfilId = obterUsuarioId()) {
+    if (!perfilId) return false;
+    const audiencia = window.audienciaMissaoSuiri(m);
+    if (audiencia === 'kids') return !m.atribuido_a || m.atribuido_a === 'todos_kids' || m.atribuido_a === perfilId;
+    return audiencia !== 'adultos' && responsavelMissaoSuiri(m) === perfilId;
+}
+
+function podeOperarMissaoSuiri(m, perfil = window.perfilAtual) {
+    if (!perfil?.id || String(perfil.permissoes?.missoes).toLowerCase() === 'false') return false;
+    if (ehMissaoPessoalSuiri(m)) return responsavelMissaoSuiri(m) === perfil.id &&
+        (!window.usuarioAtual?.id || window.usuarioAtual.id === perfil.id);
+    if (m.atribuido_a && m.atribuido_a !== perfil.id) return false;
+    return perfil.eh_kids || perfil.papel === 'dependente'
+        ? missaoVisivelNoPainelKids(m, perfil.id)
+        : missaoVisivelNoPainelAdulto(m, perfil.id);
+}

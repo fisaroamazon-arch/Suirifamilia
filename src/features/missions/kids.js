@@ -110,7 +110,8 @@ window.carregarMissoesDoDia = async function() {
 
     if(familiaConsultada!==window.familiaAtualId||perfilConsultado!==obterUsuarioId())return;
     if (!error) {
-        cacheMissoes = (data || []).map(window.normalizarMissaoColetivaSuiri);
+        cacheMissoes = (data || []).map(window.normalizarMissaoColetivaSuiri)
+            .filter(m => !ehMissaoPessoalSuiri(m) || responsavelMissaoSuiri(m) === perfilConsultado);
         window.verificarReativacaoAutomaticaMissoes();
         window.renderizarMissoesTela();
         window.carregarMissoesKidsExclusiva();
@@ -130,11 +131,7 @@ window.carregarMissoesKidsExclusiva = function() {
     container.innerHTML = '';
     const meuId = obterUsuarioId();
 
-    const missoesKids = cacheMissoes.filter(m => {
-        const ehParaMim = m.atribuido_a === meuId;
-        const ehTodosKids = m.destinatario_kids === 'todos_kids' || m.atribuido_a === 'todos_kids';
-        return ehParaMim || ehTodosKids;
-    });
+    const missoesKids = cacheMissoes.filter(m => missaoVisivelNoPainelKids(m, meuId));
 
     const pendentes = missoesKids.filter(m => {
         if (m.destinatario_kids === 'todos_kids' && Array.isArray(m.concluidos_por_array)) {
@@ -367,7 +364,7 @@ window.alternarMissoesConcluidas = function(tipo, qtd) {
 window.toggleSubitemMissao = async function(missaoId, subitemId) {
     const supabase = obterClienteSupabase();
     const missao = cacheMissoes.find(m => m.id === missaoId);
-    if (!missao || !Array.isArray(missao.subitens) || !supabase) return;
+    if (!missao || !podeOperarMissaoSuiri(missao) || !Array.isArray(missao.subitens) || !supabase) return;
 
     const sub = missao.subitens.find(s => s.id === subitemId);
     if (!sub) return;

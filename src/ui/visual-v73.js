@@ -14,6 +14,7 @@
     function applyConsole(){
         if(!men)return;
         const style=consoleStyle();root.dataset.console=style;
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content',style==='playstation'?'#101e49':'#101e14');
         document.querySelectorAll('[data-console-choice]').forEach(b=>{const active=b.dataset.consoleChoice===style;b.setAttribute('aria-pressed',String(active));b.classList.toggle('selecionado',active);});
     }
     function injectSwitch(){

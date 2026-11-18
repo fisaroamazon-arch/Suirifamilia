@@ -502,7 +502,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
             </div>
 
             <!-- LINHA 2: CABEÇALHO -->
-            <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:2px 4px;">
+            <div class="cabecalho-espaco-pessoal" style="display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:2px 4px;">
                 <div style="width:70px; height:70px; border-radius:22px; background:linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border:1.8px solid #d8b4fe; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 8px 20px rgba(124,58,237,0.16);">
                     <img class="avatar-espaco-pessoal" src="${window.esc(Suiri.imageUrl(window.perfilAtual?.avatar_url || 'assets/icons-modern/icone-pessoa-escopo.svg'))}" alt="Foto do usuário">
                 </div>
@@ -662,7 +662,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <h4 style="font-size:14px; font-weight:900; color:#3b0764; margin:0;">Como se sente hoje</h4>
                         <span style="font-size:11.5px; color:#6b21a8; font-weight:600; display:block; margin-top:2px;">Um espaço para demonstrar suas sensações e emoções.</span>
                     </div>
-                    <button type="button" id="btn-toggle-sintomas-bloco" 
+                    <button type="button" id="btn-toggle-sintomas-bloco" aria-expanded="false" aria-controls="bloco-corpo-sintomas-retratil" 
                             style="padding:7px 16px; font-size:11.5px; border-radius:12px; font-weight:800; background:linear-gradient(135deg, #ec4899 0%, #be185d 100%); color:#fff; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(236,72,153,0.25);"
                             onclick="window.alternarSecaoComoSeSenteHoje()">
                         Responder
@@ -677,7 +677,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🌸 Estado Emocional:</span>
                             <strong id="badge-sint-emocional" style="font-size:10.5px; color:#581c87; background:#f3e8ff; padding:2px 8px; border-radius:6px;">Estável / Serena 🧘‍♀️</strong>
                         </div>
-                        <input type="range" id="range-sint-emocional" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('emocional')">
+                        <input type="range" id="range-sint-emocional" aria-label="Estado emocional" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#7c3aed; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('emocional')">
                     </div>
 
                     <!-- 2. Conforto Físico & Dores -->
@@ -686,7 +686,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🌿 Conforto Físico & Dores:</span>
                             <strong id="badge-sint-fisico" style="font-size:10.5px; color:#047857; background:#dcfce7; padding:2px 8px; border-radius:6px;">Corpo Leve / Sem Dores 🌿</strong>
                         </div>
-                        <input type="range" id="range-sint-fisico" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#10b981; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('fisico')">
+                        <input type="range" id="range-sint-fisico" aria-label="Bem-estar físico" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#10b981; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('fisico')">
                     </div>
 
                     <!-- 3. Disposição & Energia -->
@@ -695,7 +695,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">⚡ Disposição & Energia:</span>
                             <strong id="badge-sint-energia" style="font-size:10.5px; color:#b45309; background:#fef3c7; padding:2px 8px; border-radius:6px;">Ritmo Moderado 🌿</strong>
                         </div>
-                        <input type="range" id="range-sint-energia" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('energia')">
+                        <input type="range" id="range-sint-energia" aria-label="Energia" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#f59e0b; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('energia')">
                     </div>
 
                     <!-- 4. Comunicação & Expressão -->
@@ -704,7 +704,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">💬 Comunicação & Expressão:</span>
                             <strong id="badge-sint-comunicacao" style="font-size:10.5px; color:#1d4ed8; background:#dbeafe; padding:2px 8px; border-radius:6px;">Conversa Normal 🗣️</strong>
                         </div>
-                        <input type="range" id="range-sint-comunicacao" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#3b82f6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('comunicacao')">
+                        <input type="range" id="range-sint-comunicacao" aria-label="Comunicação" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#3b82f6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('comunicacao')">
                     </div>
 
                     <!-- 5. Sociabilidade & Companhia -->
@@ -713,7 +713,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🛋️ Sociabilidade & Companhia:</span>
                             <strong id="badge-sint-social" style="font-size:10.5px; color:#6b21a8; background:#ede9fe; padding:2px 8px; border-radius:6px;">Neutra / Equilibrada ☕</strong>
                         </div>
-                        <input type="range" id="range-sint-social" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#8b5cf6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('social')">
+                        <input type="range" id="range-sint-social" aria-label="Disposição social" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#8b5cf6; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('social')">
                     </div>
 
                     <!-- 6. Paz Mental & Clareza -->
@@ -722,7 +722,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🧠 Paz Mental & Clareza:</span>
                             <strong id="badge-sint-pazmental" style="font-size:10.5px; color:#0e7490; background:#cffafe; padding:2px 8px; border-radius:6px;">Pensamentos Sob Controle 🧘‍♀️</strong>
                         </div>
-                        <input type="range" id="range-sint-pazmental" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#06b6d4; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('pazmental')">
+                        <input type="range" id="range-sint-pazmental" aria-label="Paz mental" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#06b6d4; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('pazmental')">
                     </div>
 
                     <!-- 7. Paciência & Tolerância (TPM) -->
@@ -731,7 +731,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">🕊️ Paciência & Tolerância:</span>
                             <strong id="badge-sint-paciencia" style="font-size:10.5px; color:#9d174d; background:#fce7f3; padding:2px 8px; border-radius:6px;">Tolerância Normal 🌿</strong>
                         </div>
-                        <input type="range" id="range-sint-paciencia" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#ec4899; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('paciencia')">
+                        <input type="range" id="range-sint-paciencia" aria-label="Paciência" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#ec4899; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('paciencia')">
                     </div>
 
                     <!-- 8. Autoestima & Amor-Próprio -->
@@ -740,14 +740,16 @@ window.renderizarEsqueletoEspacoMulher = function() {
                             <span style="font-size:11.5px; font-weight:800; color:#3b0764;">👑 Autoestima & Amor-Próprio:</span>
                             <strong id="badge-sint-autoestima" style="font-size:10.5px; color:#701a75; background:#fae8ff; padding:2px 8px; border-radius:6px;">Confortável Consigo Mesma 💃</strong>
                         </div>
-                        <input type="range" id="range-sint-autoestima" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#d946ef; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('autoestima')">
+                        <input type="range" id="range-sint-autoestima" aria-label="Autoestima" min="1" max="5" value="3" step="0.01" style="width:100%; accent-color:#d946ef; cursor:pointer;" oninput="window.atualizarRotuloBarraSintomas('autoestima')">
                     </div>
                     
                     <div style="display:flex; justify-content:flex-end; align-items:center; border-top:1.5px solid #d8b4fe; padding-top:10px;">
-                        <button type="button" class="btn-principal" style="width:auto; padding:8px 24px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff; cursor:pointer;" onclick="window.salvarRegistroSintomaDiario()">Registar</button>
+                        <button type="button" class="btn-principal" style="width:auto; padding:8px 24px; font-size:12px; font-weight:800; border-radius:12px; background:linear-gradient(135deg, #7c3aed 0%, #581c87 100%); border:none; color:#fff; cursor:pointer;" id="btn-confirmar-sintomas" onclick="window.salvarRegistroSintomaDiario()">Confirmar registro do dia</button>
                     </div>
                 </div>
             </div>
+
+            <small id="status-sintomas-hoje" role="status"></small>
 
             <!-- HISTÓRICO COM GRÁFICO TEMPORAL DE SINTOMAS & HUMOR -->
             <div id="container-historico-sintomas-ciclos" style="margin-top:14px; display:flex; flex-direction:column; gap:8px;"></div>
@@ -937,17 +939,17 @@ window.renderizarEsqueletoEspacoMulher = function() {
                         <strong style="font-size:13.5px; color:#3b0764; font-weight:800;">Curadoria de Obras</strong>
                     </div>
                     <div style="display:flex; gap:4px; background:#f3e8ff; padding:2px; border-radius:10px;">
-                        <button type="button" id="btn-aba-filmes-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#7c3aed; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes (${listaFilmes || 200})</button>
-                        <button type="button" id="btn-aba-series-mulher" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#581c87;" onclick="window.alternarAbaMidiaMulher('series')">Séries (${listaSeries || 250})</button>
+                        <button type="button" id="btn-aba-filmes-mulher" aria-pressed="true" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:#7c3aed; color:#fff;" onclick="window.alternarAbaMidiaMulher('filmes')">Filmes (${listaFilmes || 200})</button>
+                        <button type="button" id="btn-aba-series-mulher" aria-pressed="false" style="border:none; padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px; cursor:pointer; background:transparent; color:#581c87;" onclick="window.alternarAbaMidiaMulher('series')">Séries (${listaSeries || 250})</button>
                     </div>
                 </div>
 
                 <div id="card-carrossel-midia-mulher" style="border-radius:16px; overflow:hidden;">
-                    <div style="position:relative; width:100%; height:220px; background:#2e1065; overflow:hidden; display:flex; align-items:center; justify-content:center; border-radius:16px;">
-                        <img id="midia-mulher-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80" alt="Capa da Obra" 
+                    <div class="capa-curadoria" style="position:relative; width:100%; height:220px; background:#2e1065; overflow:hidden; display:flex; align-items:center; justify-content:center; border-radius:16px;">
+                        <img id="midia-mulher-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80" alt="" onerror="this.hidden=true" onload="this.hidden=false" 
                              style="width:100%; height:100%; object-fit:cover; display:block; transition:opacity 0.3s ease;">
                         
-                        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(46,16,101,0.1) 0%, rgba(46,16,101,0.92) 100%); pointer-events:none;"></div>
+                        <div class="sombra-capa-curadoria" style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(46,16,101,0.1) 0%, rgba(46,16,101,0.92) 100%); pointer-events:none;"></div>
                         
                         <div style="position:absolute; bottom:12px; left:14px; right:14px; z-index:2;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -1298,6 +1300,7 @@ window.renderizarEsqueletoEspacoMulher = function() {
             </div>
         </div>
     `;
+    window.renderizarHistoricoSintomas?.();
 };
 
 // =========================================================================

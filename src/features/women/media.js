@@ -15,28 +15,13 @@ window.alternarAbaMidiaMulher = function(aba) {
     const listaFilmesQtd = (window.CatalogoFilmesMasculinos && window.CatalogoFilmesMasculinos.length) || 200;
     const listaSeriesQtd = (window.CatalogoSeriesMasculinas && window.CatalogoSeriesMasculinas.length) || 250;
 
-    if (aba === 'filmes') {
-        if (btnF) { 
-            btnF.style.background = '#7c3aed'; 
-            btnF.style.color = '#fff'; 
-            btnF.textContent = `Filmes (${listaFilmesQtd})`;
-        }
-        if (btnS) { 
-            btnS.style.background = 'transparent'; 
-            btnS.style.color = '#581c87'; 
-            btnS.textContent = `Séries (${listaSeriesQtd})`;
-        }
-    } else {
-        if (btnS) { 
-            btnS.style.background = '#7c3aed'; 
-            btnS.style.color = '#fff'; 
-            btnS.textContent = `Séries (${listaSeriesQtd})`;
-        }
-        if (btnF) { 
-            btnF.style.background = 'transparent'; 
-            btnF.style.color = '#581c87'; 
-            btnF.textContent = `Filmes (${listaFilmesQtd})`;
-        }
+    if (btnF) {
+        btnF.setAttribute('aria-pressed', String(aba === 'filmes'));
+        btnF.textContent = `Filmes (${listaFilmesQtd})`;
+    }
+    if (btnS) {
+        btnS.setAttribute('aria-pressed', String(aba === 'series'));
+        btnS.textContent = `Séries (${listaSeriesQtd})`;
     }
 
     window.indiceMidiaMulher[aba] = 0;
@@ -218,7 +203,7 @@ window.atualizarVisualizacaoMidiaMulher = function() {
     window.buscarDadosTmdbMidiaMulher(item).then(dadosApi => {
         if (dadosApi) {
             const atual = window.obterListaMidiaMulherAtual()[window.indiceMidiaMulher[window.abaMidiaMulherAtiva]];
-            if (atual && (atual.imdbId === item.imdbId || atual.titulo === item.titulo)) {
+            if (atual === item) {
                 if (dadosApi.poster && elPosterImg) {
                     elPosterImg.src = dadosApi.poster;
                 }

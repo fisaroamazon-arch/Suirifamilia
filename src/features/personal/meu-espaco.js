@@ -376,7 +376,7 @@ window.renderizarMeuEspaco = function() {
                 `;
             }
             else if (pin.origem === 'secao-inicio') {
-                const pendentes = (typeof cacheMissoes !== 'undefined') ? cacheMissoes.filter(m => m.status === 'pendente') : [];
+                const pendentes = (typeof cacheMissoes !== 'undefined') ? cacheMissoes.filter(m => m.status === 'pendente' && missaoVisivelNoPainelAdulto(m)) : [];
                 if (pendentes.length === 0) {
                     content.innerHTML = `<span style="font-size: 12.5px; color: #15803d; text-align: center; display: block; padding: 12px; font-weight: 700; background: #f0fdf4; border-radius: 12px;">Todas as missões da casa estão cumpridas! 🌟</span>`;
                 } else {
@@ -463,7 +463,7 @@ window.renderizarMeuEspaco = function() {
         } 
         else if (pin.tipo === 'item') {
             if (pin.categoria === 'missao' && typeof cacheMissoes !== 'undefined') {
-                const missao = cacheMissoes.find(m => m.id === pin.referencia);
+                const missao = cacheMissoes.find(m => m.id === pin.referencia && missaoVisivelNoPainelAdulto(m));
                 if (missao) {
                     const concluida = missao.status === 'concluida';
                     content.innerHTML = `

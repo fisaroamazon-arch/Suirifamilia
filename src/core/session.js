@@ -564,6 +564,7 @@ window.selecionarUsuarioQuiosque = function(membroId) {
         window.fecharJanelaPrincipalQuiosque();
         Suiri.reloadPersonal?.();
         window.aplicarRegrasPerfilKidsOuAdulto();
+        window.carregarMissoesDoDia?.();
         if (window.SonsSuiri && typeof window.SonsSuiri.sucessoMissao === 'function') {
             window.SonsSuiri.sucessoMissao();
         }
@@ -672,7 +673,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
         painelAdulto?.classList.remove('oculto');
         barraNav?.classList.remove('oculto');
 
-        document.getElementById('container-tamagotchi-kids')?.remove();
+        window.TamagotchiKids?.montarWidgetNaTela();
         document.getElementById('modal-tamagotchi-cuidados')?.classList.add('oculto');
 
         const elNomeMembro = document.getElementById('nome-membro-topo');

@@ -2,7 +2,7 @@
 // SUIRI GESTÃO FAMILIAR - APP-ESPACO-MASCULINO.JS (100% INTEGRAL E COMPLETO)
 // Reorganização Oficial do Layout: 
 // 1. Princípio do Dia
-// 2. A Forja (Missões + Estado Diário: Humor, Mente Serena, Disposição, Foco)
+// 2. A Forja (Evolução & Missões) e Estado do Dia (Corpo & Mente)
 // 3. Arsenal Prático (Doutrina Física & Nutrição com Sorteio)
 // 4. Radar Pessoal & Vida a Dois (Libido, Performance Própria, Satisfação Parceira)
 // 5. Filmes & Séries (Com Logos Oficiais de Streaming e Links Diretos)
@@ -256,6 +256,7 @@ window.abrirEspacoMasculino = async function() {
         window.dadosMidiaQueroVerMasc = Suiri.parseJSON(localStorage.getItem(window.obterChaveStorageMasc('midia_quero_ver'))) || [];
     } catch (e) {}
 
+    rascunhoForja = null;
     window.renderizarEsqueletoEspacoMasculino();
     window.renderizarReflexaoEstoica(false);
     window.renderizarListaFavoritasEstoicas();
@@ -427,8 +428,8 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             </button>
         </div>
 
-        <!-- CABEÇALHO NOBRE -->
-        <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
+        <!-- CABEÇALHO DO ESPAÇO -->
+        <div class="cabecalho-espaco-pessoal" style="display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:2px 4px;">
             <div style="width:85px; height:85px; border-radius:18px; background:#ffffff; border:2px solid #22c55e; box-shadow:0 4px 12px rgba(22, 163, 74, 0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <img class="avatar-espaco-pessoal" src="${window.esc(Suiri.imageUrl(window.perfilAtual?.avatar_url || 'assets/icons-modern/icone-pessoa-escopo.svg'))}" alt="Foto do usuário">
             </div>
@@ -469,12 +470,12 @@ window.renderizarEsqueletoEspacoMasculino = function() {
         </div>
 
         <!-- ============================================================= -->
-        <!-- 2. A FORJA (MISSÕES, NÍVEIS, XP + ESTADO DIÁRIO DO HOMEM) -->
+        <!-- 2. A FORJA (MISSÕES, NÍVEIS E XP) -->
         <!-- ============================================================= -->
-        <div class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ea580c; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div id="cartao-forja" class="cartao-geral" style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #ea580c; box-shadow:0 4px 18px rgba(15,23,42,0.05); margin-bottom:14px; padding:16px 18px; border-radius:18px;">
+            <div class="cabecalho-forja">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img src="assets/icons-modern/icone-fogo.svg" alt="A Forja" style="width:30px; height:30px; object-fit:contain;">
+                    <img src="assets/icons-modern/icone-fogo.svg" alt="" style="width:30px; height:30px; object-fit:contain;">
                     <strong style="font-size:14px; color:#0f172a; font-weight:900;">A Forja (Evolução & Missões)</strong>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -553,107 +554,9 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             <!-- GRADE DAS 6 MISSÕES -->
             <div id="grid-botoes-missoes-forja" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;"></div>
 
-            <!-- CHECK-IN DO ESTADO DIÁRIO -->
-            <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:14px; margin-bottom:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <span style="font-size:16px;">⚡</span>
-                        <strong style="font-size:13px; color:#0f172a; font-weight:900;">Estado do Dia (Corpo & Mente)</strong>
-                    </div>
-                    <button type="button" class="btn-principal" style="padding:4px 10px; font-size:10px; border-radius:7px; width:auto; background:#ea580c; color:#fff; font-weight:800; border:none;" onclick="window.salvarEstadoDiarioCompleto()">Salvar Estado</button>
-                </div>
-                <p style="font-size:11px; color:#64748b; margin:0 0 12px 0;">Mapeie como você se sente hoje. Deslize a barra do mal-estar (1) até o ápice de vitalidade e equilíbrio (10).</p>
-
-                <!-- Humor Geral -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Humor Geral</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
-                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-humor-diario')" 
-                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
-                            <span style="font-size:11px; font-weight:700; color:#0284c7; text-decoration:underline;">Instrução</span>
-                        </button>
-                        <span id="badge-humor-diario-val" style="font-size:11.5px; font-weight:800; color:#0369a1; text-align:right;">Neutro / Equilibrado</span>
-                    </div>
-                    <input type="range" id="range-humor-diario" class="slider-xbox-animado slider-xbox-humor" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('humor')">
-                    <div id="legenda-humor-diario" class="oculto" style="margin-top:8px; background:#f0f9ff; border-left:3px solid #0284c7; padding:8px 10px; border-radius:8px; font-size:11px; color:#0369a1; line-height:1.45;">
-                        Deslize a barra para expressar como sentiu seu humor e ânimo hoje: marque mais para a esquerda se esteve triste, desanimado ou irritado, ou mais para a direita se esteve animado, radiante e confiante.
-                    </div>
-                </div>
-
-                <!-- Nível de Estresse / Paz Mental -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Nível de Estresse / Paz Mental</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
-                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-estresse-diario')" 
-                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
-                            <span style="font-size:11px; font-weight:700; color:#d97706; text-decoration:underline;">Instrução</span>
-                        </button>
-                        <span id="badge-estresse-diario-val" style="font-size:11.5px; font-weight:800; color:#b45309; text-align:right;">Moderado</span>
-                    </div>
-                    <input type="range" id="range-estresse-diario" class="slider-xbox-animado slider-xbox-estresse" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('estresse')">
-                    <div id="legenda-estresse-diario" class="oculto" style="margin-top:8px; background:#fffbeb; border-left:3px solid #d97706; padding:8px 10px; border-radius:8px; font-size:11px; color:#92400e; line-height:1.45;">
-                        Deslize a barra para expressar o nível de pressão que sentiu hoje: marque mais para a esquerda se esteve tenso, sobrecarregado ou ansioso, ou mais para a direita se esteve com a mente serena, calma e em paz.
-                    </div>
-                </div>
-
-                <!-- Disposição Física -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Disposição Física</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
-                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-fisico-diario')" 
-                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
-                            <span style="font-size:11px; font-weight:700; color:#16a34a; text-decoration:underline;">Instrução</span>
-                        </button>
-                        <span id="badge-fisico-diario-val" style="font-size:11.5px; font-weight:800; color:#15803d; text-align:right;">Normal</span>
-                    </div>
-                    <input type="range" id="range-fisico-diario" class="slider-xbox-animado slider-xbox-fisico" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('fisico')">
-                    <div id="legenda-fisico-diario" class="oculto" style="margin-top:8px; background:#f0fdf4; border-left:3px solid #16a34a; padding:8px 10px; border-radius:8px; font-size:11px; color:#166534; line-height:1.45;">
-                        Deslize a barra para expressar a energia física do seu corpo hoje: marque mais para a esquerda se sentiu o corpo pesado, esgotado ou sem forças, ou mais para a direita se esteve com disposição total e vigor máximo.
-                    </div>
-                </div>
-
-                <!-- Foco Mental -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Foco Mental</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
-                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-mental-diario')" 
-                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
-                            <span style="font-size:11px; font-weight:700; color:#7c3aed; text-decoration:underline;">Instrução</span>
-                        </button>
-                        <span id="badge-mental-diario-val" style="font-size:11.5px; font-weight:800; color:#6d28d9; text-align:right;">Concentrado</span>
-                    </div>
-                    <input type="range" id="range-mental-diario" class="slider-xbox-animado slider-xbox-mental" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('mental')">
-                    <div id="legenda-mental-diario" class="oculto" style="margin-top:8px; background:#f5f3ff; border-left:3px solid #7c3aed; padding:8px 10px; border-radius:8px; font-size:11px; color:#5b21b6; line-height:1.45;">
-                        Deslize a barra para expressar sua clareza de raciocínio hoje: marque mais para a esquerda se sentiu a mente dispersa, distraída ou com névoa, ou mais para a direita se esteve com foco blindado e mente afiada.
-                    </div>
-                </div>
-
-                <!-- GRÁFICO RETRÁTIL DO ESTADO DIÁRIO -->
-                <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
-                    <div onclick="window.alternarSecaoRetratil('bloco-grafico-estado-diario', 'seta-grafico-estado-diario')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;">📊 Ver / Ocultar Gráfico do Estado Diário</span>
-                        <span id="seta-grafico-estado-diario" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
-                    </div>
-                    <div id="bloco-grafico-estado-diario" class="oculto" style="margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span style="font-size:10.5px; font-weight:800; color:#0f172a;">Evolução Temporal (1 a 10):</span>
-                            <div style="display:flex; gap:6px; font-size:9.5px; font-weight:700; flex-wrap:wrap;">
-                                <span style="color:#0284c7;">● Humor</span>
-                                <span style="color:#d97706;">● Serenidade</span>
-                                <span style="color:#16a34a;">● Físico</span>
-                                <span style="color:#7c3aed;">● Mental</span>
-                            </div>
-                        </div>
-                        <div id="container-grafico-svg-estado-diario" style="width:100%; height:110px; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="texto-insight-estado-diario" style="font-size:11px; color:#64748b; margin-top:8px; line-height:1.4;">
-                            Mantenha o check-in diário para visualizar tendências de equilíbrio e energia.
-                        </div>
-                    </div>
-                </div>
+            <div class="confirmacao-diaria">
+                <button id="btn-confirmar-forja" type="button" class="btn-principal" onclick="window.confirmarMissoesForjaHoje()">Confirmar missões do dia</button>
+                <small id="status-forja-diaria" role="status"></small>
             </div>
 
             <!-- PAINEL RETRÁTIL DE CONQUISTAS -->
@@ -674,6 +577,113 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                 <div id="bloco-historico-forja-conteudo" class="oculto" style="margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
             </div>
         </div>
+
+            <!-- CHECK-IN DO ESTADO DIÁRIO -->
+        <section id="cartao-estado-diario" class="cartao-geral" aria-labelledby="titulo-estado-diario">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:16px;">⚡</span>
+                        <strong id="titulo-estado-diario">Estado do Dia (Corpo & Mente)</strong>
+                    </div>
+                </div>
+                <p style="font-size:11px; color:#64748b; margin:0 0 12px 0;">Mapeie como você se sente hoje. Deslize a barra do mal-estar (1) até o ápice de vitalidade e equilíbrio (10).</p>
+
+                <!-- Humor Geral -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Humor Geral</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-humor-diario')" 
+                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                            <span style="font-size:11px; font-weight:700; color:#0284c7; text-decoration:underline;">Instrução</span>
+                        </button>
+                        <span id="badge-humor-diario-val" style="font-size:11.5px; font-weight:800; color:#0369a1; text-align:right;">Neutro / Equilibrado</span>
+                    </div>
+                    <input type="range" id="range-humor-diario" aria-label="Humor geral" class="slider-xbox-animado slider-xbox-humor" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('humor')">
+                    <div id="legenda-humor-diario" class="oculto" style="margin-top:8px; background:#f0f9ff; border-left:3px solid #0284c7; padding:8px 10px; border-radius:8px; font-size:11px; color:#0369a1; line-height:1.45;">
+                        Deslize a barra para expressar como sentiu seu humor e ânimo hoje: marque mais para a esquerda se esteve triste, desanimado ou irritado, ou mais para a direita se esteve animado, radiante e confiante.
+                    </div>
+                </div>
+
+                <!-- Nível de Estresse / Paz Mental -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Nível de Estresse / Paz Mental</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-estresse-diario')" 
+                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                            <span style="font-size:11px; font-weight:700; color:#d97706; text-decoration:underline;">Instrução</span>
+                        </button>
+                        <span id="badge-estresse-diario-val" style="font-size:11.5px; font-weight:800; color:#b45309; text-align:right;">Moderado</span>
+                    </div>
+                    <input type="range" id="range-estresse-diario" aria-label="Serenidade" class="slider-xbox-animado slider-xbox-estresse" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('estresse')">
+                    <div id="legenda-estresse-diario" class="oculto" style="margin-top:8px; background:#fffbeb; border-left:3px solid #d97706; padding:8px 10px; border-radius:8px; font-size:11px; color:#92400e; line-height:1.45;">
+                        Deslize a barra para expressar o nível de pressão que sentiu hoje: marque mais para a esquerda se esteve tenso, sobrecarregado ou ansioso, ou mais para a direita se esteve com a mente serena, calma e em paz.
+                    </div>
+                </div>
+
+                <!-- Disposição Física -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Disposição Física</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-fisico-diario')" 
+                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                            <span style="font-size:11px; font-weight:700; color:#16a34a; text-decoration:underline;">Instrução</span>
+                        </button>
+                        <span id="badge-fisico-diario-val" style="font-size:11.5px; font-weight:800; color:#15803d; text-align:right;">Normal</span>
+                    </div>
+                    <input type="range" id="range-fisico-diario" aria-label="Disposição física" class="slider-xbox-animado slider-xbox-fisico" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('fisico')">
+                    <div id="legenda-fisico-diario" class="oculto" style="margin-top:8px; background:#f0fdf4; border-left:3px solid #16a34a; padding:8px 10px; border-radius:8px; font-size:11px; color:#166534; line-height:1.45;">
+                        Deslize a barra para expressar a energia física do seu corpo hoje: marque mais para a esquerda se sentiu o corpo pesado, esgotado ou sem forças, ou mais para a direita se esteve com disposição total e vigor máximo.
+                    </div>
+                </div>
+
+                <!-- Foco Mental -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px 14px; border-radius:14px; margin-bottom:12px;">
+                    <div style="font-size:12.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">Foco Mental</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+                        <button type="button" onclick="window.alternarSecaoRetratil('legenda-mental-diario')" 
+                                style="background:none; border:none; padding:2px 0; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                            <img src="assets/icons-modern/icone-manual.svg" onerror="this.onerror=null; this.src='assets/icons-modern/icone-manual.svg';" alt="Manual" style="width:14px; height:14px; object-fit:contain;">
+                            <span style="font-size:11px; font-weight:700; color:#7c3aed; text-decoration:underline;">Instrução</span>
+                        </button>
+                        <span id="badge-mental-diario-val" style="font-size:11.5px; font-weight:800; color:#6d28d9; text-align:right;">Concentrado</span>
+                    </div>
+                    <input type="range" id="range-mental-diario" aria-label="Foco mental" class="slider-xbox-animado slider-xbox-mental" min="1" max="10" value="5" step="0.01" oninput="window.atualizarRotuloEstadoDiario('mental')">
+                    <div id="legenda-mental-diario" class="oculto" style="margin-top:8px; background:#f5f3ff; border-left:3px solid #7c3aed; padding:8px 10px; border-radius:8px; font-size:11px; color:#5b21b6; line-height:1.45;">
+                        Deslize a barra para expressar sua clareza de raciocínio hoje: marque mais para a esquerda se sentiu a mente dispersa, distraída ou com névoa, ou mais para a direita se esteve com foco blindado e mente afiada.
+                    </div>
+                </div>
+
+                <div class="confirmacao-diaria">
+                    <button type="button" class="btn-principal" onclick="window.salvarEstadoDiarioCompleto()">Confirmar estado do dia</button>
+                    <small id="status-estado-diario" role="status"></small>
+                </div>
+
+                <!-- GRÁFICO RETRÁTIL DO ESTADO DIÁRIO -->
+                <div style="border-top:1px dashed #cbd5e1; padding-top:10px;">
+                    <button class="alternador-grafico-diario" type="button" aria-expanded="false" aria-controls="bloco-grafico-estado-diario" onclick="window.alternarSecaoRetratil('bloco-grafico-estado-diario', 'seta-grafico-estado-diario'); this.setAttribute('aria-expanded', String(!document.getElementById('bloco-grafico-estado-diario').classList.contains('oculto')))" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0;">
+                        <span style="font-size:11px; font-weight:800; color:#0f172a;">Gráfico do Estado Diário</span>
+                        <span id="seta-grafico-estado-diario" style="font-size:12px; color:#0f172a; transition:transform 0.2s ease;">▼</span>
+                    </button>
+                    <div id="bloco-grafico-estado-diario" class="oculto" style="margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:12px;">
+                        <div class="titulo-grafico-diario">
+                            <strong>Últimos 30 dias</strong>
+                            <div class="legenda-grafico-diario">
+                                <span style="--cor-curva:#38a8e7">Humor</span>
+                                <span style="--cor-curva:#ef9d25">Serenidade</span>
+                                <span style="--cor-curva:#32b96a">Físico</span>
+                                <span style="--cor-curva:#a274eb">Mental</span>
+                            </div>
+                        </div>
+                        <div id="container-grafico-svg-estado-diario"></div>
+                        <div id="texto-insight-estado-diario" style="font-size:11px; color:#64748b; margin-top:8px; line-height:1.4;">
+                            Mantenha o check-in diário para visualizar tendências de equilíbrio e energia.
+                        </div>
+                    </div>
+                </div>
+        </section>
 
         <!-- ============================================================= -->
         <!-- 3. ARSENAL PRÁTICO (DOUTRINA FÍSICA & NUTRIÇÃO COM SORTEIO) -->
@@ -835,9 +845,9 @@ window.renderizarEsqueletoEspacoMasculino = function() {
 
             <!-- CARD DE DESTAQUE -->
             <div id="card-carrossel-midia" style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden;">
-                <div id="midia-capa-container" style="width:100%; height:200px; position:relative; overflow:hidden; background:#f1f5f9;">
-                    <img id="midia-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80" alt="Capa" style="width:100%; height:100%; object-fit:cover; object-position:center top; display:block;">
-                    <div id="midia-overlay-gradiente" style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.85) 100%); pointer-events:none;"></div>
+                <div id="midia-capa-container" class="capa-curadoria" style="width:100%; height:200px; position:relative; overflow:hidden; background:#f1f5f9;">
+                    <img id="midia-poster-img" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=700&auto=format&fit=crop&q=80" alt="" onerror="this.hidden=true" onload="this.hidden=false" style="width:100%; height:100%; object-fit:cover; object-position:center top; display:block;">
+                    <div id="midia-overlay-gradiente" class="sombra-capa-curadoria" style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.85) 100%); pointer-events:none;"></div>
                     <div style="position:absolute; bottom:10px; left:12px; right:12px; z-index:2;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                             <span id="midia-badge-categoria" style="font-size:10px; font-weight:800; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Categoria</span>
@@ -1229,7 +1239,7 @@ window.renderizarPainelEvolucaoForja = function() {
     for (let i = 0; i < 7; i++) {
         const d = new Date();
         d.setDate(agora.getDate() - i);
-        const dStr = d.toISOString().split('T')[0];
+        const dStr = Suiri.today(d);
         const reg = window.dadosForjaDiaria[dStr];
         if (reg) missoesSemana += Object.keys(reg.itens || {}).length;
     }
@@ -1343,14 +1353,13 @@ window.renderizarBotoesForja = function() {
     const grid = document.getElementById('grid-botoes-missoes-forja');
     if (!grid) return;
 
-    const hojeStr = Suiri.today();
-    const registroHoje = window.dadosForjaDiaria[hojeStr] || { itens: {} };
+    const registroHoje = itensForjaHoje();
 
     grid.innerHTML = window.configMissoesForja.map(m => {
         const cumprido = !!registroHoje.itens[m.id];
         return `
             <label style="display:flex; align-items:center; justify-content:space-between; background:${cumprido ? '#f0fdf4' : '#f8fafc'}; padding:8px 10px; border-radius:10px; border:1.5px solid ${cumprido ? '#16a34a' : '#e2e8f0'}; cursor:pointer; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-                <span style="font-size:11.5px; font-weight:800; color:${cumprido ? '#15803d' : '#1e293b'};">${m.rotulo}</span>
+                <span style="font-size:11.5px; font-weight:800; color:${cumprido ? '#15803d' : '#1e293b'};">${esc(m.rotulo)}</span>
                 <input type="checkbox" onchange="window.alternarItemForjaHoje('${m.id}', this.checked)" ${cumprido ? 'checked' : ''} style="width:16px; height:16px; accent-color:#16a34a;">
             </label>
         `;
@@ -1359,39 +1368,51 @@ window.renderizarBotoesForja = function() {
     window.atualizarProgressoForjaHoje();
 };
 
+let rascunhoForja = null;
+function itensForjaHoje() {
+    const data = Suiri.today();
+    const chave = window.obterChaveStorageMasc('forja_diaria');
+    if (rascunhoForja?.data !== data || rascunhoForja?.chave !== chave) {
+        rascunhoForja = { data, chave, itens: { ...window.dadosForjaDiaria[data]?.itens }, alterado: false };
+    }
+    return rascunhoForja;
+}
+
 window.alternarItemForjaHoje = function(idMissao, marcado) {
-    const hojeStr = Suiri.today();
-    if (!window.dadosForjaDiaria[hojeStr]) {
-        window.dadosForjaDiaria[hojeStr] = { data: hojeStr, itens: {} };
+    const rascunho = itensForjaHoje();
+    if (marcado) rascunho.itens[idMissao] = true;
+    else delete rascunho.itens[idMissao];
+    rascunho.alterado = true;
+    window.renderizarBotoesForja();
+};
+
+window.confirmarMissoesForjaHoje = function() {
+    const rascunho = itensForjaHoje();
+    const { data, chave, itens } = rascunho;
+    const qtd = Object.keys(itens).length;
+    try {
+        const registros = Suiri.parseJSON(localStorage.getItem(chave), window.dadosForjaDiaria) || {};
+        registros[data] = { data, itens: { ...itens }, qtd, porcentagem: Math.round(qtd / 6 * 100), grau: window.obterGrauHonraForja(qtd).titulo };
+        localStorage.setItem(chave, JSON.stringify(registros));
+        window.dadosForjaDiaria = registros;
+        rascunho.alterado = false;
+    } catch {
+        window.mostrarToast?.('Não foi possível salvar as missões neste aparelho.', 'erro');
+        return;
     }
-
-    if (marcado) {
-        window.dadosForjaDiaria[hojeStr].itens[idMissao] = true;
-    } else {
-        delete window.dadosForjaDiaria[hojeStr].itens[idMissao];
-    }
-
-    const qtdCumprida = Object.keys(window.dadosForjaDiaria[hojeStr].itens).length;
-    const porcentagem = Math.round((qtdCumprida / 6) * 100);
-    const honra = window.obterGrauHonraForja(qtdCumprida);
-
-    window.dadosForjaDiaria[hojeStr].qtd = qtdCumprida;
-    window.dadosForjaDiaria[hojeStr].porcentagem = porcentagem;
-    window.dadosForjaDiaria[hojeStr].grau = honra.titulo;
-
-    localStorage.setItem(window.obterChaveStorageMasc('forja_diaria'), JSON.stringify(window.dadosForjaDiaria));
-    
-    window.atualizarProgressoForjaHoje();
     window.calcularOfensivaForja();
     window.renderizarPainelEvolucaoForja();
     window.renderizarHistoricoForja();
     window.renderizarBotoesForja();
+    window.mostrarToast?.('Missões do dia confirmadas.', 'sucesso');
 };
 
 window.atualizarProgressoForjaHoje = function() {
-    const hojeStr = Suiri.today();
-    const registroHoje = window.dadosForjaDiaria[hojeStr] || { itens: {} };
-    const qtd = Object.keys(registroHoje.itens || {}).length;
+    const rascunho = itensForjaHoje();
+    const status = document.getElementById('status-forja-diaria');
+    if (status) status.textContent = rascunho.alterado ? 'Alterações aguardando confirmação.' :
+        window.dadosForjaDiaria[rascunho.data] ? 'Missões de hoje confirmadas.' : '';
+    const qtd = Object.keys(rascunho.itens).length;
     const pct = Math.round((qtd / 6) * 100);
     const honra = window.obterGrauHonraForja(qtd);
 
@@ -1503,7 +1524,8 @@ window.atualizarRotuloEstadoDiario = function(tipo) {
 };
 
 window.salvarEstadoDiarioCompleto = async function() {
-    const vHumor = Math.round(Number(document.getElementById('range-humor-diario')?.value || '5'));
+    if (!document.getElementById('cartao-estado-diario')) return;
+    const vHumor = Math.round(Number(document.getElementById('range-humor-diario').value));
     const vEstresse = Math.round(Number(document.getElementById('range-estresse-diario')?.value || '5'));
     const vFisico = Math.round(Number(document.getElementById('range-fisico-diario')?.value || '5'));
     const vMental = Math.round(Number(document.getElementById('range-mental-diario')?.value || '5'));
@@ -1522,91 +1544,51 @@ window.salvarEstadoDiarioCompleto = async function() {
         textoMental: window.obterDescricaoNotaEstadoDiario('mental', vMental)
     };
 
-    window.dadosEstadoDiario.humor = vHumor;
-    window.dadosEstadoDiario.estresse = vEstresse;
-    window.dadosEstadoDiario.fisico = vFisico;
-    window.dadosEstadoDiario.mental = vMental;
-
-    if (!Array.isArray(window.dadosEstadoDiario.historico)) {
-        window.dadosEstadoDiario.historico = [];
+    const chave = window.obterChaveStorageMasc('estado_diario');
+    try {
+        const dados = Suiri.parseJSON(localStorage.getItem(chave)) || window.dadosEstadoDiario;
+        const anteriores = Array.isArray(dados.historico) ? dados.historico : [];
+        const atualizados = {
+            ...dados, humor: vHumor, estresse: vEstresse, fisico: vFisico, mental: vMental,
+            historico: [novoRegistro, ...anteriores.filter(registro => registro.data !== hojeStr)]
+        };
+        localStorage.setItem(chave, JSON.stringify(atualizados));
+        window.dadosEstadoDiario = atualizados;
+    } catch {
+        window.mostrarToast?.('Não foi possível salvar o estado do dia neste aparelho.', 'erro');
+        return;
     }
-
-    const idxHoje = window.dadosEstadoDiario.historico.findIndex(r => r.data === hojeStr);
-    if (idxHoje >= 0) {
-        window.dadosEstadoDiario.historico[idxHoje] = novoRegistro;
-    } else {
-        window.dadosEstadoDiario.historico.unshift(novoRegistro);
-    }
-
-    if (window.dadosEstadoDiario.historico.length > 30) {
-        window.dadosEstadoDiario.historico = window.dadosEstadoDiario.historico.slice(0, 30);
-    }
-
-    localStorage.setItem(window.obterChaveStorageMasc('estado_diario'), JSON.stringify(window.dadosEstadoDiario));
     window.renderizarGraficoETendenciasEstadoDiario();
-
-    if (typeof window.mostrarToast === 'function') {
-        window.mostrarToast("Estado diário salvo com sucesso!", "sucesso");
-    }
+    window.mostrarToast?.('Estado do dia confirmado.', 'sucesso');
 };
 
 window.renderizarGraficoETendenciasEstadoDiario = function() {
-    const hist = window.dadosEstadoDiario.historico || [];
     const contGraf = document.getElementById('container-grafico-svg-estado-diario');
-    const elInsight = document.getElementById('texto-insight-estado-diario');
-
     if (!contGraf) return;
 
-    if (hist.length < 2) {
-        contGraf.innerHTML = '<span style="font-size:11px; color:#64748b; text-align:center;">Registre pelo menos 2 check-ins para gerar as curvas do seu Estado Diário.</span>';
-        if (elInsight) elInsight.textContent = "Faça seu check-in diário para acompanhar a consistência do seu humor, serenidade, vigor físico e foco mental.";
-        return;
+    const hoje = Suiri.today();
+    const porDia = new Map();
+    for (const registro of window.dadosEstadoDiario.historico || []) {
+        if (!porDia.has(registro.data)) porDia.set(registro.data, registro);
     }
-
-    const pontos = [...hist.slice(0, 7)].reverse();
-    const w = 320;
-    const h = 90;
-    const pad = 16;
-    const dx = (w - (pad * 2)) / Math.max(1, pontos.length - 1);
-
-    const calcY = (val) => h - pad - (((val - 1) / 9) * (h - (pad * 2)));
-
-    const ptsHumor = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.humor || 5)}`).join(' ');
-    const ptsEstresse = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.estresse || 5)}`).join(' ');
-    const ptsFisico = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.fisico || 5)}`).join(' ');
-    const ptsMental = pontos.map((p, idx) => `${pad + (idx * dx)},${calcY(p.mental || 5)}`).join(' ');
-
-    contGraf.innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; overflow:visible;">
-            <line x1="${pad}" y1="${calcY(5)}" x2="${w - pad}" y2="${calcY(5)}" stroke="#e2e8f0" stroke-dasharray="3,3" stroke-width="1" />
-            <polyline fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsHumor}" />
-            <polyline fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsEstresse}" />
-            <polyline fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsFisico}" />
-            <polyline fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${ptsMental}" />
-            ${pontos.map((p, idx) => `
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.humor || 5)}" r="2.5" fill="#0284c7" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.estresse || 5)}" r="2.5" fill="#d97706" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.fisico || 5)}" r="2.5" fill="#16a34a" />
-                <circle cx="${pad + (idx * dx)}" cy="${calcY(p.mental || 5)}" r="2.5" fill="#7c3aed" />
-            `).join('')}
-        </svg>
-    `;
-
-    const calcMedia = (arr, campo) => arr.length ? (arr.reduce((acc, cur) => acc + (cur[campo] || 5), 0) / arr.length).toFixed(1) : '5.0';
-    const medH = calcMedia(pontos, 'humor');
-    const medE = calcMedia(pontos, 'estresse');
-    const medF = calcMedia(pontos, 'fisico');
-    const medM = calcMedia(pontos, 'mental');
-
-    if (elInsight) {
-        if (parseFloat(medE) <= 4.0) {
-            elInsight.innerHTML = `⚠️ <strong>Alerta de Tensão:</strong> Sua serenidade média está baixa (${medE}/10). Proteja momentos de silêncio e descompressão após o expediente.`;
-        } else if (parseFloat(medF) >= 7.5 && parseFloat(medM) >= 7.5) {
-            elInsight.innerHTML = `🔥 <strong>Pico de Rendimento:</strong> Seu vigor físico (${medF}/10) e foco mental (${medM}/10) estão no ápice. Momento propício para desafios de grande porte.`;
-        } else {
-            elInsight.innerHTML = `🎯 <strong>Estabilidade:</strong> Médias da semana: Humor ${medH} | Serenidade ${medE} | Físico ${medF} | Mental ${medM}. Mantenha a constância na Forja.`;
-        }
-    }
+    const dias = Array.from({ length: 30 }, (_, index) => Suiri.shiftDay(hoje, index - 29));
+    const series = [
+        ['humor', 'Humor', '#38a8e7'],
+        ['estresse', 'Serenidade', '#ef9d25'],
+        ['fisico', 'Disposição física', '#32b96a'],
+        ['mental', 'Foco mental', '#a274eb']
+    ].map(([campo, label, color]) => ({
+        label, color, values: dias.map(dia => {
+            const valor = Number(porDia.get(dia)?.[campo]);
+            return valor >= 1 && valor <= 10 ? valor : null;
+        })
+    }));
+    contGraf.innerHTML = Suiri.dailyChart(dias, series, 1, 10);
+    const total = dias.filter(dia => porDia.has(dia)).length;
+    document.getElementById('texto-insight-estado-diario').textContent = total === 0
+        ? 'Confirme o estado de hoje para começar o histórico.'
+        : `${total} de 30 dias com registro.`;
+    document.getElementById('status-estado-diario').textContent = porDia.has(hoje) ? 'Estado de hoje confirmado.' : '';
 };
 
 // =========================================================================

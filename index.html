@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <script src="src/core/config.js?v=b161cb94c173"></script>
-<script src="src/core/foundation.js?v=71b1533e0036"></script>
+<script src="src/core/foundation.js?v=6bc017c9bca2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Suiri Gestão Familiar</title>
@@ -17,7 +17,7 @@
     <link rel="apple-touch-icon" href="assets/images/icone.jpg">
 
     <!-- Buster Absoluto: Obriga o Telemóvel a Descarregar o Novo Design -->
-    <link rel="stylesheet" href="styles/base.css?v=25a15e1f91b1">
+    <link rel="stylesheet" href="styles/base.css?v=dbcb5e9d2dbe">
     <link rel="stylesheet" href="styles/modulos.css?v=8893fc8f4fa5">
     <link rel="stylesheet" href="styles/modais.css?v=a9d2847a1b55">
 
@@ -30,9 +30,10 @@
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
 <link rel="stylesheet" href="styles/atualizacao-v72.css?v=77a831311121">
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
-<link rel="stylesheet" href="styles/visual-v74.css?v=f5e0d587d4e2">
-<link rel="stylesheet" href="styles/visual-v75.css?v=c2b5c12a43ce">
-<link rel="stylesheet" href="styles/ajustes-v76.css?v=b2134cb977c5">
+<link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
+<link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
+<link rel="stylesheet" href="styles/espaco-kids.css?v=55ac219a1218">
+    <link rel="stylesheet" href="styles/ajustes-v76.css?v=6a7ccba5bbcb">
 </head>
 <body>
 
@@ -324,8 +325,12 @@
                             <span style="font-size: 11px; font-weight: 800; color: #334155;">Transferir</span>
                         </button>
                         <button type="button" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; gap: 6px; box-shadow: 0 1px 3px rgba(15,23,42,0.02);" onclick="window.abrirModalOpcoesCupomIA()">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                            <span style="font-size: 11px; font-weight: 800; color: #334155;">Cupão IA</span>
+                            <svg class="icone-cupom-ia" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M12.5 18H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l1.5-2h5L15 5h3a2 2 0 0 1 2 2v2"/>
+                                <circle cx="9.5" cy="11" r="3"/>
+                                <path d="M15.5 11.5h6l1 1v8.7l-1.6-.9-1.6.9-1.6-.9-1.6.9-1.6-.9v-7.8zM17 15h3m-3 2.5h3"/>
+                            </svg>
+                            <span style="font-size: 11px; font-weight: 800; color: #334155;">Cupom IA</span>
                         </button>
                     </div>
 
@@ -359,9 +364,9 @@
                             <h3 style="font-size: 15px; font-weight: 800; margin: 0;">Extrato Nominal</h3>
                             <button type="button" class="btn-secundario" style="padding: 5px 10px; font-size: 11px;" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                            <input type="date" id="extrato-filtro-inicio">
-                            <input type="date" id="extrato-filtro-fim">
+                        <div class="filtros-data-extrato">
+                            <input type="date" id="extrato-filtro-inicio" aria-label="Data inicial do extrato">
+                            <input type="date" id="extrato-filtro-fim" aria-label="Data final do extrato">
                         </div>
                         <button type="button" class="btn-secundario" style="width: 100%; margin-bottom: 10px;" onclick="window.carregarExtratoPeriodo()">Filtrar Extrato</button>
                         <div id="lista-extrato-carteira"></div>
@@ -369,9 +374,9 @@
 
                     <div id="bloco-card-balanco-familiar" class="cartao-geral">
                         <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">Balanço Consolidado</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                            <input type="date" id="data-inicio">
-                            <input type="date" id="data-fim">
+                        <div class="filtros-data-extrato">
+                            <input type="date" id="data-inicio" aria-label="Data inicial do balanço">
+                            <input type="date" id="data-fim" aria-label="Data final do balanço">
                         </div>
                         <select id="filtro-membro-relatorio" style="margin-bottom: 8px;">
                             <option value="todos">Todos os Membros (Casa)</option>
@@ -516,9 +521,9 @@
             <section id="tela-kids-exclusiva" class="oculto">
                 <div class="cabecalho-kids-container">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <img id="img-avatar-kids" class="avatar-kids-circulo" src="assets/icons-modern/icone-casa-escopo.svg" alt="Avatar Kids" onclick="window.abrirSeletorFotoPerfil()" title="Mudar Foto">
+                        <button type="button" class="chuiri-avatar" onclick="window.abrirSeletorFotoPerfil()" aria-label="Mudar foto"><img id="img-avatar-kids" class="avatar-kids-circulo" src="assets/icons-modern/icone-casa-escopo.svg" alt=""></button>
                         <div>
-                            <span class="subtitulo-kids-tag" style="cursor:pointer;" onclick="window.abrirModalEmblemas()">Minhas Conquistas</span>
+                            <button type="button" class="subtitulo-kids-tag chuiri-conquistas" onclick="window.abrirModalEmblemas()">Minhas conquistas</button>
                             <h2 id="nome-membro-kids" class="titulo-kids-nome">Criança</h2>
                         </div>
                     </div>
@@ -534,21 +539,33 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn-lojinha-kids-gigante" onclick="window.abrirModalRankingEquipe()">
-                    <div class="icone-box-presente">
-                        <img src="assets/icons-modern/icone-loja.svg" alt="Lojinha" style="width: 32px; height: 32px; object-fit: contain;">
+                <section id="container-tamagotchi-kids" class="chuiri-vila" aria-labelledby="chuiri-vila-titulo">
+                    <div class="chuiri-vila-cena">
+                        <div class="chuiri-vila-cabecalho">
+                            <div><h3 id="chuiri-vila-titulo">Vila do Chuíri</h3>
+                                <p id="chuiri-recado-kids" role="status">Vamos brincar?</p></div>
+                            <span class="chuiri-moedas"><span data-chuiri-moedas>50</span> moedas</span>
+                        </div>
+                        <div class="chuiri-vila-personagens">
+                            <button id="btn-chuiri-tamagotchi" type="button" onclick="TamagotchiKids.interagirComToque()">
+                                <img id="img-chuiri-animado-widget" alt="">
+                                <span>Fazer carinho</span>
+                            </button>
+                            <button id="btn-casinha-tamagotchi" type="button" onclick="TamagotchiKids.abrirCasinha()">
+                                <img src="assets/images/animated/casa.gif" alt="" decoding="async" loading="lazy">
+                                <span>Entrar na casinha</span>
+                            </button>
+                        </div>
                     </div>
-                    <div style="text-align:left;">
-                        <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.9; display:block;">Recompensas</span>
-                        <strong style="font-size:17px; font-weight:800; display:block;">Abrir a Lojinha de Prêmios</strong>
+                    <div class="chuiri-vila-atalhos">
+                        <a href="jogos.html"><img src="assets/icons-modern/icone-oficina.svg" alt=""> Jogar</a>
+                        <button type="button" onclick="window.abrirModalRankingEquipe()"><img src="assets/icons-modern/icone-loja.svg" alt=""> Lojinha</button>
+                        <button type="button" data-chuiri-som aria-pressed="false" onclick="TamagotchiKids.alternarSom()">Voz ligada</button>
                     </div>
-                </button>
+                </section>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:14px 4px 10px 4px;">
-                    <h3 style="font-size:16px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:6px;">
-                        <img src="assets/icons-modern/icone-check.svg" alt="Check" style="width: 20px; height: 20px; object-fit: contain;">
-                        Tarefas para Fazer Hoje
-                    </h3>
+                <div class="chuiri-missoes-titulo">
+                    <h3>Missões de hoje</h3>
                     <span id="contador-missoes-kids-pendentes" class="badge-contador-kids">0 missões</span>
                 </div>
 
@@ -557,6 +574,38 @@
 
         </div>
     
+<dialog id="modal-casinha-chuiri" class="chuiri-casa" aria-labelledby="chuiri-casa-titulo">
+    <header class="chuiri-casa-topo">
+        <h2 id="chuiri-casa-titulo">Casinha do Chuíri</h2>
+        <span class="chuiri-moedas"><span data-chuiri-moedas>50</span> moedas</span>
+        <button type="button" class="chuiri-fechar" aria-label="Fechar casinha" autofocus onclick="TamagotchiKids.fecharCasinha()">×</button>
+    </header>
+    <div class="chuiri-barras">
+        <label>Saciedade <span><progress max="100" value="80" data-chuiri-status="fome"></progress><span aria-hidden="true">80%</span></span></label>
+        <label>Higiene <span><progress max="100" value="90" data-chuiri-status="higiene"></progress><span aria-hidden="true">90%</span></span></label>
+        <label>Energia <span><progress max="100" value="85" data-chuiri-status="energia"></progress><span aria-hidden="true">85%</span></span></label>
+        <label>Alegria <span><progress max="100" value="85" data-chuiri-status="felicidade"></progress><span aria-hidden="true">85%</span></span></label>
+    </div>
+    <p id="chuiri-recado-casa" class="chuiri-recado-casa" role="status">Vamos brincar?</p>
+    <div class="chuiri-casa-cena">
+        <img id="cenario-foto-interna" src="assets/images/interna.jpg" alt="Casa de três andares com quarto no sótão, cozinha e banheiro no meio e sala no térreo" loading="lazy">
+        <div id="container-chuiri-ativo" data-comodo="sala">
+            <img id="img-chuiri-animado-palco" alt="">
+        </div>
+        <button type="button" id="btn-acao-cama" class="chuiri-ponto" onclick="TamagotchiKids.acaoDormirCama()">Cama</button>
+        <button type="button" id="btn-acao-geladeira" class="chuiri-ponto" aria-expanded="false" aria-controls="menu-geladeira-chuiri" onclick="TamagotchiKids.acaoTocarGeladeira()">Geladeira</button>
+        <button type="button" id="btn-acao-banho" class="chuiri-ponto" onclick="TamagotchiKids.acaoTomarBanho()">Banho</button>
+        <a href="jogos.html" id="btn-acao-sala" class="chuiri-ponto">Jogos</a>
+    </div>
+    <section id="menu-geladeira-chuiri" class="chuiri-geladeira" aria-labelledby="chuiri-geladeira-titulo" hidden>
+        <header>
+            <h3 id="chuiri-geladeira-titulo">O que vamos comer?</h3>
+            <button type="button" id="chuiri-fechar-geladeira" class="chuiri-fechar" aria-label="Fechar geladeira" onclick="TamagotchiKids.fecharMenuGeladeira()">×</button>
+        </header>
+        <div id="grade-cardapio-geladeira"></div>
+    </section>
+</dialog>
+
 <div id="modal-suiri-config" class="modal-overlay oculto"><div class="modal-conteudo modal-bottom-sheet">
  <div class="modal-header"><h3>Configurações</h3><button type="button" aria-label="Fechar configurações" onclick="Suiri.closeModal('modal-suiri-config')">✕</button></div>
  <p class="suiri-hint">A interface usa o modo claro. Os espaços pessoais mantêm seus próprios estilos.</p>
@@ -564,7 +613,7 @@
  <p class="suiri-hint">As alterações de foto e as demais gravações exigem conexão. Notificações em segundo plano dependem de configuração do serviço de envio.</p>
  <p class="suiri-hint">Dados pessoais antigos sem identificação foram preservados neste aparelho. Eles não são associados automaticamente a outra pessoa.</p>
  <button type="button" class="btn-secundario" onclick="window.exportarDadosLocaisSuiri()">Exportar dados locais antigos</button>
- <button type="button" class="btn-secundario" onclick="window.importarDadosLocaisSuiri()">Importar meus dados antigos</button><p class="suiri-hint">Suiri Família 7.1 · <a href="docs/LEIA_PRIMEIRO.html" target="_blank" rel="noopener">Guia desta versão</a></p>
+ <button type="button" class="btn-secundario" onclick="window.importarDadosLocaisSuiri()">Importar meus dados antigos</button><p class="suiri-hint">Suiri Família 7.7 · <a href="docs/LEIA_PRIMEIRO.html" target="_blank" rel="noopener">Guia desta versão</a></p>
 </div></div>
 <div id="modal-suiri-nova-senha" class="modal-overlay oculto"><div class="modal-conteudo"><h3>Definir nova senha</h3><label for="suiri-nova-senha">Nova senha</label><input id="suiri-nova-senha" type="password" autocomplete="new-password" minlength="8"><button type="button" class="btn-principal" onclick="window.salvarNovaSenhaSuiri()">Salvar senha</button></div></div>
 
@@ -1498,7 +1547,7 @@
     </div>
 
     <!-- Scripts Modulares -->
-    <script src="src/core/session.js?v=44d986e2494f"></script>
+    <script src="src/core/session.js?v=7c9650f82665"></script>
 <script src="src/core/offline.js?v=63b990511789"></script>
     <script src="src/ui/icons.js?v=8be3e6f08036"></script>
     <script src="src/features/rewards/gamificacao.js?v=916057bb2471"></script>
@@ -1508,10 +1557,10 @@
 <script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
 <script src="src/features/shopping/mercado.js?v=ec31ec76d512"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
-    <script src="src/features/missions/state-and-ui.js?v=980d3e1a1b47"></script>
-<script src="src/features/missions/kids.js?v=12b8e04fe142"></script>
+    <script src="src/features/missions/state-and-ui.js?v=8e27f0000277"></script>
+<script src="src/features/missions/kids.js?v=8adec75b960c"></script>
 <script src="src/core/swipe.js?v=882c9d3b2682"></script>
-<script src="src/features/missions/missoes.js?v=a7f3450d4360"></script>
+<script src="src/features/missions/missoes.js?v=5d21d697e126"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
 <script src="src/features/finances/voice-and-entry.js?v=9b15b379c69b"></script>
 <script src="src/features/finances/wallet.js?v=2666571ad62c"></script>
@@ -1519,26 +1568,26 @@
 <script src="src/features/notices/recados.js?v=7da866d472eb"></script>
 <script src="src/features/goals/metas-anuais.js?v=f93c6ad566c2"></script>
 <script src="src/core/lifecycle.js?v=4887334ced4f"></script>
-    <script src="src/features/family/membros.js?v=0b2b5a237732"></script>
+    <script src="src/features/family/membros.js?v=fa8a5150f518"></script>
 <script src="src/features/agenda/calendario.js?v=346d86283b57"></script>
 <script src="src/features/notifications/painel.js?v=658db5d6041d"></script>
 <script src="src/core/realtime.js?v=b43020086885"></script>
     <script src="src/features/reports/relatorios.js?v=f95ceb167fd9"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
-    <script src="src/features/kids/mascote.js?v=b3e8e5ac297a"></script>
-    <script src="src/features/personal/meu-espaco.js?v=4962362ae719"></script>
+    <script src="src/features/kids/mascote.js?v=e5b10021f2e8"></script>
+    <script src="src/features/personal/meu-espaco.js?v=e668bc93e7b4"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
-<script src="src/services/operations.js?v=cb4eefc01056"></script>
+<script src="src/services/operations.js?v=5e9d3950cef3"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
 <script src="src/core/navigation.js?v=d9908f5e085b"></script>
 
     <script src="src/pages/profile-menu.js?v=be4aee6ffedf"></script>
 
 <script src="src/data/reflexoes-365.js?v=ed637e39d800"></script>
-<script src="src/ui/atualizacao-v72.js?v=8bac3638fe08"></script>
-<script src="src/ui/visual-v73.js?v=b96def4964f2"></script>
+<script src="src/ui/atualizacao-v72.js?v=9b44b82f638d"></script>
+<script src="src/ui/visual-v73.js?v=859030ba92e8"></script>
 <script src="src/ui/modern-icons.js?v=468066753641"></script>
-<script src="src/ui/visual-v74.js?v=72b00d70092d"></script>
+<script src="src/ui/visual-v74.js?v=6ec189b1d02d"></script>
 <script src="src/ui/player-v74.js?v=d72735c68d59"></script>
 <script src="src/ui/visual-v75.js?v=7a49cd28095e"></script>
 <script src="src/ui/photo-crop-v75.js?v=11120596c908"></script>
