@@ -1,0 +1,82 @@
+:root {
+    color-scheme: dark;
+    font-family: system-ui, sans-serif;
+    background: #21182e;
+    color: #fff3e8;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: radial-gradient(ellipse at 80% 0, #593564, transparent 38rem), #21182e;
+    min-height: 100dvh;
+}
+.atelier { width: min(100%, 570px); margin: auto; padding: 12px 12px max(24px, env(safe-area-inset-bottom)); }
+.cabecalho, .caderno header { display: flex; align-items: center; gap: 12px; }
+.cabecalho { margin-bottom: 12px; }
+h1, h2 { margin: 0; letter-spacing: -.03em; }
+h1 { font-size: clamp(22px, 7vw, 31px); }
+h2 { font-size: 18px; }
+button, .importar, .voltar {
+    min-height: 38px;
+    border-radius: 10px;
+    border: 1px solid #8a6799;
+    padding: 5px 8px;
+    color: #fff3e8;
+    background: #372745;
+    font: 700 12px system-ui, sans-serif;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.voltar, .importar { display: inline-grid; place-items: center; text-decoration: none; white-space: nowrap; }
+:focus-visible { outline: 3px solid #f9ca7f; outline-offset: 2px; }
+button:disabled { opacity: .46; cursor: default; }
+.ferramentas { padding: 8px; border: 1px solid #dfacfb59; border-radius: 15px; background: #291c38e6; }
+.linha { display: grid; gap: 6px; }
+.pinceis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.pinceis button { padding-inline: 2px; font-size: clamp(10px, 3vw, 12px); }
+.pinceis [aria-pressed="true"], #baixar-arte { color: #2b1938; background: #f5ce91; border-color: #ffd991; }
+.espessura { display: flex; gap: 9px; align-items: center; font-size: 12px; padding-inline: 4px; }
+.espessura input { width: 100%; height: 26px; accent-color: #f5ce91; }
+.paleta { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; margin-top: 4px; }
+.paleta [data-cor], .personalizada {
+    width: 100%;
+    max-width: 44px;
+    min-height: 0;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid #fff6;
+    background: var(--cor);
+    justify-self: center;
+}
+.paleta [aria-pressed="true"] { outline: 2px solid #fff5e6; outline-offset: 1px; }
+.personalizada { position: relative; display: grid; place-items: center; background: #6c4d81; font-size: 20px; }
+.personalizada input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.personalizada:focus-within { outline: 3px solid #f9ca7f; }
+.folha {
+    margin-block: 10px;
+    padding: 5px;
+    background: #f1d8b2;
+    border-radius: 13px;
+    box-shadow: 0 5px 0 #110c1b;
+}
+#papel { width: 100%; height: auto; display: block; border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; }
+.acoes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.acoes button { font-size: clamp(10px, 3vw, 12px); }
+.caderno { margin-top: 18px; padding: 10px; border: 1px solid #dfacfb59; background: #291c38; border-radius: 16px; }
+.caderno header { justify-content: space-between; }
+.importar { background: #634475; }
+#arte-aviso { font-size: 12px; color: #f8cf9d; margin: 5px 0; }
+#arte-aviso:empty { display: none; }
+.paginas { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; margin-top: 8px; }
+.pagina { display: grid; gap: 3px; min-width: 0; align-content: start; padding: 3px; }
+.pagina[aria-pressed="true"] { border-color: #ffc783; box-shadow: 0 0 0 1px #ffc783; }
+.pagina img { width: 100%; aspect-ratio: 1; background: white; border-radius: 6px; }
+.pagina span { min-width: 0; overflow-wrap: anywhere; padding: 2px; font-size: 10px; }
+.somente-leitor { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }
+.caderno header:focus-within .importar { outline: 3px solid #f9ca7f; outline-offset: 2px; }
+
+.caderno header { flex-wrap: wrap; }
+.importar-arte { display: flex; flex-wrap: wrap; gap: 5px; }
+.importar-arte .importar { position: relative; }
+.caderno header:focus-within .importar { outline: none; }
+.caderno header .importar:focus-within { outline: 3px solid #f9ca7f; outline-offset: 2px; }
