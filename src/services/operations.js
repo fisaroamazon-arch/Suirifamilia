@@ -90,6 +90,7 @@
                 const mensagem = r.repeated ? 'Esta ação já foi registrada nesta ocorrência.'
                     : action === 'reopen' ? 'Missão reaberta; a recompensa desta ocorrência não será duplicada.'
                     : action === 'complete' ? `Missão confirmada! ${r.delta > 0 ? '+' : ''}${r.delta} XP.`
+                    : action === 'partial' ? `Missão feita em partes! +${r.delta} XP.`
                     : 'Resultado da missão confirmado.';
                 informar(mensagem);
                 window.mostrarToast(mensagem);
@@ -113,6 +114,7 @@
         });
     }
     window.concluirMissaoDomestica=(id, informar)=>mission('complete',id,informar);
+    window.concluirMissaoParcialSuiri=(id, informar)=>mission('partial',id,informar);
     window.falharMissaoDomestica=(id, informar)=>mission('fail',id,informar);
     window.reabrirMissaoDomestica=(id, informar)=>mission('reopen',id,informar);
     window.verificarReativacaoAutomaticaMissoes = async () => {

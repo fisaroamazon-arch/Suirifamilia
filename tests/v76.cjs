@@ -200,6 +200,34 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
    assert.equal(botao.disabled,false);
   } finally {w.__cli.rpc=rpc;}
  });
+ await test('Kids registra conclusão parcial pelo botão do meio e mostra o XP concedido',async()=>{
+  const kid=w.__tables.membros[1],rpc=w.__cli.rpc;
+  const mission={id:'parcial',familia_id:fam,escopo:'kids',titulo:'Guardar os brinquedos',destinatario_kids:'todos_kids',
+   status:'pendente',parcial_por_array:[],concluidos_por_array:[],falhados_por_array:[],xp_recompensa:25};
+  w.perfilAtual=kid;w.aplicarRegrasPerfilKidsOuAdulto();
+  w.__tables.missoes=[mission];
+  w.__cli.rpc=async(name,args)=>{
+   assert.equal(name,'suiri_operacao_v7');
+   assert.equal(args.p_payload.action,'partial');
+   return {data:{ok:true,mission:{...mission,parcial_por_array:[kid.id],concluidos_por_array:[kid.id]},xp:32,delta:12},error:null};
+  };
+  try{
+   await w.carregarMissoesDoDia();
+   const list=d.getElementById('lista-missoes-kids-container');
+   const buttons=[...list.querySelectorAll('[data-missao-acao]')];
+   assert.deepEqual(buttons.map(b=>b.dataset.missaoAcao),['fail','partial','complete']);
+   buttons[1].click();
+   await new Promise(resolve=>setTimeout(resolve,25));
+   assert.match(list.querySelector('#container-concluidas-kids').textContent,/Missão feita em partes/);
+   assert.equal(d.getElementById('contador-xp-kids').textContent,'32 XP');
+  }finally{w.__cli.rpc=rpc;}
+ });
+ await test('barra do sistema fica preta nas cinco páginas e Arcade respeita a borda superior',()=>{
+  for(const page of ['index.html','homem.html','mulher.html','jogos.html','arte.html'])
+   assert.match(fs.readFileSync(page,'utf8'),/name="theme-color" content="#000000"/);
+  assert.equal(JSON.parse(fs.readFileSync('manifest.json','utf8')).theme_color,'#000000');
+  assert.match(fs.readFileSync('styles/pages/jogos.css','utf8'),/body\.arcade-page \{[^}]+align-items: flex-start;[^}]+safe-area-inset-top/);
+ });
  assert.deepEqual(main.errors,[]);main.dom.window.close();
  const loaded=await load('mulher.html'),a=loaded.w,doc=a.document;
  a.renderizarEsqueletoEspacoMulher();await new Promise(r=>setTimeout(r,30));
@@ -215,7 +243,7 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   const modal=doc.getElementById('modal-orientacoes-estagio-fase'),handle=modal.querySelector('.sheet-drag-handle');assert.equal(modal.querySelector('.phase-tabs').children.length,4);assert.equal(modal.querySelector('.phase-topics').children.length,4);assert(modal.querySelector('#modal-conteudo-orientacoes-corpo'));assert.equal(modal.firstElementChild.lastElementChild.querySelector('button').textContent,'Entendido');handle.dispatchEvent(new a.MouseEvent('pointerdown',{bubbles:true,clientX:20,clientY:30}));handle.dispatchEvent(new a.MouseEvent('pointerup',{bubbles:true,clientX:20,clientY:140}));assert(modal.classList.contains('oculto'));
  });
  await test('modo foco preservado e vídeo usa somente sequência de quadros originais',()=>{
-  a.escolherModoMulherSuiri('foco');assert.equal(doc.documentElement.dataset.womenMode,'foco');assert.equal(doc.querySelector('meta[name="theme-color"]').content,'#21142e');a.escolherModoMulherSuiri('normal');assert.equal(doc.documentElement.dataset.womenMode,'normal');assert(doc.querySelector('#video-cenario-fundo source').src.includes('flores-ida-volta-original.mp4'));
+  a.escolherModoMulherSuiri('foco');assert.equal(doc.documentElement.dataset.womenMode,'foco');assert.equal(doc.querySelector('meta[name="theme-color"]').content,'#000000');a.escolherModoMulherSuiri('normal');assert.equal(doc.documentElement.dataset.womenMode,'normal');assert(doc.querySelector('#video-cenario-fundo source').src.includes('flores-ida-volta-original.mp4'));
  });
  await test('bem-estar feminino edita o dia, liga registros e mostra as oito respostas',async()=>{
   const hoje='2026-03-31';a.Suiri.today=(date)=>date ? `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` : hoje;
@@ -310,10 +338,10 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   assert.equal(itens[2].getAttribute('aria-current'),'location');
   m.escolherEstiloMasculino('playstation');
   assert.equal(md.documentElement.dataset.console,'playstation');
-  assert.equal(md.querySelector('meta[name="theme-color"]').content,'#101e49');
+  assert.equal(md.querySelector('meta[name="theme-color"]').content,'#000000');
   m.escolherEstiloMasculino('xbox');
   assert.equal(md.documentElement.dataset.console,'xbox');
-  assert.equal(md.querySelector('meta[name="theme-color"]').content,'#101e14');
+  assert.equal(md.querySelector('meta[name="theme-color"]').content,'#000000');
  });
  assert.deepEqual(men.errors,[]);men.dom.window.close();
  await new Promise(r=>setTimeout(r,30));assert.deepEqual(loaded.errors,[]);loaded.dom.window.close();

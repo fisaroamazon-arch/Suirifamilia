@@ -233,6 +233,7 @@ function podeOperarMissaoSuiri(m, perfil = window.perfilAtual) {
 
 const funcoesDeMissaoSuiri = {
     complete: 'concluirMissaoDomestica',
+    partial: 'concluirMissaoParcialSuiri',
     fail: 'falharMissaoDomestica',
     reopen: 'reabrirMissaoDomestica'
 };

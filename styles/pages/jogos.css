@@ -1038,16 +1038,22 @@
 
 /* Arcade do Chuíri · superfícies e cenários dos seis jogos. */
 body.arcade-page {
-    padding: 0;
-    background: #10112a;
+    height: 100dvh;
+    align-items: flex-start;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+        env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    background: #000;
     color: #f9f4ff;
 }
 .arcade-page #app-container {
+    height: 100%;
+    min-height: 0;
     max-width: 512px;
     background: radial-gradient(ellipse at 85% 4%, #473267 0, transparent 45%),
         radial-gradient(ellipse at 0% 65%, #192f4d 0, transparent 54%), #14152c;
 }
 .arcade-page .barra-topo {
+    flex-shrink: 0;
     min-height: 54px;
     padding: 4px 0;
     margin: 0 16px;

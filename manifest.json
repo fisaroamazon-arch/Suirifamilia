@@ -4,8 +4,8 @@
   "description": "Gestão financeira, mercado e missões da família",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#101820",
-  "theme_color": "#152c3d",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {

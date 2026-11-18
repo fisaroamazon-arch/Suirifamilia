@@ -10,7 +10,7 @@ body {
     background: radial-gradient(ellipse at 80% 0, #593564, transparent 38rem), #21182e;
     min-height: 100dvh;
 }
-.atelier { width: min(100%, 570px); margin: auto; padding: 12px 12px max(24px, env(safe-area-inset-bottom)); }
+.atelier { width: min(100%, 570px); margin: auto; padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom)); }
 .cabecalho, .caderno header { display: flex; align-items: center; gap: 12px; }
 .cabecalho { margin-bottom: 12px; }
 h1, h2 { margin: 0; letter-spacing: -.03em; }

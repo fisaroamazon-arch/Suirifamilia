@@ -203,6 +203,8 @@ window.carregarMissoesKidsExclusiva = function() {
         const algumIrmaoJaFez = ehTodosKids && concluidosArray.length > 0 && !euJaFiz;
         const concluida = euJaFiz || (missao.status === 'concluida' && !ehTodosKids);
         const falhada = euFalhei;
+        const parciais = missao.parcial_por_array;
+        const parcial = concluida && Array.isArray(parciais) && parciais.includes(meuId);
 
         card.className = `card-missao-kids ${concluida ? 'concluida' : ''}`;
         card.style.flexDirection = 'column';
@@ -214,7 +216,7 @@ window.carregarMissoesKidsExclusiva = function() {
             card.style.opacity = '0.78';
         }
 
-        const xpRecompensa = missao.xp_recompensa || 20;
+        const xpRecompensa = missao.xp_recompensa ?? 20;
 
         let grupoAvataresHtml = '';
         let mensagemIrmaoFezHtml = '';
@@ -289,7 +291,7 @@ window.carregarMissoesKidsExclusiva = function() {
                 <div style="flex:1; min-width:0; padding-right:4px;">
                     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
                         <span style="font-size:11.5px; font-weight:800; background:#fff7ed; color:#ea580c; border:1px solid #ffedd5; padding:2px 8px; border-radius:999px; display:inline-flex; align-items:center; gap:4px;">
-                            ${obterIconeSeguro('moeda')} +${xpRecompensa} XP
+                            ${obterIconeSeguro('moeda')} ${parcial ? '50% do XP' : `+${xpRecompensa} XP`}
                         </span>
                         ${ehTodosKids ? `
                             <span style="font-size:10.5px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:2px 7px; border-radius:999px; border:1px solid rgba(2,132,199,0.2);">
@@ -310,7 +312,7 @@ window.carregarMissoesKidsExclusiva = function() {
                     ${grupoAvataresHtml}
                     ${mensagemIrmaoFezHtml}
 
-                    ${(concluida && !ehTodosKids) ? `
+                    ${(concluida && !ehTodosKids && !parcial) ? `
                         <div style="margin-top:6px; font-size:12px; font-weight:800; color:#15803d;">
                             Você completou esta missão!
                         </div>
@@ -320,12 +322,18 @@ window.carregarMissoesKidsExclusiva = function() {
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:12px; border-top: 1.5px dashed ${concluida || falhada ? 'transparent' : 'rgba(249, 115, 22, 0.2)'};">
+            <div class="acoes-missao-kids" style="border-top: 1.5px dashed ${concluida || falhada ? 'transparent' : 'rgba(249, 115, 22, 0.2)'};">
                 ${(!concluida && !falhada) ? `
-                    <button type="button" class="btn-erro" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" data-missao-acao="fail" data-missao-id="${esc(missao.id)}">
+                    <button type="button" class="btn-erro" data-missao-acao="fail" data-missao-id="${esc(missao.id)}">
                         ${obterIconeSeguro('joinhaInvertido')} Não fiz
                     </button>
-                    <button type="button" class="btn-sucesso" style="flex:1; padding: 12px; font-size: 13.5px; font-weight: 800; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; ${algumIrmaoJaFez ? 'background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);' : ''}" data-missao-acao="complete" data-missao-id="${esc(missao.id)}">
+                    ${Array.isArray(parciais) ? `
+                        <button type="button" class="btn-parcial-kids" data-missao-acao="partial" data-missao-id="${esc(missao.id)}">
+                            Fiz em partes
+                            <small>Metade do XP</small>
+                        </button>
+                    ` : ''}
+                    <button type="button" class="btn-sucesso" data-missao-acao="complete" data-missao-id="${esc(missao.id)}">
                         ${obterIconeSeguro('joinha')} Fiz!
                     </button>
                 ` : (falhada ? `
@@ -334,7 +342,7 @@ window.carregarMissoesKidsExclusiva = function() {
                     </button>
                 ` : `
                     <span style="font-size:13px; font-weight:800; padding:10px 16px; width:100%; text-align:center; border-radius:14px; background:#ecfdf5; color:#065f46; border: 1.5px solid #a7f3d0;">
-                        Missão Cumprida!
+                        ${parcial ? 'Missão feita em partes' : 'Missão cumprida!'}
                     </span>
                 `)}
             </div>
@@ -496,8 +504,9 @@ window.renderizarHistoricoMissoesKidsADM = function() {
             if (membro) nomeAlvo = obterPrimeiroNomeSeguro(membro.nome);
         }
 
+        const parcial = m.parcial_por_array?.includes?.(m.concluido_por) === true;
         let feitoPor = '';
-        if (concluida && m.concluido_por && window.listaMembrosFamilia) {
+        if ((concluida || parcial) && m.concluido_por && window.listaMembrosFamilia) {
             const quemFez = window.listaMembrosFamilia.find(x => x.id === m.concluido_por);
             if (quemFez) feitoPor = ` - Feito por: ${obterPrimeiroNomeSeguro(quemFez.nome)}`;
         }
@@ -524,7 +533,7 @@ window.renderizarHistoricoMissoesKidsADM = function() {
                         ${nomeAlvo}
                     </span>
                     <span style="font-size:11px; font-weight:800; color:${concluida ? '#15803d' : (falhou ? '#e11d48' : '#ea580c')};">
-                        ${concluida ? 'Concluída' : (falhou ? 'Fracassada' : 'Pendente')} ${feitoPor}
+                        ${parcial ? 'Feita em partes' : concluida ? 'Concluída' : falhou ? 'Fracassada' : 'Pendente'} ${feitoPor}
                     </span>
                 </div>
                 <strong style="font-size:13.5px; color:var(--texto-principal, #0f172a);">${window.esc ? window.esc(m.titulo) : m.titulo}</strong>

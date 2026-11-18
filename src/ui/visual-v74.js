@@ -7,7 +7,6 @@
   if(!women)return;
   const stored=key()&&localStorage.getItem(key());const mode=stored==='foco'?'foco':'normal';root.dataset.womenMode=mode;
   document.body.classList.remove('modo-vidro');
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='foco'?'#21142e':'#581c87');
   document.querySelectorAll('[data-women-choice]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.womenChoice===mode));});
   const video=document.getElementById('video-cenario-fundo');
   if(video){video.loop=true;video.muted=true;video.playsInline=true;if(mode==='foco')video.pause();else if(S.memberId())video.play()?.catch(()=>{});}

@@ -256,7 +256,7 @@
                     MotorMemoria.parar();
                     document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                     document.getElementById('menu-arcade').style.display = 'flex';
-                    document.querySelector(`[data-arcade-jogo="${this.telaAtiva}"]`)?.focus();
+                    document.querySelector(`[data-arcade-jogo="${this.telaAtiva}"]`)?.focus({ preventScroll: true });
                     this.telaAtiva = 'menu';
                 }
             },

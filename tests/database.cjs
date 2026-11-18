@@ -1,6 +1,7 @@
 const {PGlite}=require('@electric-sql/pglite');
 const fs=require('fs'),assert=require('node:assert/strict');
 const sql=fs.readFileSync('supabase/02_ATUALIZAR_V7.sql','utf8');
+const parcialSQL=fs.readFileSync('supabase/05_MISSOES_PARCIAIS_V7163.sql','utf8');
 const db=new PGlite();
 const uid='10000000-0000-4000-8000-000000000001',adult='10000000-0000-4000-8000-000000000002',kid='10000000-0000-4000-8000-000000000003',other='10000000-0000-4000-8000-000000000004';
 const fam='20000000-0000-4000-8000-000000000001',fam2='20000000-0000-4000-8000-000000000002';
@@ -35,6 +36,7 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  create table recados_lar(id uuid primary key default gen_random_uuid(),familia_id text,conteudo text);
  `);
  await db.exec(sql);
+ await db.exec(parcialSQL);
  await db.exec(fs.readFileSync('supabase/03_TRANSFERENCIAS_V71.sql','utf8'));
  await q('insert into auth.users values($1),($2),($3),($4)',[uid,adult,kid,other]);
  await q('insert into familias(id,nome_familia)values($1,$2),($3,$4)',[fam,'Teste A',fam2,'Teste B']);
@@ -159,7 +161,50 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   assert.equal((await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total,before+10);
   const task=(await q('select * from missoes where id=$1',[retry])).rows[0];assert.equal(task.status,'concluida');assert.equal(task.subitens[0].concluido,true);
  });
- await test('migração é reaplicável sem perder dados',async()=>{await db.exec(sql);assert.equal(Number((await q('select count(*)n from membros')).rows[0].n),4);});
+ await test('missão coletiva Kids antiga funciona e repetir falha após reabrir não desconta XP de novo',async()=>{
+  const legacy='50000000-0000-4000-8000-000000000003';
+  await q("insert into missoes(id,familia_id,titulo,status,escopo,criado_por,xp_recompensa,recorrencia_tipo)values($1,$2,'Kids antiga','pendente','kids',$3,20,'nenhuma')",[legacy,fam,uid]);
+  await expectFailure(()=>op('mission',{id:legacy,action:'complete'}));
+  const before=(await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total;
+  const fail=await op('mission',{id:legacy,action:'fail'},kid);
+  assert.deepEqual(fail.mission.falhados_por_array,[kid]);
+  assert.equal(fail.xp,before-10);
+  const reopen=await op('mission',{id:legacy,action:'reopen'},kid);
+  assert.deepEqual(reopen.mission.falhados_por_array,[]);
+  const repeated=await op('mission',{id:legacy,action:'fail'},kid);
+  assert.deepEqual(repeated.mission.falhados_por_array,[kid]);
+  assert.equal(repeated.xp,fail.xp);
+  await op('mission',{id:legacy,action:'reopen'},kid);
+  const complete=await op('mission',{id:legacy,action:'complete'},kid);
+  assert.deepEqual(complete.mission.concluidos_por_array,[kid]);
+  assert.equal(complete.xp,before+10);
+ });
+ await test('parcial dá metade do XP, mantém subitens e não permite somar crédito após reabrir',async()=>{
+  const parcial='50000000-0000-4000-8000-000000000004';
+  const checklist=[{texto:'Uma parte',concluido:true},{texto:'Outra parte',concluido:false}];
+  await q("insert into missoes(id,familia_id,titulo,status,escopo,criado_por,xp_recompensa,recorrencia_tipo,subitens)values($1,$2,'Parcial','pendente','kids',$3,25,'diaria_24h',$4)",[parcial,fam,uid,JSON.stringify(checklist)]);
+  const before=(await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total;
+  const completed=await op('mission',{id:parcial,action:'partial'},kid);
+  assert.equal(completed.delta,12);
+  assert.equal(completed.xp,before+12);
+  assert.deepEqual(completed.mission.parcial_por_array,[kid]);
+  assert.deepEqual(completed.mission.subitens,checklist);
+  await op('mission',{id:parcial,action:'reopen'},kid);
+  const repeated=await op('mission',{id:parcial,action:'complete'},kid);
+  assert.equal(repeated.repeated,true);
+  assert.equal(repeated.xp,before+12);
+  assert.deepEqual(repeated.mission.parcial_por_array,[kid]);
+  await q("update missoes set proxima_execucao=now()-interval '1 hour' where id=$1",[parcial]);
+  const reset=await op('mission',{id:parcial,action:'reset'},kid);
+  assert.deepEqual(reset.mission.parcial_por_array,[]);
+  assert.equal((await op('mission',{id:parcial,action:'complete'},kid)).delta,25);
+ });
+ await test('adulto não registra conclusão parcial',async()=>{
+  const adulta='50000000-0000-4000-8000-000000000005';
+  await q("insert into missoes(id,familia_id,titulo,status,escopo,criado_por,xp_recompensa,recorrencia_tipo)values($1,$2,'Casa','pendente','casa',$3,20,'nenhuma')",[adulta,fam,uid]);
+  assert.match(await expectFailure(()=>op('mission',{id:adulta,action:'partial'})),/somente no Espaço Kids/);
+ });
+ await test('migração é reaplicável sem perder dados',async()=>{await db.exec(sql);await db.exec(parcialSQL);await db.exec(parcialSQL);assert.equal(Number((await q('select count(*)n from membros')).rows[0].n),4);});
  await db.close();
  fs.mkdirSync('.test-results',{recursive:true});fs.writeFileSync('.test-results/sql-v7.json',JSON.stringify({engine:'PGlite/PostgreSQL em memória; schema de teste compatível, não o Supabase real',checks},null,2));console.log(JSON.stringify(checks,null,2));
 })().catch(e=>{console.error(e.message,e.detail||'',e.where||'',e.position||'');process.exit(1)});
