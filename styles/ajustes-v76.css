@@ -389,3 +389,54 @@ html[data-theme][data-console] .setor-espaco {
     html[data-theme][data-console] .navegacao-espacos a { transition: none; }
     html[data-theme][data-console] .navegacao-espacos a:hover { transform: none; }
 }
+
+/* Superfícies da Curadoria e leitura de rótulos nos dois temas de console. */
+html[data-theme][data-console] body .container-homem :is(a:not(.badge-streaming-link,.navegacao-espacos a,.btn-link-voltar), div.suiri-texto-legado-escuro) {
+    color: var(--v73-ink) !important;
+}
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir {
+    background: var(--v73-surface2) !important;
+    border: 1px solid var(--v73-line) !important;
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir > div:first-child { flex-wrap: wrap; gap: 6px 12px; }
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir a:not(.badge-streaming-link) {
+    color: var(--v73-accent) !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px;
+}
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir .badge-streaming-link {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    max-width: 100%;
+    min-height: 36px;
+    border: 1px solid var(--v73-line);
+    border-radius: 9px;
+    padding: 5px 9px;
+    color: var(--v73-ink) !important;
+    background: var(--v73-surface) !important;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir .badge-streaming-link:is(:hover,:focus-visible) {
+    border-color: var(--v73-accent);
+    outline-color: var(--v73-accent);
+}
+html[data-theme][data-console] body .container-homem #midia-bloco-onde-assistir .streaming-link-externo {
+    color: var(--v73-accent) !important;
+    flex-shrink: 0;
+}
+#apoio-topo-familia { padding: 12px !important; }
+#btn-doacao-familia { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; }
+#btn-doacao-familia img { width: 19px; height: 19px; }
+html[data-theme] body .apoio-semanal, html[data-theme] body .aviso-privacidade { width: min(100%, 420px); text-align: left; }
+:is(.apoio-semanal,.aviso-privacidade) .modal-header h2 { margin: 0; font-size: 18px; }
+:is(.apoio-semanal,.aviso-privacidade) p { font-size: 13px; line-height: 1.5; }
+.apoio-semanal label { display: block; font-size: 12px; font-weight: 750; margin-bottom: 6px; }
+#apoio-chave-pix { width: 100%; margin-bottom: 10px; font: 14px monospace !important; padding-inline: 9px !important; }
+#apoio-status-pix:empty { display: none; }
