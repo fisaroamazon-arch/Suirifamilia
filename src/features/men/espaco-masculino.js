@@ -411,12 +411,6 @@ window.renderizarEsqueletoEspacoMasculino = function() {
             box-shadow: 0 2px 10px rgba(34, 197, 94, 0.65), 0 0 0 6px rgba(34, 197, 94, 0.2);
         }
 
-        .badge-streaming-link {
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .badge-streaming-link:active {
-            transform: scale(0.96);
-        }
         </style>
 
         <!-- TOPO: RETORNO AO LAR -->
@@ -865,7 +859,7 @@ window.renderizarEsqueletoEspacoMasculino = function() {
                     <p id="midia-descricao-destaque" style="font-size:12px; color:#334155; margin:0 0 10px 0; line-height:1.5;">Carregando sinopse oficial em português...</p>
 
                     <!-- PAINEL ONDE ASSISTIR COM LOGOS E LINKS DIRETOS -->
-                    <div id="midia-bloco-onde-assistir" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+                    <div id="midia-bloco-onde-assistir">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                             <span style="font-size:10.5px; font-weight:800; color:#15803d; text-transform:uppercase;">📺 Onde Assistir (Toque para Abrir):</span>
                             <a id="midia-link-justwatch" href="#" target="_blank" rel="noopener noreferrer" style="font-size:10px; font-weight:700; color:#0284c7; text-decoration:none;">Mais opções ↗</a>
@@ -1980,12 +1974,11 @@ window.atualizarVisualizacaoMidia = function() {
                         : `<span style="font-size:12px; line-height:1;">📺</span>`;
 
                     return `
-                        <a href="${linkDireto}" target="_blank" rel="noopener noreferrer" class="badge-streaming-link" 
-                           style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#ffffff; color:#0f172a; border:1px solid #bbf7d0; padding:4px 9px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.04); font-size:11px; font-weight:700; cursor:pointer;" 
+                        <a href="${linkDireto}" target="_blank" rel="noopener noreferrer" class="badge-streaming-link"
                            title="Abrir ${esc(item.titulo)} no ${esc(p.nome)}">
                             ${tagLogo}
                             <span>${esc(p.nome)}</span>
-                            <span style="font-size:10px; color:#16a34a; font-weight:800; margin-left:1px;">↗</span>
+                            <span class="streaming-link-externo" aria-hidden="true">↗</span>
                         </a>
                     `;
                 }).join('');
