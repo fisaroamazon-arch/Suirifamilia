@@ -100,7 +100,7 @@ window.TamagotchiKids = {
             imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormir; });
             this._timeoutAnimacao = setTimeout(() => {
                 imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormindo; });
-            }, 9500);
+            }, 7930); // Duração de uma volta da animação original de deitar.
             return;
         }
 
