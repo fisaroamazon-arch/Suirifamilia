@@ -654,9 +654,8 @@
         #container-dueto-piano-2p {
             display: none;
             flex-direction: column;
-            justify-content: space-between;
-            height: 100vh;
-            height: 100dvh;
+            height: 100%;
+            min-height: 0;
             width: 100%;
             max-width: 440px;
             margin: 0 auto;
@@ -1471,8 +1470,9 @@ body.arcade-page {
 .arcade-page #painel-aprendizado-box .estrelinha-alvo-box { margin: 0 auto 4px; }
 .arcade-page #painel-aprendizado-box .estrelinha-alvo-box span { color: #ffdfb8 !important; }
 .arcade-page #container-dueto-piano-2p { overflow-y: auto; }
-.arcade-page :is(.bloco-dueto-j1, .bloco-dueto-j2) { min-height: 215px; }
-.arcade-page .pista-dueto-box { min-height: 105px; }
+.arcade-page :is(.bloco-dueto-j1, .bloco-dueto-j2) { min-height: 187px; }
+.arcade-page .pista-dueto-box { min-height: 58px; }
+.arcade-page .pista-dueto-box canvas { position: absolute; inset: 0; }
 .arcade-page #over-simon { z-index: 49; }
 
 .piano-opcao {
@@ -1647,3 +1647,64 @@ body.arcade-page {
     background: #ffffff12;
     border: 1px solid #a892bb;
 }
+
+.arcade-page #tela-simon {
+    min-height: 0;
+    padding: 6px 10px;
+    text-align: center;
+}
+.arcade-page #tela-simon[data-modo-piano="dueto"] {
+    padding: 0;
+    overflow: hidden;
+}
+#tela-simon .piano-painel-dueto { padding: 5px 7px; }
+#tela-simon .piano-painel-dueto .piano-ajustes { margin: 4px 0 0; }
+
+#tela-simon #container-teclados-livre { margin: 4px auto 8px; gap: 7px; }
+#tela-simon #painel-livre-box {
+    max-width: 420px;
+    padding: 8px 10px;
+    margin: 0 auto 8px;
+    border: 1px solid #756a91;
+    border-radius: 12px;
+    background: #2a253d;
+    color: #fff4f8;
+}
+#tela-simon #painel-livre-box h3 { margin: 0 0 3px; font-size: .78rem; }
+#tela-simon #painel-livre-box .piano-opcao { color: inherit; }
+#tela-simon .piano-timbres-livres { display: grid; gap: 3px; }
+#tela-simon .piano-timbre-oitava {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    border-top: 1px solid #ffffff20;
+    font-size: .75rem;
+}
+#tela-simon .piano-timbre-oitava button { min-height: 30px; }
+#tela-simon .piano-desafio-livre:not([hidden]) {
+    max-width: 420px;
+    margin: 4px auto;
+    align-items: center;
+    flex-wrap: wrap;
+    color: #fff4f8;
+}
+#tela-simon .piano-desafio-livre[hidden] { display: none; }
+
+#tela-simon #painel-aprendizado-box { margin-block: 2px 4px; padding: 6px 8px; }
+#tela-simon #painel-aprendizado-box .piano-repertorio { margin-bottom: 4px; }
+#tela-simon #painel-aprendizado-box .piano-repertorio select { min-height: 33px; font-size: .83rem; }
+#tela-simon #painel-aprendizado-box .piano-ajustes summary { padding-block: .32rem; }
+#tela-simon #painel-aprendizado-box .piano-ajustes .alternador-timbre-som { margin-bottom: 5px; }
+#tela-simon #painel-aprendizado-box .piano-placar { gap: 4px; }
+#tela-simon #painel-aprendizado-box .estrelinha-alvo-box {
+    flex: 0 0 auto;
+    gap: 4px;
+    margin: 0;
+    padding: 2px 5px;
+    white-space: nowrap;
+}
+#tela-simon #painel-aprendizado-box .estrelinha-icone { font-size: .85rem; }
+#tela-simon #painel-aprendizado-box .nota-alvo-texto { font-size: .85rem; }
+#tela-simon #painel-aprendizado-box .piano-placar > progress { height: 4px; }

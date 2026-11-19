@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7165';
+const CACHE='suiri-family-v7166';
 const SHELL=[
   "./",
   "./index.html",
@@ -36,14 +36,14 @@ const SHELL=[
   "./assets/images/arte/ursinho.svg",
   "./src/core/config.js?v=50eb0e2f989b",
   "./src/core/foundation.js?v=43a15d70093e",
-  "./styles/pages/jogos.css?v=311db6c74b4f",
+  "./styles/pages/jogos.css?v=4c75e581dcc9",
   "./styles/themes.css?v=3911cf04fce3",
   "./src/data/musicas.js?v=ac86a220bd3b",
   "./src/data/partituras.js?v=6f903d6da520",
   "./src/data/partituras-extras.js?v=b3d6d41ab058",
   "./src/features/kids/piano-banda.js?v=0f1afd3d00d2",
-  "./src/features/kids/piano.js?v=e7e50e6a1dbe",
-  "./src/pages/arcade.js?v=3bcf5e44fb41",
+  "./src/features/kids/piano.js?v=125ca551b817",
+  "./src/pages/arcade.js?v=e18fb4acd43a",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=a9d2847a1b55",

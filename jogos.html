@@ -7,17 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
-    <link rel="stylesheet" href="styles/pages/jogos.css?v=311db6c74b4f">
+    <link rel="stylesheet" href="styles/pages/jogos.css?v=4c75e581dcc9">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
 </head>
 <body class="arcade-page">
 
     <div id="app-container">
-        <!-- BARRA DO TOPO (Ocultada nos modos 2 Jogadores) -->
+        <!-- BARRA DO TOPO DO ARCADE -->
         <div class="barra-topo" id="barra-topo-arcade">
             <button class="btn-voltar" onclick="GerenciadorArcade.voltarAcao()">
                 <svg class="icone-svg" style="width:16px;height:16px;" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                Voltar
+                <span id="rotulo-voltar-arcade">Voltar</span>
             </button>
             <div class="moedas-badge">
                 <svg class="icone-svg" style="width:17px;height:17px;color:#d97706;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
@@ -167,7 +167,7 @@
         </div>
 
         <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (ESTEIRAS SYNTHESIA SOLO & DUETO 2P) -->
-        <div id="tela-simon" class="area-jogo" style="padding:6px 10px; text-align:center;">
+        <div id="tela-simon" class="area-jogo" data-modo-piano="aprendizado">
             <div class="alternador-modos-som" id="tabs-piano-seletor-modos">
                 <button type="button" class="btn-modo-som-tab ativo" id="tab-piano-aprendizado" onclick="MotorMusica.trocarModo('aprendizado')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Aprender</button>
                 <button type="button" class="btn-modo-som-tab" id="tab-piano-livre" onclick="MotorMusica.trocarModo('livre')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Livre</button>
@@ -177,42 +177,40 @@
             <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
             <div class="painel-aprendizado-musica" id="painel-aprendizado-box">
                 <div class="piano-repertorio">
-                        <label>Estilo
-                            <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
-                                <option value="infantil">Infantil · 20</option>
-                                <option value="classicas">Clássicas · 20</option>
-                                <option value="pop">Pop · 20</option>
-                            </select>
-                        </label>
-                        <label>Música
-                            <select id="seletor-musica-alvo" onchange="MotorMusica.selecionarMusica(this.value)"></select>
-                        </label>
-                    </div>
-                    <details class="piano-ajustes">
-                        <summary>Ajustes de som e toque</summary>
-                    <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
-                    <div class="piano-banda" role="group" aria-label="Acompanhamento">
-                        <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
-                        <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
-                        <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
-                    </div>
-                    </details>
-
-                <!-- SELETOR DE INSTRUMENTO DO MODO SOLO -->
-                <div class="alternador-timbre-som" style="margin-bottom:6px;">
-                    <button type="button" class="btn-timbre-tab ativo" id="btn-timbre-solo-piano" aria-pressed="true" onclick="MotorMusica.trocarTimbreSolo('piano')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
-                    <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-cordas" aria-pressed="false" onclick="MotorMusica.trocarTimbreSolo('cordas')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
-                    <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-xilofone" aria-pressed="false" onclick="MotorMusica.trocarTimbreSolo('xilofone')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#xylophone"></use></svg> Xilofone</button>
+                    <label>Estilo
+                        <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
+                            <option value="infantil">Infantil · 20</option>
+                            <option value="classicas">Clássicas · 20</option>
+                            <option value="pop">Pop · 20</option>
+                        </select>
+                    </label>
+                    <label>Música
+                        <select id="seletor-musica-alvo" onchange="MotorMusica.selecionarMusica(this.value)"></select>
+                    </label>
                 </div>
 
-                <div class="piano-controles">
+                <details class="piano-ajustes">
+                    <summary>Som e velocidade</summary>
+                    <div class="alternador-timbre-som">
+                        <button type="button" class="btn-timbre-tab ativo" id="btn-timbre-solo-piano" aria-pressed="true" onclick="MotorMusica.trocarTimbreSolo('piano')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
+                        <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-cordas" aria-pressed="false" onclick="MotorMusica.trocarTimbreSolo('cordas')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
+                        <button type="button" class="btn-timbre-tab" id="btn-timbre-solo-xilofone" aria-pressed="false" onclick="MotorMusica.trocarTimbreSolo('xilofone')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#xylophone"></use></svg> Xilofone</button>
+                    </div>
                     <div class="painel-velocidade-bichinhos" id="botoes-velocidade-solo">
                         <button type="button" class="btn-velocidade-bichinho" data-fator="toque" onclick="MotorMusica.mudarFatorVelocidade('toque', this)" title="Toque para a próxima nota"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Toque</button>
                         <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5, this)">50%</button>
                         <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75, this)">75%</button>
                         <button type="button" class="btn-velocidade-bichinho ativo" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1.0, this)">100%</button>
                     </div>
+                    <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                    <div class="piano-banda" role="group" aria-label="Acompanhamento">
+                        <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
+                        <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
+                        <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
+                    </div>
+                </details>
 
+                <div class="piano-controles">
                     <div class="piano-acoes">
                         <button type="button" class="btn-play-pause-musica" id="btn-play-musica-solo" onclick="MotorMusica.togglePlay()">
                             <span id="icone-play-solo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-solo">Jogar</span>
@@ -221,15 +219,14 @@
                     </div>
                 </div>
 
-                <div class="estrelinha-alvo-box">
-                    <span class="estrelinha-icone"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> </span>
-                    <span style="font-size:12px; font-weight:800; color:#475569;">Próxima:</span>
-                    <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
-                </div>
-
                 <div class="piano-placar">
-                    <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
+                    <div class="estrelinha-alvo-box">
+                        <span class="estrelinha-icone"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> </span>
+                        <span style="font-size:12px; font-weight:800; color:#475569;">Próxima:</span>
+                        <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
+                    </div>
                     <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
+                    <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
                 </div>
             </div>
 
@@ -257,15 +254,9 @@
                 <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
             </div>
 
-            <!-- PAINEL SUPERIOR DO MODO LIVRE -->
-            <div class="painel-livre-box" id="painel-livre-box" style="display:none; padding:6px 12px; background:rgba(255,255,255,0.94); border:2px solid #38bdf8; border-radius:20px; max-width:420px; margin:4px auto 6px auto;">
-                <p style="font-size:12px; color:#0f172a; font-weight:900;">Modo Livre · quatro oitavas</p>
-                <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
-                <label class="piano-opcao"><input type="checkbox" onchange="MotorMusica.alterarDesafioLivre(this.checked)"> Desafio de notas</label>
-                <div class="piano-desafio-livre">
-                    <span id="alvo-desafio-livre" aria-live="polite" hidden></span>
-                    <div data-vidas-piano id="erros-livre-piano" hidden><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
-                </div>
+            <div class="piano-desafio-livre" id="piano-desafio-livre-status" hidden>
+                <span id="alvo-desafio-livre" aria-live="polite" hidden></span>
+                <div data-vidas-piano id="erros-livre-piano" hidden><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
             </div>
 
             <!-- COLUNA DAS 4 OITAVAS INDEPENDENTES (MODO LIVRE: C2 A C6) -->
@@ -274,11 +265,6 @@
                 <div class="faixa-teclado-unidade">
                     <div class="topo-faixa-oitava">
                         <span class="badge-faixa-oitava" style="color:#8b5cf6;">Oitava 5 (Aguda)</span>
-                        <div class="seletor-timbre-mini" id="timbre-oitava-5">
-                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(5, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'xilofone', this)">Xilo</button>
-                        </div>
                     </div>
                     <div class="teclado-compacto-livre" id="teclado-livre-agudo">
                         <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ</span></div>
@@ -302,11 +288,6 @@
                 <div class="faixa-teclado-unidade">
                     <div class="topo-faixa-oitava">
                         <span class="badge-faixa-oitava" style="color:#0284c7;">Oitava 4 (Média)</span>
-                        <div class="seletor-timbre-mini" id="timbre-oitava-4">
-                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(4, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'xilofone', this)">Xilo</button>
-                        </div>
                     </div>
                     <div class="teclado-compacto-livre" id="teclado-livre-medio">
                         <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
@@ -330,11 +311,6 @@
                 <div class="faixa-teclado-unidade">
                     <div class="topo-faixa-oitava">
                         <span class="badge-faixa-oitava" style="color:#d97706;">Oitava 3 (Grave)</span>
-                        <div class="seletor-timbre-mini" id="timbre-oitava-3">
-                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(3, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'xilofone', this)">Xilo</button>
-                        </div>
                     </div>
                     <div class="teclado-compacto-livre" id="teclado-livre-grave">
                         <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ</span></div>
@@ -358,11 +334,6 @@
                 <div class="faixa-teclado-unidade">
                     <div class="topo-faixa-oitava">
                         <span class="badge-faixa-oitava" style="color:#b91c1c;">Oitava 2 (Sub-Grave)</span>
-                        <div class="seletor-timbre-mini" id="timbre-oitava-2">
-                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(2, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
-                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'xilofone', this)">Xilo</button>
-                        </div>
                     </div>
                     <div class="teclado-compacto-livre" id="teclado-livre-subgrave">
                         <div class="tecla-branca-piano" data-nota="C2"><span class="rotulo-nota-branca">DÓ</span></div>
@@ -379,6 +350,46 @@
                         <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#2"><span class="rotulo-nota-preta">FÁ#</span></div>
                         <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#2"><span class="rotulo-nota-preta">SOL#</span></div>
                         <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#2"><span class="rotulo-nota-preta">LÁ#</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="painel-livre-box" id="painel-livre-box" style="display:none">
+                <h3>Ajustes do modo Livre</h3>
+                <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                <label class="piano-opcao"><input type="checkbox" onchange="MotorMusica.alterarDesafioLivre(this.checked)"> Desafio de notas</label>
+                <div class="piano-timbres-livres" aria-label="Instrumento de cada oitava">
+                    <div class="piano-timbre-oitava">
+                        <span>Oitava 5</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-5">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(5, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(5, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="piano-timbre-oitava">
+                        <span>Oitava 4</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-4">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(4, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(4, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="piano-timbre-oitava">
+                        <span>Oitava 3</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-3">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(3, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(3, 'xilofone', this)">Xilo</button>
+                        </div>
+                    </div>
+                    <div class="piano-timbre-oitava">
+                        <span>Oitava 2</span>
+                        <div class="seletor-timbre-mini" id="timbre-oitava-2">
+                            <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreOitava(2, 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'cordas', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Violino</button>
+                            <button type="button" class="btn-mini-timbre" onclick="MotorMusica.trocarTimbreOitava(2, 'xilofone', this)">Xilo</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -419,44 +430,39 @@
                 </div>
 
                 <div class="piano-painel-dueto">
-                    <div class="piano-repertorio">
-                        <label>Estilo
-                            <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
-                                <option value="infantil">Infantil · 20</option>
-                                <option value="classicas">Clássicas · 20</option>
-                                <option value="pop">Pop · 20</option>
-                            </select>
-                        </label>
-                        <label>Música
-                            <select id="seletor-musica-dueto" onchange="MotorMusica.selecionarMusica(this.value)"></select>
-                        </label>
+                    <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
+                    <div class="piano-acoes">
+                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
+                        <button type="button" class="btn-play-pause-musica" id="btn-play-musica-dueto" onclick="MotorMusica.togglePlay()" style="padding:5px 12px; font-size:12px;">
+                            <span id="icone-play-dueto"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-dueto">Jogar</span>
+                        </button>
                     </div>
                     <details class="piano-ajustes">
-                        <summary>Ajustes de som e toque</summary>
-                    <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
-                    <div class="piano-banda" role="group" aria-label="Acompanhamento">
-                        <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
-                        <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
-                        <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
-                    </div>
-                    </details>
-
-                    <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
-                    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px;">
+                        <summary>Música, som e velocidade</summary>
+                        <div class="piano-repertorio">
+                            <label>Estilo
+                                <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
+                                    <option value="infantil">Infantil · 20</option>
+                                    <option value="classicas">Clássicas · 20</option>
+                                    <option value="pop">Pop · 20</option>
+                                </select>
+                            </label>
+                            <label>Música
+                                <select id="seletor-musica-dueto" onchange="MotorMusica.selecionarMusica(this.value)"></select>
+                            </label>
+                        </div>
+                        <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
+                        <div class="piano-banda" role="group" aria-label="Acompanhamento">
+                            <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
+                            <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
+                            <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
+                        </div>
                         <div class="painel-velocidade-bichinhos" id="botoes-velocidade-dueto" style="margin-bottom:0; padding:2px 4px;">
                             <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5, this)" style="padding:3px 6px; font-size:10.5px;">50%</button>
                             <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75, this)" style="padding:3px 6px; font-size:10.5px;">75%</button>
                             <button type="button" class="btn-velocidade-bichinho ativo" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1.0, this)" style="padding:3px 6px; font-size:10.5px;">100%</button>
                         </div>
-
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
-                            <button type="button" class="btn-voltar-dueto" onclick="GerenciadorArcade.voltarAcao()">Voltar</button>
-                            <button type="button" class="btn-play-pause-musica" id="btn-play-musica-dueto" onclick="MotorMusica.togglePlay()" style="padding:5px 12px; font-size:12px;">
-                                <span id="icone-play-dueto"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-dueto">Jogar</span>
-                            </button>
-                        </div>
-                    </div>
+                    </details>
                 </div>
 
                 <div class="bloco-dueto-j1">
@@ -603,8 +609,8 @@
 
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=0f1afd3d00d2"></script>
-    <script src="src/features/kids/piano.js?v=e7e50e6a1dbe"></script>
+    <script src="src/features/kids/piano.js?v=125ca551b817"></script>
 
-    <script src="src/pages/arcade.js?v=3bcf5e44fb41"></script>
+    <script src="src/pages/arcade.js?v=e18fb4acd43a"></script>
 </body>
 </html>

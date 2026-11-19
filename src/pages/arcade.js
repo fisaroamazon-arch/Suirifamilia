@@ -248,6 +248,9 @@
                 } else {
                     MotorFlappy.parar();
                     MotorQuebraBlocos.parar();
+                    if (this.telaAtiva === 'simon' && window.MotorMusica?.modo === 'dueto') {
+                        window.MotorMusica.trocarModo('aprendizado');
+                    }
                     if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
                         window.MotorMusica.pararMusicaEContadores();
                     }
