@@ -1,11 +1,16 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7163';
+const CACHE='suiri-family-v7165';
 const SHELL=[
   "./",
   "./index.html",
-  "./styles/espaco-kids.css?v=fab1f4c65236",
+  "./styles/espaco-kids.css?v=44eeb2ac679f",
   "./manifest.json",
   "./jogos.html",
+  "./assets/icons-modern/kids.svg",
+  "./assets/images/clareira-chuiri.svg",
+  "./assets/audio/piano/piano.mp3",
+  "./assets/audio/piano/cordas.mp3",
+  "./assets/audio/piano/xilofone.mp3",
   "./arte.html",
   "./src/pages/arte.js?v=3dc03c495f89",
   "./styles/pages/arte.css?v=82679152bf8e",
@@ -31,14 +36,14 @@ const SHELL=[
   "./assets/images/arte/ursinho.svg",
   "./src/core/config.js?v=50eb0e2f989b",
   "./src/core/foundation.js?v=43a15d70093e",
-  "./styles/pages/jogos.css?v=18622ccf490d",
+  "./styles/pages/jogos.css?v=311db6c74b4f",
   "./styles/themes.css?v=3911cf04fce3",
   "./src/data/musicas.js?v=ac86a220bd3b",
   "./src/data/partituras.js?v=6f903d6da520",
-  "./src/data/partituras-extras.js?v=c8c93a99f1dd",
+  "./src/data/partituras-extras.js?v=b3d6d41ab058",
   "./src/features/kids/piano-banda.js?v=0f1afd3d00d2",
-  "./src/features/kids/piano.js?v=23df28514270",
-  "./src/pages/arcade.js?v=535a033b5173",
+  "./src/features/kids/piano.js?v=e7e50e6a1dbe",
+  "./src/pages/arcade.js?v=3bcf5e44fb41",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=a9d2847a1b55",
@@ -62,7 +67,7 @@ const SHELL=[
   "./src/features/shopping/mercado.js?v=ec31ec76d512",
   "./src/features/agenda/recorrencia.js?v=bbe9de936651",
   "./src/features/missions/state-and-ui.js?v=4649b051709a",
-  "./src/features/missions/kids.js?v=df5b41a66f66",
+  "./src/features/missions/kids.js?v=c488417695da",
   "./src/core/swipe.js?v=882c9d3b2682",
   "./src/features/missions/missoes.js?v=5c5d214daed4",
   "./src/ui/emoji-selector.js?v=51099e79ed38",
@@ -78,7 +83,7 @@ const SHELL=[
   "./src/core/realtime.js?v=b43020086885",
   "./src/features/reports/relatorios.js?v=f95ceb167fd9",
   "./src/features/help/tour.js?v=919c0eea73a4",
-  "./src/features/kids/mascote.js?v=ecb94df335ad",
+  "./src/features/kids/mascote.js?v=643ef4fc2ed0",
   "./src/features/personal/meu-espaco.js?v=6e7d7c340acf",
   "./src/features/missions/sugestoes.js?v=633f2cd129e1",
   "./src/services/operations.js?v=bf6bb00c2eee",
@@ -203,7 +208,8 @@ self.addEventListener('fetch',event=>{
  if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs)\//.test(url.pathname))return;
  const navigation=req.mode==='navigate';
  const smallAsset=/\.(js|css|png|jpg|svg|json)$/.test(url.pathname);
- if(!navigation&&!smallAsset)return;
+ const pianoSample=/\/assets\/audio\/piano\/(piano|cordas|xilofone)\.mp3$/.test(url.pathname)&&!req.headers.has('range');
+ if(!navigation&&!smallAsset&&!pianoSample)return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);
   if(navigation){

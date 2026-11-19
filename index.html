@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
-<link rel="stylesheet" href="styles/espaco-kids.css?v=fab1f4c65236">
+<link rel="stylesheet" href="styles/espaco-kids.css?v=44eeb2ac679f">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
 </head>
 <body>
@@ -544,23 +544,35 @@
                         <div class="chuiri-vila-cabecalho">
                             <div><h3 id="chuiri-vila-titulo">Vila do Chuíri</h3>
                                 <p id="chuiri-recado-kids" role="status">Vamos brincar?</p></div>
-                            <span class="chuiri-moedas"><span data-chuiri-moedas>50</span> moedas</span>
+                            <span class="chuiri-moedas"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#coin"></use></svg> <span data-chuiri-moedas>50</span> moedas</span>
                         </div>
                         <div class="chuiri-vila-personagens">
+                            <div class="chuiri-vida-da-vila" aria-hidden="true"><i></i><i></i><i></i></div>
+                            <button class="chuiri-joaninha" type="button" aria-label="Fazer a joaninha voar">
+                                <svg viewBox="0 0 32 30" aria-hidden="true"><ellipse fill="#4c2b38" cx="16" cy="8" rx="5" ry="5"/><path fill="#fb6359" d="M16 8c-15 0-15 20 0 20S31 8 16 8Z"/><path stroke="#4c2b38" stroke-width="1.6" d="M16 10v17"/><g fill="#4c2b38"><circle cx="11" cy="16" r="1.8"/><circle cx="21" cy="17" r="1.8"/><circle cx="11" cy="22" r="1.4"/><circle cx="21" cy="23" r="1.4"/></g></svg>
+                            </button>
                             <button id="btn-chuiri-tamagotchi" type="button" onclick="TamagotchiKids.interagirComToque()">
                                 <img id="img-chuiri-animado-widget" alt="">
-                                <span>Fazer carinho</span>
+                                <svg class="chuiri-carinho-efeito" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg>
+                                <span><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg> Fazer carinho</span>
                             </button>
-                            <button id="btn-casinha-tamagotchi" type="button" onclick="TamagotchiKids.abrirCasinha()">
-                                <img src="assets/images/animated/casa.gif" alt="" decoding="async" loading="lazy">
-                                <span>Entrar na casinha</span>
+                            <button id="btn-casinha-tamagotchi" type="button" aria-haspopup="dialog" onclick="TamagotchiKids.abrirCasinhaPelaVila(this)">
+                                <span class="chuiri-casinha-arte">
+                                    <img src="assets/images/animated/casa.gif" alt="" decoding="async" loading="lazy">
+                                    <svg class="chuiri-casinha-luzes" viewBox="0 0 544 544" aria-hidden="true">
+                                        <g class="chuiri-janelas"><ellipse cx="148" cy="295" rx="19" ry="19"/><ellipse cx="119" cy="380" rx="13" ry="20"/><ellipse cx="169" cy="380" rx="17" ry="20"/></g>
+                                        <path class="chuiri-soleira" d="M234 446v-52a21 21 0 0 1 42 0v52Z"/>
+                                        <path class="chuiri-porta" d="M234 446v-52a21 21 0 0 1 42 0v52Z"/>
+                                    </svg>
+                                </span>
+                                <span><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#home"></use></svg> Entrar na casinha</span>
                             </button>
                         </div>
                     </div>
                     <div class="chuiri-vila-atalhos">
-                        <a href="jogos.html"><img src="assets/icons-modern/icone-oficina.svg" alt=""> Jogar</a>
+                        <a href="jogos.html"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#game"></use></svg> Jogar</a>
                         <button type="button" onclick="window.abrirModalRankingEquipe()"><img src="assets/icons-modern/icone-loja.svg" alt=""> Lojinha</button>
-                        <button type="button" data-chuiri-som aria-pressed="false" onclick="TamagotchiKids.alternarSom()">Voz ligada</button>
+                        <button type="button" data-chuiri-som aria-pressed="false" onclick="TamagotchiKids.alternarSom()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#voice"></use></svg> <span>Voz ligada</span></button>
                     </div>
                 </section>
 
@@ -578,14 +590,14 @@
 <dialog id="modal-casinha-chuiri" class="chuiri-casa" aria-labelledby="chuiri-casa-titulo">
     <header class="chuiri-casa-topo">
         <h2 id="chuiri-casa-titulo">Casinha do Chuíri</h2>
-        <span class="chuiri-moedas"><span data-chuiri-moedas>50</span> moedas</span>
+        <span class="chuiri-moedas"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#coin"></use></svg> <span data-chuiri-moedas>50</span> moedas</span>
         <button type="button" class="chuiri-fechar" aria-label="Fechar casinha" autofocus onclick="TamagotchiKids.fecharCasinha()">×</button>
     </header>
     <div class="chuiri-barras">
-        <label>Saciedade <span><progress max="100" value="80" data-chuiri-status="fome"></progress><span aria-hidden="true">80%</span></span></label>
-        <label>Higiene <span><progress max="100" value="90" data-chuiri-status="higiene"></progress><span aria-hidden="true">90%</span></span></label>
-        <label>Energia <span><progress max="100" value="85" data-chuiri-status="energia"></progress><span aria-hidden="true">85%</span></span></label>
-        <label>Alegria <span><progress max="100" value="85" data-chuiri-status="felicidade"></progress><span aria-hidden="true">85%</span></span></label>
+        <label><span class="chuiri-indicador"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#food"></use></svg> Saciedade</span><span><progress max="100" value="80" data-chuiri-status="fome"></progress><span aria-hidden="true">80%</span></span></label>
+        <label><span class="chuiri-indicador"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#water"></use></svg> Higiene</span><span><progress max="100" value="90" data-chuiri-status="higiene"></progress><span aria-hidden="true">90%</span></span></label>
+        <label><span class="chuiri-indicador"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#energy"></use></svg> Energia</span><span><progress max="100" value="85" data-chuiri-status="energia"></progress><span aria-hidden="true">85%</span></span></label>
+        <label><span class="chuiri-indicador"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg> Alegria</span><span><progress max="100" value="85" data-chuiri-status="felicidade"></progress><span aria-hidden="true">85%</span></span></label>
     </div>
     <p id="chuiri-recado-casa" class="chuiri-recado-casa" role="status">Vamos brincar?</p>
     <div class="chuiri-casa-cena">
@@ -1589,7 +1601,7 @@
 <script src="src/features/shopping/mercado.js?v=ec31ec76d512"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4649b051709a"></script>
-<script src="src/features/missions/kids.js?v=df5b41a66f66"></script>
+<script src="src/features/missions/kids.js?v=c488417695da"></script>
 <script src="src/core/swipe.js?v=882c9d3b2682"></script>
 <script src="src/features/missions/missoes.js?v=5c5d214daed4"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
@@ -1605,7 +1617,7 @@
 <script src="src/core/realtime.js?v=b43020086885"></script>
     <script src="src/features/reports/relatorios.js?v=f95ceb167fd9"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
-    <script src="src/features/kids/mascote.js?v=ecb94df335ad"></script>
+    <script src="src/features/kids/mascote.js?v=643ef4fc2ed0"></script>
     <script src="src/features/personal/meu-espaco.js?v=6e7d7c340acf"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
 <script src="src/services/operations.js?v=bf6bb00c2eee"></script>

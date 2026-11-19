@@ -1566,3 +1566,84 @@ body.arcade-page {
 @media (prefers-reduced-motion: reduce) {
     .arcade-page .nota-musical-voando { display: none; }
 }
+
+#tela-simon .kids-icon {
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: -.25em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#tela-simon .piano-placar { flex-wrap: wrap; gap: 5px; }
+#tela-simon .piano-placar > progress { flex-basis: 100%; height: 6px; }
+#tela-simon [data-vidas-piano]:not([hidden]) {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: .38rem;
+    padding: .28rem .48rem;
+    border: 1px solid #9d769866;
+    border-radius: 9px;
+    background: #1d172c;
+    color: #fff1f5;
+    font-size: 11px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+#tela-simon .piano-coracoes { display: flex; gap: .12rem; color: #eaa1ba; }
+#tela-simon .piano-coracoes svg { width: 17px; height: 17px; }
+#tela-simon .piano-coracoes .cheio { fill: #ff7099; color: #ffb6cc; }
+#tela-simon .piano-total-vidas { font-size: 14px; }
+#tela-simon .piano-meta-vida {
+    margin-left: auto;
+    border-left: 1px solid #9d769866;
+    padding-left: .4rem;
+    color: #ffe1a0;
+}
+#tela-simon .piano-controles,
+#tela-simon .piano-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+#tela-simon .piano-controles { margin-bottom: 5px; }
+#tela-simon .piano-controles .painel-velocidade-bichinhos { margin-bottom: 0; }
+#tela-simon .btn-timbre-tab { min-height: 36px; }
+#tela-simon .piano-acoes > button { min-height: 35px; }
+#tela-simon .piano-painel-dueto [data-vidas-piano] { margin-bottom: 4px; }
+
+#tela-simon .piano-ajustes {
+    margin-bottom: .35rem;
+    padding: 0 .5rem;
+    border: 1px solid #82729c80;
+    border-radius: .55rem;
+    text-align: left;
+}
+#tela-simon .piano-ajustes summary {
+    padding: .42rem 0;
+    color: #f0e2fb;
+    font-size: .72rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+#tela-simon .piano-acoes { flex: 1 1 auto; }
+#tela-simon .piano-acoes .btn-play-pause-musica {
+    flex: 1;
+    min-width: 76px;
+    min-height: 40px;
+    color: #30203b;
+    background: #ffe0a5;
+}
+#tela-simon .piano-acoes .btn-voltar-dueto {
+    color: #f5e5ff;
+    background: #ffffff12;
+    border: 1px solid #a892bb;
+}

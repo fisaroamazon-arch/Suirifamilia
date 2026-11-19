@@ -51,21 +51,64 @@
         ['Rua das Lanternas · Synth-pop',103,'Cm Bb F G','a d h d f h m:2 | k f d f k h f:2 | f j h d c f h:2'],
         ['Última Batida · Dance-pop',113,'C G Am F','h h m e h e m:2 | l h f c h f l:2 | j e f h j m m:2']
     ];
-    const converter = ([titulo,bpm,base,tema], estilo) => {
-        const melodia = tema.replace(/\|/g,' ').trim().split(/\s+/).map(token => {
+    const lerFrase = frase => frase.trim().split(/\s+/).map(token => {
             const [letra, duracao] = token.split(':');
             return {n:notas[letra.charCodeAt(0)-97], d:Number(duracao || 1)};
-        });
+    });
+
+    function arranjar(frases, ciclo, bpm, estilo) {
         const compasso = 4;
-        const ciclo = base.split(' ');
-        let restante = melodia.reduce((soma, nota) => soma + nota.d, 0);
+        const melodia = [];
         const harmonia = [];
-        for (let i=0; restante>0; i++) {
-            const nome = ciclo[Math.floor(i/compasso) % ciclo.length];
-            const d = Math.min(1, restante);
-            harmonia.push({nome, notas:[acordes[nome][i % 3]], d});
-            restante -= d;
+        let batidas = 0;
+
+        function adicionar(frase, progressao) {
+            const duracao = frase.reduce((soma, nota) => soma + nota.d, 0);
+            const total = Math.ceil(duracao / compasso) * compasso;
+            melodia.push(...frase.slice(0, -1), {...frase.at(-1), d: frase.at(-1).d + total - duracao});
+            for (let i = 0; i < total; i++) {
+                const nome = progressao[Math.floor(i / compasso) % progressao.length];
+                harmonia.push({nome, notas:[acordes[nome][i % 3]], d:1});
+            }
+            batidas += total;
         }
+
+        const motivo = frases.flat();
+        const notasPonte = [...new Set(motivo.map(nota => nota.n))];
+        const ponte = Array.from({length: 4}, (_, compassoPonte) => {
+            const ordem = [0, 1, 2, 1];
+            return ordem.map((passo, i) => ({
+                n: notasPonte[(compassoPonte + passo) % notasPonte.length],
+                d: estilo === 'pop' ? [0.5, 1.5, 1, 1][i] : 1
+            }));
+        }).flat();
+        const virada = [...ciclo.slice(1), ciclo[0]];
+        const alvo = bpm * 2.25;
+        let secao = 0;
+        while (batidas < alvo) {
+            switch (secao % 5) {
+                case 0: frases.forEach(frase => adicionar(frase, ciclo)); break;
+                case 1:
+                    frases.forEach((frase, indice) => {
+                        const resposta = frase.map((nota, posicao) => ({
+                            ...nota, d: nota.d === 1 ? ((posicao + indice) % 2 ? 1.25 : .75) : nota.d
+                        }));
+                        adicionar(resposta, ciclo);
+                    });
+                    break;
+                case 2: adicionar(ponte, virada); break;
+                case 3: adicionar(motivo, ciclo); break;
+                case 4: adicionar(ponte.slice(8).concat(frases[0]), virada); break;
+            }
+            secao++;
+        }
+        const tonica = acordes[ciclo[0]][0].replace('3', '4');
+        adicionar([{n: motivo.at(-1).n, d: 2}, {n: tonica, d: 6}], [ciclo.at(-1), ciclo[0]]);
+        return {compasso, melodia, harmonia};
+    }
+
+    const converter = ([titulo,bpm,base,tema], estilo) => {
+        const {compasso, melodia, harmonia} = arranjar(tema.split('|').map(lerFrase), base.split(' '), bpm, estilo);
         return {titulo,bpm,estilo,compasso,melodia,harmonia};
     };
     window.CATALOGO_MUSICAS = [

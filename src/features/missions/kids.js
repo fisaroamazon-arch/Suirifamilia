@@ -329,7 +329,7 @@ window.carregarMissoesKidsExclusiva = function() {
                     </button>
                     ${Array.isArray(parciais) ? `
                         <button type="button" class="btn-parcial-kids" data-missao-acao="partial" data-missao-id="${esc(missao.id)}">
-                            Fiz em partes
+                            <svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#partial"></use></svg> Fiz em partes
                             <small>Metade do XP</small>
                         </button>
                     ` : ''}

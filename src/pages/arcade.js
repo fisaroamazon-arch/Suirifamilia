@@ -286,6 +286,7 @@
                     MotorQuebraBlocos.montar();
                 } else if (idJogo === 'simon') {
                     document.getElementById('tela-simon').style.display = 'block';
+                    window.AudioMotor?.carregarAmostra?.('piano');
                     if (window.MotorMusica && typeof window.MotorMusica.montar === 'function') {
                         window.MotorMusica.montar();
                     }

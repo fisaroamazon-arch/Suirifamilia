@@ -205,6 +205,15 @@ window.TamagotchiKids = {
         this.atualizarStatusCompacto();
         this.mostrarRecado('O Chuíri adorou seu carinho!');
         this.definirEstadoAnimacao('feliz', 4500);
+        if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            const coracao = document.querySelector('.chuiri-carinho-efeito');
+            this.animacaoCarinho?.cancel();
+            this.animacaoCarinho = coracao?.animate?.([
+                {opacity: 0, transform: 'translate(0, 8px) scale(.6)'},
+                {opacity: 1, transform: 'translate(4px, -7px) scale(1)', offset: .28},
+                {opacity: 0, transform: 'translate(14px, -28px) scale(1.17)'}
+            ], {duration: 730, easing: 'ease-out'});
+        }
         this.tocarAudio('toque');
     },
 
@@ -227,6 +236,21 @@ window.TamagotchiKids = {
         this.tocarAudio('falha');
     },
 
+    abrirCasinhaPelaVila: function(botao) {
+        const modal = document.getElementById('modal-casinha-chuiri');
+        if (!window.modoKidsAtivo || !modal || modal.open || this.entradaCasinha) return;
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            this.abrirCasinha();
+            return;
+        }
+        botao.classList.add('chuiri-abrindo-casa');
+        this.entradaCasinha = setTimeout(() => {
+            this.entradaCasinha = null;
+            botao.classList.remove('chuiri-abrindo-casa');
+            this.abrirCasinha();
+        }, 360);
+    },
+
     abrirCasinha: function() {
         if (!window.modoKidsAtivo) return;
         const modal = document.getElementById('modal-casinha-chuiri');
@@ -241,6 +265,11 @@ window.TamagotchiKids = {
     },
 
     fecharCasinha: function() {
+        if (this.entradaCasinha) {
+            clearTimeout(this.entradaCasinha);
+            this.entradaCasinha = null;
+            document.getElementById('btn-casinha-tamagotchi')?.classList.remove('chuiri-abrindo-casa');
+        }
         const modal = document.getElementById('modal-casinha-chuiri');
         if (modal?.open) modal.close();
     },
@@ -263,7 +292,10 @@ window.TamagotchiKids = {
         }
         for (const botao of document.querySelectorAll('[data-chuiri-som]')) {
             botao.setAttribute('aria-pressed', String(estado.silencioso === true));
-            botao.textContent = estado.silencioso ? 'Voz desligada' : 'Voz ligada';
+            const icone = estado.silencioso ? 'mute' : 'voice';
+            botao.querySelector('use')?.setAttribute('href', `assets/icons-modern/kids.svg#${icone}`);
+            const rotulo = botao.querySelector('span') || botao;
+            rotulo.textContent = estado.silencioso ? 'Voz desligada' : 'Voz ligada';
         }
         const cama = document.getElementById('btn-acao-cama');
         if (cama) cama.textContent = estado.dormindo ? 'Acordar' : 'Cama';
@@ -377,6 +409,19 @@ window.TamagotchiKids = {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
+    const cena = document.querySelector('.chuiri-vila-cena');
+    function ajustarCeu() {
+        const hora = new Date().getHours();
+        cena?.classList.toggle('chuiri-noite', hora >= 18 || hora < 6);
+    }
+    ajustarCeu();
+    window.addEventListener('focus', ajustarCeu);
+    const joaninha = cena?.querySelector('.chuiri-joaninha');
+    joaninha?.addEventListener('click', () => {
+        if (joaninha.classList.contains('voando')) return;
+        joaninha.classList.add('voando');
+        setTimeout(() => joaninha.classList.remove('voando'), 850);
+    });
     const modal = document.getElementById('modal-casinha-chuiri');
     modal?.addEventListener('cancel', event => {
         if (document.getElementById('menu-geladeira-chuiri').hidden) return;

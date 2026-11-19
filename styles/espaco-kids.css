@@ -99,7 +99,7 @@
     filter: drop-shadow(0 6px 6px #2038264d);
 }
 
-.chuiri-vila-personagens span {
+.chuiri-vila-personagens button > span:not(.chuiri-casinha-arte) {
     padding: .58rem .55rem;
     border-radius: 999px;
     background: var(--chuiri-verde);
@@ -328,4 +328,172 @@
 
 @media (prefers-reduced-motion: reduce) {
     #container-chuiri-ativo { transition: none; }
+}
+
+.kids-icon {
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chuiri-moedas,
+.chuiri-vila-personagens button > span:not(.chuiri-casinha-arte) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .32rem;
+}
+
+.chuiri-vila-cena {
+    position: relative;
+    isolation: isolate;
+    padding: .95rem 0 0;
+    background: linear-gradient(180deg, #bdedea, #eff6ca 76%);
+}
+
+.chuiri-vila-cena.chuiri-noite {
+    background: radial-gradient(ellipse at 70% 72%, #536489, #2a3b64 57%, #202b50);
+    color: #fff4db;
+}
+
+.chuiri-vila-cabecalho,
+.chuiri-vila-personagens { position: relative; }
+.chuiri-vila-cabecalho { padding: 0 .95rem; }
+
+.chuiri-vila-personagens {
+    max-width: none;
+    min-height: 200px;
+    background: url('../assets/images/clareira-chuiri.svg') center bottom / 100% 100% no-repeat;
+    padding: 0 .55rem .64rem;
+}
+
+.chuiri-noite .chuiri-vila-personagens {
+    background-image: linear-gradient(#1e335600 55%, #192f5c46),
+        url('../assets/images/clareira-chuiri.svg');
+}
+
+.chuiri-vila-personagens > button:not(.chuiri-joaninha) {
+    position: relative;
+    isolation: isolate;
+}
+
+.chuiri-vila-personagens > button:not(.chuiri-joaninha)::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: auto auto 2.75rem 50%;
+    width: 50%;
+    height: .65rem;
+    border-radius: 50%;
+    background: #24442655;
+    filter: blur(4px);
+    transform: translateX(-50%);
+}
+
+.chuiri-vila-personagens img {
+    height: clamp(130px, 36vw, 165px);
+    transform: translateY(10px);
+    filter: drop-shadow(0 3px 3px #20382627);
+}
+
+.chuiri-casinha-arte {
+    display: block;
+    position: relative;
+    width: min(100%, clamp(130px, 36vw, 165px));
+    aspect-ratio: 1;
+    transform: translateY(19px);
+}
+
+#btn-casinha-tamagotchi img { height: 100%; transform: none; }
+
+.chuiri-casinha-luzes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.chuiri-janelas {
+    fill: #ffe28c;
+    filter: blur(7px);
+    opacity: 0;
+    transition: opacity 160ms ease-in;
+}
+
+.chuiri-noite .chuiri-janelas { opacity: .65; }
+.chuiri-abrindo-casa .chuiri-janelas { opacity: 1; }
+
+.chuiri-soleira, .chuiri-porta { opacity: 0; }
+.chuiri-soleira { fill: #f1bd70; }
+.chuiri-porta {
+    fill: #3c2218;
+    stroke: #7c512f;
+    stroke-width: 3;
+    transform-origin: 234px 412px;
+    transition: transform 300ms ease-out;
+}
+
+.chuiri-abrindo-casa :is(.chuiri-soleira, .chuiri-porta) { opacity: 1; }
+.chuiri-abrindo-casa .chuiri-porta { transform: scaleX(.32) skewY(-10deg); }
+
+.chuiri-carinho-efeito {
+    position: absolute;
+    top: 28%;
+    left: 63%;
+    width: 28px;
+    height: 28px;
+    opacity: 0;
+    fill: #ed6488;
+    stroke: #fff4dd;
+    stroke-width: 1.6;
+    pointer-events: none;
+}
+.chuiri-vila-personagens .chuiri-joaninha {
+    position: absolute;
+    z-index: 1;
+    left: 45%;
+    bottom: 3.4rem;
+    width: 44px;
+    height: 44px;
+    align-content: center;
+    animation: chuiri-passeio 12s ease-in-out infinite alternate;
+}
+
+.chuiri-joaninha svg { width: 20px; transition: transform .35s, opacity .35s; }
+.chuiri-joaninha.voando svg { transform: translate(40px, -60px) rotate(32deg); opacity: 0; }
+.chuiri-joaninha:focus-visible { outline: solid 2px #563046; border-radius: 50%; }
+.chuiri-noite .chuiri-joaninha { display: none; }
+.chuiri-vida-da-vila { display: none; }
+.chuiri-noite .chuiri-vida-da-vila { display: block; }
+.chuiri-vida-da-vila i {
+    position: absolute;
+    left: 46%;
+    top: 47%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fff3a5;
+    box-shadow: 0 0 8px 3px #ffe8899e;
+    animation: chuiri-vagalume 4.8s ease-in-out infinite alternate;
+}
+.chuiri-vida-da-vila i:nth-child(2) { left: 59%; top: 63%; animation-delay: -1.4s; }
+.chuiri-vida-da-vila i:nth-child(3) { left: 85%; top: 36%; animation-delay: -3s; }
+@keyframes chuiri-passeio { from { transform: translateX(-13px); } to { transform: translateX(9px); } }
+@keyframes chuiri-vagalume { from { opacity: .25; transform: translateY(4px); } to { opacity: 1; transform: translateY(-10px); } }
+
+.btn-parcial-kids .kids-icon { vertical-align: -.2em; }
+.chuiri-barras .chuiri-indicador { gap: .22rem; }
+.chuiri-barras .chuiri-indicador .kids-icon { width: 15px; height: 15px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .chuiri-vila-personagens .chuiri-joaninha,
+    .chuiri-joaninha svg,
+    .chuiri-vida-da-vila i { animation: none; transition: none; }
+    .chuiri-joaninha.voando svg { transform: none; }
 }
