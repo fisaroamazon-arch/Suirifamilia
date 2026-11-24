@@ -245,9 +245,9 @@ window.lerFotoCupomFiscal = async function(arquivo) {
         document.getElementById('input-fin-valor').value=total.toFixed(2);
         window.selecionarTipoRegistroRapido('saida');
         document.getElementById('select-fin-escopo').value = 'pessoal';
-        document.getElementById('select-fin-categoria').value='Supermercado';
+        window.preencherCategoriasFinanceiras('Supermercado');
         // Não insere itens no carrinho: evita contabilizar novamente a compra ao finalizá-lo.
-        Suiri.openModal('modal-registro-rapido-financas');
+        await window.abrirRegistroRapido();
         window.mostrarToast('Confira descrição e total antes de salvar. Os itens não foram enviados ao carrinho.','info');
       } catch (error) { Suiri.notifyError(error); }
     });

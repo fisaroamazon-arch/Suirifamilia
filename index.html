@@ -3,6 +3,7 @@
 <head>
 <script src="src/core/config.js?v=50eb0e2f989b"></script>
 <script src="src/core/foundation.js?v=134013abdc96"></script>
+<script src="src/ui/tema-principal.js?v=6063bc1f0c77"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Suiri Gestão Familiar</title>
@@ -28,6 +29,7 @@
 
     <link rel="stylesheet" href="styles/pages/index.css?v=84ae3fac1f25">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
+<link rel="stylesheet" href="styles/tema-principal.css?v=38485c1bfc0a">
 <link rel="stylesheet" href="styles/atualizacao-v72.css?v=77a831311121">
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
@@ -204,13 +206,15 @@
                             <div id="bloco-conversao-xp-mesada" style="margin-bottom: 12px; padding: 12px 14px; background: #f0f9ff; border: 1.5px dashed #38bdf8; border-radius: 14px;">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                                     <h4 style="margin:0; font-size:13.5px; color:#0369a1;">Câmbio para Mesada</h4>
-                                    <button type="button" class="btn-secundario" style="padding:4px 9px; font-size:10.5px; border-radius:8px;" onclick="window.abrirModalConfigurarTaxaXP()">Ajustar Taxa</button>
+                                    <button type="button" class="btn-secundario" style="padding:4px 9px; font-size:10.5px; border-radius:8px;" id="btn-configurar-taxa-xp" disabled onclick="window.abrirModalConfigurarTaxaXP()">Ajustar Taxa</button>
                                 </div>
+                                <label for="select-kid-conversao-xp">Criança</label>
+                                <select id="select-kid-conversao-xp" onchange="window.atualizarConversaoXP()"></select>
                                 <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom: 10px;">
                                     <span>Taxa: <strong id="lbl-taxa-conversao-xp">100 XP = R$ 5,00</strong></span>
-                                    <span>Criança: <strong id="lbl-xp-disponivel-conversao" style="color:#f97316;">0 XP</strong></span>
+                                    <span>Saldo: <strong id="lbl-xp-disponivel-conversao" style="color:#f97316;">0 XP</strong></span>
                                 </div>
-                                <button type="button" class="btn-sucesso" style="width:100%; border-radius: 12px;" onclick="window.converterXPParaMesada()">Converter XP em Dinheiro</button>
+                                <button type="button" class="btn-sucesso" style="width:100%; border-radius: 12px;" id="btn-converter-xp" disabled onclick="window.converterXPParaMesada()">Converter XP em Dinheiro</button>
                             </div>
                             <div id="lista-historico-kids-adm"></div>
                         </div>
@@ -331,7 +335,7 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px;">
-                        <button type="button" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; border-radius: 14px; background: #fff7ed; border: 1px solid #fed7aa; cursor: pointer; gap: 6px; box-shadow: 0 1px 3px rgba(15,23,42,0.02);" onclick="document.getElementById('modal-registro-rapido-financas').classList.remove('oculto');">
+                        <button type="button" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; border-radius: 14px; background: #fff7ed; border: 1px solid #fed7aa; cursor: pointer; gap: 6px; box-shadow: 0 1px 3px rgba(15,23,42,0.02);" onclick="window.abrirRegistroRapido()">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             <span style="font-size: 11px; font-weight: 800; color: #ea580c;">Registar Valor</span>
                         </button>
@@ -399,10 +403,32 @@
                         <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Gerar Balanço</button>
                     </div>
 
+                    <div class="cartao-geral" style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <label>Gráfico
+                            <select id="relatorio-formato-grafico" onchange="window.renderizarGraficoCategorias()">
+                                <option value="colunas">Colunas</option>
+                                <option value="barras">Barras</option>
+                                <option value="pizza">Pizza</option>
+                            </select>
+                        </label>
+                        <label>Movimentação
+                            <select id="relatorio-tipo-grafico" onchange="window.renderizarGraficoCategorias()">
+                                <option value="saida">Despesas</option>
+                                <option value="entrada">Receitas</option>
+                            </select>
+                        </label>
+                        <label>Agrupar por
+                            <select id="relatorio-grupo-grafico" onchange="window.renderizarGraficoCategorias()">
+                                <option value="categoria">Categoria</option>
+                                <option value="subcategoria">Subcategoria</option>
+                            </select>
+                        </label>
+                    </div>
+
                     <div id="relatorio-pdf-container" class="oculto">
                         <div id="area-resultados-relatorio"></div>
                         <div class="cartao-geral" style="margin-top: 10px;">
-                            <h4 style="font-size: 13.5px; margin-bottom: 8px; text-align: center; color: #0f172a;">Comparativo: Renda vs Gastos Próprios</h4>
+                            <h4 style="font-size: 13.5px; margin-bottom: 8px; text-align: center; color: #0f172a;" id="titulo-grafico-categorias">Distribuição por Categoria</h4>
                             <div style="position: relative; height: 220px; width: 100%;">
                                 <canvas id="grafico-barras-renda-gastos"></canvas>
                             </div>
@@ -666,6 +692,11 @@
  <p id="suiri-offline-status" role="status"></p><button type="button" class="btn-secundario" onclick="window.processarFilaOffline().catch(Suiri.notifyError)">Sincronizar pendências</button>
  <p class="suiri-hint">As alterações de foto e as demais gravações exigem conexão. Notificações em segundo plano dependem de configuração do serviço de envio.</p>
  <p class="suiri-hint">Dados pessoais antigos sem identificação foram preservados neste aparelho. Eles não são associados automaticamente a outra pessoa.</p>
+ <label for="suiri-config-tema">Aparência</label>
+ <select id="suiri-config-tema" onchange="Suiri.theme.set(this.value)">
+    <option value="claro">Modo claro</option>
+    <option value="escuro">Modo escuro</option>
+ </select>
  <button type="button" class="btn-secundario" onclick="Suiri.closeModal('modal-suiri-config'); window.abrirAvisoPrivacidade()">Privacidade dos dados</button>
  <button type="button" class="btn-secundario" onclick="window.exportarDadosLocaisSuiri()">Exportar dados locais antigos</button>
  <button type="button" class="btn-secundario" onclick="window.importarDadosLocaisSuiri()">Importar meus dados antigos</button><p class="suiri-hint">Suiri Família 7.7 · <a href="docs/LEIA_PRIMEIRO.html" target="_blank" rel="noopener">Guia desta versão</a></p>
@@ -715,7 +746,7 @@
         <div class="modal-conteudo modal-bottom-sheet">
             <div class="modal-header" style="border-bottom: none; margin-bottom: 0;">
                 <h3 style="font-size:18px;">Registar Valor</h3>
-                <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px;" onclick="document.getElementById('modal-registro-rapido-financas').classList.add('oculto')">✕</button>
+                <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px;" onclick="Suiri.closeModal('modal-registro-rapido-financas')">✕</button>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top:10px;">
@@ -733,18 +764,24 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
                 <input type="number" step="0.01" id="input-fin-valor" placeholder="R$ 0,00">
-                <select id="select-fin-categoria">
+                <select id="select-fin-categoria" aria-label="Categoria" onchange="window.atualizarSubcategoriasFinanceiras()">
                     <option value="Geral">Geral</option>
-                    <option value="Supermercado">Supermercado</option>
-                    <option value="Moradia">Moradia</option>
-                    <option value="Lazer">Lazer</option>
-                    <option value="Alimentação">Alimentação</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Educação">Educação</option>
-                    <option value="Salário">Renda/Salário</option>
                 </select>
             </div>
+
+            <label for="select-fin-subcategoria">Subcategoria</label>
+            <select id="select-fin-subcategoria" style="margin-bottom:12px;">
+                <option value="">Sem subcategoria</option>
+            </select>
+            <details style="margin-bottom:12px;">
+                <summary>Criar categoria ou subcategoria</summary>
+                <label for="input-fin-nova-categoria">Nome</label>
+                <input id="input-fin-nova-categoria" maxlength="60" autocomplete="off">
+                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <button type="button" class="btn-secundario" onclick="window.criarCategoriaFinanceira(false)">Criar categoria</button>
+                    <button type="button" class="btn-secundario" onclick="window.criarCategoriaFinanceira(true)">Criar na categoria selecionada</button>
+                </div>
+            </details>
 
             <select id="select-fin-escopo" style="width:100%; margin-bottom:16px;">
                 <option value="casa">Gasto da Família (Compartilhado)</option>
@@ -1620,14 +1657,14 @@
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
 <script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
-<script src="src/features/shopping/mercado.js?v=ffa4f0ee9b8d"></script>
+<script src="src/features/shopping/mercado.js?v=976d0601c872"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4649b051709a"></script>
-<script src="src/features/missions/kids.js?v=c488417695da"></script>
+<script src="src/features/missions/kids.js?v=5ca8889fbbd4"></script>
 <script src="src/core/swipe.js?v=882c9d3b2682"></script>
-<script src="src/features/missions/missoes.js?v=5c5d214daed4"></script>
+<script src="src/features/missions/missoes.js?v=44c347a263f3"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
-<script src="src/features/finances/voice-and-entry.js?v=b3be37020d20"></script>
+<script src="src/features/finances/voice-and-entry.js?v=8ec00abd51b2"></script>
 <script src="src/features/finances/wallet.js?v=2666571ad62c"></script>
 <script src="src/features/savings/cofres.js?v=476f0fdddf3a"></script>
 <script src="src/features/notices/recados.js?v=7da866d472eb"></script>
@@ -1637,12 +1674,12 @@
 <script src="src/features/agenda/calendario.js?v=5d3a86357091"></script>
 <script src="src/features/notifications/painel.js?v=430ec365766e"></script>
 <script src="src/core/realtime.js?v=f81ce057c2e0"></script>
-    <script src="src/features/reports/relatorios.js?v=f95ceb167fd9"></script>
+    <script src="src/features/reports/relatorios.js?v=6c9ae67ab941"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
     <script src="src/features/kids/mascote.js?v=643ef4fc2ed0"></script>
     <script src="src/features/personal/meu-espaco.js?v=6e7d7c340acf"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
-<script src="src/services/operations.js?v=bf6bb00c2eee"></script>
+<script src="src/services/operations.js?v=d81ab58c7d00"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
 <script src="src/core/navigation.js?v=a90194488572"></script>
 

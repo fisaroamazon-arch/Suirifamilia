@@ -457,9 +457,17 @@ document.addEventListener('click', (e) => {
     }
 });
 
+function podeEditarMissaoSuiri(missao) {
+    const audiencia = window.audienciaMissaoSuiri(missao);
+    if (audiencia === 'kids' || audiencia === 'kids-individual') {
+        return ehAdministrador() && !window.modoKidsAtivo && window.perfilAtual?.id === window.usuarioAtual?.id;
+    }
+    return missaoVisivelNoPainelAdulto(missao);
+}
+
 window.iniciarEdicaoMissao = function(id) {
     const missao = cacheMissoes.find(m => m.id === id);
-    if (!missao || !missaoVisivelNoPainelAdulto(missao)) return;
+    if (!missao || !podeEditarMissaoSuiri(missao)) return;
 
     document.getElementById(`menu-drop-missao-${id}`)?.classList.add('oculto');
     const cardPai = document.getElementById(`card-missao-bloco-${id}`);
@@ -490,7 +498,7 @@ window.iniciarEdicaoMissao = function(id) {
     setVal('edit-missao-id', missao.id);
     setVal('edit-missao-titulo', missao.titulo || '');
     setVal('edit-missao-prioridade', missao.prioridade || '2');
-    setVal('edit-missao-recorrencia', missao.recorrencia_tipo || 'diaria_24h');
+    setVal('edit-missao-recorrencia', missao.recorrencia_tipo === 'unica' ? 'nenhuma' : missao.recorrencia_tipo || 'diaria_24h');
     
     const iconeChave = missao.icone || '⭐';
     const inputEmoji = document.getElementById('edit-missao-emoji');
@@ -505,11 +513,11 @@ window.iniciarEdicaoMissao = function(id) {
     
     const btnEditIcone = document.getElementById('btn-icone-edit-missao');
     if (btnEditIcone) {
-        btnEditIcone.innerHTML = `<span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">${iconeChave}</span>`;
+        btnEditIcone.innerHTML = `<span id="svg-preview-edit-missao" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; font-size:32px; line-height:1; user-select:none;">${window.esc(iconeChave)}</span>`;
     }
     
     let respSel = 'todos';
-    if (missao.destinatario_kids === 'todos_kids') respSel = 'todos_kids';
+    if (window.audienciaMissaoSuiri(missao) === 'kids' && !missao.atribuido_a) respSel = 'todos_kids';
     else if (ehMissaoPessoalSuiri(missao)) respSel = 'individual';
     else if (missao.atribuido_a) respSel = missao.atribuido_a;
     setVal('edit-missao-responsavel', respSel);
@@ -517,14 +525,14 @@ window.iniciarEdicaoMissao = function(id) {
     setVal('edit-missao-horario-limite', missao.horario_limite ? missao.horario_limite.slice(0, 5) : '');
     setVal('edit-missao-horario-reinicio', missao.horario_reinicio ? missao.horario_reinicio.slice(0, 5) : '04:00');
 
-    document.getElementById('modal-editar-missao')?.classList.remove('oculto');
+    Suiri.openModal('modal-editar-missao');
 };
 
 window.fecharModalEditarMissao = function() {
-    document.getElementById('modal-editar-missao')?.classList.add('oculto');
+    Suiri.closeModal('modal-editar-missao');
 };
 
-window.salvarEdicaoMissao = async function() {
+window.salvarEdicaoMissao = () => Suiri.once('editar-missao', async () => {
     const supabase = obterClienteSupabase();
     const id = document.getElementById('edit-missao-id')?.value;
     const titulo = document.getElementById('edit-missao-titulo')?.value?.trim();
@@ -541,7 +549,9 @@ window.salvarEdicaoMissao = async function() {
     if (!titulo) return window.mostrarToast("O título não pode estar vazio.", "erro");
 
     const missaoAtual = cacheMissoes.find(m => m.id === id);
-    if (!missaoAtual || !missaoVisivelNoPainelAdulto(missaoAtual)) return;
+    if (!supabase || !missaoAtual || !podeEditarMissaoSuiri(missaoAtual)) {
+        return window.mostrarToast('Esta tarefa não pode ser editada pelo perfil atual.', 'erro');
+    }
     if (respValor === 'individual' && missaoAtual.criado_por && missaoAtual.criado_por !== obterUsuarioId()) {
         return window.mostrarToast('Só quem criou a missão pode torná-la pessoal.', 'erro');
     }
@@ -582,20 +592,26 @@ window.salvarEdicaoMissao = async function() {
         horario_reinicio: horaReinicio.length === 5 ? horaReinicio + ':00' : horaReinicio
     };
 
-    let { error } = await supabase.from('missoes').update(payloadUpdate).eq('id', id);
-
-    if (error && error.message && error.message.includes('icone')) {
-        delete payloadUpdate.icone;
-        const resFallback = await supabase.from('missoes').update(payloadUpdate).eq('id', id);
-        error = resFallback.error;
+    if (missaoAtual.recorrencia_tipo !== recorrenciaTipo || missaoAtual.horario_reinicio !== payloadUpdate.horario_reinicio) {
+        payloadUpdate.proxima_execucao = calcularProximaDataExecucao(recorrenciaTipo, horaReinicio);
+    }
+    try {
+        let resultado = await supabase.from('missoes').update(payloadUpdate)
+            .eq('id', id).eq('familia_id', window.familiaAtualId).select('id');
+        if (resultado.error?.code === 'PGRST204' && resultado.error.message.includes('icone')) {
+            delete payloadUpdate.icone;
+            resultado = await supabase.from('missoes').update(payloadUpdate)
+                .eq('id', id).eq('familia_id', window.familiaAtualId).select('id');
+        }
+        Suiri.check(resultado, 1);
+    } catch (error) {
+        return Suiri.notifyError(error);
     }
 
-    if (error) return window.mostrarToast("Erro ao atualizar: " + error.message, "erro");
-
     window.fecharModalEditarMissao();
-    window.mostrarToast("Missão confirmada e atualizada com sucesso!");
+    window.mostrarToast('Tarefa atualizada.');
     await window.carregarMissoesDoDia();
-};
+});
 
 // =========================================================================
 // 10. CONCLUSÃO E PENALIZAÇÃO (FOTINHAS COOPERATIVAS APLICADAS - TRICOLOR)

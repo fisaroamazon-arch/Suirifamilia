@@ -2,6 +2,7 @@ const {PGlite}=require('@electric-sql/pglite');
 const fs=require('fs'),assert=require('node:assert/strict');
 const sql=fs.readFileSync('supabase/02_ATUALIZAR_V7.sql','utf8');
 const parcialSQL=fs.readFileSync('supabase/05_MISSOES_PARCIAIS_V7163.sql','utf8');
+const kidsCategoriasSQL=fs.readFileSync('supabase/migrations/20261124031217_kids_e_categorias.sql','utf8');
 const db=new PGlite();
 const uid='10000000-0000-4000-8000-000000000001',adult='10000000-0000-4000-8000-000000000002',kid='10000000-0000-4000-8000-000000000003',other='10000000-0000-4000-8000-000000000004';
 const fam='20000000-0000-4000-8000-000000000001',fam2='20000000-0000-4000-8000-000000000002';
@@ -38,6 +39,8 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  await db.exec(sql);
  await db.exec(parcialSQL);
  await db.exec(fs.readFileSync('supabase/03_TRANSFERENCIAS_V71.sql','utf8'));
+ await db.exec(kidsCategoriasSQL);
+ await db.exec(kidsCategoriasSQL);
  await q('insert into auth.users values($1),($2),($3),($4)',[uid,adult,kid,other]);
  await q('insert into familias(id,nome_familia)values($1,$2),($3,$4)',[fam,'Teste A',fam2,'Teste B']);
  for(const [id,f,p,k,xp]of [[uid,fam,'adm',false,1000],[adult,fam,'adulto',false,100],[kid,fam,'dependente',true,450],[other,fam2,'adm',false,100]])await q('insert into membros(id,familia_id,nome,papel,eh_kids,xp_total)values($1,$2,$3,$4,$5,$6)',[id,f,id,p,k,xp]);
@@ -124,7 +127,40 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   assert.equal((await q('select status from missoes where id=$1',[mission])).rows[0].status,'concluida');
   assert.equal((await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total,before+20);
  });
- await test('mesada debita XP e cria entrada na mesma transação',async()=>{const r=await op('allowance',{rate:{qtd:100,valor:5}});assert.equal(r.count,1);assert.equal((await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total,70);});
+ await test('mesada e taxa independentes por criança, com conversão atômica e repetição segura',async()=>{
+  const segundo='10000000-0000-4000-8000-000000000006';
+  await q("insert into membros(id,familia_id,nome,papel,eh_kids,xp_total) values($1,$2,'Segundo Kid','dependente',true,220)",[segundo,fam]);
+  const rate={qtd:100,valor:5};
+  await expectFailure(()=>op('allowance',{rate}));
+  await expectFailure(()=>op('allowance',{kid:other,rate}));
+  await expectFailure(()=>op('allowance',{kid,rate:{qtd:100,valor:6}}));
+  await op('allowance_rate',{kid:segundo,rate:{qtd:50,valor:2.5}});
+  const id=crypto.randomUUID();
+  const r=await op('allowance',{kid,rate},uid,id);
+  assert.equal(r.amount,20);
+  assert.equal(r.xp,400);
+  assert((await op('allowance',{kid,rate},uid,id)).repeated);
+  assert.equal((await q('select xp_total from membros where id=$1',[kid])).rows[0].xp_total,70);
+  assert.equal((await q('select xp_total from membros where id=$1',[segundo])).rows[0].xp_total,220);
+  const segundaConversao=await op('allowance',{kid:segundo,rate:{qtd:50,valor:2.5}});
+  assert.equal(segundaConversao.amount,10);
+  assert.equal((await q('select xp_total from membros where id=$1',[segundo])).rows[0].xp_total,20);
+ });
+ await test('catálogo separa tipos, deduplica nomes e mantém isolamento de família',async()=>{
+  const criar=(tipo,nome,sub=null)=>q('select suiri_criar_categoria_financeira($1,$2,$3) as r',[tipo,nome,sub]);
+  await db.exec('grant select on membros to authenticated; create policy teste_membros_legado on membros for select to authenticated using (true); set role authenticated');
+  await criar('entrada','Projetos');
+  await criar('saida','Projetos','Pesquisa');
+  await criar('saida','projetos','pesquisa');
+  const linhas=(await q('select tipo,nome,subcategorias from suiri_categorias_financeiras order by tipo')).rows;
+  assert.deepEqual(linhas,[{tipo:'entrada',nome:'Projetos',subcategorias:[]},{tipo:'saida',nome:'Projetos',subcategorias:['Pesquisa']}]);
+  await q("select set_config('request.jwt.claim.sub',$1,false)",[other]);
+  assert.equal((await q('select * from suiri_categorias_financeiras')).rows.length,0);
+  await q("select set_config('request.jwt.claim.sub',$1,false)",[kid]);
+  await expectFailure(()=>criar('saida','Despesas'));
+  await q("select set_config('request.jwt.claim.sub',$1,false)",[uid]);
+  await db.exec('reset role');
+ });
  await test('recompensa padrão usa preço do servidor e aceita replay do mesmo ID',async()=>{const id=crypto.randomUUID();const r=await op('reward',{id:'game_time',cost:-100},uid,id);assert.equal(r.xp,800);assert((await op('reward',{id:'game_time'},uid,id)).repeated);});
  await test('bloqueio impede criança de operar finanças',async()=>{await expectFailure(()=>op('contribution',{amount:1,destination:'pessoal'},kid));});
  await test('usuário autenticado não grava diretamente no ledger',async()=>{
@@ -134,8 +170,8 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  });
  await test('RPC funciona com privilégio authenticated e autorização explícita',async()=>{await db.exec('set role authenticated');const r=await op('contribution',{amount:1,destination:'pessoal'});assert(r.ok);await db.exec('reset role');});
  await test('extrato mascara detalhes privados no servidor',async()=>{
-  await q("insert into transacoes(familia_id,membro_id,tipo,valor,descricao,categoria,data_transacao,escopo,eh_privado)values($1,$2,'saida',1,'SEGREDO_PRIVADO','CATEGORIA_PRIVADA',current_date,'pessoal',true)",[fam,adult]);
-  const r=await q('select suiri_extrato_v7() as r');assert(!JSON.stringify(r.rows).includes('SEGREDO_PRIVADO'));assert(JSON.stringify(r.rows).includes('Gasto Privado'));
+  await q("insert into transacoes(familia_id,membro_id,tipo,valor,descricao,categoria,subcategoria,data_transacao,escopo,eh_privado)values($1,$2,'saida',1,'SEGREDO_PRIVADO','CATEGORIA_PRIVADA','SUBCATEGORIA_PRIVADA',current_date,'pessoal',true)",[fam,adult]);
+  const r=await q('select suiri_extrato_v7() as r');assert(!JSON.stringify(r.rows).includes('SEGREDO_PRIVADO'));assert(JSON.stringify(r.rows).includes('Gasto Privado'));assert(!JSON.stringify(r.rows).includes('SUBCATEGORIA_PRIVADA'));
  });
  await test('RLS restringe consulta direta mesmo com política antiga permissiva',async()=>{
   await db.exec('grant select on transacoes to authenticated; create policy teste_leitura_antiga on transacoes for select to authenticated using(true)');
@@ -204,7 +240,7 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   await q("insert into missoes(id,familia_id,titulo,status,escopo,criado_por,xp_recompensa,recorrencia_tipo)values($1,$2,'Casa','pendente','casa',$3,20,'nenhuma')",[adulta,fam,uid]);
   assert.match(await expectFailure(()=>op('mission',{id:adulta,action:'partial'})),/somente no Espaço Kids/);
  });
- await test('migração é reaplicável sem perder dados',async()=>{await db.exec(sql);await db.exec(parcialSQL);await db.exec(parcialSQL);assert.equal(Number((await q('select count(*)n from membros')).rows[0].n),4);});
+ await test('migração é reaplicável sem perder dados',async()=>{await db.exec(sql);await db.exec(parcialSQL);await db.exec(parcialSQL);await db.exec(kidsCategoriasSQL);assert.equal(Number((await q('select count(*)n from membros')).rows[0].n),5);});
  await db.close();
  fs.mkdirSync('.test-results',{recursive:true});fs.writeFileSync('.test-results/sql-v7.json',JSON.stringify({engine:'PGlite/PostgreSQL em memória; schema de teste compatível, não o Supabase real',checks},null,2));console.log(JSON.stringify(checks,null,2));
 })().catch(e=>{console.error(e.message,e.detail||'',e.where||'',e.position||'');process.exit(1)});
