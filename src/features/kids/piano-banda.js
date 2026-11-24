@@ -4,12 +4,14 @@ window.BandaPiano = (() => {
     let ruido;
 
     function numero(nota) {
-        return (Number(nota.at(-1)) + 1) * 12 + alturas.indexOf(nota.slice(0,-1));
+        const [, altura, oitava] = /^([A-G]#?)(-?\d+)$/.exec(nota);
+        return (Number(oitava) + 1) * 12 + alturas.indexOf(altura);
     }
 
     function montar(musica) {
         const eventos = [];
-        const fim = musica.melodia.reduce((soma, nota) => soma + nota.d, 0);
+        const fim = musica.duracao ? musica.duracao * musica.bpm / 60 :
+            musica.melodia.reduce((soma, nota) => soma + nota.d, 0);
         const compasso = musica.compasso || 4;
         const pop = musica.estilo === 'pop';
         const classica = musica.estilo === 'classicas';
@@ -18,10 +20,13 @@ window.BandaPiano = (() => {
         };
         let tempo = 0;
         for (const item of musica.harmonia || []) {
+            tempo = item.t ?? tempo;
             for (const nota of item.notas) {
                 const midi = numero(nota);
                 adicionar(tempo, midi, 1, item.d * .74, 53);
-                if (Math.floor(tempo) % 2 === 0) adicionar(tempo, midi - 12, 0, item.d * .8, 73);
+                if (!classica && midi >= 12 && Math.floor(tempo) % 2 === 0) {
+                    adicionar(tempo, midi - 12, 0, item.d * .8, 73);
+                }
             }
             tempo += item.d;
         }

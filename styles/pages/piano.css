@@ -1,0 +1,119 @@
+.arcade-page #tela-simon {
+    background: radial-gradient(ellipse at 60% 0%, #604573 0, #262a50 39%, #181a31 80%);
+    --piano-aguda: #d6abff;
+    --piano-grave: #8be7ed;
+}
+.piano-estudio {
+    max-width: 440px;
+    margin: 4px auto 6px;
+    padding: 7px 12px;
+    border: 1px solid #d7c8ff47;
+    border-radius: 14px;
+    background: linear-gradient(120deg, #443562, #34496c);
+    color: #fff2de;
+    text-align: left;
+}
+.piano-estudio h2 { font-size: 1.12rem; line-height: 1.18; letter-spacing: -.02em; }
+.piano-estudio p { font-size: .73rem; margin-top: 2px; color: #eedffc; }
+#tela-simon[data-modo-piano="dueto"] .piano-estudio { display: none; }
+#tela-simon #painel-aprendizado-box {
+    border-radius: 17px;
+    background: linear-gradient(137deg, #383456, #2d2b4a 58%, #3f3049);
+    border-color: #c4a7df69;
+}
+#tela-simon .piano-repertorio label { font-weight: 750; }
+#tela-simon .piano-repertorio label select { min-width: 0; }
+.piano-oitavas-guia {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 2px .34rem;
+    color: #f1e6fb;
+    font-size: .73rem;
+    margin: 5px 0;
+}
+.piano-oitavas-guia b:first-child { color: var(--piano-aguda); }
+.piano-oitavas-guia b:nth-of-type(2) { color: var(--piano-grave); }
+.piano-fonte { margin: 0 0 5px; font-size: .7rem; text-align: center; }
+.piano-fonte a { color: #e8d7ff; text-underline-offset: 2px; }
+.piano-fonte span { display: block; color: #e8d7ff; overflow-wrap: anywhere; }
+#tela-simon .piano-parte:not([hidden]) { display: grid; gap: 3px; margin-block: 3px 7px; font-size: .75rem; }
+.piano-parte select { width: 100%; min-width: 0; }
+
+#tela-simon .piano-sem-relogio {
+    min-height: 40px;
+    padding: 4px 7px;
+    border-radius: 8px;
+    border: 1px solid #ae9bc0;
+    background: #37365a;
+    color: #f3e9ff;
+    font-size: .72rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+#tela-simon .piano-sem-relogio[aria-pressed="true"] {
+    background: #dbc5f7;
+    color: #39234f;
+    border-color: #e4cbff;
+}
+#tela-simon .piano-acoes { justify-content: flex-start; }
+#tela-simon [data-oitava^="↑"] { color: var(--piano-aguda) !important; }
+#tela-simon [data-oitava^="↓"] { color: var(--piano-grave) !important; }
+#tela-simon [data-oitava]:not([data-oitava=""]) {
+    background: #242039;
+    border: 1px solid #a99abb;
+    border-radius: 7px;
+    padding: 2px 4px;
+    white-space: normal;
+}
+#tela-simon [data-oitava]:not([data-oitava=""])::after {
+    content: " " attr(data-oitava);
+    display: inline-block;
+    margin-inline-start: 3px;
+}
+#tela-simon [data-oitava-alvo^="↑"], #tela-simon .tocando[data-oitava-tocada^="↑"] { --piano-oitava-tinta: var(--piano-aguda); }
+#tela-simon [data-oitava-alvo^="↓"], #tela-simon .tocando[data-oitava-tocada^="↓"] { --piano-oitava-tinta: var(--piano-grave); }
+
+#tela-simon [data-oitava-alvo]::after,
+#tela-simon [data-oitava-tocada]::after {
+    content: attr(data-oitava-alvo);
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: max-content;
+    max-width: 98%;
+    padding: 2px 3px;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    background: #242039;
+    color: var(--piano-oitava-tinta);
+    font-size: clamp(8px, 2.7vw, 11px);
+    font-weight: 850;
+    pointer-events: none;
+}
+#tela-simon [data-oitava-tocada]::after { content: attr(data-oitava-tocada); }
+#tela-simon [data-oitava-alvo],
+#tela-simon .tocando[data-oitava-tocada] {
+    box-shadow: inset 0 -4px var(--piano-oitava-tinta), inset 0 0 16px var(--piano-oitava-tinta) !important;
+}
+#tela-simon .tocando[data-oitava-tocada] {
+    background: linear-gradient(#fff4fa, var(--piano-oitava-tinta) 45%, #776ca5) !important;
+}
+#tela-simon .tocando[data-oitava-tocada] > span {
+    color: #201b35;
+}
+#tela-simon #pista-esteira-box {
+    border-radius: 16px 16px 8px 8px;
+    border-color: #9793bf;
+    box-shadow: 0 8px 26px #100d2f7a;
+}
+#tela-simon #teclado-piano-completo {
+    border-radius: 8px 8px 16px 16px;
+    box-shadow: 0 8px 28px #140f2f98;
+}
+@media (max-width: 380px) {
+    #tela-simon .piano-acoes { gap: 3px; }
+    #tela-simon .piano-sem-relogio { font-size: .66rem; }
+}
