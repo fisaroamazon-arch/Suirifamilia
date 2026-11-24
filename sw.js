@@ -4,7 +4,7 @@ const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
   "./src/ui/visual-v73.js?v=66da58d67c66",
-  "./styles/financas.css?v=a13192c93ce8",
+  "./styles/financas.css?v=07e53eca63c0",
   "./",
   "./index.html",
   "./src/ui/download-android.js?v=1048b2414956",

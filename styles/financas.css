@@ -279,7 +279,7 @@ html[data-theme] body .fin-sugestoes button {
 
 .fin-copia-pdf .fin-extrato-texto { display: block; overflow: visible; }
 .fin-copia-pdf :is(.fin-extrato-item, .fin-totais > div, .fin-comparacao > li) { break-inside: avoid; }
-.fin-copia-pdf :is(.fin-resumo::after, .fin-ver-mais) { display: none; }
+.fin-copia-pdf .fin-resumo::after, .fin-copia-pdf .fin-ver-mais { display: none; }
 
 @keyframes fin-aparecer { from { opacity: .44; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fin-crescer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
