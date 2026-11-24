@@ -600,3 +600,5 @@ html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button {
 }
 html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button > span { color: inherit !important; }
 html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button[aria-pressed="true"] { background: #3b5368 !important; }
+
+.chuiri-vila-atalhos > button:last-child:nth-child(3) { grid-column: 1 / -1; }

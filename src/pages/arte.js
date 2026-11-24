@@ -1,24 +1,23 @@
 (() => {
     'use strict';
 
-    const paginas = [
-        ['ursinho', 'Ursinho'], ['gato', 'Gato'], ['raposa', 'Raposa'], ['borboleta', 'Borboleta'],
-        ['abelha', 'Abelha'], ['peixe', 'Peixe'], ['tartaruga', 'Tartaruga'], ['baleia', 'Baleia'],
-        ['arvore', 'Árvore'], ['flor', 'Flor'], ['casa', 'Casa'], ['foguete', 'Foguete'],
-        ['planeta', 'Planeta'], ['robo', 'Robô'], ['dino', 'Dinossauro'], ['caracol', 'Caracol'],
-        ['sorvete', 'Sorvete'], ['barco', 'Barco'], ['castelo', 'Castelo'], ['arco-iris', 'Arco-íris']
-    ];
     const obter = id => document.getElementById(id);
     const papel = obter('papel');
-    const tamanho = papel.width;
+    const tamanho = 640;
     const exibicao = papel.getContext('2d');
-    const camada = () => {
+    const camada = (largura, altura) => {
         const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = tamanho;
+        canvas.width = largura;
+        canvas.height = altura;
         return canvas.getContext('2d', {willReadFrequently: true});
     };
-    const tinta = camada();
-    const rascunho = camada();
+    const tinta = camada(papel.width, papel.height);
+    const rascunho = camada(papel.width, papel.height);
+    const ferramentas = obter('ferramentas-arte');
+    const botaoFerramentas = obter('abrir-ferramentas');
+    const botaoFullscreen = obter('tela-cheia-arte');
+    const { niveis, renderizar } = window.SuiriDesenhosArte;
+    let nivel = 'facil';
     const aviso = obter('arte-aviso');
     const desfazer = obter('desfazer');
     const refazer = obter('refazer');
@@ -34,12 +33,35 @@
     let revisaoModelo = 0;
     let quadro = 0;
 
+    function centralizar(ctx, imagem) {
+        const fator = Math.min(ctx.canvas.width / imagem.width, ctx.canvas.height / imagem.height);
+        const largura = imagem.width * fator;
+        const altura = imagem.height * fator;
+        ctx.drawImage(imagem, (ctx.canvas.width - largura) / 2, (ctx.canvas.height - altura) / 2, largura, altura);
+    }
+
+    function ajustarPapel() {
+        const area = papel.getBoundingClientRect();
+        if (!area.width || !area.height) return;
+        const escala = 1000 / Math.max(area.width, area.height);
+        const largura = Math.round(area.width * escala);
+        const altura = Math.round(area.height * escala);
+        if (papel.width === largura && papel.height === altura) return;
+        finalizarTraco();
+        const anterior = camada(papel.width, papel.height);
+        anterior.drawImage(tinta.canvas, 0, 0);
+        papel.width = tinta.canvas.width = rascunho.canvas.width = largura;
+        papel.height = tinta.canvas.height = rascunho.canvas.height = altura;
+        centralizar(tinta, anterior.canvas);
+        desenhar();
+    }
+
     function desenhar() {
         cancelAnimationFrame(quadro);
         quadro = 0;
         exibicao.fillStyle = '#ffffff';
-        exibicao.fillRect(0, 0, tamanho, tamanho);
-        if (modelo && !modelo.contorno) exibicao.drawImage(modelo.imagem, 0, 0);
+        exibicao.fillRect(0, 0, papel.width, papel.height);
+        if (modelo && !modelo.contorno) centralizar(exibicao, modelo.imagem);
         exibicao.drawImage(tinta.canvas, 0, 0);
         if (traco && traco.pincel !== 'borracha') {
             exibicao.globalAlpha = traco.pincel === 'marca' ? .38 : 1;
@@ -48,7 +70,7 @@
         }
         if (modelo?.contorno) {
             exibicao.globalCompositeOperation = 'multiply';
-            exibicao.drawImage(modelo.imagem, 0, 0, tamanho, tamanho);
+            centralizar(exibicao, modelo.imagem);
             exibicao.globalCompositeOperation = 'source-over';
         }
     }
@@ -62,7 +84,7 @@
     }
 
     function estadoAtual() {
-        return {modelo, tinta: tinta.getImageData(0, 0, tamanho, tamanho)};
+        return {modelo, tinta: tinta.getImageData(0, 0, papel.width, papel.height)};
     }
 
     function registrar(estado) {
@@ -79,7 +101,14 @@
         destino.push(estadoAtual());
         const estado = origem.pop();
         modelo = estado.modelo;
-        tinta.putImageData(estado.tinta, 0, 0);
+        tinta.clearRect(0, 0, papel.width, papel.height);
+        if (estado.tinta.width === papel.width && estado.tinta.height === papel.height) {
+            tinta.putImageData(estado.tinta, 0, 0);
+        } else {
+            const original = camada(estado.tinta.width, estado.tinta.height);
+            original.putImageData(estado.tinta, 0, 0);
+            centralizar(tinta, original.canvas);
+        }
         aviso.textContent = '';
         desenhar();
         atualizarHistorico();
@@ -89,15 +118,15 @@
         finalizarTraco();
         const anterior = estadoAtual();
         modelo = novoModelo;
-        tinta.clearRect(0, 0, tamanho, tamanho);
+        tinta.clearRect(0, 0, papel.width, papel.height);
         registrar(anterior);
         desenhar();
     }
 
     function ponto(evento, caixa) {
         return {
-            x: (evento.clientX - caixa.left) * tamanho / caixa.width,
-            y: (evento.clientY - caixa.top) * tamanho / caixa.height,
+            x: (evento.clientX - caixa.left) * papel.width / caixa.width,
+            y: (evento.clientY - caixa.top) * papel.height / caixa.height,
             pressao: evento.pointerType === 'pen' ? evento.pressure : .59
         };
     }
@@ -243,7 +272,7 @@
             tinta.globalAlpha = 1;
         }
         traco = null;
-        rascunho.clearRect(0, 0, tamanho, tamanho);
+        rascunho.clearRect(0, 0, papel.width, papel.height);
         registrar(feito.antes);
         desenhar();
     }
@@ -292,6 +321,7 @@
         previa.style.setProperty('--previa-tamanho', `${Math.max(2, largura * (pincel === 'giz' ? .3 : .36))}px`);
         previa.style.setProperty('--previa-cor', pincel === 'borracha' ? '#fff' : cor);
         previa.dataset.ferramenta = pincel;
+        botaoFerramentas.style.setProperty('--cor-ativa', pincel === 'borracha' ? '#fff' : cor);
         espessura.setAttribute('aria-valuetext', `${largura} pixels`);
     }
 
@@ -378,7 +408,7 @@
                 const escala = Math.min(tamanho / imagem.naturalWidth, tamanho / imagem.naturalHeight);
                 const largura = imagem.naturalWidth * escala;
                 const altura = imagem.naturalHeight * escala;
-                const contexto = camada();
+                const contexto = camada(tamanho, tamanho);
                 if (converter) {
                     contexto.fillStyle = '#fff';
                     contexto.fillRect(0, 0, tamanho, tamanho);
@@ -389,27 +419,77 @@
             }
             trocarModelo({id, imagem: fundo, contorno});
             aviso.textContent = nome + ' está na folha.';
-            obter('folha').scrollIntoView({block: 'nearest'});
+            ferramentas.close();
         } catch {
             if (revisao === revisaoModelo) aviso.textContent = 'Não foi possível abrir a imagem. Experimente outro arquivo.';
         }
     }
 
-    for (const [id, nome] of paginas) {
-        const botao = document.createElement('button');
-        botao.type = 'button';
-        botao.className = 'pagina';
-        botao.dataset.pagina = id;
-        botao.setAttribute('aria-pressed', 'false');
-        const miniatura = document.createElement('img');
-        miniatura.alt = '';
-        miniatura.loading = 'lazy';
-        miniatura.src = 'assets/images/arte/' + id + '.svg';
-        const titulo = document.createElement('span');
-        titulo.textContent = nome;
-        botao.append(miniatura, titulo);
-        botao.addEventListener('click', () => carregarModelo(id, nome, miniatura.src, true));
-        obter('paginas').append(botao);
+    function mostrarPaginas() {
+        const fragmento = document.createDocumentFragment();
+        for (const [id, nome] of niveis[nivel]) {
+            const botao = document.createElement('button');
+            botao.type = 'button';
+            botao.className = 'pagina';
+            botao.dataset.pagina = id;
+            botao.setAttribute('aria-pressed', String(id === modelo?.id));
+            const miniatura = document.createElement('img');
+            miniatura.alt = '';
+            miniatura.loading = 'lazy';
+            const nivelPagina = nivel;
+            miniatura.src = nivelPagina === 'facil' ? 'assets/images/arte/' + id + '.svg'
+                : renderizar(nivelPagina, id, 120).toDataURL();
+            const titulo = document.createElement('span');
+            titulo.textContent = nome;
+            botao.append(miniatura, titulo);
+            botao.addEventListener('click', () => {
+                const url = nivelPagina === 'facil' ? miniatura.src : renderizar(nivelPagina, id, tamanho).toDataURL();
+                carregarModelo(id, nome, url, true);
+            });
+            fragmento.append(botao);
+        }
+        obter('paginas').replaceChildren(fragmento);
+    }
+
+    const botoesNivel = document.querySelectorAll('[data-arte-nivel]');
+    botoesNivel.forEach(botao => botao.addEventListener('click', () => {
+        nivel = botao.dataset.arteNivel;
+        botoesNivel.forEach(outro => outro.setAttribute('aria-pressed', String(outro === botao)));
+        mostrarPaginas();
+    }));
+    botaoFerramentas.addEventListener('click', () => {
+        ferramentas.showModal();
+        ferramentas.scrollTop = 0;
+    });
+    obter('fechar-ferramentas').addEventListener('click', () => ferramentas.close());
+    ferramentas.addEventListener('click', evento => {
+        if (evento.target !== ferramentas) return;
+        const limite = ferramentas.getBoundingClientRect();
+        if (evento.clientX < limite.left || evento.clientX > limite.right ||
+            evento.clientY < limite.top || evento.clientY > limite.bottom) ferramentas.close();
+    });
+    const cabecalho = ferramentas.querySelector('header');
+    let gesto;
+    cabecalho.addEventListener('pointerdown', evento => { gesto = {x: evento.clientX, y: evento.clientY}; });
+    cabecalho.addEventListener('pointerup', evento => {
+        if (gesto && evento.clientY - gesto.y > 45 && Math.abs(evento.clientX - gesto.x) < 55) ferramentas.close();
+        gesto = null;
+    });
+    cabecalho.addEventListener('pointercancel', () => { gesto = null; });
+    if (document.fullscreenEnabled) {
+        botaoFullscreen.hidden = false;
+        botaoFullscreen.addEventListener('click', async () => {
+            ferramentas.close();
+            try {
+                if (document.fullscreenElement) await document.exitFullscreen();
+                else await document.documentElement.requestFullscreen();
+            } catch {
+                aviso.textContent = 'O navegador manteve a visualização padrão.';
+            }
+        });
+        document.addEventListener('fullscreenchange', () => {
+            botaoFullscreen.textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Entrar em tela cheia';
+        });
     }
 
     async function importarImagem(evento, converter) {
@@ -433,6 +513,11 @@
     obter('baixar-arte').addEventListener('click', () => {
         finalizarTraco();
         desenhar();
+        if (navigator.userAgent.includes('SuiriFamiliaImagem/1')) {
+            window.SuiriPdfAndroid = papel.toDataURL('image/png').split(',')[1];
+            location.href = 'suiri-native://save-drawing';
+            return;
+        }
         papel.toBlob(arquivo => {
             if (!arquivo) {
                 aviso.textContent = 'Não foi possível salvar a imagem.';
@@ -449,6 +534,8 @@
         }, 'image/png');
     });
 
+    mostrarPaginas();
     atualizarPrevia();
-    desenhar();
+    ajustarPapel();
+    new ResizeObserver(ajustarPapel).observe(obter('folha'));
 })();

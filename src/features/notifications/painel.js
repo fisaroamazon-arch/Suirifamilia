@@ -21,6 +21,7 @@ window.atualizarNotificacoesGeraisPainel = async function() {
     limite7Dias.setDate(limite7Dias.getDate() + 7);
     const limite7DiasStr = Suiri.today(limite7Dias);
     const familia = window.familiaAtualId;
+    const perfil = obterUsuarioId();
 
     const [{ data: contas, error: erroContas }, { data: eventos, error: erroEventos }] = await Promise.all([
         cli.from('agenda_financeira').select('*').eq('familia_id', familia)
@@ -30,9 +31,14 @@ window.atualizarNotificacoesGeraisPainel = async function() {
             .gte('data_evento', hojeStr).lte('data_evento', limite7DiasStr)
             .order('data_evento', { ascending: true })
     ]);
-    if (familia !== window.familiaAtualId || erroContas || erroEventos) return false;
+    if (familia !== window.familiaAtualId || perfil !== obterUsuarioId() || erroContas || erroEventos) return false;
 
-    const listaContas = contas || [];
+    const relacao = window.perfilAtual;
+    const temAcesso = !window.modoKidsAtivo && String(relacao?.permissoes?.gastos).toLowerCase() !== 'false';
+    const listaContas = temAcesso ? (contas || []).filter(item => {
+        const privada = item.escopo === 'pessoal' || item.eh_privado === true;
+        return !privada || (item.membro_id || item.criado_por) === perfil;
+    }) : [];
     const listaEventos = eventos || [];
 
     listaContas.forEach(c => {
@@ -51,7 +57,8 @@ window.atualizarNotificacoesGeraisPainel = async function() {
 
     const pendenciasHoje = contasHoje.filter(c => c.status !== 'liquidado' && c.pago !== true);
     const totalBadge = pendenciasHoje.length + eventosHoje.length;
-    if (totalBadge > 0) await window.exibirLembreteAgenda(familia, hojeStr);
+    if (window.SuiriAlertasAndroid) window.SuiriAlertasAndroid.atualizarContas(pendenciasHoje);
+    else if (totalBadge > 0) await window.exibirLembreteAgenda(familia, hojeStr);
 
     const btnSinoFlutuante = document.getElementById('btn-sino-notificacoes-topo');
     if (btnSinoFlutuante) {

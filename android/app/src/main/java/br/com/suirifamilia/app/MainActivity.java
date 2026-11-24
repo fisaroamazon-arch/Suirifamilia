@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -25,6 +27,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.view.WindowInsets;
 import android.util.Base64;
+import android.service.notification.StatusBarNotification;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import java.io.OutputStream;
@@ -32,10 +36,15 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
+import java.util.Locale;
 
 public final class MainActivity extends Activity {
     private static final String SITE = "https://fisaroamazon-arch.github.io/Suirifamilia/";
     private static final String CHANNEL = "agenda";
+    private static final int ALERTA_DETALHADO = 2;
     private static final int VOICE = 1, GALLERY = 2, MICROPHONE = 3, CAMERA = 4, NOTIFICATIONS = 5, SAVE_PDF = 6;
     private static final int PDF_CHUNK = 65536, MAX_PDF_BASE64 = 16000000;
     private WebView web;
@@ -43,6 +52,12 @@ public final class MainActivity extends Activity {
     private PermissionRequest camera;
     private StringBuilder pdfInProgress;
     private byte[] pdfToSave;
+    private int consultaAlertas;
+    private boolean exportandoImagem;
+    private TextToSpeech vozTour;
+    private boolean vozTourPronta;
+    private String textoVozTour;
+    private int pedidoVozTour;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -50,7 +65,7 @@ public final class MainActivity extends Activity {
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1 SuiriFamiliaAlertas/1 SuiriFamiliaImagem/1 SuiriFamiliaVoz/1");
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!request.isForMainFrame()) return false;
@@ -64,7 +79,17 @@ public final class MainActivity extends Activity {
                             break;
                         case "notifications": enableNotifications(); break;
                         case "reminder": remind(); break;
-                        case "save-pdf": startPdfExport(view.getUrl()); break;
+                        case "sync-alerts": sincronizarAlertas(); break;
+                        case "clear-alerts":
+                            consultaAlertas++;
+                            limparAlertas(getSystemService(NotificationManager.class));
+                            getPreferences(MODE_PRIVATE).edit().remove("perfil_alertas").apply();
+                            web.loadUrl(SITE + "index.html");
+                            break;
+                        case "speak-tour": lerPassoTour(); break;
+                        case "stop-tour": pararTourFalado(); break;
+                        case "save-pdf": startPdfExport(view.getUrl(), false); break;
+                        case "save-drawing": startPdfExport(view.getUrl(), true); break;
                     }
                 } else if (request.hasGesture() && "https".equals(url.getScheme())) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW, url)); }
@@ -130,7 +155,19 @@ public final class MainActivity extends Activity {
         }
         setContentView(content);
         content.requestApplyInsets();
-        if (state == null || web.restoreState(state) == null) web.loadUrl(SITE);
+        if (state == null || web.restoreState(state) == null) abrirTelaInicial(getIntent());
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        abrirTelaInicial(intent);
+    }
+
+    private void abrirTelaInicial(Intent intent) {
+        String tela = intent == null ? null : intent.getStringExtra("suiri_tela");
+        if (Arrays.asList("inicio", "calendario", "financeiro").contains(tela)) web.loadUrl(SITE + "index.html#" + tela);
+        else if (web.getUrl() == null) web.loadUrl(SITE);
     }
 
     private static boolean isSite(Uri url) {
@@ -162,7 +199,11 @@ public final class MainActivity extends Activity {
     private void enableNotifications() {
         NotificationManager manager = getSystemService(NotificationManager.class);
         if (manager.areNotificationsEnabled()) {
-            web.evaluateJavascript("window.atualizarNotificacoesGeraisPainel?.()", null);
+            criarCanaisAlertas(manager);
+            message("Notificações ativadas. As pendências aparecem após sincronizar.");
+            web.evaluateJavascript("if (window.SuiriAlertasAndroid) window.SuiriAlertasAndroid.atualizar(); "
+                    + "else window.atualizarNotificacoesGeraisPainel?.()", null);
+            sincronizarAlertas();
         } else if (Build.VERSION.SDK_INT >= 33 && !has(Manifest.permission.POST_NOTIFICATIONS)
                 && !getPreferences(MODE_PRIVATE).getBoolean("asked_notifications", false)) {
             getPreferences(MODE_PRIVATE).edit().putBoolean("asked_notifications", true).apply();
@@ -184,10 +225,102 @@ public final class MainActivity extends Activity {
                 new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         manager.notify(1, new Notification.Builder(this, CHANNEL)
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setSmallIcon(R.drawable.suiri_notificacao)
                 .setContentTitle("Suiri Família").setContentText("Confira os lembretes de hoje no aplicativo.")
                 .setContentIntent(open).setAutoCancel(true).setVisibility(Notification.VISIBILITY_PRIVATE).build());
         getPreferences(MODE_PRIVATE).edit().putString("last_reminder", today).apply();
+    }
+
+    private void criarCanaisAlertas(NotificationManager manager) {
+        manager.createNotificationChannel(new NotificationChannel("missoes", "Missões da família", NotificationManager.IMPORTANCE_DEFAULT));
+        manager.createNotificationChannel(new NotificationChannel("caixa", "Fluxo de caixa", NotificationManager.IMPORTANCE_DEFAULT));
+    }
+
+    private static void limparAlertas(NotificationManager manager) {
+        manager.cancel(1);
+        for (StatusBarNotification n : manager.getActiveNotifications()) {
+            if (n.getId() == ALERTA_DETALHADO) manager.cancel(n.getTag(), n.getId());
+        }
+    }
+
+    private void sincronizarAlertas() {
+        final int pedido = ++consultaAlertas;
+        final String origem = web.getUrl();
+        web.evaluateJavascript("window.SuiriAlertasAndroid?.ler()", resposta -> {
+            if (pedido != consultaAlertas || origem == null || !origem.equals(web.getUrl())) return;
+            try {
+                Object valor = new JSONTokener(resposta).nextValue();
+                if (valor instanceof String) publicarAlertas(new JSONObject((String) valor));
+            } catch (org.json.JSONException ignored) {
+                android.util.Log.w("SuiriAlertas", "Resposta de alertas indisponível.");
+            }
+        });
+    }
+
+    private void publicarAlertas(JSONObject snapshot) {
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        SharedPreferences dados = getPreferences(MODE_PRIVATE);
+        String perfil = snapshot.optString("perfil");
+        if (!perfil.equals(dados.getString("perfil_alertas", ""))) {
+            limparAlertas(manager);
+            dados.edit().putString("perfil_alertas", perfil).apply();
+        }
+        if (perfil.isEmpty() || perfil.length() > 150 || !manager.areNotificationsEnabled()) return;
+        criarCanaisAlertas(manager);
+        for (String grupo : new String[]{"missoes", "contas", "lancamentos"}) {
+            JSONArray lista = snapshot.optJSONArray(grupo);
+            String canal = "missoes".equals(grupo) ? grupo : "caixa";
+            if (lista == null || manager.getNotificationChannel(canal).getImportance() == NotificationManager.IMPORTANCE_NONE) continue;
+            atualizarCanal(manager, dados, perfil, grupo, canal, lista);
+        }
+    }
+
+    private void atualizarCanal(NotificationManager manager, SharedPreferences dados, String perfil, String grupo, String canal, JSONArray lista) {
+        String chave = "lidos:" + perfil + ":" + grupo;
+        String hoje = LocalDate.now().toString();
+        String marcador = hoje + ":";
+        Set<String> lidos = new HashSet<>(dados.getStringSet(chave, Collections.emptySet()));
+        lidos.removeIf(item -> !item.startsWith(marcador));
+        Set<String> ativos = new HashSet<>();
+        for (int i = 0; i < Math.min(lista.length(), 120); i++) {
+            JSONObject item = lista.optJSONObject(i);
+            if (item == null) continue;
+            String id = item.optString("id");
+            String tela = item.optString("tela");
+            if (!id.matches("[a-zA-Z0-9_-]{1,110}") || !Arrays.asList("inicio", "calendario", "financeiro").contains(tela)) continue;
+            String tag = grupo + ":" + id;
+            ativos.add(tag);
+            StatusBarNotification existente = null;
+            for (StatusBarNotification n : manager.getActiveNotifications()) {
+                if (n.getId() == ALERTA_DETALHADO && tag.equals(n.getTag())) {
+                    existente = n;
+                    break;
+                }
+            }
+            String marca = marcador + id;
+            if (lidos.contains(marca) && existente == null) continue;
+            String titulo = item.optString("titulo");
+            String corpo = item.optString("corpo");
+            if (existente != null && titulo.contentEquals(existente.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE, ""))
+                    && corpo.contentEquals(existente.getNotification().extras.getCharSequence(Notification.EXTRA_BIG_TEXT, ""))) continue;
+            Intent destino = new Intent(this, MainActivity.class).putExtra("suiri_tela", tela)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent abrir = PendingIntent.getActivity(this, tela.hashCode(), destino,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            String resumo = corpo.split("\n", 2)[0];
+            manager.notify(tag, ALERTA_DETALHADO, new Notification.Builder(this, canal)
+                    .setSmallIcon(R.drawable.suiri_notificacao).setContentTitle(titulo).setContentText(resumo)
+                    .setStyle(new Notification.BigTextStyle().bigText(corpo))
+                    .setContentIntent(abrir).setAutoCancel(true).setOnlyAlertOnce(true)
+                    .setVisibility(Notification.VISIBILITY_PRIVATE).build());
+            lidos.add(marca);
+        }
+        for (StatusBarNotification n : manager.getActiveNotifications()) {
+            if (n.getId() == ALERTA_DETALHADO && n.getTag() != null && n.getTag().startsWith(grupo + ":") && !ativos.contains(n.getTag())) {
+                manager.cancel(n.getTag(), n.getId());
+            }
+        }
+        dados.edit().putStringSet(chave, lidos).apply();
     }
 
     @Override public void onRequestPermissionsResult(int code, String[] permissions, int[] result) {
@@ -205,8 +338,65 @@ public final class MainActivity extends Activity {
         }
     }
 
-    private void startPdfExport(String page) {
+    private void lerPassoTour() {
+        final int pedido = ++pedidoVozTour;
+        String origem = web.getUrl();
+        web.evaluateJavascript("window.SuiriTextoTour || ''", resultado -> {
+            if (pedido != pedidoVozTour || origem == null || !origem.equals(web.getUrl()) || resultado == null) return;
+            try {
+                Object texto = new JSONTokener(resultado).nextValue();
+                if (!(texto instanceof String) || ((String) texto).isEmpty() || ((String) texto).length() > 1800) return;
+                textoVozTour = (String) texto;
+                if (vozTour == null) {
+                    vozTour = new TextToSpeech(this, status -> {
+                        runOnUiThread(() -> {
+                            if (vozTour == null) return;
+                            vozTourPronta = status == TextToSpeech.SUCCESS
+                                    && vozTour.setLanguage(new Locale("pt", "BR")) >= TextToSpeech.LANG_AVAILABLE;
+                            if (vozTourPronta) {
+                                vozTour.setSpeechRate(.92f);
+                                falarTextoTour();
+                            } else {
+                                textoVozTour = null;
+                                message("A voz em português não está instalada no Android.");
+                            }
+                        });
+                    });
+                } else if (vozTourPronta) falarTextoTour();
+            } catch (org.json.JSONException ignored) {
+                android.util.Log.w("SuiriTour", "Texto para narração indisponível.");
+            }
+        });
+    }
+
+    private void falarTextoTour() {
+        if (textoVozTour == null) return;
+        vozTour.speak(textoVozTour, TextToSpeech.QUEUE_FLUSH, null, "manual-suiri");
+        textoVozTour = null;
+    }
+
+    private void pararTourFalado() {
+        pedidoVozTour++;
+        textoVozTour = null;
+        if (vozTour != null) vozTour.stop();
+    }
+
+    @Override protected void onPause() {
+        pararTourFalado();
+        super.onPause();
+    }
+
+    @Override protected void onDestroy() {
+        if (vozTour != null) {
+            vozTour.shutdown();
+            vozTour = null;
+        }
+        super.onDestroy();
+    }
+
+    private void startPdfExport(String page, boolean imagem) {
         if (pdfInProgress != null || pdfToSave != null) return;
+        exportandoImagem = imagem;
         pdfInProgress = new StringBuilder();
         readPdfChunk(page);
     }
@@ -214,7 +404,7 @@ public final class MainActivity extends Activity {
     private void readPdfChunk(String page) {
         int offset = pdfInProgress.length();
         if (!page.equals(web.getUrl()) || offset > MAX_PDF_BASE64) {
-            finishPdfRead("Não foi possível receber o PDF.");
+            finishPdfRead("Não foi possível receber o arquivo.");
             return;
         }
         web.evaluateJavascript("(window.SuiriPdfAndroid || '').slice(" + offset + ","
@@ -234,14 +424,15 @@ public final class MainActivity extends Activity {
                     return;
                 }
                 byte[] pdf = Base64.decode(pdfInProgress.toString(), Base64.DEFAULT);
-                if (pdf.length < 5 || pdf[0] != '%' || pdf[1] != 'P' || pdf[2] != 'D' || pdf[3] != 'F' || pdf[4] != '-') {
-                    throw new IllegalArgumentException("PDF inválido");
-                }
+                boolean assinaturaValida = exportandoImagem
+                        ? pdf.length >= 8 && pdf[0] == (byte) 137 && pdf[1] == 'P' && pdf[2] == 'N' && pdf[3] == 'G'
+                        : pdf.length >= 5 && pdf[0] == '%' && pdf[1] == 'P' && pdf[2] == 'D' && pdf[3] == 'F' && pdf[4] == '-';
+                if (!assinaturaValida) throw new IllegalArgumentException("Arquivo inválido");
                 finishPdfRead(null);
                 pdfToSave = pdf;
                 startActivityForResult(new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE).setType("application/pdf")
-                    .putExtra(Intent.EXTRA_TITLE, "Suiri_Familia_" + LocalDate.now() + ".pdf"), SAVE_PDF);
+                    .addCategory(Intent.CATEGORY_OPENABLE).setType(exportandoImagem ? "image/png" : "application/pdf")
+                    .putExtra(Intent.EXTRA_TITLE, exportandoImagem ? "meu-desenho-suiri.png" : "Suiri_Familia_" + LocalDate.now() + ".pdf"), SAVE_PDF);
             } catch (Exception error) {
                 pdfToSave = null;
                 finishPdfRead("Não foi possível abrir o seletor de arquivos para o PDF.");
@@ -265,9 +456,9 @@ public final class MainActivity extends Activity {
             try (OutputStream output = getContentResolver().openOutputStream(uri, "wt")) {
                 if (output == null) throw new IOException("Destino indisponível");
                 output.write(pdf);
-                runOnUiThread(() -> message("PDF salvo."));
+                runOnUiThread(() -> message("Arquivo salvo."));
             } catch (IOException | SecurityException error) {
-                runOnUiThread(() -> message("Não foi possível salvar o PDF."));
+                runOnUiThread(() -> message("Não foi possível salvar o arquivo."));
             }
         }).start();
     }

@@ -2311,8 +2311,30 @@
                 { id: 'baleia', nome: 'Baleia', cor: '#b2eee9' },
                 { id: 'robo', nome: 'Robô', cor: '#dfdfed' }
             ],
+            figurasGeradas: new Map(),
+
+            catalogo: function() {
+                const cores = ['#f2ccaa', '#c5d7ff', '#f0c5e1', '#c5edca', '#f8e2ab', '#ddcefa', '#bcebe4'];
+                const usados = new Set(this.simbolos.map(item => item.id));
+                const outros = SuiriDesenhosArte.niveis.facil.filter(([id]) => !usados.has(id));
+                const extras = SuiriDesenhosArte.niveis.medio.slice(0, 12);
+                return [
+                    ...this.simbolos,
+                    ...outros.map(([id, nome], i) => ({id, nome, cor: cores[i % cores.length]})),
+                    ...extras.map(([id, nome], i) => ({id, nome, nivel: 'medio', cor: cores[(i + 2) % cores.length]}))
+                ];
+            },
+
+            figura: function(carta) {
+                if (!carta.nivel) return `assets/images/arte/${carta.id}.svg`;
+                if (!this.figurasGeradas.has(carta.id)) {
+                    this.figurasGeradas.set(carta.id, SuiriDesenhosArte.renderizar(carta.nivel, carta.id, 132).toDataURL());
+                }
+                return this.figurasGeradas.get(carta.id);
+            },
 
             trocarNivel: function(pares) {
+                if (![4, 6, 8, 16, 32].includes(pares)) return;
                 this.totalPares = pares;
                 for (const botao of document.querySelectorAll('[data-memoria-pares]')) {
                     const ativo = Number(botao.dataset.memoriaPares) === pares;
@@ -2388,7 +2410,8 @@
                 this.bloqueado = false;
                 this.atualizarPlacar();
 
-                const simbolos = this.simbolos.slice(0, this.totalPares);
+                grade.dataset.pares = this.totalPares;
+                const simbolos = this.catalogo().slice(0, this.totalPares);
                 const baralho = [...simbolos, ...simbolos];
                 for (let i = baralho.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -2421,7 +2444,7 @@
 
                 const c = this.cartas[idx];
                 const figura = document.createElement('img');
-                figura.src = `assets/images/arte/${c.id}.svg`;
+                figura.src = this.figura(c);
                 figura.alt = '';
                 figura.className = 'memoria-figura';
                 el.style.setProperty('--memoria-figura-fundo', c.cor);

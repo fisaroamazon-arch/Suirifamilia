@@ -131,6 +131,7 @@ window.carregarMissoesDoDia = async function() {
         return;
     }
 
+    window.SuiriAlertasAndroid?.atualizarMissoes(cacheMissoes);
     window.verificarReativacaoAutomaticaMissoes();
     window.carregarMissoesKidsExclusiva();
     window.renderizarMissoesTela();

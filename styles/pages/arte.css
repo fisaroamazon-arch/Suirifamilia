@@ -16,13 +16,20 @@
 body {
     margin: 0;
     background: radial-gradient(ellipse at 80% 0, var(--arte-luz), transparent 38rem), var(--arte-fundo);
-    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
 }
-.atelier { width: min(100%, 570px); margin: auto; padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom)); }
+.atelier {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
 .cabecalho, .caderno header { display: flex; align-items: center; gap: 12px; }
-.cabecalho { margin-bottom: 12px; }
+.cabecalho { padding: 5px 8px; gap: clamp(5px, 2vw, 12px); }
 h1, h2 { margin: 0; letter-spacing: -.03em; }
-h1 { font-size: clamp(22px, 7vw, 31px); }
+h1 { font-size: clamp(16px, 5vw, 25px); margin-right: auto; }
 h2 { font-size: 18px; }
 button, .importar, .voltar {
     min-height: 38px;
@@ -90,17 +97,46 @@ button:disabled { opacity: .46; cursor: default; }
 .personalizada { position: relative; display: grid; place-items: center; background: #6c4d81; font-size: 20px; }
 .personalizada input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .personalizada:focus-within { outline: 3px solid #f9ca7f; }
-.folha {
-    margin-block: 10px;
-    padding: 5px;
-    background: linear-gradient(145deg, #f9ddba, #c9abe8);
-    border-radius: 15px;
-    box-shadow: 0 5px 0 #120c2736, 0 12px 28px #130b2938;
+.folha { flex: 1; min-height: 0; position: relative; background: #fff; }
+#papel { width: 100%; height: 100%; position: absolute; inset: 0; display: block; background: #fff; touch-action: none; cursor: crosshair; }
+#abrir-ferramentas { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; }
+.cor-ativa { width: 12px; height: 12px; border-radius: 50%; background: var(--cor-ativa, #7847c9); border: 1px solid currentColor; }
+#ferramentas-arte {
+    width: min(100% - 14px, 610px);
+    max-height: calc(100dvh - 18px - env(safe-area-inset-bottom));
+    margin: auto auto max(8px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px;
+    color: var(--arte-tinta);
+    background: var(--arte-painel);
+    border: 1px solid var(--arte-borda);
+    border-radius: 18px;
+    box-shadow: 0 10px 40px #1f102877;
+    animation: abrir-ferramentas 180ms ease-out;
 }
-#papel { width: 100%; height: auto; display: block; border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; }
-.acoes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+#ferramentas-arte::backdrop { background: #1c132375; }
+@keyframes abrir-ferramentas { from { opacity: 0; transform: translateY(15px); } }
+@media (prefers-reduced-motion: reduce) { #ferramentas-arte { animation: none; } }
+.cabecalho-ferramentas {
+    position: sticky;
+    top: -10px;
+    z-index: 2;
+    background: var(--arte-painel);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 2px 9px;
+    touch-action: none;
+}
+#fechar-ferramentas { background: var(--arte-realce); color: var(--arte-no-realce); }
+.niveis-caderno { display: flex; gap: 6px; margin-top: 7px; }
+.niveis-caderno button { flex: 1; }
+.niveis-caderno [aria-pressed="true"] { background: var(--arte-realce); color: var(--arte-no-realce); border-color: var(--arte-realce); }
+#tela-cheia-arte:not([hidden]) { margin: 6px 0 0; }
+.acoes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 7px; }
 .acoes button { font-size: clamp(10px, 3vw, 12px); }
-.caderno { margin-top: 18px; }
+.caderno { margin-top: 8px; }
 .caderno header { justify-content: space-between; }
 .importar { background: var(--arte-botao); }
 #arte-aviso { font-size: 12px; color: var(--arte-tinta); margin: 5px 0; }
@@ -120,20 +156,8 @@ button:disabled { opacity: .46; cursor: default; }
 .caderno header .importar:focus-within { outline: 3px solid #f9ca7f; outline-offset: 2px; }
 
 @media (orientation: landscape) and (min-width: 560px) {
-    .atelier { width: min(100%, 980px); padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right)); }
-    .mesa-arte {
-        display: grid;
-        grid-template-columns: minmax(195px, 300px) minmax(0, 1fr);
-        grid-template-areas: "tools paper" "actions paper";
-        align-items: start;
-        align-content: start;
-        gap: 9px 16px;
-    }
-    .ferramentas { grid-area: tools; }
-    .folha { grid-area: paper; margin: 0; width: min(100%, max(170px, calc(100dvh - 86px))); justify-self: center; }
-    .acoes { grid-area: actions; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .paleta { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .paginas { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    #ferramentas-arte { margin: auto max(8px, env(safe-area-inset-right)) auto auto; width: min(51vw, 510px); }
+    .paginas { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 @media (prefers-color-scheme: light) {
     :root {
