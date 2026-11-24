@@ -55,7 +55,9 @@ try {
         <option value="2">2</option><option value="3">3</option></select></label>
         <div id="teclado-piano-completo"><div data-nota="C4"></div></div>`);
     const teclado = window.document.getElementById('teclado-piano-completo');
-    motor.consultasAlcance = [{matches:true}, {matches:true}];
+    motor.orientacaoAmpla = {matches:true};
+    motor.atualizarAlcance();
+    assert.equal(teclado.children.length, 37);
     motor.alterarAlcance(2);
     assert.equal(teclado.children.length, 25);
     assert.equal(motor.mapearNota('E5').tecla, 'E5');
@@ -64,10 +66,21 @@ try {
     assert.equal(teclado.children.length, 37);
     assert.equal(motor.mapearNota('G#3').tecla, 'G#3');
     assert.equal(motor.mapearNota('G#2').simbolo, '↓1');
-    motor.consultasAlcance = [{matches:false}, {matches:false}];
+    motor.orientacaoAmpla.matches = false;
     motor.atualizarAlcance();
     assert.equal(motor.mapearNota('E5').tecla, 'E4');
     assert.equal(teclado.children[0].dataset.nota, 'C4');
+    const livre = window.document.createElement('div');
+    for (const [base, inicio, fim] of [[2, 'C2', 'C4'], [4, 'C4', 'C6']]) {
+        motor.montarTecladoAmpliado(livre, 2, base);
+        assert.equal(livre.children.length, 25);
+        assert.equal(livre.firstElementChild.dataset.nota, inicio);
+        assert.equal(livre.lastElementChild.dataset.nota, fim);
+    }
+    motor.timbresLivres[2] = 'cordas';
+    motor.timbresLivres[5] = 'xilofone';
+    assert.equal(motor.obterInstrumentoPorOrigem('livre-grave', 'A2'), 'cordas');
+    assert.equal(motor.obterInstrumentoPorOrigem('livre-agudo', 'C6'), 'xilofone');
     console.log('Piano: catálogo, movimentos, mapeamento, som e iluminação de oitavas verificados.');
 } finally {
     dom.window.close();

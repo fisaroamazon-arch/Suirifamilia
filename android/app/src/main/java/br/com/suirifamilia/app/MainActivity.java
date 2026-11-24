@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.view.WindowInsets;
 import android.util.Base64;
@@ -49,13 +51,6 @@ public final class MainActivity extends Activity {
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
         web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1");
-        web.setOnApplyWindowInsetsListener((view, insets) -> {
-            if (Build.VERSION.SDK_INT >= 30) {
-                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
-                view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            }
-            return insets;
-        });
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!request.isForMainFrame()) return false;
@@ -115,7 +110,26 @@ public final class MainActivity extends Activity {
                 return true;
             }
         });
-        setContentView(web);
+        FrameLayout content = new FrameLayout(this);
+        content.addView(web, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        if (Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+            content.setOnApplyWindowInsetsListener((view, insets) -> {
+                int system = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
+                int ime = WindowInsets.Type.ime();
+                Insets safe = Insets.max(insets.getInsetsIgnoringVisibility(system), insets.getInsets(ime));
+                // Padding the parent shrinks the WebView itself, including its HTML viewport.
+                view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
+                return new WindowInsets.Builder(insets)
+                        .setInsets(system | ime, Insets.NONE)
+                        .setInsetsIgnoringVisibility(system, Insets.NONE)
+                        .setDisplayCutout(null)
+                        .build();
+            });
+        }
+        setContentView(content);
+        content.requestApplyInsets();
         if (state == null || web.restoreState(state) == null) web.loadUrl(SITE);
     }
 
