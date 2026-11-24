@@ -16,6 +16,105 @@
 .piano-estudio h2 { font-size: 1.12rem; line-height: 1.18; letter-spacing: -.02em; }
 .piano-estudio p { font-size: .73rem; margin-top: 2px; color: #eedffc; }
 #tela-simon[data-modo-piano="dueto"] .piano-estudio { display: none; }
+.piano-musica-atual {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff1dc;
+    font-size: .86rem;
+    font-weight: 750;
+}
+.piano-abrir-config { display: none; }
+.arcade-page[data-arcade-tela="simon"] #arcade-som { display: none; }
+.arcade-page[data-arcade-tela="simon"] .piano-abrir-config {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    min-height: 38px;
+    border: 1px solid #aa91cc;
+    border-radius: 12px;
+    background: linear-gradient(130deg, #504075, #38375d);
+    color: #fff3e4;
+    font-size: .76rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+#piano-configuracoes {
+    width: min(520px, calc(100% - 22px));
+    max-height: min(86dvh, 620px);
+    margin: auto;
+    padding: 0 14px 14px;
+    border: 1px solid #b6a0dc;
+    border-radius: 20px;
+    background: linear-gradient(140deg, #382b57, #222840);
+    box-shadow: 0 18px 50px #0a081cab;
+    color: #fff1e8;
+    overflow: hidden;
+}
+#piano-configuracoes[open] { display: flex; flex-direction: column; }
+.piano-config-corpo { min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#piano-configuracoes::backdrop {
+    background: #161128a8;
+    backdrop-filter: blur(4px);
+}
+.piano-config-cabecalho {
+    flex-shrink: 0;
+    margin-bottom: 10px;
+    touch-action: none;
+    text-align: center;
+}
+.piano-config-cabecalho h2 { font-size: 1.13rem; }
+.piano-config-alca {
+    display: grid;
+    place-items: center;
+    width: 74px;
+    height: 29px;
+    margin: auto;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+.piano-config-alca span {
+    width: 38px;
+    height: 4px;
+    border-radius: 6px;
+    background: #b9a7d3;
+}
+#piano-configuracoes section { margin-bottom: 8px; }
+.piano-velocidade { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; margin-block: 5px; font-size: .78rem; }
+.piano-velocidade .painel-velocidade-bichinhos { margin: 0; }
+#piano-configuracoes :is(.piano-parte, .piano-alcance):not([hidden]) {
+    display: grid;
+    gap: 4px;
+    margin: 4px 0 8px;
+    color: #ead9f8;
+    font-size: .76rem;
+    text-align: left;
+}
+#piano-configuracoes :is(.piano-parte, .piano-alcance) select {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    padding: 4px 7px;
+    border: 1px solid #8b7da2;
+    border-radius: 8px;
+    background: #302e47;
+    color: #fff1eb;
+}
+#piano-configuracoes .piano-config-fechar {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 39px;
+    margin: 7px 0 0;
+    background: #f8d99d;
+    color: #392c40;
+}
+@media (orientation: portrait) {
+    #piano-configuracoes { margin: auto auto max(9px, env(safe-area-inset-bottom)); }
+}
 #tela-simon #painel-aprendizado-box {
     border-radius: 17px;
     background: linear-gradient(137deg, #383456, #2d2b4a 58%, #3f3049);
@@ -38,8 +137,6 @@
 .piano-fonte { margin: 0 0 5px; font-size: .7rem; text-align: center; }
 .piano-fonte a { color: #e8d7ff; text-underline-offset: 2px; }
 .piano-fonte span { display: block; color: #e8d7ff; overflow-wrap: anywhere; }
-#tela-simon .piano-parte:not([hidden]) { display: grid; gap: 3px; margin-block: 3px 7px; font-size: .75rem; }
-.piano-parte select { width: 100%; min-width: 0; }
 
 #tela-simon .piano-sem-relogio {
     min-height: 40px;
@@ -117,6 +214,9 @@
     border-radius: 8px 8px 16px 16px;
     box-shadow: 0 8px 28px #140f2f98;
 }
+#teclado-piano-completo[data-alcance="2"], #teclado-piano-completo[data-alcance="3"] { padding: 0; }
+#teclado-piano-completo[data-alcance] .tecla-branca-piano { min-width: 0; }
+#teclado-piano-completo[data-alcance] .rotulo-nota-preta { font-size: 8px; }
 #tela-simon #painel-aprendizado-box .piano-placar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -175,13 +275,13 @@
 @media (orientation: landscape) {
     .piano-girar { display: none; }
 }
-@media (orientation: landscape) and (max-height: 600px) {
-    .arcade-page[data-arcade-tela="simon"] #app-container { max-width: 1000px; }
+@media (orientation: landscape) and (min-width: 500px) {
+    .arcade-page[data-arcade-tela="simon"] #app-container { max-width: 1180px; }
     .arcade-page[data-arcade-tela="simon"] .barra-topo { min-height: 44px; }
     .arcade-page[data-arcade-tela="simon"] .barra-topo .btn-voltar { min-height: 34px; }
     .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"] {
         display: grid !important;
-        grid-template-columns: clamp(208px, 32%, 290px) minmax(0, 520px);
+        grid-template-columns: clamp(208px, 28%, 290px) minmax(0, 785px);
         grid-template-rows: 37px minmax(68px, 1fr) clamp(68px, 23dvh, 108px);
         grid-template-areas: "modos pista" "painel pista" "painel teclas";
         gap: 5px 12px;
@@ -210,10 +310,6 @@
         overflow-y: auto;
         scrollbar-width: thin;
     }
-    #tela-simon #painel-aprendizado-box .piano-repertorio {
-        grid-template-columns: minmax(80px, .9fr) minmax(0, 1.1fr);
-    }
-    #tela-simon #painel-aprendizado-box .piano-repertorio select { font-size: .74rem; }
     #tela-simon #painel-aprendizado-box .estrelinha-icone { display: none; }
     #tela-simon .piano-rotulo-proxima { position: absolute; clip-path: inset(50%); }
     #tela-simon #painel-aprendizado-box .piano-meta-vida { display: none; }
@@ -233,7 +329,7 @@
     #tela-simon #container-teclados-livre { max-width: 700px; }
     #tela-simon #container-teclados-livre[style*="flex"] { display: grid !important; grid-template-columns: 1fr 1fr; }
 }
-@media (orientation: landscape) and (max-height: 600px) and (max-width: 555px) {
+@media (orientation: landscape) and (min-width: 500px) and (max-width: 555px) {
     .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"] {
         grid-template-columns: 180px minmax(0, 1fr);
         column-gap: 7px;
