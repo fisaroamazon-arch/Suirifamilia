@@ -602,10 +602,11 @@ window.MotorMusica = {
         if (this.orientacaoAmpla.addEventListener) this.orientacaoAmpla.addEventListener('change', atualizar);
         else this.orientacaoAmpla.addListener?.(atualizar);
         this.atualizarAlcance();
+        document.addEventListener('fullscreenchange', () => this.atualizarBotaoTelaInteira());
         dialogo.addEventListener('close', () => {
             const retomar = this.retomarAposConfiguracao;
             this.retomarAposConfiguracao = false;
-            if (retomar && !this.tocandoMusica && this.modo !== 'livre' && !this.encerrada && document.body.dataset.arcadeTela === 'simon') {
+            if (retomar && !this.tocandoMusica && this.modo !== 'livre' && document.body.dataset.arcadeTela === 'simon') {
                 this.togglePlay();
             }
         });
@@ -633,12 +634,79 @@ window.MotorMusica = {
         this.retomarAposConfiguracao = !emRede && this.tocandoMusica;
         if (this.tocandoMusica) this.pausarMusica();
         this.pararTodasNotas();
+        this.atualizarMenuPiano();
+        this.atualizarBotaoTelaInteira();
+        dialogo.showModal();
+        dialogo.querySelector('.piano-config-corpo').scrollTop = 0;
+    },
+
+    atualizarMenuPiano: function() {
+        const dialogo = document.getElementById('piano-configuracoes');
+        if (!dialogo) return;
         dialogo.querySelectorAll('[data-config-piano]').forEach(secao => {
             secao.hidden = !secao.dataset.configPiano.split(' ').includes(this.modo);
         });
         const toque = dialogo.querySelector('[data-fator="toque"]');
         if (toque) toque.hidden = this.modo !== 'aprendizado';
-        dialogo.showModal();
+        const livre = this.modo === 'livre';
+        const sala = this.modo === 'dueto' ? window.DuetoPiano?.estadoMenu() : null;
+        const jogar = document.getElementById('piano-jogar');
+        jogar.textContent = livre || sala?.convidado ? 'Voltar às teclas' : this.rotuloPartida === 'Continuar' ? 'Continuar' : 'Jogar';
+        document.getElementById('piano-reiniciar').hidden = Boolean(sala?.emSala || (livre && !this.desafioLivre));
+    },
+
+    jogarPeloMenu: function() {
+        const dialogo = document.getElementById('piano-configuracoes');
+        const sala = this.modo === 'dueto' ? window.DuetoPiano?.estadoMenu() : null;
+        if (sala?.aguardando && !sala.convidado) {
+            window.DuetoPiano.controlarPartida();
+            return;
+        }
+        this.retomarAposConfiguracao = this.modo !== 'livre' && !sala?.convidado;
+        dialogo?.close();
+    },
+
+    reiniciarPeloMenu: function() {
+        this.retomarAposConfiguracao = false;
+        this.reiniciarMusica();
+    },
+
+    telaInteiraNativa: function() {
+        return navigator.userAgent.includes('SuiriFamiliaPiano/1');
+    },
+
+    atualizarBotaoTelaInteira: function() {
+        const botao = document.getElementById('piano-tela-inteira');
+        if (!botao) return;
+        botao.hidden = !this.telaInteiraNativa() && !document.fullscreenEnabled;
+        botao.textContent = this.emTelaInteiraNativa || document.fullscreenElement ? 'Sair da tela inteira' : 'Tela inteira';
+    },
+
+    ativarTelaInteira: function(ligada) {
+        if (this.telaInteiraNativa()) {
+            if (Boolean(this.emTelaInteiraNativa) !== ligada) {
+                this.emTelaInteiraNativa = ligada;
+                location.href = 'suiri-native://' + (ligada ? 'piano-fullscreen' : 'piano-exit-fullscreen');
+            }
+            this.atualizarBotaoTelaInteira();
+        } else if (ligada && document.fullscreenEnabled && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().then(() => {
+                if (document.body.dataset.arcadeTela !== 'simon') this.ativarTelaInteira(false);
+            }).catch(() => {});
+        } else if (!ligada && document.fullscreenElement === document.documentElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+    },
+
+    alternarTelaInteira: function() {
+        this.ativarTelaInteira(!this.emTelaInteiraNativa && !document.fullscreenElement);
+    },
+
+    fecharPiano: function() {
+        this.retomarAposConfiguracao = false;
+        document.getElementById('piano-configuracoes')?.close();
+        if (this.modo === 'dueto') window.DuetoPiano?.sair();
+        this.ativarTelaInteira(false);
     },
 
     alterarAlcance: function(valor) {
@@ -961,7 +1029,6 @@ window.MotorMusica = {
     mudarFatorVelocidade: function(fator) {
         const mudandoModo = (fator === 'toque') !== (this.fatorVelocidade === 'toque');
         this.fatorVelocidade = fator;
-        document.querySelector('.piano-sem-relogio')?.setAttribute('aria-pressed', String(fator === 'toque'));
         if (mudandoModo && fator === 'toque') {
             if (this.animEsteiraId) cancelAnimationFrame(this.animEsteiraId);
             this.animEsteiraId = null;
@@ -980,7 +1047,7 @@ window.MotorMusica = {
 
         if (fator === 'toque' && !document.getElementById('piano-configuracoes')?.open) {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Pausar");
+            this.atualizarRotuloPartida('Pausar');
             this.renderizarTodasEsteiras();
         } else if (this.tocandoMusica) {
             this.iniciarAnimacaoEsteira();
@@ -1046,7 +1113,7 @@ window.MotorMusica = {
             this.pausarMusica();
         } else if (this.fatorVelocidade === 'toque') {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Pausar");
+            this.atualizarRotuloPartida('Pausar');
             this.atualizarDisplays();
             this.renderizarTodasEsteiras();
         } else {
@@ -1056,7 +1123,7 @@ window.MotorMusica = {
 
     iniciarMusica: function() {
         this.tocandoMusica = true;
-        this.atualizarBotoesPlayVisual(true, "Pausar");
+        this.atualizarRotuloPartida('Pausar');
         this.ultimoTimestamp = performance.now();
         this.iniciarAnimacaoEsteira();
     },
@@ -1067,7 +1134,7 @@ window.MotorMusica = {
         this.relogioCompartilhado = null;
         if (this.animEsteiraId) cancelAnimationFrame(this.animEsteiraId);
         this.animEsteiraId = null;
-        this.atualizarBotoesPlayVisual(false, "Continuar");
+        this.atualizarRotuloPartida('Continuar');
         if (this.efeitosEsteira.length) this.animarEfeitosEsteira();
     },
 
@@ -1083,7 +1150,7 @@ window.MotorMusica = {
         this.animEsteiraId = null;
         this.pararTodasNotas();
         this.tempoMusicaSegundos = 0;
-        this.atualizarBotoesPlayVisual(false, "Jogar");
+        this.atualizarRotuloPartida('Jogar');
     },
 
     reiniciarMusica: function() {
@@ -1105,23 +1172,15 @@ window.MotorMusica = {
         this.renderizarTodasEsteiras();
         if (this.fatorVelocidade === 'toque' && !document.getElementById('piano-configuracoes')?.open) {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Pausar");
+            this.atualizarRotuloPartida('Pausar');
         } else {
-            this.atualizarBotoesPlayVisual(false, "Jogar");
+            this.atualizarRotuloPartida('Jogar');
         }
     },
 
-    atualizarBotoesPlayVisual: function(tocando, texto) {
-        const icone = tocando ? 'pause' : 'play';
-        const iconeS = document.querySelector('#icone-play-solo use');
-        const txtS = document.getElementById('txt-play-solo');
-        const iconeD = document.querySelector('#icone-play-dueto use');
-        const txtD = document.getElementById('txt-play-dueto');
-
-        if (iconeS) iconeS.setAttribute('href', `assets/icons-modern/kids.svg#${icone}`);
-        if (txtS) txtS.textContent = texto;
-        if (iconeD) iconeD.setAttribute('href', `assets/icons-modern/kids.svg#${icone}`);
-        if (txtD) txtD.textContent = texto;
+    atualizarRotuloPartida: function(texto) {
+        this.rotuloPartida = texto;
+        this.atualizarMenuPiano();
     },
 
     construirTrilhasMelodiaEHarmonia: function() {
@@ -1599,34 +1658,19 @@ window.MotorMusica = {
     },
 
     trocarModo: function(novoModo) {
+        if (novoModo === this.modo) return;
+        this.retomarAposConfiguracao = false;
         if (this.modo === 'dueto' && novoModo !== 'dueto') window.DuetoPiano?.sair();
         this.pararMusicaEContadores();
         this.modo = novoModo;
         if (novoModo === 'dueto' && this.fatorVelocidade === 'toque') {
             this.fatorVelocidade = 1;
-            document.querySelector('.piano-sem-relogio')?.setAttribute('aria-pressed', 'false');
         }
         document.querySelectorAll('.btn-velocidade-bichinho').forEach(botao => {
             const fator = botao.dataset.fator;
             botao.classList.toggle('ativo', fator === 'toque' ? this.fatorVelocidade === fator :
                 Number(fator) === this.fatorVelocidade);
         });
-
-        const rotuloVoltar = document.getElementById('rotulo-voltar-arcade');
-        if (rotuloVoltar) rotuloVoltar.textContent = novoModo === 'dueto' ? 'Sair do Dueto' : 'Arcade';
-
-        const telaSimon = document.getElementById('tela-simon');
-        if (telaSimon) {
-            telaSimon.dataset.modoPiano = novoModo;
-            telaSimon.scrollTop = 0;
-        }
-
-        const tabA = document.getElementById('tab-piano-aprendizado');
-        const tabL = document.getElementById('tab-piano-livre');
-        const tabD = document.getElementById('tab-piano-dueto');
-        if (tabA) tabA.classList.toggle('ativo', novoModo === 'aprendizado');
-        if (tabL) tabL.classList.toggle('ativo', novoModo === 'livre');
-        if (tabD) tabD.classList.toggle('ativo', novoModo === 'dueto');
 
         this.organizarPainel();
 
@@ -1668,14 +1712,19 @@ window.MotorMusica = {
         const solo = this.modo === 'aprendizado' && !duplo;
         const pistas = this.pistasAtivas();
         const compartilhado = this.tecladoCompartilhado();
-        painel.dataset.painelPiano = duplo ? 'duplo' : this.modo;
+        painel.dataset.modoPiano = this.modo;
         painel.classList.toggle('piano-maos-juntas', compartilhado);
         painel.querySelectorAll('[data-pista-piano]').forEach(bloco => {
             const parte = bloco.dataset.pistaPiano;
             bloco.hidden = !pistas[parte] || (compartilhado && parte === 'base');
         });
-        document.getElementById('tabs-piano-seletor-modos').style.display = this.modo === 'dueto' ? 'none' : 'flex';
-        document.getElementById('painel-aprendizado-box').style.display = solo ? 'block' : 'none';
+        for (const modo of ['aprendizado', 'livre', 'dueto']) {
+            const botao = document.getElementById('tab-piano-' + modo);
+            if (!botao) continue;
+            botao.classList.toggle('ativo', this.modo === modo);
+            botao.setAttribute('aria-pressed', String(this.modo === modo));
+        }
+        this.atualizarMenuPiano();
         document.getElementById('pista-esteira-box').style.display = solo ? 'block' : 'none';
         document.getElementById('teclado-piano-completo').style.display = solo ? 'flex' : 'none';
         document.getElementById('container-teclados-livre').style.display = this.modo === 'livre' ? 'flex' : 'none';
@@ -1731,38 +1780,25 @@ window.MotorMusica = {
     },
 
     atualizarDisplays: function() {
-        const desafioLivre = document.getElementById('piano-desafio-livre-status');
-        if (desafioLivre) desafioLivre.hidden = this.modo !== 'livre' || !this.desafioLivre;
-        if (!this.catalogoMusicas || this.catalogoMusicas.length === 0) return;
+        if (!this.catalogoMusicas.length) return;
         const mus = this.partituraAtual;
-        const alvoLivre = document.getElementById('alvo-desafio-livre');
-        if (alvoLivre) {
-            alvoLivre.hidden = !this.desafioLivre;
-            alvoLivre.textContent = this.encerrada ? 'Fim da tentativa' :
-                `Toque ${this.tabelaFrequencias[this.proximaNotaLivre]?.nome || '—'} na oitava 4`;
-        }
-        const placarLivre = document.getElementById('erros-livre-piano');
-        if (placarLivre) placarLivre.hidden = !this.desafioLivre;
         const notaItem = this.notasNaEsteira[this.passoNota];
         const alvo = this.mapearNota(notaItem?.nota);
         const acordeItem = this.acordesNaEsteira[this.passoAcorde];
-
-        const elNotaTxt = document.getElementById('txt-nota-alvo-aprendizado');
-        if (elNotaTxt) {
-            elNotaTxt.textContent = alvo?.etiqueta || '—';
-            elNotaTxt.dataset.oitava = alvo?.simbolo || '';
+        const rotuloNota = alvo ? [alvo.etiqueta, alvo.simbolo].filter(Boolean).join(' ') : '—';
+        const estado = document.getElementById('piano-estado-partida');
+        const nota = document.getElementById('piano-nota-atual');
+        if (estado && nota) {
+            const livre = this.modo === 'livre';
+            estado.hidden = livre && !this.desafioLivre;
+            if (livre) {
+                nota.textContent = this.encerrada ? 'Fim da tentativa' : (this.tabelaFrequencias[this.proximaNotaLivre]?.nome || '—');
+            } else if (this.tecladoCompartilhado()) {
+                nota.textContent = `Esq. ${acordeItem?.nome || '—'} · Dir. ${rotuloNota}`;
+            } else {
+                nota.textContent = this.pistasAtivas().melodia ? rotuloNota : (acordeItem?.nome || '—');
+            }
         }
-
-        const elMelodiaDueto = document.getElementById('badge-melodia-alvo-dueto');
-        if (elMelodiaDueto) {
-            elMelodiaDueto.textContent = this.tecladoCompartilhado() ?
-                `Esq. ${acordeItem?.nome || '—'} · Dir. ${alvo?.etiqueta || '—'}` :
-                `Melodia · ${alvo?.etiqueta || '—'}`;
-            elMelodiaDueto.dataset.oitava = alvo?.simbolo || '';
-        }
-
-        const elAcordeDueto = document.getElementById('badge-acorde-alvo-dueto');
-        if (elAcordeDueto) elAcordeDueto.textContent = `Base · ${acordeItem?.nome || '—'}`;
 
         const progresso = document.getElementById('progresso-piano');
         if (progresso) {

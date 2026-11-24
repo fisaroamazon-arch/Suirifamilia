@@ -33,6 +33,9 @@
     let revisaoModelo = 0;
     let quadro = 0;
     let antesDeRedimensionar = null;
+    let pontaCerdas;
+    let corDaPonta;
+    const opacidadeDoTraco = {marca: .38, cerdas: .61};
 
     function fatorDeEncaixe(origem, destino) {
         return Math.min(destino.width / origem.width, destino.height / origem.height);
@@ -89,7 +92,7 @@
         if (modelo && !modelo.contorno) centralizar(exibicao, modelo.imagem, modelo.escala);
         exibicao.drawImage(tinta.canvas, 0, 0);
         if (traco && traco.pincel !== 'borracha') {
-            exibicao.globalAlpha = traco.pincel === 'marca' ? .38 : 1;
+            exibicao.globalAlpha = opacidadeDoTraco[traco.pincel] ?? 1;
             exibicao.drawImage(rascunho.canvas, 0, 0);
             exibicao.globalAlpha = 1;
         }
@@ -171,38 +174,59 @@
         ctx.fill();
     }
 
+    function obterPontaCerdas(pigmento) {
+        if (corDaPonta === pigmento) return pontaCerdas;
+        const lado = 80;
+        const ponta = camada(lado, lado);
+        const imagem = ponta.createImageData(lado, lado);
+        const rgb = Number.parseInt(pigmento.slice(1), 16);
+        for (let y = 0; y < lado; y++) {
+            for (let x = 0; x < lado; x++) {
+                const dx = (x + .5) * 2 / lado - 1;
+                const dy = (y + .5) * 2 / lado - 1;
+                const angulo = Math.atan2(dy, dx);
+                const ruido = ((Math.imul(x + 23, 21373) ^ Math.imul(y + 19, 8831)) & 255) / 255;
+                const raio = Math.hypot(dx, dy) + .04 * Math.sin(angulo * 13) + .08 * (ruido - .5);
+                const borda = Math.min(1, Math.max(0, (1 - raio) / .55));
+                const suavidade = borda * borda * (3 - 2 * borda);
+                const fibra = .91 + .09 * Math.sin(dx * 37 + dy * 3);
+                const i = (y * lado + x) * 4;
+                imagem.data[i] = rgb >> 16;
+                imagem.data[i + 1] = (rgb >> 8) & 255;
+                imagem.data[i + 2] = rgb & 255;
+                imagem.data[i + 3] = 255 * suavidade * fibra * (.78 + .22 * ruido);
+            }
+        }
+        ponta.putImageData(imagem, 0, 0);
+        corDaPonta = pigmento;
+        pontaCerdas = ponta.canvas;
+        return pontaCerdas;
+    }
+
     function pintarCerdas(ctx, inicio, fim, controle, largura) {
         const dx = fim.x - inicio.x;
         const dy = fim.y - inicio.y;
         const distancia = Math.hypot(dx, dy);
-        const lateralX = distancia ? -dy / distancia : -.72;
-        const lateralY = distancia ? dx / distancia : .69;
-        const pressao = .37 + .91 * (inicio.pressao + fim.pressao) / 2;
-        const larguraAtiva = largura * pressao;
-        const cerdas = Math.max(7, Math.ceil(larguraAtiva * .75));
-        ctx.lineCap = 'round';
-        for (let i = 0; i < cerdas; i++) {
-            const lado = 2 * i / (cerdas - 1) - 1;
-            const afastamento = (lado * .48 + Math.sin(i * 12.1) * .028) * larguraAtiva;
-            const x = afastamento * lateralX;
-            const y = afastamento * lateralY;
-            const centro = 1 - Math.abs(lado);
-            ctx.lineWidth = Math.max(.62, larguraAtiva / cerdas * (.65 + .57 * centro));
-            ctx.globalAlpha = (.22 + .73 * centro) * (i % 4 === 0 ? .52 : 1);
-            if (distancia) {
-                const falha = i % 5 === 0 ? 6 : 2 + (i % 3);
-                ctx.setLineDash([Math.max(1.1, larguraAtiva * (.21 + .59 * centro)), falha + larguraAtiva * (.85 - centro * .64)]);
-                ctx.lineDashOffset = i * 6.7 - traco.comprimento;
-                ctx.beginPath();
-                ctx.moveTo(inicio.x + x, inicio.y + y);
-                ctx.quadraticCurveTo(controle.x + x, controle.y + y, fim.x + x, fim.y + y);
-                ctx.stroke();
-            } else {
-                ctx.beginPath();
-                ctx.ellipse(fim.x + x, fim.y + y, ctx.lineWidth * 1.1, ctx.lineWidth * .7, -.8, 0, 2 * Math.PI);
-                ctx.fill();
-            }
+        const intervalo = Math.max(.7, largura * .13);
+        const ponta = obterPontaCerdas(traco.cor);
+        let percurso = traco.proximoDeposito;
+        ctx.globalAlpha = distancia ? .48 : .71;
+        for (; percurso <= distancia; percurso += intervalo) {
+            const t = distancia ? percurso / distancia : 0;
+            const q = 1 - t;
+            const x = q * q * inicio.x + 2 * q * t * controle.x + t * t * fim.x;
+            const y = q * q * inicio.y + 2 * q * t * controle.y + t * t * fim.y;
+            const pressao = inicio.pressao + (fim.pressao - inicio.pressao) * t;
+            const comprimento = traco.comprimento + percurso;
+            const abertura = .7 + .3 * Math.min(1, comprimento / (largura * .65));
+            const diametro = largura * (.43 + 1.02 * pressao) * abertura;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(Math.atan2(dy, dx) + .22 * Math.sin(comprimento / 13));
+            ctx.drawImage(ponta, -diametro * .55, -diametro * .5, diametro * 1.1, diametro);
+            ctx.restore();
         }
+        traco.proximoDeposito = percurso - distancia;
     }
 
     function pintarGiz(ctx, inicio, fim, largura) {
@@ -285,7 +309,7 @@
         const feito = traco;
         if (feito.extremo !== feito.anterior) pintarSegmento(feito.extremo, feito.anterior, feito.anterior);
         if (feito.pincel !== 'borracha') {
-            tinta.globalAlpha = feito.pincel === 'marca' ? .38 : 1;
+            tinta.globalAlpha = opacidadeDoTraco[feito.pincel] ?? 1;
             tinta.drawImage(rascunho.canvas, 0, 0);
             tinta.globalAlpha = 1;
         }
@@ -300,7 +324,7 @@
         papel.setPointerCapture(evento.pointerId);
         const local = ponto(evento, papel.getBoundingClientRect());
         traco = {
-            id: evento.pointerId, anterior: local, extremo: local, pincel, cor, comprimento: 0,
+            id: evento.pointerId, anterior: local, extremo: local, pincel, cor, comprimento: 0, proximoDeposito: 0,
             largura: Number(espessura.value),
             antes: estadoAtual()
         };

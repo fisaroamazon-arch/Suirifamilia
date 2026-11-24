@@ -354,11 +354,7 @@
 
             voltarAcao: function() {
                 this.controlarBarraSuperior(true);
-                if (this.telaAtiva === 'simon' && window.MotorMusica?.modo === 'dueto') {
-                    window.MotorMusica.trocarModo('aprendizado');
-                    document.getElementById('tab-piano-aprendizado')?.focus();
-                    return;
-                }
+                if (this.telaAtiva === 'simon') window.MotorMusica?.fecharPiano();
                 if (this.partidaPausada) {
                     delete this.partidaPausada.motor.canvas.parentElement.dataset.pausa;
                     this.partidaPausada = null;
@@ -385,7 +381,7 @@
                 }
             },
 
-            abrirJogo: function(idJogo) {
+            abrirJogo: function(idJogo, telaInteira = false) {
                 if (this.telaAtiva !== 'menu' || !document.getElementById(`tela-${idJogo}`)) return;
                 this.atualizarNomesJogadores();
                 if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
@@ -424,6 +420,8 @@
                     window.AudioMotor?.carregarAmostra?.('piano');
                     if (window.MotorMusica && typeof window.MotorMusica.montar === 'function') {
                         window.MotorMusica.montar();
+                        if (telaInteira) window.MotorMusica.ativarTelaInteira(true);
+                        document.getElementById('piano-abrir-config')?.focus({ preventScroll: true });
                     }
                 } else if (idJogo === 'bolhas') {
                     document.getElementById('tela-bolhas').style.display = 'block';

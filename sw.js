@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7182';
+const CACHE='suiri-family-v7183';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -42,8 +42,8 @@ const SHELL=[
   "./assets/audio/piano/xilofone.mp3",
   "./arte.html",
   "./src/data/desenhos-arte.js?v=3ce33393256b",
-  "./src/pages/arte.js?v=326d9a4694c8",
-  "./styles/pages/arte.css?v=97e3adb261a5",
+  "./src/pages/arte.js?v=a7d71712ae1c",
+  "./styles/pages/arte.css?v=1ab3264fdef4",
   "./assets/images/arte/abelha.svg",
   "./assets/images/arte/arco-iris.svg",
   "./assets/images/arte/arvore.svg",
@@ -66,7 +66,7 @@ const SHELL=[
   "./assets/images/arte/ursinho.svg",
   "./src/core/config.js?v=50eb0e2f989b",
   "./src/core/foundation.js?v=134013abdc96",
-  "./styles/pages/piano.css?v=e58a9f7024c9",
+  "./styles/pages/piano.css?v=13257a9e7452",
   "./styles/pages/jogos.css?v=9b97da6fab58",
   "./styles/themes.css?v=3911cf04fce3",
   "./src/data/musicas.js?v=ac86a220bd3b",
@@ -74,9 +74,9 @@ const SHELL=[
   "./src/data/partituras-classicas.js?v=00e485e3c4a2",
   "./src/data/partituras-extras.js?v=cf58d3b9dbee",
   "./src/features/kids/piano-banda.js?v=103a53e7e8b6",
-  "./src/features/kids/piano-dueto-rede.js?v=8f4def6b9e3f",
-  "./src/features/kids/piano.js?v=4cc140df81ee",
-  "./src/pages/arcade.js?v=fab76121f08d",
+  "./src/features/kids/piano-dueto-rede.js?v=0e0836ccbc7f",
+  "./src/features/kids/piano.js?v=9623d69a22e2",
+  "./src/pages/arcade.js?v=a09984302a01",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=491bacb49130",

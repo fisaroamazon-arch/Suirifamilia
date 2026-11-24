@@ -3,19 +3,6 @@
     --piano-aguda: #d6abff;
     --piano-grave: #8be7ed;
 }
-.piano-estudio {
-    max-width: 440px;
-    margin: 4px auto 6px;
-    padding: 7px 12px;
-    border: 1px solid #d7c8ff47;
-    border-radius: 14px;
-    background: linear-gradient(120deg, #443562, #34496c);
-    color: #fff2de;
-    text-align: left;
-}
-.piano-estudio h2 { font-size: 1.12rem; line-height: 1.18; letter-spacing: -.02em; }
-.piano-estudio p { font-size: .73rem; margin-top: 2px; color: #eedffc; }
-#tela-simon:not([data-modo-piano="aprendizado"]) .piano-estudio { display: none; }
 .piano-musica-atual {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -24,22 +11,66 @@
     font-size: .86rem;
     font-weight: 750;
 }
-.piano-abrir-config { display: none; }
-.arcade-page[data-arcade-tela="simon"] #arcade-som { display: none; }
-.arcade-page[data-arcade-tela="simon"] .piano-abrir-config {
+.arcade-page[data-arcade-tela="simon"] #app-container { max-width: none; }
+.arcade-page[data-arcade-tela="simon"] #barra-topo-arcade { display: none !important; }
+
+.arcade-page[data-arcade-tela="simon"] #tela-simon {
+    --altura-teclado: 44%;
+    display: flex !important;
+    flex-direction: column;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.piano-abrir-config {
+    position: absolute;
+    z-index: 4;
+    top: 9px;
+    right: 10px;
+    min-height: 43px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 10px;
-    min-height: 38px;
-    border: 1px solid #aa91cc;
+    padding: 0 10px;
+    border: 1px solid #a08db9;
     border-radius: 12px;
-    background: linear-gradient(130deg, #504075, #38375d);
+    background: #2c2546f5;
     color: #fff3e4;
-    font-size: .76rem;
+    font-size: .78rem;
     font-weight: 750;
     cursor: pointer;
 }
+.piano-abrir-config svg { width: 17px; height: 17px; }
+.piano-estado-partida {
+    position: absolute;
+    top: 10px;
+    left: 11px;
+    z-index: 3;
+    max-width: calc(100% - 107px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    pointer-events: none;
+}
+#piano-estado-partida[hidden] { display: none; }
+#piano-nota-atual {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: 1px solid #8ba4cc72;
+    border-radius: 8px;
+    padding: 3px 7px;
+    background: #111931ed;
+    color: #feecd4;
+    font-size: .74rem;
+    font-weight: 800;
+}
+#tela-simon #piano-estado-partida [data-vidas-piano] { margin: 0; font-size: .72rem; }
+#tela-simon #piano-estado-partida .piano-coracoes svg { width: 12px; height: 12px; }
+#tela-simon .piano-estado-partida .piano-meta-vida { display: none; }
+
 #piano-configuracoes {
     width: min(520px, calc(100% - 22px));
     max-height: min(86dvh, 620px);
@@ -108,9 +139,6 @@
     background: #242039;
 }
 .piano-figuras li::before { content: ""; width: .68rem; height: .68rem; border-radius: 3px; background: var(--figura-cor); }
-.piano-legenda-maos { border-radius: 999px; padding: 2px 8px; background: #23304c; color: #eff6ff; font-size: .72rem; }
-.piano-legenda-maos [data-piano-ambas], .piano-maos-juntas .piano-legenda-maos [data-piano-direita] { display: none; }
-.piano-maos-juntas .piano-legenda-maos [data-piano-ambas] { display: inline; }
 #piano-configuracoes :is(.piano-parte, .piano-alcance):not([hidden]) {
     display: grid;
     gap: 4px;
@@ -129,73 +157,47 @@
     background: #302e47;
     color: #fff1eb;
 }
-#piano-configuracoes .piano-config-fechar {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    min-height: 39px;
-    margin: 7px 0 0;
-    background: #f8d99d;
-    color: #392c40;
-}
+#tabs-piano-seletor-modos { margin: 0 0 8px; }
+#tabs-piano-seletor-modos .btn-modo-som-tab { flex: 1; min-height: 42px; }
+#piano-configuracoes .piano-repertorio label { font-weight: 750; }
+#piano-configuracoes .piano-repertorio label select { min-width: 0; }
+.piano-resumo-menu { display: grid; gap: 5px; }
+.piano-resumo-menu progress { width: 100%; height: 7px; accent-color: #ffdb9e; }
+.piano-guia { color: #e7dbf2; font-size: .75rem; line-height: 1.35; }
+.piano-guia-maos { display: none; }
+.piano-maos-juntas .piano-guia-maos { display: block; }
+.piano-acoes-menu { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.piano-menu-rodape { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; flex-shrink: 0; padding-top: 8px; }
+.piano-menu-rodape > button { min-height: 42px; justify-content: center; }
+#piano-configuracoes .piano-config-fechar { margin: 0; background: #f8d99d; color: #392c40; }
 @media (orientation: portrait) {
     #piano-configuracoes { margin: auto auto max(9px, env(safe-area-inset-bottom)); }
 }
-#tela-simon #painel-aprendizado-box {
-    border-radius: 17px;
-    background: linear-gradient(137deg, #383456, #2d2b4a 58%, #3f3049);
-    border-color: #c4a7df69;
+@media (orientation: landscape) {
+    .piano-girar { display: none; }
 }
-#tela-simon .piano-repertorio label { font-weight: 750; }
-#tela-simon .piano-repertorio label select { min-width: 0; }
-.piano-oitavas-guia {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: baseline;
-    gap: 2px .34rem;
-    color: #f1e6fb;
-    font-size: .73rem;
-    margin: 5px 0;
+@media (orientation: landscape) and (min-width: 640px) {
+    #piano-configuracoes { width: min(740px, calc(100% - 22px)); max-height: 94dvh; }
+    .piano-config-cabecalho { margin-bottom: 7px; }
+    .piano-config-alca { height: 21px; }
+    .piano-config-corpo {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: start;
+        gap: 5px 12px;
+    }
+    #tabs-piano-seletor-modos, .piano-config-corpo > [data-config-piano="livre"] { grid-column: 1 / -1; }
+    .piano-acoes-menu { justify-content: flex-end; align-self: center; }
 }
-.piano-oitavas-guia b:first-child { color: var(--piano-aguda); }
-.piano-oitavas-guia b:nth-of-type(2) { color: var(--piano-grave); }
+@media (max-width: 360px) {
+    #tela-simon #piano-estado-partida .piano-coracoes { display: none; }
+    #tabs-piano-seletor-modos .kids-icon { display: none; }
+}
+
 .piano-fonte { margin: 0 0 5px; font-size: .7rem; text-align: center; }
 .piano-fonte a { color: #e8d7ff; text-underline-offset: 2px; }
 .piano-fonte span { display: block; color: #e8d7ff; overflow-wrap: anywhere; }
 
-#tela-simon .piano-sem-relogio {
-    min-height: 40px;
-    padding: 4px 7px;
-    border-radius: 8px;
-    border: 1px solid #ae9bc0;
-    background: #37365a;
-    color: #f3e9ff;
-    font-size: .72rem;
-    font-weight: 750;
-    cursor: pointer;
-}
-#tela-simon .piano-sem-relogio[aria-pressed="true"] {
-    background: #dbc5f7;
-    color: #39234f;
-    border-color: #e4cbff;
-}
-#tela-simon .piano-acoes { justify-content: flex-start; }
-#tela-simon [data-oitava^="↑"] { color: var(--piano-aguda) !important; }
-#tela-simon [data-oitava^="↓"] { color: var(--piano-grave) !important; }
-#tela-simon [data-oitava]:not([data-oitava=""]) {
-    background: #242039;
-    border: 1px solid #a99abb;
-    border-radius: 7px;
-    padding: 2px 4px;
-    white-space: normal;
-}
-#tela-simon [data-oitava]:not([data-oitava=""])::after {
-    content: " " attr(data-oitava);
-    display: inline-block;
-    margin-inline-start: 3px;
-}
 #tela-simon [data-oitava-alvo^="↑"], #tela-simon .tocando[data-oitava-tocada^="↑"] { --piano-oitava-tinta: var(--piano-aguda); }
 #tela-simon [data-oitava-alvo^="↓"], #tela-simon .tocando[data-oitava-tocada^="↓"] { --piano-oitava-tinta: var(--piano-grave); }
 
@@ -232,64 +234,80 @@
     outline: 2px solid #a76bfc;
     outline-offset: -3px;
 }
-#tela-simon #pista-esteira-box {
-    border-radius: 16px 16px 8px 8px;
-    border-color: #9793bf;
-    box-shadow: 0 8px 26px #100d2f7a;
+#tela-simon :is(#pista-esteira-box, .pista-dueto-box) {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    border-radius: 10px 10px 0 0;
 }
-#tela-simon #teclado-piano-completo {
-    border-radius: 8px 8px 16px 16px;
-    box-shadow: 0 8px 28px #140f2f98;
+#tela-simon :is(#teclado-piano-completo, #teclado-dueto-melodia, #teclado-dueto-harmonia) {
+    flex: 0 0 var(--altura-teclado);
+    height: var(--altura-teclado);
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0 0 10px 10px;
 }
-#teclado-piano-completo[data-alcance="2"], #teclado-piano-completo[data-alcance="3"] { padding: 0; }
-#teclado-piano-completo[data-alcance] .tecla-branca-piano { min-width: 0; }
-#teclado-piano-completo[data-alcance] .rotulo-nota-preta { font-size: 8px; }
+#tela-simon #container-dueto-piano-2p {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+}
+#tela-simon [data-pista-piano][hidden] { display: none; }
+#tela-simon [data-pista-piano]:not([hidden]) { display: flex; flex: 1; }
+
 #tela-simon #container-teclados-livre {
-    max-width: 785px;
-    gap: 8px;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    gap: 4px;
+}
+#container-teclados-livre .faixa-teclado-unidade:first-child .topo-faixa-oitava {
+    min-height: 44px;
+    padding-inline-end: 95px;
+}
+#container-teclados-livre .faixa-teclado-unidade:first-child { flex-basis: 24px; }
+#piano-estado-partida:not([hidden]) ~ #container-teclados-livre .faixa-teclado-unidade:first-child .badge-faixa-oitava {
+    visibility: hidden;
 }
 #container-teclados-livre .faixa-teclado-unidade {
-    padding: 5px;
+    flex: 1;
+    min-height: 0;
+    padding: 3px;
+    gap: 3px;
     border-color: #a79bc1;
     background: linear-gradient(140deg, #4a4266, #353c59);
 }
 #container-teclados-livre .badge-faixa-oitava {
+    padding: 2px 6px;
     background: #26223d;
     color: #fff0dd;
-    font-size: .75rem;
+    font-size: .7rem;
     box-shadow: none;
 }
 #container-teclados-livre .badge-faixa-oitava span { color: #d3c3ed; font-weight: 600; }
 #container-teclados-livre .teclado-compacto-livre {
-    height: clamp(94px, 19dvh, 146px);
+    flex: 1;
+    min-height: 0;
+    max-width: none;
+    height: auto;
     padding: 0;
 }
-#container-teclados-livre :is(.tecla-branca-piano, .tecla-preta-piano) { min-width: 0; }
-#container-teclados-livre .rotulo-nota-preta { font-size: clamp(7px, 1.35vw, 9px); }
-#tela-simon #painel-aprendizado-box .piano-placar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+#tela-simon :is(.tecla-branca-piano, .tecla-preta-piano) { min-width: 0; }
+#tela-simon :is(.rotulo-nota-branca, .rotulo-nota-preta) { font-size: clamp(8px, 1.24vw, 14px); }
+#tela-simon .tecla-preta-piano .rotulo-nota-preta { font-size: clamp(7px, 1vw, 12px); }
+@media (orientation: portrait) {
+    .arcade-page[data-arcade-tela="simon"] #tela-simon { --altura-teclado: 34%; }
 }
-#tela-simon #painel-aprendizado-box .piano-placar > progress {
-    grid-column: 1 / -1;
-    width: 100%;
-}
-#tela-simon #painel-aprendizado-box .estrelinha-alvo-box {
-    justify-content: flex-start;
-    min-width: 0;
-}
-.piano-rotulo-proxima { font-size: .75rem; }
-#tela-simon #txt-nota-alvo-aprendizado {
-    display: inline-block;
-    flex: 0 0 6.5em;
-    padding: 2px 4px;
-    border: 1px solid transparent;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-}
-#tela-simon #txt-nota-alvo-aprendizado[data-oitava]:not([data-oitava=""]) { border-color: #a99abb; }
-#tela-simon #txt-nota-alvo-aprendizado::after { white-space: nowrap; }
 #tela-simon [data-nota].tocando,
 #tela-simon [data-nota].nota-errada {
     transform: none;
@@ -305,151 +323,7 @@
     #tela-simon [data-nota].alvo-brilhando,
     #tela-simon [data-nota].harmonia-brilhando { animation: none; }
 }
-@media (max-width: 380px) {
-    #tela-simon .piano-acoes { gap: 3px; }
-    #tela-simon .piano-sem-relogio { font-size: .66rem; }
-    #tela-simon #painel-aprendizado-box .estrelinha-icone { display: none; }
-    #tela-simon .piano-rotulo-proxima { position: absolute; clip-path: inset(50%); }
-}
-@media (max-width: 345px) {
-    #tela-simon #painel-aprendizado-box .piano-meta-vida > svg { display: none; }
-}
-@media (orientation: portrait) {
-    .piano-girar { display: inline; }
-}
-@media (orientation: portrait) and (max-height: 740px) {
-    #tela-simon #pista-esteira-box { height: clamp(112px, 22dvh, 165px); }
-    #tela-simon #teclado-piano-completo { height: clamp(86px, 17dvh, 120px); }
-}
-@media (orientation: landscape) {
-    .piano-girar { display: none; }
-}
-@media (orientation: landscape) {
-    .arcade-page[data-arcade-tela="simon"] #app-container { max-width: 1180px; }
-    .arcade-page[data-arcade-tela="simon"] .barra-topo { min-height: 44px; }
-    .arcade-page[data-arcade-tela="simon"] .barra-topo .btn-voltar { min-height: 34px; }
-    .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"]:not([data-painel-piano="duplo"]) {
-        display: grid !important;
-        grid-template-columns: clamp(208px, 28%, 290px) minmax(0, 785px);
-        grid-template-rows: 37px minmax(68px, 1fr) clamp(68px, 23dvh, 108px);
-        grid-template-areas: "modos pista" "painel pista" "painel teclas";
-        gap: 5px 12px;
-        justify-content: center;
-        height: auto;
-        padding: 6px 10px 8px;
-    }
-    #tela-simon[data-modo-piano="aprendizado"] .piano-estudio { display: none; }
-    #tela-simon #tabs-piano-seletor-modos { grid-area: modos; margin: 0; }
-    #tela-simon #tabs-piano-seletor-modos .btn-modo-som-tab {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        padding-inline: 5px;
-        font-size: .68rem;
-        white-space: nowrap;
-    }
-    #tela-simon #painel-aprendizado-box {
-        grid-area: painel;
-        align-self: start;
-        width: 100%;
-        max-height: 100%;
-        min-width: 0;
-        margin: 0;
-        overflow-y: auto;
-        scrollbar-width: thin;
-    }
-    #tela-simon #painel-aprendizado-box .estrelinha-icone { display: none; }
-    #tela-simon .piano-rotulo-proxima { position: absolute; clip-path: inset(50%); }
-    #tela-simon #painel-aprendizado-box .piano-meta-vida { display: none; }
-    #tela-simon #painel-aprendizado-box .piano-coracoes svg { width: 13px; height: 13px; }
-    #tela-simon #painel-aprendizado-box .piano-acoes { display: grid; grid-template-columns: 1fr 1fr; }
-    #tela-simon #painel-aprendizado-box .piano-acoes > button { min-height: 34px; }
-    #tela-simon #painel-aprendizado-box .btn-voltar-dueto { grid-column: 1 / -1; justify-content: center; }
-    #tela-simon #pista-esteira-box,
-    #tela-simon #teclado-piano-completo {
-        width: 100%;
-        max-width: none;
-        height: 100%;
-        margin: 0;
-    }
-    #tela-simon #pista-esteira-box { grid-area: pista; margin-block-end: -5px; }
-    #tela-simon #teclado-piano-completo { grid-area: teclas; }
-    #container-teclados-livre .teclado-compacto-livre { height: clamp(45px, 19dvh, 124px); }
-}
-@media (orientation: landscape) and (max-width: 1039px) {
-    .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"]:not([data-painel-piano="duplo"]) {
-        grid-template-columns: minmax(156px, 23%) minmax(0, 1fr);
-        grid-template-rows: auto minmax(38px, 1fr) clamp(54px, 23dvh, 100px);
-        grid-template-areas: "modos painel" "pista pista" "teclas teclas";
-        gap: 4px 7px;
-        padding: 4px 7px 5px;
-    }
-    #tela-simon #tabs-piano-seletor-modos { align-self: center; gap: 3px; }
-    #tela-simon #tabs-piano-seletor-modos .btn-modo-som-tab { min-height: 38px; }
-    #tela-simon[data-modo-piano="aprendizado"]:not([data-painel-piano="duplo"]) #painel-aprendizado-box {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 2px 7px;
-        padding: 4px 6px;
-    }
-    #tela-simon #painel-aprendizado-box .piano-musica-atual {
-        grid-column: 1 / -1;
-        font-size: .72rem;
-        text-align: left;
-    }
-    #tela-simon #painel-aprendizado-box .piano-oitavas-guia { display: none; }
-    #tela-simon #painel-aprendizado-box .piano-controles { margin: 0; }
-    #tela-simon #painel-aprendizado-box .piano-acoes {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 4px;
-    }
-    #tela-simon #painel-aprendizado-box .piano-acoes > button { min-height: 33px; white-space: nowrap; }
-    #tela-simon #painel-aprendizado-box .btn-voltar-dueto { padding-inline: 7px; }
-    #tela-simon #painel-aprendizado-box .btn-voltar-dueto span { display: none; }
-    #tela-simon #painel-aprendizado-box .piano-placar { min-width: 0; }
-    #tela-simon #painel-aprendizado-box .piano-placar > progress { display: none; }
-    #tela-simon #txt-nota-alvo-aprendizado { flex-basis: 5.75em; padding-inline: 2px; font-size: .72rem; }
-}
-@media (orientation: landscape) and (max-width: 590px) {
-    #tela-simon #painel-aprendizado-box .piano-coracoes { display: none; }
-    #tela-simon #painel-aprendizado-box .piano-acoes > button { padding-inline: 5px; font-size: .64rem; }
-}
-@media (orientation: landscape) and (max-width: 480px) {
-    .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"]:not([data-painel-piano="duplo"]) {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto minmax(28px, 1fr) clamp(48px, 22dvh, 76px);
-        grid-template-areas: "modos" "painel" "pista" "teclas";
-    }
-}
-
-
-#tela-simon[data-painel-piano="duplo"] #container-dueto-piano-2p {
-    max-width: 1000px;
-    gap: 5px;
-    height: auto;
-}
-#tela-simon[data-painel-piano="duplo"] .piano-estudio { display: none; }
-#tela-simon[data-painel-piano="duplo"] .piano-painel-dueto {
-    order: -2;
-    display: flex;
-    flex-shrink: 0;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 5px 10px;
-    margin: 0;
-    max-width: none;
-}
-#tela-simon[data-painel-piano="duplo"] .bloco-dueto-j1 { order: -1; }
-#tela-simon[data-painel-piano="duplo"] .teclado-compacto-livre { padding: 0; }
-#tela-simon[data-painel-piano="duplo"] .tecla-branca-piano { min-width: 0; }
-#tela-simon[data-painel-piano="duplo"] .rotulo-nota-preta { font-size: 8px; }
-#tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-acoes { flex: 0 0 auto; }
-#tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-musica-atual { flex: 1 1 142px; min-width: 0; }
 .piano-rede-estado { color: #fff0c4; font-size: .73rem; padding: 3px 0; overflow-wrap: anywhere; }
-#piano-rede-estado { flex-basis: 100%; }
 .piano-rede-acoes { display: flex; flex-wrap: wrap; gap: 5px; }
 .piano-rede-acoes button, .piano-convite-link {
     min-height: 36px; padding: 4px 9px; border-radius: 8px; border: 1px solid #8b7da2;
@@ -457,23 +331,3 @@
 }
 .piano-convite-link { width: 100%; }
 [data-piano-entrar] .piano-convite-link { flex: 1 1 185px; min-width: 0; }
-@media (orientation: landscape) {
-    #tela-simon[data-modo-piano="aprendizado"][data-painel-piano="duplo"] { display: flex !important; flex-direction: column; }
-    #tela-simon[data-painel-piano="duplo"] #container-dueto-piano-2p { flex: 1; height: 100%; }
-    #tela-simon[data-painel-piano="duplo"] :is(.bloco-dueto-j1, .bloco-dueto-j2) { min-height: 70px; }
-    #tela-simon[data-painel-piano="duplo"] .pista-dueto-box {
-        flex: 1;
-        width: 100%;
-        max-width: none;
-        min-height: 18px;
-        margin: 0;
-    }
-    #tela-simon[data-painel-piano="duplo"] .teclado-compacto-livre { height: clamp(36px, 13dvh, 89px); }
-    #tela-simon.piano-maos-juntas #teclado-dueto-melodia { height: clamp(52px, 19dvh, 120px); }
-    #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-meta-vida { display: none; }
-    #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-coracoes svg { width: 12px; height: 12px; }
-}
-@media (orientation: landscape) and (max-height: 310px) {
-    #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-coracoes { display: none; }
-    #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-acoes > button { min-height: 31px; }
-}

@@ -8,13 +8,9 @@ window.DuetoPiano = (() => {
     let recado = '';
 
     function atualizarTela() {
-        const jogo = document.getElementById('piano-rede-estado');
         const ajustes = document.getElementById('piano-rede-ajustes');
-        for (const campo of [jogo, ajustes]) {
-            if (!campo) continue;
-            campo.hidden = !recado;
-            campo.textContent = recado;
-        }
+        ajustes.hidden = !recado;
+        ajustes.textContent = recado;
         document.querySelector('[data-piano-criar]').hidden = Boolean(sala);
         document.querySelector('[data-piano-convidar]').hidden = !sala?.anfitriao || !sala.conectada;
         document.querySelector('[data-piano-sair]').hidden = !sala;
@@ -22,9 +18,7 @@ window.DuetoPiano = (() => {
         const convidado = sala && !sala.anfitriao;
         document.querySelectorAll('#piano-configuracoes [data-estilo-piano], #seletor-musica-alvo, [data-parte-piano], #botoes-velocidade-solo button')
             .forEach(campo => { campo.disabled = Boolean(convidado); });
-        const iniciar = document.getElementById('btn-play-musica-dueto');
-        iniciar.disabled = Boolean(sala && !sala.anfitriao);
-        document.getElementById('piano-reiniciar-dueto').hidden = Boolean(sala);
+        window.MotorMusica?.atualizarMenuPiano();
     }
 
     function mostrar(texto) {
@@ -112,7 +106,7 @@ window.DuetoPiano = (() => {
                     atual.ajusteRelogio = msg.hora - (msg.eco + Date.now()) / 2;
                 }
                 clearTimeout(atual.espera);
-                mostrar('Na sala. Escolha sua parte em Ajustes. O anfitrião inicia a música.');
+                mostrar('Na sala. Escolha sua parte no menu. O anfitrião inicia a música.');
                 return;
             }
         }
@@ -261,7 +255,7 @@ window.DuetoPiano = (() => {
     function entrarPeloConvite() {
         const codigo = codigoDoConvite(location.hash);
         if (!codigo) return;
-        GerenciadorArcade.abrirJogo('simon');
+        GerenciadorArcade.abrirJogo('simon', window.MotorMusica.telaInteiraNativa());
         window.MotorMusica.trocarModo('dueto');
         conectar(codigo, false);
     }
@@ -270,6 +264,9 @@ window.DuetoPiano = (() => {
     window.addEventListener('pagehide', () => sair());
     return {
         criar, entrar, convidar, sair, controlarPartida, pausarPartida,
+        estadoMenu() {
+            return {emSala: Boolean(sala), convidado: Boolean(sala && !sala.anfitriao), aguardando: Boolean(sala && !sala.par)};
+        },
         enviarNotas(chaves, notas, timbre) {
             if (sala?.par) enviar('notas', {notas: notas.map((nota, i) => [chaves[i], nota]), timbre});
         },

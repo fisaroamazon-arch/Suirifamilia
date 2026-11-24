@@ -25,7 +25,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.util.Base64;
 import android.service.notification.StatusBarNotification;
 import org.json.JSONArray;
@@ -48,6 +50,9 @@ public final class MainActivity extends Activity {
     private static final int VOICE = 1, GALLERY = 2, MICROPHONE = 3, CAMERA = 4, NOTIFICATIONS = 5, SAVE_PDF = 6;
     private static final int PDF_CHUNK = 65536, MAX_PDF_BASE64 = 16000000;
     private WebView web;
+    private FrameLayout content;
+    private boolean pianoTelaInteira;
+    private int flagsAntesDoPiano;
     private ValueCallback<Uri[]> gallery;
     private PermissionRequest camera;
     private StringBuilder pdfInProgress;
@@ -65,8 +70,12 @@ public final class MainActivity extends Activity {
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1 SuiriFamiliaAlertas/1 SuiriFamiliaImagem/1 SuiriFamiliaVoz/1");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1 SuiriFamiliaAlertas/1 SuiriFamiliaImagem/1 SuiriFamiliaVoz/1 SuiriFamiliaPiano/1");
         web.setWebViewClient(new WebViewClient() {
+            @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                definirTelaInteiraPiano(false);
+            }
+
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!request.isForMainFrame()) return false;
                 Uri url = request.getUrl();
@@ -86,6 +95,10 @@ public final class MainActivity extends Activity {
                             getPreferences(MODE_PRIVATE).edit().remove("perfil_alertas").apply();
                             web.loadUrl(SITE + "index.html");
                             break;
+                        case "piano-fullscreen":
+                            if ("/Suirifamilia/jogos.html".equals(Uri.parse(view.getUrl()).getPath())) definirTelaInteiraPiano(true);
+                            break;
+                        case "piano-exit-fullscreen": definirTelaInteiraPiano(false); break;
                         case "speak-tour": lerPassoTour(); break;
                         case "stop-tour": pararTourFalado(); break;
                         case "save-pdf": startPdfExport(view.getUrl(), false); break;
@@ -135,15 +148,18 @@ public final class MainActivity extends Activity {
                 return true;
             }
         });
-        FrameLayout content = new FrameLayout(this);
+        content = new FrameLayout(this);
         content.addView(web, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         if (Build.VERSION.SDK_INT >= 30) {
             getWindow().setDecorFitsSystemWindows(false);
             content.setOnApplyWindowInsetsListener((view, insets) -> {
-                int system = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
+                int bars = WindowInsets.Type.systemBars();
+                int cutout = WindowInsets.Type.displayCutout();
+                int system = bars | cutout;
                 int ime = WindowInsets.Type.ime();
-                Insets safe = Insets.max(insets.getInsetsIgnoringVisibility(system), insets.getInsets(ime));
+                Insets safe = insets.getInsetsIgnoringVisibility(pianoTelaInteira ? cutout : system);
+                safe = Insets.max(safe, insets.getInsets(ime));
                 // Padding the parent shrinks the WebView itself, including its HTML viewport.
                 view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
                 return new WindowInsets.Builder(insets)
@@ -168,6 +184,33 @@ public final class MainActivity extends Activity {
         String tela = intent == null ? null : intent.getStringExtra("suiri_tela");
         if (Arrays.asList("inicio", "calendario", "financeiro").contains(tela)) web.loadUrl(SITE + "index.html#" + tela);
         else if (web.getUrl() == null) web.loadUrl(SITE);
+    }
+
+    private void definirTelaInteiraPiano(boolean ativar) {
+        if (pianoTelaInteira == ativar) return;
+        pianoTelaInteira = ativar;
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController controller = getWindow().getInsetsController();
+            if (controller != null) {
+                if (ativar) {
+                    controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                    controller.hide(WindowInsets.Type.systemBars());
+                } else {
+                    controller.show(WindowInsets.Type.systemBars());
+                    controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_DEFAULT);
+                }
+            }
+            content.requestApplyInsets();
+        } else {
+            View decor = getWindow().getDecorView();
+            if (ativar) {
+                flagsAntesDoPiano = decor.getSystemUiVisibility();
+                decor.setSystemUiVisibility(flagsAntesDoPiano | View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            } else {
+                decor.setSystemUiVisibility(flagsAntesDoPiano);
+            }
+        }
     }
 
     private static boolean isSite(Uri url) {
@@ -487,6 +530,11 @@ public final class MainActivity extends Activity {
     }
 
     @Override public void onBackPressed() {
+        if (pianoTelaInteira) {
+            web.evaluateJavascript("(() => { const menu = document.getElementById('piano-configuracoes'); "
+                    + "if (menu?.open) menu.close(); else GerenciadorArcade.voltarAcao(); })()", null);
+            return;
+        }
         if (web.canGoBack()) web.goBack();
         else super.onBackPressed();
     }
