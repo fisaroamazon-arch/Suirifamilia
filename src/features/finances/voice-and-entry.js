@@ -233,19 +233,20 @@ window.selecionarTipoRegistroRapido = function(tipo) {
     const seletor = document.getElementById('select-fin-tipo');
     const mudou = seletor.value !== tipo;
     seletor.value = tipo;
-    const confirmar = document.getElementById('fin-confirmar-registro');
-    if (confirmar) confirmar.textContent = tipo === 'entrada' ? 'Registrar receita' : 'Registrar despesa';
+    const receita = tipo === 'entrada';
+    const titulo = receita ? 'Registrar receita' : 'Registrar despesa';
+    const modal = document.getElementById('modal-registro-rapido-financas');
+    modal.dataset.finTipo = tipo;
+    document.getElementById('fin-titulo-registro').textContent = titulo;
+    document.getElementById('fin-confirmar-registro').textContent = titulo;
+    document.getElementById('btn-toggle-tipo-despesa').setAttribute('aria-pressed', String(!receita));
+    document.getElementById('btn-toggle-tipo-receita').setAttribute('aria-pressed', String(receita));
+    const descricao = document.getElementById('input-fin-descricao');
+    descricao.placeholder = receita ? 'Ex. Pagamento recebido' : 'Ex. Compras do mês';
+    descricao.setAttribute('aria-label', receita ? 'Descrição da receita' : 'Descrição da despesa');
+    document.getElementById('select-fin-categoria').placeholder = receita ? 'Ex. Serviços' : 'Ex. Mercado';
+    document.getElementById('select-fin-subcategoria').placeholder = receita ? 'Ex. Fotografia' : 'Ex. Guloseimas';
     window.preencherCategoriasFinanceiras(mudou ? '' : undefined, mudou ? '' : undefined);
-    for (const [id, ativo, cor] of [
-        ['btn-toggle-tipo-despesa', tipo === 'saida', '#f43f5e'],
-        ['btn-toggle-tipo-receita', tipo === 'entrada', '#10b981']
-    ]) {
-        const botao = document.getElementById(id);
-        if (!botao) continue;
-        botao.setAttribute('aria-pressed', String(ativo));
-        botao.style.background = ativo ? cor : 'transparent';
-        botao.style.color = ativo ? '#fff' : '#0f172a';
-    }
 };
 
 window.confirmarRegistroRapido = async function(botao) {

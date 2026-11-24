@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
 <link rel="stylesheet" href="styles/espaco-kids.css?v=213911b07577">
-    <link rel="stylesheet" href="styles/financas.css?v=be509af84d6d">
+    <link rel="stylesheet" href="styles/financas.css?v=b9aae4ac282a">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
     <link rel="stylesheet" href="styles/tema-principal.css?v=2748698233be">
 </head>
@@ -786,21 +786,21 @@
     </dialog>
 
     <!-- MODAL UNIFICADO DE REGISTRO DE FINANÇAS -->
-    <div id="modal-registro-rapido-financas" class="modal-overlay modal-overlay-bottom oculto">
+    <div id="modal-registro-rapido-financas" data-fin-tipo="saida" class="modal-overlay modal-overlay-bottom oculto">
         <div class="modal-conteudo modal-bottom-sheet">
             <div class="modal-header" style="border-bottom: none; margin-bottom: 0;">
-                <h3 style="font-size:18px;">Registrar valor</h3>
+                <h3 id="fin-titulo-registro" style="font-size:18px;">Registrar despesa</h3>
                 <button type="button" class="btn-secundario" style="padding:6px 12px; border-radius:12px;" onclick="Suiri.closeModal('modal-registro-rapido-financas')">✕</button>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top:10px;">
-                <button type="button" id="btn-toggle-tipo-despesa" class="btn-principal" style="background:#f43f5e; color:#fff;" aria-pressed="true" onclick="window.selecionarTipoRegistroRapido('saida')">Despesa (Saída)</button>
-                <button type="button" id="btn-toggle-tipo-receita" aria-pressed="false" class="btn-secundario" onclick="window.selecionarTipoRegistroRapido('entrada')">Receita (Entrada)</button>
+            <div class="fin-tipos-registro" role="group" aria-label="Tipo do lançamento">
+                <button type="button" id="btn-toggle-tipo-despesa" class="fin-tipo-registro" aria-pressed="true" onclick="window.selecionarTipoRegistroRapido('saida')">Despesa (Saída)</button>
+                <button type="button" id="btn-toggle-tipo-receita" aria-pressed="false" class="fin-tipo-registro" onclick="window.selecionarTipoRegistroRapido('entrada')">Receita (Entrada)</button>
                 <input type="hidden" id="select-fin-tipo" value="saida">
             </div>
 
             <div style="position: relative; margin-bottom: 12px;">
-                <input type="text" id="input-fin-descricao" placeholder="Descrição ou use a voz..." oninput="window.atualizarSugestaoFinanceira()" style="width: 100%;">
+                <input type="text" id="input-fin-descricao" placeholder="Ex. Compras do mês" aria-label="Descrição da despesa" oninput="window.atualizarSugestaoFinanceira()" style="width: 100%;">
                 <button type="button" id="btn-mic-gastos" aria-label="Ditado de lançamento" style="position: absolute; right: 10px; top: 12px; background: transparent; border: none; cursor: pointer;" onclick="window.ouvirComandoVoz()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                 </button>
@@ -1712,7 +1712,7 @@
 <script src="src/core/swipe.js?v=14267843cb50"></script>
 <script src="src/features/missions/missoes.js?v=44c347a263f3"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
-<script src="src/features/finances/voice-and-entry.js?v=af7d7bbbb1d8"></script>
+<script src="src/features/finances/voice-and-entry.js?v=09167114112c"></script>
 <script src="src/features/finances/graficos.js?v=954c9ad9ad28"></script>
 <script src="src/features/finances/planejamento.js?v=b2ebd625fb1a"></script>
 <script src="src/features/finances/wallet.js?v=aec77e9028d2"></script>
