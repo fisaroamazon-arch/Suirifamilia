@@ -69,8 +69,12 @@ window.DuetoPiano = (() => {
             atual.inicio = null;
             document.getElementById('piano-configuracoes')?.close();
             mostrar('Dueto em dois celulares');
-            piano.tempoMusicaSegundos = partida.posicao;
-            piano.relogioCompartilhado = {inicio, posicao: partida.posicao};
+            const contar = partida.contar === true;
+            const posicao = contar ? Math.max(0, partida.posicao) : partida.posicao;
+            piano.contagemPendente = null;
+            piano.tempoMusicaSegundos = posicao;
+            const duracao = contar ? piano.prepararContagem(posicao, false, true, inicio) : 0;
+            piano.relogioCompartilhado = {inicio: inicio + duracao, posicao};
             if (!piano.tocandoMusica) piano.togglePlay(true);
         }, Math.max(0, atraso));
     }
@@ -245,8 +249,10 @@ window.DuetoPiano = (() => {
         const velocidade = piano.fatorVelocidade;
         const recomecar = !sala.partida || piano.encerrada || sala.partida.musica !== musica ||
             sala.partida.movimento !== movimento || sala.partida.velocidade !== velocidade;
-        const posicao = recomecar ? -piano.tempoParaAcertar() * 3 : piano.tempoMusicaSegundos;
-        const partida = {musica, movimento, velocidade, recomecar, posicao, inicio: Date.now() + 1800};
+        const contagem = piano.contagemPendente;
+        const posicao = recomecar ? -piano.tempoParaAcertar() * 3 : contagem?.destino ?? piano.tempoMusicaSegundos;
+        const partida = {musica, movimento, velocidade, recomecar, posicao,
+            contar: (recomecar || Boolean(contagem)) && piano.metronomoLigado, inicio: Date.now() + 1800};
         enviar('tocar', partida);
         iniciarAgendado(partida, sala);
         return true;

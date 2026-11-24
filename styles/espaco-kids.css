@@ -469,7 +469,7 @@
 .chuiri-joaninha.voando svg { transform: translate(40px, -60px) rotate(32deg); opacity: 0; }
 .chuiri-joaninha:focus-visible { outline: solid 2px #563046; border-radius: 50%; }
 .chuiri-noite .chuiri-joaninha { display: none; }
-.chuiri-vida-da-vila { display: none; }
+.chuiri-vida-da-vila { display: none; position: absolute; inset: 0; pointer-events: none; }
 .chuiri-noite .chuiri-vida-da-vila { display: block; }
 .chuiri-vida-da-vila i {
     position: absolute;

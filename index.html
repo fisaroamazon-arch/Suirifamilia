@@ -21,7 +21,7 @@
     <!-- Buster Absoluto: Obriga o Telemóvel a Descarregar o Novo Design -->
     <link rel="stylesheet" href="styles/base.css?v=dbcb5e9d2dbe">
     <link rel="stylesheet" href="styles/modulos.css?v=8893fc8f4fa5">
-    <link rel="stylesheet" href="styles/modais.css?v=491bacb49130">
+    <link rel="stylesheet" href="styles/modais.css?v=65463f7da52f">
 
     <!-- Dependências Externas -->
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
@@ -34,10 +34,11 @@
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
-<link rel="stylesheet" href="styles/espaco-kids.css?v=f72e14d68f8f">
+<link rel="stylesheet" href="styles/espaco-kids.css?v=09f2b2a80a07">
     <link rel="stylesheet" href="styles/financas.css?v=b9aae4ac282a">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
     <link rel="stylesheet" href="styles/tema-principal.css?v=2748698233be">
+    <link rel="stylesheet" href="styles/tour.css?v=245b93b4ad66">
 </head>
 <body>
 
@@ -647,7 +648,7 @@
                     </div>
                 </section>
 
-                <a class="chuiri-atalho-arcade" href="jogos.html">
+                <a class="chuiri-atalho-arcade" href="jogos.html?v=7184">
                     <span class="chuiri-atalho-icone" aria-hidden="true">
                         <svg class="kids-icon"><use href="assets/icons-modern/kids.svg#game"></use></svg>
                     </span>
@@ -687,7 +688,7 @@
         <button type="button" id="btn-acao-cama" class="chuiri-ponto" onclick="TamagotchiKids.acaoDormirCama()">Cama</button>
         <button type="button" id="btn-acao-geladeira" class="chuiri-ponto" aria-expanded="false" aria-controls="menu-geladeira-chuiri" onclick="TamagotchiKids.acaoTocarGeladeira()">Geladeira</button>
         <button type="button" id="btn-acao-banho" class="chuiri-ponto" onclick="TamagotchiKids.acaoTomarBanho()">Banho</button>
-        <a href="jogos.html" id="btn-acao-sala" class="chuiri-ponto">Jogos</a>
+        <a href="jogos.html?v=7184" id="btn-acao-sala" class="chuiri-ponto">Jogos</a>
     </div>
     <section id="menu-geladeira-chuiri" class="chuiri-geladeira" aria-labelledby="chuiri-geladeira-titulo" hidden>
         <header>
@@ -1679,31 +1680,33 @@
     </div>
 
     <dialog id="modal-tour-instrucoes" class="oculto" aria-labelledby="tour-passo-titulo">
-        <div class="conteudo-tour-flutuante">
+        <iframe id="tour-tela" sandbox="allow-same-origin" title="Tela demonstrativa do Suíri Família" tabindex="-1" aria-hidden="true"></iframe>
+        <div id="tour-toque" aria-hidden="true" hidden></div>
+        <section class="conteudo-tour-flutuante" id="tour-guia">
             <header class="tour-cabecalho">
-                <span>Manual <span id="tour-passo-numero"></span></span>
-                <button type="button" class="btn-secundario" onclick="window.encerrarTourInstrucoes()" aria-label="Fechar manual">✕</button>
+                <span class="tour-etiqueta"><i aria-hidden="true"></i> Demonstração</span>
+                <span id="tour-passo-numero"></span>
+                <button type="button" id="tour-fechar" aria-label="Fechar demonstração" title="Fechar demonstração">✕</button>
             </header>
-            <label class="tour-assunto">Escolher assunto <select id="tour-indice"></select></label>
+            <label class="tour-assunto"><span class="tour-sr">Escolher assunto</span><select id="tour-indice"></select></label>
             <div class="tour-passo" aria-live="polite">
                 <h2 id="tour-passo-titulo"></h2>
-                <p id="tour-local"></p>
                 <p id="tour-passo-descricao"></p>
             </div>
-            <div class="tour-experiencia">
-                <p>Experimente com dados de exemplo</p>
-                <dl id="tour-exemplo"></dl>
-                <button type="button" id="tour-simular" aria-controls="tour-resultado" class="btn-secundario"></button>
-                <p id="tour-resultado" role="status" hidden></p>
-            </div>
-            <div class="tour-acoes">
-                <button type="button" id="btn-tour-anterior" class="btn-secundario" onclick="window.navegarTour(-1)">← Anterior</button>
-                <button type="button" id="tour-narrar" class="btn-secundario" aria-pressed="false" hidden>Ouvir passo</button>
-                <button type="button" id="btn-tour-proximo" class="btn-principal" onclick="window.navegarTour(1)">Próximo →</button>
-            </div>
-        </div>
+            <p id="tour-estado" class="tour-sr" role="status"></p>
+            <footer class="tour-acoes">
+                <button type="button" id="btn-tour-anterior" aria-label="Passo anterior" title="Passo anterior">←</button>
+                <button type="button" id="tour-repetir" aria-label="Repetir demonstração" title="Repetir demonstração">↻</button>
+                <button type="button" id="tour-narrar" aria-label="Narração" aria-pressed="false" title="Narração" hidden>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 0 1 0 6m2-8a7 7 0 0 1 0 10"/></svg>
+                </button>
+                <button type="button" id="btn-tour-proximo" class="btn-principal">Próximo →</button>
+            </footer>
+        </section>
     </dialog>
 
+    <script src="src/features/help/tour-roteiro.js?v=a58fa225c6c6"></script>
+    <script src="src/features/help/tour.js?v=cbafcc604d1a"></script>
     <!-- Scripts Modulares -->
     <script src="src/core/session.js?v=2285cad23e3a"></script>
 <script src="src/core/offline.js?v=63b990511789"></script>
@@ -1734,7 +1737,6 @@
 <script src="src/features/notifications/painel.js?v=a1c8e18342ce"></script>
 <script src="src/core/realtime.js?v=f81ce057c2e0"></script>
     <script src="src/features/reports/relatorios.js?v=969de5e1ecb5"></script>
-    <script src="src/features/help/tour.js?v=29e47533df27"></script>
     <script src="src/features/kids/mascote.js?v=eca949f7df4d"></script>
     <script src="src/features/personal/meu-espaco.js?v=737570a89a4b"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
@@ -1752,6 +1754,6 @@
 <script src="src/ui/player-v74.js?v=d72735c68d59"></script>
 <script src="src/ui/visual-v75.js?v=7a49cd28095e"></script>
 <script src="src/ui/photo-crop-v75.js?v=11120596c908"></script>
-<script src="src/ui/ajustes-v76.js?v=01decc13dcec"></script>
+<script src="src/ui/ajustes-v76.js?v=2ef30fba93dc"></script>
 </body>
 </html>

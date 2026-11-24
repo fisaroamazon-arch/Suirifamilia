@@ -1112,6 +1112,8 @@
             },
 
             fim: function() {
+                window.RecordesArcade?.registrar('flappy', this.modo === 2 ? 'Dupla' : 'Solo',
+                    this.obstaculosPassados, `${this.obstaculosPassados} troncos`);
                 this.parar();
                 tentarVibrar(60);
                 const ov = document.getElementById('over-flappy');
@@ -1565,6 +1567,13 @@
             },
 
             fim: function() {
+                if (this.modo === 2) {
+                    window.RecordesArcade?.registrar('quebrablocos', 'Skate Pong',
+                        this.pontosJ1 - this.pontosJ2, `${this.pontosJ1} × ${this.pontosJ2}`, 'Base × Topo');
+                } else {
+                    window.RecordesArcade?.registrar('quebrablocos', 'Solo',
+                        this.totalDestruidos, `${this.totalDestruidos} blocos`, `Fase ${this.faseAtual}`);
+                }
                 this.parar();
                 tentarVibrar(60);
                 GerenciadorArcade.controlarBarraSuperior(true);
@@ -1981,6 +1990,9 @@
             },
 
             fim: function() {
+                const modos = {solo:'Sobrevivência', duelo:'Duelo', rush:'Rush'};
+                const bolhas = this.estouradasJ1 + (this.modo === 'rush' ? this.estouradasJ2 : 0);
+                window.RecordesArcade?.registrar('bolhas', modos[this.modo], bolhas, `${bolhas} bolhas`);
                 this.parar();
                 tentarVibrar([60, 50, 60]);
                 GerenciadorArcade.controlarBarraSuperior(true);
@@ -2258,6 +2270,11 @@
             },
 
             vitoria: function(p, vInfo) {
+                if (p === 'X' || this.modo === '2p') {
+                    const jogadas = this.tabuleiro.filter(Boolean).length;
+                    window.RecordesArcade?.registrar('velha', this.modo === '2p' ? 'Dois jogadores' : this.dificuldade === 'desafio' ? 'Contra Chuíri · Desafio' : 'Contra Chuíri · Treino',
+                        -jogadas, `Vitória em ${jogadas} jogadas`, `Trinca com ${p}`);
+                }
                 this.fim = true;
                 this.riscarLinhaVitoria(vInfo);
                 const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
@@ -2490,12 +2507,19 @@
                             }
                             this.viradas = [];
                             this.bloqueado = false;
-                        }, {4: 1080, 6: 880, 8: 700}[this.totalPares]);
+                        }, {4: 1080, 6: 880, 8: 700, 16: 850, 32: 980}[this.totalPares]);
                     }
                 }
             },
 
             fimDeJogo: function(premio) {
+                const modalidade = `${this.totalPares} pares · ${this.modo === '2p' ? 'Dupla' : 'Solo'}`;
+                if (this.modo === '2p') {
+                    window.RecordesArcade?.registrar('memoria', modalidade, this.paresJ1,
+                        `${this.paresJ1} pares`, `${this.jogadas} jogadas na partida`);
+                } else {
+                    window.RecordesArcade?.registrar('memoria', modalidade, -this.jogadas, `${this.jogadas} jogadas`);
+                }
                 const ov = document.getElementById('over-memoria');
                 const cont = document.getElementById('dialogo-memoria-conteudo');
                 if (!ov || !cont || GerenciadorArcade.telaAtiva !== 'memoria') return;

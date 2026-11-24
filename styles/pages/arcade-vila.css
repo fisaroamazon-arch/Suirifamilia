@@ -417,3 +417,44 @@
     min-height: 42px;
     font-size: clamp(14px, 4vw, 22px);
 }
+
+.arcade-page .arcade-recordes-abrir {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    min-height: 40px;
+    gap: 7px;
+    color: #ffedcd;
+    background: #413453;
+}
+#arcade-recordes {
+    inset: 0;
+    width: min(410px, calc(100% - 24px));
+    max-height: 88dvh;
+    margin: auto;
+    padding: 15px;
+    border: 1px solid #9e85c0;
+    border-radius: 20px;
+    color: #fff2ea;
+    background: linear-gradient(135deg, #382d52, #20273f);
+    overflow-y: auto;
+    box-shadow: 0 12px 34px #0d0b248c;
+}
+#arcade-recordes::backdrop { background: #151028af; backdrop-filter: blur(3px); }
+#arcade-recordes header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+#arcade-recordes header button, #recordes-jogo {
+    min-height: 38px;
+    padding: 4px 10px;
+    border: 1px solid #a58ec4;
+    border-radius: 9px;
+    background: #332b49;
+    color: #fff2ea;
+}
+#arcade-recordes label { display: grid; margin: 10px 0; gap: 4px; font-size: .8rem; }
+#recordes-resultados { font-size: .86rem; }
+#recordes-resultados h3 { font-size: .92rem; margin-block: 12px 5px; }
+#recordes-resultados ol { list-style-position: inside; }
+#recordes-resultados li { border-top: 1px solid #d6b9fb3b; padding: 7px 3px; }
+#recordes-resultados li strong { margin-inline-start: 5px; }
+#recordes-resultados li span { display: block; margin: 3px 0 0 1.45rem; color: #e6d3ec; }

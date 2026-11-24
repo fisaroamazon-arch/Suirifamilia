@@ -15,7 +15,6 @@
  }
  const render=window.renderizarConteudoModalOrientacoes;if(render)window.renderizarConteudoModalOrientacoes=function(...args){const value=render.apply(this,args);seasonUI();return value;};
  const dismiss = modal => {
-  if (modal.id === 'modal-tour-instrucoes') return window.encerrarTourInstrucoes?.();
   if (modal.id === 'modal-modo-acolhimento') return window.fecharModoAcolhimento?.();
   if (modal.id === 'modal-crop-imagem') return window.fecharModalCrop?.();
   if (modal.id === 'modal-confirmar-exclusao-agenda') return window.fecharModalConfirmarExclusaoAgenda?.();
@@ -31,7 +30,7 @@
 
  const initialized = new WeakSet();
  const backdrops = new WeakSet();
- const overlaySelector = S.isHome ? '.modal-overlay, dialog, #modal-tour-instrucoes' : '.modal-overlay';
+ const overlaySelector = S.isHome ? '.modal-overlay, dialog:not(#modal-tour-instrucoes)' : '.modal-overlay';
 
  function setup(modal) {
   const native = modal.matches('dialog');
@@ -39,8 +38,7 @@
   const panel = native ? modal : modal.firstElementChild;
   if (!panel || initialized.has(panel)) return;
   initialized.add(panel);
-  const flutuante = modal.id === 'modal-tour-instrucoes';
-  panel.classList.add(native ? 'suiri-swipe-dialog' : flutuante ? 'suiri-swipe-flutuante' : 'suiri-sheet');
+  panel.classList.add(native ? 'suiri-swipe-dialog' : 'suiri-sheet');
 
   const handle = document.createElement('button');
   handle.type = 'button';

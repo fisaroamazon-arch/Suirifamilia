@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7183';
+const CACHE='suiri-family-v7184';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -10,10 +10,10 @@ const SHELL=[
   "./src/ui/download-android.js?v=1048b2414956",
   "./styles/tema-principal.css?v=2748698233be",
   "./src/ui/tema-principal.js?v=9ab0f9a5813c",
-  "./styles/espaco-kids.css?v=f72e14d68f8f",
+  "./styles/espaco-kids.css?v=09f2b2a80a07",
   "./manifest.json",
   "./jogos.html",
-  "./styles/pages/arcade-vila.css?v=f0482e02486a",
+  "./styles/pages/arcade-vila.css?v=87ab4d0fb3a8",
   "./assets/images/kids/banho-parado.webp",
   "./assets/images/kids/banho.webp",
   "./assets/images/kids/casa-parado.webp",
@@ -66,7 +66,7 @@ const SHELL=[
   "./assets/images/arte/ursinho.svg",
   "./src/core/config.js?v=50eb0e2f989b",
   "./src/core/foundation.js?v=134013abdc96",
-  "./styles/pages/piano.css?v=13257a9e7452",
+  "./styles/pages/piano.css?v=31a03e4c64dd",
   "./styles/pages/jogos.css?v=9b97da6fab58",
   "./styles/themes.css?v=3911cf04fce3",
   "./src/data/musicas.js?v=ac86a220bd3b",
@@ -74,12 +74,13 @@ const SHELL=[
   "./src/data/partituras-classicas.js?v=00e485e3c4a2",
   "./src/data/partituras-extras.js?v=cf58d3b9dbee",
   "./src/features/kids/piano-banda.js?v=103a53e7e8b6",
-  "./src/features/kids/piano-dueto-rede.js?v=0e0836ccbc7f",
-  "./src/features/kids/piano.js?v=9623d69a22e2",
-  "./src/pages/arcade.js?v=a09984302a01",
+  "./src/features/kids/piano-dueto-rede.js?v=ef756f2088a2",
+  "./src/features/kids/piano.js?v=d6a58545562c",
+  "./src/pages/arcade-recordes.js?v=fba76cceb1b0",
+  "./src/pages/arcade.js?v=9f483e3936e1",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
-  "./styles/modais.css?v=491bacb49130",
+  "./styles/modais.css?v=65463f7da52f",
   "./vendor/supabase-2.49.8.js?v=522e844a8554",
   "./vendor/chart-4.4.8.js?v=e4cf4d144b22",
   "./vendor/html2pdf-0.10.1.js?v=85e6ee9ce246",
@@ -116,7 +117,9 @@ const SHELL=[
   "./src/features/notifications/painel.js?v=a1c8e18342ce",
   "./src/core/realtime.js?v=f81ce057c2e0",
   "./src/features/reports/relatorios.js?v=969de5e1ecb5",
-  "./src/features/help/tour.js?v=29e47533df27",
+  "./styles/tour.css?v=245b93b4ad66",
+  "./src/features/help/tour-roteiro.js?v=a58fa225c6c6",
+  "./src/features/help/tour.js?v=cbafcc604d1a",
   "./src/features/kids/mascote.js?v=eca949f7df4d",
   "./src/features/personal/meu-espaco.js?v=737570a89a4b",
   "./src/features/missions/sugestoes.js?v=633f2cd129e1",
@@ -132,8 +135,8 @@ const SHELL=[
   "./src/ui/player-v74.js?v=d72735c68d59",
   "./src/ui/visual-v75.js?v=7a49cd28095e",
   "./src/ui/photo-crop-v75.js?v=11120596c908",
-  "./src/ui/ajustes-v76.js?v=01decc13dcec",
-  "./src/ui/ajustes-v76.js?v=0967caac09ef",
+  "./src/ui/ajustes-v76.js?v=2ef30fba93dc",
+  "./src/ui/ajustes-v76.js?v=2ef30fba93dc",
   "./mulher.html",
   "./styles/pages/mulher.css?v=b4f83b48cddf",
   "./src/data/dicas-mulher.js?v=d2e93ad47fe6",
@@ -242,14 +245,15 @@ self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);
  if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs|downloads)\//.test(url.pathname))return;
  const navigation=req.mode==='navigate';
+ const paginaDemo=/\/(jogos|arte)\.html$/.test(url.pathname);
  const smallAsset=/\.(js|css|png|jpg|webp|svg|json)$/.test(url.pathname);
  const pianoSample=/\/assets\/audio\/piano\/(piano|cordas|violino-solo|xilofone)\.mp3$/.test(url.pathname)&&!req.headers.has('range');
- if(!navigation&&!smallAsset&&!pianoSample)return;
+ if(!navigation&&!smallAsset&&!pianoSample&&!paginaDemo)return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);
-  if(navigation){
-   try{const response=await fetch(req);if(response.ok)await cache.put(req,response.clone());return response;}
-   catch{const saved=await cache.match(req);if(saved)return saved;return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Suiri sem conexão</title><p>Esta página ainda não está disponível sem internet.</p><a href="./index.html">Voltar ao Suiri</a>',{headers:{'Content-Type':'text/html;charset=utf-8'}});}
+  if(navigation||paginaDemo){
+   try{const response=await fetch(req,{cache:'no-cache'});if(response.ok)await cache.put(req,response.clone());return response;}
+   catch{const saved=await cache.match(req,{ignoreSearch:paginaDemo});if(saved)return saved;if(!navigation)return Response.error();return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Suiri sem conexão</title><p>Esta página ainda não está disponível sem internet.</p><a href="./index.html">Voltar ao Suiri</a>',{headers:{'Content-Type':'text/html;charset=utf-8'}});}
   }
   const saved=await cache.match(req);if(saved)return saved;
   const response=await fetch(req);if(response.ok)await cache.put(req,response.clone());return response;

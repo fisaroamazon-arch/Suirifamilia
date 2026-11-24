@@ -5,9 +5,8 @@
 /* ========================================================== */
 
 /* Trava Universal de Segurança Contra Sobreposições */
-.oculto, 
-.modal-overlay.oculto, 
-.painel-tour-flutuante.oculto {
+.oculto,
+.modal-overlay.oculto {
     display: none !important;
 }
 
@@ -266,44 +265,3 @@
 .btn-resgatar-beneficio:active {
     transform: scale(0.94);
 }
-
-#modal-tour-instrucoes {
-    width: min(calc(100% - 20px), 570px);
-    max-height: calc(100dvh - 22px - env(safe-area-inset-bottom));
-    margin: auto auto max(10px, env(safe-area-inset-bottom));
-    padding: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    color: var(--texto-principal, #142036);
-    background: var(--fundo-card, #fff);
-    border: 1px solid var(--cor-borda, #94a8bf);
-    border-radius: 20px;
-    box-shadow: 0 14px 38px #09152d55;
-}
-#modal-tour-instrucoes::backdrop { background: #111a3190; }
-html[data-theme="dark"] #modal-tour-instrucoes { background: #22334b; color: #f3f8ff; }
-.conteudo-tour-flutuante { padding: 14px; }
-.tour-cabecalho { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 800; }
-#tour-passo-numero { font-size: .84rem; margin-inline-start: 5px; }
-.tour-assunto { display: grid; gap: 3px; margin: 4px 0 12px; font-size: .82rem; font-weight: 700; }
-.tour-assunto select { width: 100%; min-height: 40px; padding-inline: 8px; }
-.tour-passo h2 { margin: 0; font-size: clamp(1.15rem, 5vw, 1.6rem); color: inherit; }
-#tour-local { margin: 2px 0 8px; font-weight: 800; }
-#tour-passo-descricao { margin: 0 0 10px; line-height: 1.4; }
-.tour-experiencia { padding: 10px; border-radius: 14px; background: #838fab21; }
-.tour-experiencia p { margin: 0; }
-.tour-experiencia dl { display: grid; gap: 4px; margin: 8px 0; }
-.tour-experiencia dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr); gap: 5px; }
-.tour-experiencia dd { margin: 0; overflow-wrap: anywhere; font-weight: 700; }
-#tour-simular { width: 100%; min-height: 40px; }
-#tour-resultado:not([hidden]) {
-    color: inherit;
-    margin-top: 8px;
-    padding: 8px;
-    border-inline-start: 3px solid var(--cor-primaria, #ef823a);
-    animation: tour-resposta 260ms ease-out;
-}
-.tour-acoes { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-.tour-acoes > button { flex: 1 1 auto; min-height: 40px; }
-@keyframes tour-resposta { from { opacity: .2; transform: translateY(6px); } }
-@media (prefers-reduced-motion: reduce) { #tour-resultado { animation: none; } }

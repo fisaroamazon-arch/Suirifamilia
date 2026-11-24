@@ -32,6 +32,19 @@ try {
     assert.equal(motor.mapearNota('E2').tecla, 'E4');
 
     motor.mudarFatorVelocidade('toque');
+    assert.equal(motor.metronomoLigado, true);
+    const metronomo = [];
+    window.AudioMotor.tocarMetronomo = acento => metronomo.push(acento);
+    motor.togglePlay();
+    const contagem = motor.contagem;
+    assert(contagem?.comCompasso);
+    for (let i = 0; i < contagem.batidas; i++) {
+        assert.equal(motor.atualizarContagem(contagem.inicio + (i + .1) * contagem.intervalo), true);
+    }
+    assert.equal(metronomo.length, contagem.batidas);
+    assert.deepEqual(metronomo, [true, ...Array(contagem.batidas - 1).fill(false)]);
+    assert.equal(motor.atualizarContagem(contagem.inicio + contagem.duracao), false);
+    assert.equal(motor.tempoMusicaSegundos, contagem.destino);
     const tocaram = [];
     const soltaram = [];
     window.AudioMotor.iniciarVozPiano = (id, freq) => tocaram.push({ id, freq });
@@ -44,6 +57,25 @@ try {
     motor.soltarNota('E4', 1, tecla);
     assert.equal(tecla.dataset.oitavaTocada, undefined);
     assert.deepEqual(soltaram, ['E5_1']);
+
+    motor.alterarTreino(true);
+    const alvo = motor.notasNaEsteira[motor.passoNota];
+    const vidas = motor.vidas;
+    motor.avaliarNota('C4', 'solo', tecla, 2, ['C4']);
+    assert.equal(motor.passoNota, 1);
+    assert.equal(motor.vidas, vidas);
+    assert.equal(motor.contagem.destino, alvo.tInicio);
+    assert.equal(motor.contagem.erro, true);
+    motor.pausarMusica();
+    assert.equal(motor.contagemPendente.destino, alvo.tInicio);
+    motor.togglePlay();
+    assert.equal(motor.contagem.destino, alvo.tInicio);
+    motor.alterarTreino(false);
+    motor.alterarVidas('infinitas');
+    for (let i = 0; i < 6; i++) motor.registrarErro();
+    assert.equal(motor.vidas, vidas);
+    assert.equal(motor.encerrada, false);
+    motor.alterarVidas('limite');
 
     motor.selecionarMusica(motor.catalogoMusicas.indexOf(quinta));
     motor.selecionarParte('1');
