@@ -31,7 +31,7 @@ window.inicializarNavegacaoSwipe = function() {
             return;
         }
 
-        const algumModalAberto = document.querySelector('.modal-overlay:not(.oculto)');
+        const algumModalAberto = document.querySelector('.modal-overlay:not(.oculto), dialog[open]');
         if (algumModalAberto) return;
 
         if (window.modoKidsAtivo) return;

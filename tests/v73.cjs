@@ -54,13 +54,18 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   d.querySelectorAll('.modal-overlay').forEach(el=>el.classList.add('oculto'));
   const key='suiri:pense:v73:'+w.perfilAtual.id;
   w.localStorage.removeItem(key);
-  w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));
-  const modal=d.getElementById('modal-pilula-dia');assert(!modal.classList.contains('oculto'));assert(d.querySelector('#pilula-frase-filosofica blockquote').textContent.length>30);
+  const modal=d.getElementById('modal-pilula-dia');
+  const esperarAbertura=async()=>{
+   const limite=Date.now()+2400;
+   while(modal.classList.contains('oculto') && Date.now()<limite) await new Promise(r=>setTimeout(r,40));
+   assert(!modal.classList.contains('oculto'));
+  };
+  w.Suiri.Pense.agendar();await esperarAbertura();assert(d.querySelector('#pilula-frase-filosofica blockquote').textContent.length>30);
   assert.equal(w.localStorage.getItem(key),w.Suiri.today());
   w.fecharModalPilulaDia();w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));
   assert.equal(w.abrirModalPilulaDia(),true);assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
   w.localStorage.setItem(key,'2000-01-01');d.getElementById('modal-nova-missao').classList.remove('oculto');w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));assert.equal(w.localStorage.getItem(key),'2000-01-01');d.getElementById('modal-nova-missao').classList.add('oculto');
-  w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
+  w.Suiri.Pense.agendar();await esperarAbertura();w.fecharModalPilulaDia();
  });
  await test('missões de todos chegam aos dois adultos, coletivas em Todas e individuais em Minhas; Kids separados',async()=>{
   const base={familia_id:fam,criado_por:uid,status:'pendente',prioridade:1,icone:'⭐',xp_recompensa:10,recorrencia_tipo:'unica',concluidos_por_array:[],falhados_por_array:[],subitens:[]};

@@ -128,15 +128,15 @@ window.injetarPinosNosModais = function() {
     }
 
     // 4. Saldo (Minha Carteira)
-    const lblSaldo = document.getElementById('lbl-saldo-carteira-membro');
-    if (lblSaldo && !document.getElementById('pin-widget-carteira')) {
-        const btnPin = document.createElement('span');
+    const tituloCarteira = document.querySelector('.carteira-titulo');
+    if (tituloCarteira && !document.getElementById('pin-widget-carteira')) {
+        const btnPin = document.createElement('button');
         btnPin.id = 'pin-widget-carteira';
-        btnPin.style.cssText = 'cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; vertical-align: middle; transition: transform 0.15s ease;';
+        btnPin.type = 'button';
+        btnPin.setAttribute('aria-label', 'Fixar saldo no Meu Espaço');
         btnPin.innerHTML = imgPinHtml;
-        btnPin.title = "Fixar Saldo no Meu Espaço";
-        btnPin.onclick = (e) => { e.stopPropagation(); if(window.alfinetarWidgetArea) window.alfinetarWidgetArea('box-carteira-topo', 'Minha Carteira (Saldo)'); };
-        lblSaldo.appendChild(btnPin);
+        btnPin.onclick = () => window.alfinetarWidgetArea?.('box-carteira-topo', 'Minha Carteira (Saldo)');
+        tituloCarteira.appendChild(btnPin);
     }
 
     // 5. Registro Rápido de Finanças
