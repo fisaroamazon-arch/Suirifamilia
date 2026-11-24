@@ -398,3 +398,22 @@
     font-weight: 750;
 }
 .arcade-page #tela-flappy::before { display: none; }
+
+
+.arcade-page #memoria-niveis { flex-wrap: wrap; justify-content: center; gap: 5px; }
+.arcade-page #memoria-niveis button { flex: 0 1 auto; }
+.arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) {
+    --colunas-memoria: 4;
+    max-width: min(800px, 100%);
+    grid-template-columns: repeat(var(--colunas-memoria), minmax(0, 1fr));
+    gap: 6px;
+}
+.arcade-page .grade-memoria-full[data-pares="32"] { --colunas-memoria: 6; }
+@media (orientation: landscape), (min-width: 600px) {
+    .arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) { --colunas-memoria: 8; }
+}
+.arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) .carta-arcade {
+    min-width: 0;
+    min-height: 42px;
+    font-size: clamp(14px, 4vw, 22px);
+}

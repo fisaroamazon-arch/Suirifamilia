@@ -1,422 +1,144 @@
-// =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-INSTRUCAO.JS (100% COMPLETO E CONTROLADO)
-// Tour Interativo Passo a Passo com Áudio Sincronizado, Fuga de Janela
-// e Controle Manual por Clique ("Próximo" avança e toca o respectivo áudio)
-// =========================================================================
-
-let passoTourAtual = 0;
-let canceladorExecucaoDemo = false;
-let elementoFocadoAnterior = null;
-let audioTourAtual = null;
-
-// =========================================================================
-// 1. GERENCIADOR DE ÁUDIO (assets/audio/help/)
-// =========================================================================
-
-function pararAudioInstrucao() {
-    if (audioTourAtual) {
-        audioTourAtual.pause();
-        audioTourAtual.currentTime = 0;
-        audioTourAtual.onended = null;
-        audioTourAtual.onerror = null;
-        audioTourAtual = null;
-    }
-}
-
-function reproduzirAudioPasso(nomeArquivo) {
-    pararAudioInstrucao();
-    if (!nomeArquivo) return;
-
-    try {
-        audioTourAtual = new Audio(`assets/audio/help/${nomeArquivo}`);
-        audioTourAtual.play().catch(erro => {
-            console.warn("Aviso de áudio:", erro);
-        });
-    } catch (e) {
-        console.error("Erro ao carregar o arquivo de áudio:", e);
-    }
-}
-
-// =========================================================================
-// 2. UTILITÁRIOS VISUAIS E FUGA INTELIGENTE DA JANELA
-// =========================================================================
-
-function esperarMs(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// A janela sai da frente de onde a instrução está apontando
-function ajustarPosicaoModalTour(elementoAlvo) {
+/* Manual do Suíri Família. Cada demonstração acontece no próprio guia. */
+(() => {
+    const passos = [
+        { titulo: 'Encontre o que precisa', lugar: 'Menu inferior · Início',
+            texto: 'Use a barra inferior para navegar entre tarefas, compras, finanças, agenda e família. O cabeçalho mostra em qual perfil você está.',
+            campos: [['Perfil', 'Casa da Ana'], ['Atalhos', 'Início · Mercado · Finanças · Agenda · Família']], acao: 'Simular o atalho Agenda', resultado: 'A Agenda abre com os próximos compromissos, pagamentos e recebimentos.' },
+        { titulo: 'Perfis e permissões', lugar: 'Foto do perfil · Família',
+            texto: 'Toque na sua foto para trocar de perfil. Em Família, o responsável pode adicionar pessoas, editar permissões e ligar os alertas do aparelho.',
+            campos: [['Perfil de exemplo', 'Lia · Kids'], ['Permissão', 'Missões ativadas']], acao: 'Experimentar o perfil Kids', resultado: 'Lia vê as próprias tarefas, a Vila e o Arcade. Para voltar ao adulto, confirme o acesso solicitado.' },
+        { titulo: 'Crie e conclua missões', lugar: 'Início · Missões',
+            texto: 'Crie uma missão, escolha quem deve fazê-la e adicione passos se precisar. O responsável pode editar a tarefa depois.',
+            campos: [['Tarefa', 'Organizar a mochila'], ['Para', 'Lia'], ['Recompensa', '20 XP']], acao: 'Simular “Fiz!”', resultado: 'A tarefa vai para as concluídas. Quando a missão permitir, “Fiz em partes” concede metade do XP.' },
+        { titulo: 'Vila, Lojinha e mesada', lugar: 'Perfil Kids · Vila do Chuíri',
+            texto: 'Faça carinho no Chuíri, abra a casinha ou visite a Lojinha. A família define os prêmios e pode escolher uma taxa de conversão de XP para cada criança.',
+            campos: [['Moedas do Arcade', '54 moedas'], ['Lojinha', 'Recompensa combinada em casa']], acao: 'Simular uma troca de XP', resultado: 'O Suíri usa a taxa de conversão desse perfil. O adulto pode conferir o saldo e o resgate.' },
+        { titulo: 'Planeje a compra e confira o carrinho', lugar: 'Mercado · Lista do Mês / No Mercado',
+            texto: 'Faça a lista antes de sair. No mercado, marque os itens que entraram no carrinho e confira quantidade e preço unitário antes de finalizar.',
+            campos: [['Produto', 'Banana'], ['Quantidade', '2'], ['Preço de cada', 'R$ 4,50']], acao: 'Simular o total do carrinho', resultado: '2 × R$ 4,50 = R$ 9,00. Na tela real, finalizar a compra lança o total no extrato.' },
+        { titulo: 'Registre receita ou despesa', lugar: 'Finanças · Botão +',
+            texto: 'Escolha Receita ou Despesa e confira o tipo antes de confirmar. Digite a categoria e a subcategoria. O Suíri guarda esses nomes para sugerir nos próximos lançamentos.',
+            campos: [['Tipo', 'Receita'], ['Descrição', 'Aula particular'], ['Valor', 'R$ 120,00'], ['Categoria', 'Trabalho › Aulas']], acao: 'Simular o lançamento', resultado: 'O extrato ganha uma receita de R$ 120,00. “Trabalho › Aulas” fica disponível para futuras receitas.' },
+        { titulo: 'Use o microfone ou leia um cupom', lugar: 'Finanças · Microfone / Cupom IA',
+            texto: 'Dite o valor e a descrição pelo microfone ou fotografe o cupom. Na leitura do cupom, confirme se quer enviar a foto ao Google Gemini. Confira o rascunho antes de salvar.',
+            campos: [['Exemplo de ditado', 'Gastei 25 reais na farmácia'], ['Tipo sugerido', 'Despesa']], acao: 'Ver o rascunho', resultado: 'Farmácia · R$ 25,00. Na tela real, você pode corrigir o valor, a descrição, a categoria e a visibilidade.' },
+        { titulo: 'Acompanhe o saldo e os gastos', lugar: 'Finanças · Balanço / Previsão',
+            texto: 'Escolha o período e os membros. O gráfico aparece primeiro, com legenda em reais e porcentagem. Use “Ver mais” para abrir o extrato e “Previsão e economia” para acompanhar o ritmo dos gastos.',
+            campos: [['Grupo', 'Mercado · R$ 150'], ['Despesas do exemplo', 'R$ 250']], acao: 'Ler o gráfico de exemplo', resultado: 'Mercado representa 60% dos gastos. Em “Todos” você também pode comparar os membros da casa.' },
+        { titulo: 'Organize contas, agenda e metas', lugar: 'Agenda · Finanças · Meu Espaço',
+            texto: 'Agende uma conta a pagar ou receber e confirme quando o dinheiro sair ou entrar. Recados, cofres e metas ajudam a família a acompanhar o que vem depois.',
+            campos: [['Conta', 'Internet'], ['Valor', 'R$ 90,00'], ['Status', 'A pagar']], acao: 'Simular a baixa', resultado: 'A conta muda para paga e gera o lançamento no extrato. Confira a data e o valor antes de confirmar.' },
+        { titulo: 'Jogue no Arcade e faça arte', lugar: 'Vila · Jogar no Arcade',
+            texto: 'Escolha o tamanho da Memória, vire o celular para tocar piano ou abra o Espaço Arte. No desenho, use Ferramentas para escolher pincel, cor, caderno e salvar.',
+            campos: [['Memória', '4 a 32 pares'], ['Piano', 'Aprender, Livre ou Dueto'], ['Caderno', 'Fácil, médio e avançado']], acao: 'Experimentar o caderno', resultado: 'Escolha um desenho para abrir a folha. Ao terminar, toque em Ferramentas e depois em Salvar PNG.' },
+        { titulo: 'Ajustes, Android e espaços pessoais', lugar: 'Família · Configurações / Meu Espaço',
+            texto: 'Em Configurações, escolha o tema ou deixe seguir o aparelho e use o botão para baixar o APK. Meu Espaço reúne os atalhos de bem-estar, conteúdos e os Espaços Mulher e Homem.',
+            campos: [['Tema', 'Seguir o celular'], ['Alertas no Android', 'Missões da família e fluxo de caixa']], acao: 'Simular a ativação de alertas', resultado: 'No Android, toque em Ativar alertas e aceite a permissão do sistema. Abra a notificação para ir direto à seção.' }
+    ];
     const modal = document.getElementById('modal-tour-instrucoes');
     if (!modal) return;
+    const campo = id => document.getElementById(id);
+    const indice = campo('tour-indice');
+    const proximo = campo('btn-tour-proximo');
+    const anterior = campo('btn-tour-anterior');
+    const narrar = campo('tour-narrar');
+    const simular = campo('tour-simular');
+    const resultado = campo('tour-resultado');
+    const exemplo = campo('tour-exemplo');
+    const selecaoKids = [1, 2, 3, 9];
+    const native = navigator.userAgent.includes('SuiriFamiliaVoz/1');
+    let roteiro = passos;
+    let posicao = 0;
+    let comVoz = false;
 
-    if (!elementoAlvo) {
-        modal.classList.remove('posicao-topo');
-        modal.classList.add('posicao-rodape');
-        return;
+    function silenciar() {
+        if (native) window.SuiriAndroid('stop-tour');
+        else window.speechSynthesis?.cancel();
     }
 
-    const rect = elementoAlvo.getBoundingClientRect();
-    const alturaJanela = window.innerHeight;
-
-    // Se o elemento estiver da metade para baixo, a janela sobe para o topo
-    if (rect.top > (alturaJanela / 2) - 60) {
-        modal.classList.remove('posicao-rodape');
-        modal.classList.add('posicao-topo');
-    } else {
-        // Se estiver no topo, a janela desce para o rodapé
-        modal.classList.remove('posicao-topo');
-        modal.classList.add('posicao-rodape');
+    function ler(texto) {
+        if (!comVoz) return;
+        if (native) {
+            window.SuiriTextoTour = texto;
+            window.SuiriAndroid('speak-tour');
+        } else if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+            silenciar();
+            const frase = new SpeechSynthesisUtterance(texto);
+            frase.lang = 'pt-BR';
+            frase.rate = .92;
+            const voz = window.speechSynthesis.getVoices().find(item => item.lang.toLowerCase() === 'pt-br');
+            if (voz) frase.voice = voz;
+            window.speechSynthesis.speak(frase);
+        }
     }
-}
 
-function removerDestaqueElemento() {
-    if (elementoFocadoAnterior) {
-        elementoFocadoAnterior.classList.remove('destaque-tour-foco', 'clique-simulado-tour');
-        elementoFocadoAnterior = null;
+    function renderizar() {
+        const passo = roteiro[posicao];
+        indice.value = String(posicao);
+        campo('tour-passo-numero').textContent = `${posicao + 1} de ${roteiro.length}`;
+        campo('tour-passo-titulo').textContent = passo.titulo;
+        campo('tour-local').textContent = passo.lugar;
+        campo('tour-passo-descricao').textContent = passo.texto;
+        anterior.disabled = posicao === 0;
+        proximo.textContent = posicao + 1 === roteiro.length ? 'Concluir' : 'Próximo →';
+        exemplo.replaceChildren();
+        for (const [rotulo, valor] of passo.campos) {
+            const linha = document.createElement('div');
+            const label = document.createElement('dt');
+            const dado = document.createElement('dd');
+            label.textContent = rotulo;
+            dado.textContent = valor;
+            linha.append(label, dado);
+            exemplo.append(linha);
+        }
+        simular.textContent = passo.acao;
+        simular.setAttribute('aria-expanded', 'false');
+        resultado.hidden = true;
+        resultado.textContent = '';
+        modal.scrollTop = 0;
+        ler(passo.titulo + '. ' + passo.texto);
     }
-    document.querySelectorAll('.destaque-tour-foco').forEach(el => {
-        el.classList.remove('destaque-tour-foco', 'clique-simulado-tour');
+
+    window.iniciarTourInstrucoes = function() {
+        roteiro = window.modoKidsAtivo ? selecaoKids.map(i => passos[i]) : passos;
+        indice.replaceChildren(...roteiro.map(({titulo}, i) => new Option(titulo, String(i))));
+        posicao = 0;
+        if (!modal.open) {
+            modal.classList.remove('oculto');
+            modal.showModal();
+        }
+        renderizar();
+    };
+    window.navegarTour = function(direcao) {
+        const destino = posicao + direcao;
+        if (destino >= roteiro.length) modal.close();
+        else if (destino >= 0) {
+            posicao = destino;
+            renderizar();
+        }
+    };
+    window.encerrarTourInstrucoes = () => modal.close();
+    modal.addEventListener('close', () => {
+        modal.classList.add('oculto');
+        if (comVoz) silenciar();
     });
-}
-
-function destacarElementoTour(seletorOuElemento) {
-    removerDestaqueElemento();
-    if (canceladorExecucaoDemo) return null;
-
-    const el = typeof seletorOuElemento === 'string' ? document.querySelector(seletorOuElemento) : seletorOuElemento;
-    
-    if (el) {
-        el.classList.add('destaque-tour-foco');
-        elementoFocadoAnterior = el;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        ajustarPosicaoModalTour(el);
-    } else {
-        ajustarPosicaoModalTour(null);
-    }
-    return el;
-}
-
-// Digitação simulada com pausas humanas e sem abrir teclado no celular
-async function simularDigitacao(elementoInput, texto, velocidade = 80) {
-    if (!elementoInput || canceladorExecucaoDemo) return;
-    elementoInput.readOnly = true;
-    elementoInput.value = '';
-    
-    await esperarMs(400); 
-    
-    for (let i = 0; i < texto.length; i++) {
-        if (canceladorExecucaoDemo) {
-            elementoInput.readOnly = false;
-            return;
-        }
-        elementoInput.value += texto.charAt(i);
-        await esperarMs(velocidade + (Math.random() * 25));
-    }
-    
-    await esperarMs(600); 
-}
-
-// Clique simulado
-async function simularCliqueVisual(elemento) {
-    if (!elemento || canceladorExecucaoDemo) return;
-    await esperarMs(350);
-    elemento.classList.add('clique-simulado-tour');
-    await esperarMs(300);
-    elemento.classList.remove('clique-simulado-tour');
-    await esperarMs(350);
-}
-
-// =========================================================================
-// 3. ROTEIRO DOS QUADROS (CADA UM COM SEU ÁUDIO E ANIMAÇÃO)
-// =========================================================================
-
-const passosTourGuiado = [
-    // -------------------------------------------------------------
-    // QUADRO 1: APRESENTAÇÃO GERAL (Toca áudio 1 e aguarda "Próximo")
-    // -------------------------------------------------------------
-    {
-        tela: 'inicio',
-        titulo: "Bem-vindo ao Suiri Gestão Familiar",
-        descricao: "Este é o seu centro de comando. Aqui a família organiza tarefas, controla compras de supermercado, gere finanças individuais e conjuntas, e motiva as crianças com gamificação. Toque em 'Próximo' para conhecer o sistema passo a passo.",
-        audio: "guia_geral_1.mp3",
-        executarDemo: async () => {
-            destacarElementoTour('#cabecalho-topo-usuario');
-        },
-        limparDemo: () => {}
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 2: PERFIS E TROCA DE MEMBRO (Toca áudio 2)
-    // -------------------------------------------------------------
-    {
-        tela: 'inicio',
-        titulo: "Passo 1: Perfis e Troca de Membro",
-        descricao: "No topo da tela, sua foto de perfil está em destaque. Tocando no botão de dois membros ao lado, você alterna rapidamente para o parceiro ou filhos. Perfis adultos exigem PIN de 4 dígitos, enquanto o perfil Kids entra direto.",
-        audio: "guia_geral_2.mp3",
-        executarDemo: async () => {
-            const btnTrocar = destacarElementoTour('#btn-trocar-membro-topo');
-            await simularCliqueVisual(btnTrocar);
-            await esperarMs(1000);
-            destacarElementoTour('#cabecalho-topo-usuario');
-        },
-        limparDemo: () => {}
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 3: MISSÕES E REGRAS (Toca áudio 3)
-    // -------------------------------------------------------------
-    {
-        tela: 'inicio',
-        titulo: "Passo 2: Atribuir Missões e Regras",
-        descricao: "Ao criar uma tarefa, defina prioridade e horário limite. Concluir no prazo dá 100% de XP. Se passar da hora, a recompensa cai para metade. Se marcar 'Não Fiz', há penalidade de perda de XP!",
-        audio: "guia_geral_3.mp3",
-        executarDemo: async () => {
-            const btnIncluir = destacarElementoTour('button[onclick*="modal-nova-missao"]');
-            await simularCliqueVisual(btnIncluir);
-            document.getElementById('modal-nova-missao')?.classList.remove('oculto');
-            await esperarMs(600);
-
-            const inTitulo = destacarElementoTour('#input-nova-missao-titulo');
-            if (inTitulo) {
-                await simularDigitacao(inTitulo, "Arrumar os brinquedos na sala", 70);
-                destacarElementoTour('#select-nova-missao-prioridade');
-            }
-        },
-        limparDemo: () => {
-            document.getElementById('modal-nova-missao')?.classList.add('oculto');
-            const el1 = document.getElementById('input-nova-missao-titulo');
-            if (el1) { el1.value = ''; el1.readOnly = false; }
-        }
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 4: LOJINHA E RECOMPENSAS (Toca áudio 4)
-    // -------------------------------------------------------------
-    {
-        tela: 'inicio',
-        titulo: "Passo 3: A Lojinha de Recompensas",
-        descricao: "O XP ganho nas tarefas tem valor real! Toque na Loja no topo para resgatar prêmios combinados pela família. Para as crianças, os pontos podem até ser convertidos em mesada financeira.",
-        audio: "guia_geral_4.mp3",
-        executarDemo: async () => {
-            const btnLoja = destacarElementoTour('.btn-loja-topo');
-            await simularCliqueVisual(btnLoja);
-            if (typeof window.abrirModalRankingEquipe === 'function') {
-                window.abrirModalRankingEquipe();
-                await esperarMs(800);
-                destacarElementoTour('#modal-ranking-equipe .modal-conteudo');
-            }
-        },
-        limparDemo: () => {
-            if (typeof window.fecharModalRankingEquipe === 'function') window.fecharModalRankingEquipe();
-        }
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 5: MODO KIDS E MASCOTE CHUÍRI (Toca áudio 5)
-    // -------------------------------------------------------------
-    {
-        tela: 'inicio',
-        titulo: "Passo 4: O Mascote Chuíri (Modo Kids)",
-        descricao: "No perfil Kids, as crianças não veem botões bancários. Elas cumprem suas tarefas e usam as moedas para alimentar o Chuíri, que tem níveis de fome, sono e banho em tempo real.",
-        audio: "guia_geral_5.mp3",
-        executarDemo: async () => {
-            destacarElementoTour('#cabecalho-topo-usuario');
-            await esperarMs(1200);
-        },
-        limparDemo: () => {}
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 6: SUPERMERCADO INTELIGENTE (Toca áudio 6)
-    // -------------------------------------------------------------
-    {
-        tela: 'mercado',
-        titulo: "Passo 5: Supermercado e IA",
-        descricao: "Na aba Mercado, planeie na 'Lista do Mês'. No supermercado, use 'No Mercado' e digite os preços. O app avisa com borda verde promoções e vermelha inflação, além de ler notas por IA.",
-        audio: "guia_geral_6.mp3",
-        executarDemo: async () => {
-            if (typeof window.alternarVisualizacaoMercado === 'function') window.alternarVisualizacaoMercado('lista');
-            await esperarMs(500);
-
-            const inProduto = destacarElementoTour('#input-novo-item-mercado');
-            if (inProduto) {
-                await simularDigitacao(inProduto, "Azeite de Oliva Extra Virgem", 60);
-                destacarElementoTour('button[onclick*="adicionarItemMercado"]');
-            }
-        },
-        limparDemo: () => {
-            const inP = document.getElementById('input-novo-item-mercado');
-            if (inP) { inP.value = ''; inP.readOnly = false; }
-        }
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 7: FINANÇAS, CARTEIRAS E VOZ (Toca áudio 7)
-    // -------------------------------------------------------------
-    {
-        tela: 'financeiro',
-        titulo: "Passo 6: Finanças por Voz e Transferências",
-        descricao: "Minha Carteira mostra seu saldo pessoal. O Montante Familiar soma o patrimônio de todos. Toque no microfone para lançar gastos falando, ou transfira saldos entre familiares.",
-        audio: "guia_geral_7.mp3",
-        executarDemo: async () => {
-            destacarElementoTour('.box-carteira-topo');
-            await esperarMs(1000);
-            const btnCupom = destacarElementoTour('button[onclick*="abrirModalOpcoesCupomIA"]');
-            await simularCliqueVisual(btnCupom);
-            document.getElementById('modal-escolha-origem-cupom')?.classList.remove('oculto');
-            await esperarMs(1000);
-        },
-        limparDemo: () => {
-            document.getElementById('modal-escolha-origem-cupom')?.classList.add('oculto');
-        }
-    },
-
-    // -------------------------------------------------------------
-    // QUADRO 8: CALENDÁRIO, COFRES E METAS (Toca áudio 8)
-    // -------------------------------------------------------------
-    {
-        tela: 'calendario',
-        titulo: "Passo 7: Calendário, Cofres e Relatórios",
-        descricao: "Agende contas no Calendário. Ao clicar em 'Já Pago', o valor é debitado na hora da sua carteira. Acompanhe os Cofres Compartilhados e gere relatórios do mês em PDF.",
-        audio: "guia_geral_8.mp3",
-        executarDemo: async () => {
-            destacarElementoTour('#grid-calendario-container');
-            await esperarMs(1200);
-        },
-        limparDemo: () => {}
-    }
-];
-
-// =========================================================================
-// 4. CONTROLE DE NAVEGAÇÃO ("PRÓXIMO" E "ANTERIOR")
-// =========================================================================
-
-window.iniciarTourInstrucoes = async function() {
-    passoTourAtual = 0;
-    canceladorExecucaoDemo = false;
-
-    if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-    }
-
-    const modal = document.getElementById('modal-tour-instrucoes');
-    if (!modal) return;
-
-    modal.classList.remove('oculto');
-    ajustarPosicaoModalTour(null);
-    await window.renderizarPassoTourAtual();
-};
-
-window.renderizarPassoTourAtual = async function() {
-    // Interrompe imediatamente qualquer demo ou áudio do quadro anterior
-    canceladorExecucaoDemo = true;
-    pararAudioInstrucao();
-    await esperarMs(60);
-    canceladorExecucaoDemo = false;
-
-    const passo = passosTourGuiado[passoTourAtual];
-    if (!passo) return;
-
-    // Dispara o áudio correspondente a este quadro
-    if (passo.audio) {
-        reproduzirAudioPasso(passo.audio);
-    }
-
-    const lblNumero = document.getElementById('tour-passo-numero');
-    const lblTitulo = document.getElementById('tour-passo-titulo');
-    const lblDesc = document.getElementById('tour-passo-descricao');
-    const btnAnt = document.getElementById('btn-tour-anterior');
-    const btnProx = document.getElementById('btn-tour-proximo');
-
-    if (lblNumero) lblNumero.textContent = `Manual • Passo ${passoTourAtual + 1} de ${passosTourGuiado.length}`;
-    if (lblTitulo) lblTitulo.textContent = passo.titulo;
-    if (lblDesc) lblDesc.textContent = passo.descricao;
-
-    if (btnAnt) btnAnt.style.display = passoTourAtual === 0 ? 'none' : 'block';
-    if (btnProx) btnProx.textContent = (passoTourAtual === passosTourGuiado.length - 1) ? 'Concluir ✓' : 'Próximo →';
-
-    const containerBolinhas = document.getElementById('tour-indicadores-bolinhas');
-    if (containerBolinhas) {
-        containerBolinhas.innerHTML = passosTourGuiado.map((_, idx) => `
-            <span style="display:inline-block; width:${idx === passoTourAtual ? '16px' : '6px'}; height:6px; border-radius:3px; background:${idx === passoTourAtual ? 'var(--cor-primaria, #d97706)' : '#cbd5e1'}; transition:all 0.4s ease; margin:0 2px;"></span>
-        `).join('');
-    }
-
-    // Muda para a aba correspondente do quadro
-    if (passo.tela && typeof window.navegarParaTela === 'function') {
-        window.navegarParaTela(passo.tela);
-        await esperarMs(400);
-    }
-
-    // Executa a animação/destaque deste quadro
-    if (!canceladorExecucaoDemo && typeof passo.executarDemo === 'function') {
-        try {
-            await passo.executarDemo();
-        } catch (e) {
-            console.warn("Tour demo:", e);
-        }
-    }
-};
-
-window.navegarTour = async function(direcao) {
-    if (window.SonsSuiri && typeof window.SonsSuiri.popClique === 'function') {
-        window.SonsSuiri.popClique();
-    }
-
-    const passoAnterior = passosTourGuiado[passoTourAtual];
-    if (passoAnterior && typeof passoAnterior.limparDemo === 'function') {
-        passoAnterior.limparDemo();
-    }
-    removerDestaqueElemento();
-
-    const novoPasso = passoTourAtual + direcao;
-
-    // Se o usuário clicar em "Próximo", avança para o próximo quadro e toca o respectivo áudio
-    if (novoPasso >= 0 && novoPasso < passosTourGuiado.length) {
-        passoTourAtual = novoPasso;
-        await window.renderizarPassoTourAtual();
-    } else if (novoPasso >= passosTourGuiado.length) {
-        window.encerrarTourInstrucoes(true);
-    }
-};
-
-window.encerrarTourInstrucoes = function(tocarAgradecimento = false) {
-    canceladorExecucaoDemo = true;
-    removerDestaqueElemento();
-    pararAudioInstrucao();
-
-    // Se concluiu todas as etapas, toca o áudio final de agradecimento
-    if (tocarAgradecimento) {
-        reproduzirAudioPasso("guia_final_agradecimento.mp3");
-    }
-
-    passosTourGuiado.forEach(p => {
-        if (typeof p.limparDemo === 'function') {
-            try { p.limparDemo(); } catch (e) {}
-        }
+    indice.addEventListener('change', () => {
+        posicao = Number(indice.value);
+        renderizar();
     });
-
-    [
-        'modal-pilula-dia', 
-        'modal-ranking-equipe', 
-        'modal-definir-meta', 
-        'modal-novo-evento-calendario', 
-        'modal-cadastro-familiar',
-        'modal-metas-anuais',
-        'modal-escolha-origem-cupom'
-    ].forEach(id => {
-        document.getElementById(id)?.classList.add('oculto');
+    simular.addEventListener('click', () => {
+        resultado.textContent = roteiro[posicao].resultado;
+        resultado.hidden = false;
+        simular.setAttribute('aria-expanded', 'true');
+        resultado.scrollIntoView?.({block: 'nearest'});
+        ler(roteiro[posicao].resultado);
     });
-
-    const modal = document.getElementById('modal-tour-instrucoes');
-    if (modal) modal.classList.add('oculto');
-
-    if (typeof window.navegarParaTela === 'function') {
-        window.navegarParaTela('inicio');
-    }
-    
-    if (typeof window.mostrarToast === 'function') {
-        window.mostrarToast("Manual concluído! Bons registros familiares!");
-    }
-};
+    narrar.hidden = !(native || (window.speechSynthesis && window.SpeechSynthesisUtterance));
+    narrar.addEventListener('click', () => {
+        comVoz = !comVoz;
+        narrar.setAttribute('aria-pressed', String(comVoz));
+        narrar.textContent = comVoz ? 'Parar narração' : 'Ouvir passo';
+        if (comVoz) ler(roteiro[posicao].texto);
+        else silenciar();
+    });
+})();

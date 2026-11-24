@@ -7,14 +7,15 @@ tools="$sdk/build-tools/35.0.0"
 platform="$sdk/platforms/android-35/android.jar"
 source=app/src/main
 output="$PWD/build"
-mkdir -p "$output/classes" "$output/dex"
+mkdir -p "$output/classes" "$output/dex" "$output/generated"
 
 "$tools/aapt2" compile --dir "$source/res" -o "$output/resources.zip"
-"$tools/aapt2" link -I "$platform" --manifest "$source/AndroidManifest.xml" \
+"$tools/aapt2" link -I "$platform" --manifest "$source/AndroidManifest.xml" --java "$output/generated" \
     -o "$output/resources.apk" "$output/resources.zip"
 
 javac --release 8 -classpath "$platform" -d "$output/classes" \
-    "$source/java/br/com/suirifamilia/app/MainActivity.java"
+    "$source/java/br/com/suirifamilia/app/MainActivity.java" \
+    "$output/generated/br/com/suirifamilia/app/R.java"
 jar cf "$output/classes.jar" -C "$output/classes" .
 "$tools/d8" --min-api 26 --lib "$platform" --output "$output/dex" "$output/classes.jar"
 

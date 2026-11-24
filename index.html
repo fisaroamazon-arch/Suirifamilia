@@ -21,7 +21,7 @@
     <!-- Buster Absoluto: Obriga o Telemóvel a Descarregar o Novo Design -->
     <link rel="stylesheet" href="styles/base.css?v=dbcb5e9d2dbe">
     <link rel="stylesheet" href="styles/modulos.css?v=8893fc8f4fa5">
-    <link rel="stylesheet" href="styles/modais.css?v=a9d2847a1b55">
+    <link rel="stylesheet" href="styles/modais.css?v=491bacb49130">
 
     <!-- Dependências Externas -->
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
-<link rel="stylesheet" href="styles/espaco-kids.css?v=331552e30df2">
+<link rel="stylesheet" href="styles/espaco-kids.css?v=f72e14d68f8f">
     <link rel="stylesheet" href="styles/financas.css?v=b9aae4ac282a">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
     <link rel="stylesheet" href="styles/tema-principal.css?v=2748698233be">
@@ -643,6 +643,7 @@
                     <div class="chuiri-vila-atalhos">
                         <button type="button" onclick="window.abrirModalRankingEquipe()"><img src="assets/icons-modern/icone-loja.svg" alt=""> Lojinha</button>
                         <button type="button" data-chuiri-som aria-pressed="false" onclick="TamagotchiKids.alternarSom()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#voice"></use></svg> <span>Voz ligada</span></button>
+                        <button type="button" onclick="window.iniciarTourInstrucoes()">Manual Kids</button>
                     </div>
                 </section>
 
@@ -1677,27 +1678,34 @@
         </div>
     </div>
 
-    <!-- MODAL MANUAL / TOUR COMPACTO -->
-    <div id="modal-tour-instrucoes" class="painel-tour-flutuante oculto">
+    <dialog id="modal-tour-instrucoes" class="oculto" aria-labelledby="tour-passo-titulo">
         <div class="conteudo-tour-flutuante">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="tour-passo-numero" style="font-size: 11px; font-weight: 800; color: #f97316; text-transform: uppercase;">Manual</span>
-                <button type="button" style="background: none; border: none; font-size: 15px; color: #64748b; cursor: pointer;" onclick="window.encerrarTourInstrucoes()">✕</button>
+            <header class="tour-cabecalho">
+                <span>Manual <span id="tour-passo-numero"></span></span>
+                <button type="button" class="btn-secundario" onclick="window.encerrarTourInstrucoes()" aria-label="Fechar manual">✕</button>
+            </header>
+            <label class="tour-assunto">Escolher assunto <select id="tour-indice"></select></label>
+            <div class="tour-passo" aria-live="polite">
+                <h2 id="tour-passo-titulo"></h2>
+                <p id="tour-local"></p>
+                <p id="tour-passo-descricao"></p>
             </div>
-            <h4 id="tour-passo-titulo" style="font-size: 14px; color: #0f172a; margin: 6px 0 4px 0; font-weight: 900;"></h4>
-            <p id="tour-passo-descricao" style="font-size: 12.5px; color: #64748b; line-height: 1.45; margin: 0;"></p>
-            
-            <div id="tour-indicadores-bolinhas"></div>
-
-            <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 12px;">
-                <button type="button" id="btn-tour-anterior" class="btn-secundario" style="flex:1; padding: 8px; font-size: 12px;" onclick="window.navegarTour(-1)">← Anterior</button>
-                <button type="button" id="btn-tour-proximo" class="btn-principal" style="flex:1; padding: 8px; font-size: 12px; font-weight: 800;" onclick="window.navegarTour(1)">Próximo →</button>
+            <div class="tour-experiencia">
+                <p>Experimente com dados de exemplo</p>
+                <dl id="tour-exemplo"></dl>
+                <button type="button" id="tour-simular" aria-controls="tour-resultado" class="btn-secundario"></button>
+                <p id="tour-resultado" role="status" hidden></p>
+            </div>
+            <div class="tour-acoes">
+                <button type="button" id="btn-tour-anterior" class="btn-secundario" onclick="window.navegarTour(-1)">← Anterior</button>
+                <button type="button" id="tour-narrar" class="btn-secundario" aria-pressed="false" hidden>Ouvir passo</button>
+                <button type="button" id="btn-tour-proximo" class="btn-principal" onclick="window.navegarTour(1)">Próximo →</button>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <!-- Scripts Modulares -->
-    <script src="src/core/session.js?v=8f7c4db13d39"></script>
+    <script src="src/core/session.js?v=2285cad23e3a"></script>
 <script src="src/core/offline.js?v=63b990511789"></script>
     <script src="src/ui/icons.js?v=8be3e6f08036"></script>
     <script src="src/features/rewards/gamificacao.js?v=916057bb2471"></script>
@@ -1708,7 +1716,7 @@
 <script src="src/features/shopping/mercado.js?v=a3c4483fe5f0"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4570e0e54391"></script>
-<script src="src/features/missions/kids.js?v=41047c4b3821"></script>
+<script src="src/features/missions/kids.js?v=c5f55c894ec8"></script>
 <script src="src/core/swipe.js?v=14267843cb50"></script>
 <script src="src/features/missions/missoes.js?v=44c347a263f3"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
@@ -1722,10 +1730,11 @@
 <script src="src/core/lifecycle.js?v=12926c4649b5"></script>
     <script src="src/features/family/membros.js?v=66a1a83137fe"></script>
 <script src="src/features/agenda/calendario.js?v=5d3a86357091"></script>
-<script src="src/features/notifications/painel.js?v=430ec365766e"></script>
+<script src="src/features/notifications/android.js?v=ce4b671fa373"></script>
+<script src="src/features/notifications/painel.js?v=a1c8e18342ce"></script>
 <script src="src/core/realtime.js?v=f81ce057c2e0"></script>
     <script src="src/features/reports/relatorios.js?v=969de5e1ecb5"></script>
-    <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
+    <script src="src/features/help/tour.js?v=29e47533df27"></script>
     <script src="src/features/kids/mascote.js?v=eca949f7df4d"></script>
     <script src="src/features/personal/meu-espaco.js?v=737570a89a4b"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>

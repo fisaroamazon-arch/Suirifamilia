@@ -9,7 +9,7 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=36b2105c882e">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=f0482e02486a">
     <link rel="stylesheet" href="styles/pages/piano.css?v=e58a9f7024c9">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
@@ -556,6 +556,8 @@
                 <button type="button" class="btn-modo-som-tab ativo" aria-pressed="true" data-memoria-pares="4" onclick="MotorMemoria.trocarNivel(4)">4 pares</button>
                 <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="6" onclick="MotorMemoria.trocarNivel(6)">6 pares</button>
                 <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="8" onclick="MotorMemoria.trocarNivel(8)">8 pares</button>
+                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="16" onclick="MotorMemoria.trocarNivel(16)">16 pares</button>
+                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="32" onclick="MotorMemoria.trocarNivel(32)">32 pares</button>
             </div>
             <div class="painel-placar-flappy" id="hud-placar-memoria" role="status" style="position:static; transform:none; margin:2px auto 6px auto; display:inline-flex; gap:12px;">
                 <div id="status-memoria-solo" style="font-size:13px; font-weight:900; color:#6d28d9;">
@@ -603,6 +605,7 @@
     <script src="src/features/kids/piano-dueto-rede.js?v=8f4def6b9e3f"></script>
     <script src="src/features/kids/piano.js?v=4cc140df81ee"></script>
 
-    <script src="src/pages/arcade.js?v=66f6910d7fea"></script>
+    <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
+    <script src="src/pages/arcade.js?v=fab76121f08d"></script>
 </body>
 </html>

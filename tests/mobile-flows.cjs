@@ -215,6 +215,55 @@ async function main() {
     await window.exibirLembreteAgenda('family-test', '2026-11-25');
     assert.equal(reminders, 2);
 
+    Object.defineProperty(window.navigator, 'userAgent', {value: 'SuiriFamiliaAlertas/1'});
+    window.SuiriAndroid = () => {};
+    window.usuarioAtual = {id: 'adulto'};
+    window.perfilAtual = {id: 'adulto'};
+    window.listaMembrosFamilia = [{id: 'adulto', nome: 'Ana'}];
+    window.missaoVisivelNoPainelAdulto = missao => missao.escopo === 'casa';
+    window.missaoVisivelNoPainelKids = missao => missao.atribuido_a === 'kid';
+    window.Suiri.transactionQuery = () => ({
+        select: () => ({eq: () => ({eq: () => ({limit: async () => ({
+            data: [
+                {id: 'receita', tipo: 'entrada', descricao: 'Aula', valor: 120, categoria: 'Trabalho', subcategoria: 'Aulas', data_transacao: '2026-11-24'},
+                {id: 'outra', tipo: 'saida', descricao: 'Despesa de outro adulto', membro_id: 'outro', escopo: 'pessoal', valor: 80}
+            ]
+        })})})})
+    });
+    window.eval(fs.readFileSync('src/features/notifications/android.js', 'utf8'));
+    const ler = () => JSON.parse(window.SuiriAlertasAndroid.ler());
+    window.SuiriAlertasAndroid.atualizarMissoes([
+        {id: 'casa', escopo: 'casa', status: 'pendente', titulo: 'Organizar a mochila', xp_recompensa: 35, subitens: [{texto: 'Guardar livros'}]},
+        {id: 'pessoal', escopo: 'pessoal', status: 'pendente', titulo: 'Tarefa de outro perfil'}
+    ]);
+    window.SuiriAlertasAndroid.atualizarContas([
+        {id: 'internet', descricao: 'Internet', valor: 90, data_vencimento: '2026-11-24', tipo_evento: 'conta_pagar'},
+        {id: 'privada', descricao: 'Conta de outra pessoa', valor: 800, escopo: 'pessoal', membro_id: 'outro', tipo_evento: 'conta_pagar'}
+    ]);
+    window.document.dispatchEvent(new window.CustomEvent('suiri:session-ready'));
+    await new Promise(resolve => setImmediate(resolve));
+    const adulto = ler();
+    assert.equal(adulto.missoes.length, 1);
+    assert.match(adulto.missoes[0].corpo, /35 XP\n• Guardar livros/);
+    assert.equal(adulto.contas.length, 1);
+    assert.match(adulto.contas[0].corpo, /Internet.*[\s\S]*24\/11\/2026/);
+    assert.equal(adulto.lancamentos.length, 1);
+    assert.match(adulto.lancamentos[0].corpo, /Trabalho › Aulas/);
+
+    window.perfilAtual = {id: 'kid', eh_kids: true};
+    window.SuiriAlertasAndroid.atualizarMissoes([
+        {id: 'para-kid', atribuido_a: 'kid', status: 'pendente', titulo: 'Ler'},
+        {id: 'para-adulto', atribuido_a: 'adulto', status: 'pendente', titulo: 'Tarefa adulta'}
+    ]);
+    window.SuiriAlertasAndroid.atualizarContas([{id: 'nao-visivel', tipo_evento: 'conta_pagar'}]);
+    const crianca = ler();
+    assert.notEqual(crianca.perfil, adulto.perfil);
+    assert.equal(crianca.missoes[0].titulo, 'Ler');
+    assert.equal(crianca.contas, undefined);
+    assert.equal(crianca.lancamentos, undefined);
+    window.perfilAtual = null;
+    assert.deepEqual(ler(), {perfil: ''});
+
     dom.window.close();
     console.log('Ditado, cupom, receitas, categorias aprendidas, edição Kids, relatórios e notificações verificados.');
 }

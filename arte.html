@@ -5,17 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>Espaço Arte · Suiri Família</title>
-    <link rel="stylesheet" href="styles/pages/arte.css?v=4b3e0613d66a">
-    <script src="src/pages/arte.js?v=8f80958f0030" defer></script>
+    <link rel="stylesheet" href="styles/pages/arte.css?v=97e3adb261a5">
+    <script src="src/data/desenhos-arte.js?v=3ce33393256b" defer></script>
+    <script src="src/pages/arte.js?v=50ebadee5365" defer></script>
 </head>
 <body>
     <main class="atelier">
         <header class="cabecalho">
             <a href="jogos.html" class="voltar">‹ Arcade</a>
             <h1>Espaço Arte</h1>
+            <button type="button" id="abrir-ferramentas" aria-haspopup="dialog"><span class="cor-ativa" aria-hidden="true"></span> Ferramentas</button>
         </header>
 
-        <div class="mesa-arte">
+        <div class="folha" id="folha">
+            <canvas id="papel" width="640" height="640" aria-label="Área de desenho. Use o dedo ou o mouse para desenhar."></canvas>
+        </div>
+        <p id="arte-aviso" class="somente-leitor" role="status"></p>
+
+        <dialog id="ferramentas-arte" aria-labelledby="titulo-ferramentas-arte">
+            <header class="cabecalho-ferramentas">
+                <h2 id="titulo-ferramentas-arte">Ferramentas</h2>
+                <button type="button" id="fechar-ferramentas" aria-label="Voltar para a folha">Concluir</button>
+            </header>
             <section class="ferramentas" aria-label="Ferramentas de desenho">
                 <div class="linha">
                     <div class="pinceis" role="group" aria-label="Tipo de pincel">
@@ -48,19 +59,15 @@
                 </div>
             </section>
 
-            <div class="folha" id="folha">
-                <canvas id="papel" width="640" height="640" aria-label="Área de desenho. Use o dedo ou o mouse para desenhar."></canvas>
-            </div>
-
             <div class="acoes" role="group" aria-label="Ações do desenho">
                 <button id="desfazer" type="button" disabled>↶ Desfazer</button>
                 <button id="refazer" type="button" disabled>↷ Refazer</button>
                 <button id="folha-nova" type="button">Folha em branco</button>
                 <button id="baixar-arte" type="button">Salvar PNG</button>
             </div>
-        </div>
 
-        <section class="caderno" aria-labelledby="titulo-caderno">
+            <button id="tela-cheia-arte" type="button" hidden>Entrar em tela cheia</button>
+            <section class="caderno" aria-labelledby="titulo-caderno">
             <header>
                 <h2 id="titulo-caderno">Caderno de colorir</h2>
                 <div class="importar-arte">
@@ -68,9 +75,14 @@
                     <label class="importar">Foto em contorno<input id="foto-contorno-arte" type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="somente-leitor"></label>
                 </div>
             </header>
-            <p id="arte-aviso" role="status"></p>
-            <div class="paginas" id="paginas"></div>
-        </section>
+                <div class="niveis-caderno" role="group" aria-label="Dificuldade dos desenhos">
+                    <button type="button" data-arte-nivel="facil" aria-pressed="true">Fácil</button>
+                    <button type="button" data-arte-nivel="medio" aria-pressed="false">Médio</button>
+                    <button type="button" data-arte-nivel="avancado" aria-pressed="false">Avançado</button>
+                </div>
+                <div class="paginas" id="paginas"></div>
+            </section>
+        </dialog>
     </main>
 </body>
 </html>

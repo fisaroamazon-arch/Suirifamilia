@@ -613,6 +613,7 @@ window.aplicarRegrasPerfilKidsOuAdulto = function() {
 
     const ehKids = window.perfilAtual.eh_kids === true || window.perfilAtual.papel === 'dependente';
     window.modoKidsAtivo = ehKids;
+    window.SuiriAlertasAndroid?.sincronizarPerfil();
 
     const telaKids = document.getElementById('tela-kids-exclusiva');
     const painelAdulto = document.getElementById('painel-adulto-container');
@@ -774,7 +775,8 @@ window.fazerLogoff = async function() {
     window.usuarioAtual=null;window.perfilAtual=null;window.familiaAtualId=null;
     for(const k of ['suiri_perfil_ativo','suiri_familia_ativa','suiri_membros_ativos','suiri_ultimo_perfil','suiri_usuario_id'])localStorage.removeItem(k);
     // Dados pessoais e filas pertencem ao usuário e não são reenviados por outra conta.
-    window.location.replace('index.html');
+    if (window.SuiriAlertasAndroid) window.SuiriAndroid('clear-alerts');
+    else window.location.replace('index.html');
 };
 
 // =========================================================================
@@ -790,6 +792,7 @@ window.verificarSessao = async function() {
         if(error)throw error;
         if(!data?.session?.user){
             window.usuarioAtual=null;window.perfilAtual=null;window.familiaAtualId=null;
+            window.SuiriAlertasAndroid?.sincronizarPerfil();
             document.getElementById('tela-app')?.classList.add('oculto');
             document.getElementById('barra-navegacao-principal')?.classList.add('oculto');
             document.getElementById('tela-login')?.classList.remove('oculto');
