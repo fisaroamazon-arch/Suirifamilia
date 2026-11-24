@@ -1172,6 +1172,29 @@ window.MotorMusica = {
                 dedos.set(id, proxima);
                 if (proxima) this.pressionarNota(proxima.dataset.nota, id, proxima, fatorVol, origem);
             };
+            const idTeclado = `teclado-${origem}`;
+            container.querySelectorAll('[data-nota]').forEach(tecla => {
+                tecla.tabIndex = 0;
+                tecla.setAttribute('role', 'button');
+                const nota = this.infoNota(tecla.dataset.nota);
+                tecla.setAttribute('aria-label', `${nota.nome}, oitava ${nota.oitava}`);
+            });
+            const soltarTeclado = () => {
+                trocarTecla(idTeclado, null);
+                dedos.delete(idTeclado);
+            };
+            container.addEventListener('keydown', evento => {
+                const tecla = obterTecla(evento.target);
+                if (!tecla || !['Enter', ' '].includes(evento.key)) return;
+                evento.preventDefault();
+                if (!evento.repeat) trocarTecla(idTeclado, tecla);
+            });
+            container.addEventListener('keyup', evento => {
+                if (!dedos.has(idTeclado) || !['Enter', ' '].includes(evento.key)) return;
+                evento.preventDefault();
+                soltarTeclado();
+            });
+            container.addEventListener('focusout', soltarTeclado);
             container.addEventListener('pointerdown', evento => {
                 const tecla = obterTecla(evento.target);
                 if (!tecla || evento.button !== 0) return;

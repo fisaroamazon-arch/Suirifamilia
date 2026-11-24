@@ -104,6 +104,10 @@
 #tela-simon .tocando[data-oitava-tocada] > span {
     color: #201b35;
 }
+#tela-simon [data-nota]:focus-visible {
+    outline: 2px solid #a76bfc;
+    outline-offset: -3px;
+}
 #tela-simon #pista-esteira-box {
     border-radius: 16px 16px 8px 8px;
     border-color: #9793bf;
