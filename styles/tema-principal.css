@@ -234,3 +234,12 @@ html[data-theme="dark"] body #secao-mercado .total-mercado-fixo {
     font-size: 19px;
     cursor: pointer;
 }
+
+@media (max-width: 420px) {
+    #barra-navegacao-principal .bottom-nav-item span {
+        white-space: normal !important;
+        text-align: center;
+        line-height: 1.1;
+        font-size: clamp(9px, 2.65vw, 10.5px) !important;
+    }
+}

@@ -9,6 +9,7 @@
             if(screen==='mercado'&&window.perfilAtual?.permissoes?.mercado===false)return window.mostrarToast('Este perfil não tem acesso ao mercado.','erro');
             if(screen==='financeiro'&&window.perfilAtual?.permissoes?.gastos===false)return window.mostrarToast('Este perfil não tem acesso às finanças.','erro');
             original(screen);
+            if (screen === 'familia') window.carregarRecadosLar?.();
             document.querySelectorAll('#barra-navegacao-principal .bottom-nav-item').forEach(button => {
                 if (button.classList.contains('ativo')) button.setAttribute('aria-current', 'page');
                 else button.removeAttribute('aria-current');

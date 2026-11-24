@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
 <link rel="stylesheet" href="styles/espaco-kids.css?v=44eeb2ac679f">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
-    <link rel="stylesheet" href="styles/tema-principal.css?v=bf4efeffa569">
+    <link rel="stylesheet" href="styles/tema-principal.css?v=4dfa07057580">
 </head>
 <body>
 
@@ -358,28 +358,6 @@
                     <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
                     <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
 
-                    <div id="bloco-card-mural-recados" class="cartao-geral" style="border-left: 4px solid #f97316;">
-                        <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span id="lbl-titulo-mural-recados" style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #f97316;">Mural de Avisos da Família</span>
-                                <span id="contador-recados-pendentes" style="font-size: 11px; font-weight: 700; color: #64748b;">0 avisos</span>
-                            </div>
-                            <span id="seta-mural-recados" style="font-size: 12px; color: #f97316; transition: transform 0.2s ease;">▼</span>
-                        </div>
-                        <div id="mural-recados-conteudo" class="oculto" style="margin-top: 12px;">
-                            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
-                                <input type="text" id="input-novo-recado" placeholder="Deixe um recado para a casa...">
-                                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 6px;">
-                                    <select id="select-recado-destinatario">
-                                        <option value="todos">Toda a Casa</option>
-                                    </select>
-                                    <button type="button" class="btn-principal" style="width: 100%; padding: 10px; font-size: 12px;" onclick="window.publicarRecadoLar()">Afixar</button>
-                                </div>
-                            </div>
-                            <div id="lista-recados-lar" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                        </div>
-                    </div>
-
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <h3 style="font-size: 15px; font-weight: 800; margin: 0;">Extrato Nominal</h3>
@@ -524,6 +502,28 @@
                             <button type="button" id="btn-novo-membro-familia" class="btn-principal" style="width: auto; padding: 7px 13px; font-size: 12px;" onclick="window.abrirModalNovoMembro()">+ Adicionar</button>
                         </div>
                         <div id="lista-membros-cadastrados"></div>
+                    </div>
+
+                    <div id="bloco-card-mural-recados" class="cartao-geral" style="border-left: 4px solid #f97316;">
+                        <div onclick="window.alternarSecaoRetratil('mural-recados-conteudo', 'seta-mural-recados')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span id="lbl-titulo-mural-recados" style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #f97316;">Mural de Avisos da Família</span>
+                                <span id="contador-recados-pendentes" style="font-size: 11px; font-weight: 700; color: #64748b;">0 avisos</span>
+                            </div>
+                            <span id="seta-mural-recados" style="font-size: 12px; color: #f97316; transition: transform 0.2s ease;">▼</span>
+                        </div>
+                        <div id="mural-recados-conteudo" class="oculto" style="margin-top: 12px;">
+                            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+                                <input type="text" id="input-novo-recado" placeholder="Deixe um recado para a casa...">
+                                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 6px;">
+                                    <select id="select-recado-destinatario">
+                                        <option value="todos">Toda a Casa</option>
+                                    </select>
+                                    <button type="button" class="btn-principal" style="width: 100%; padding: 10px; font-size: 12px;" onclick="window.publicarRecadoLar()">Afixar</button>
+                                </div>
+                            </div>
+                            <div id="lista-recados-lar" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
                     </div>
 
                     <div class="cartao-geral" style="text-align: center;">
@@ -1662,7 +1662,7 @@
     <script src="src/services/transactions.js?v=ddea1b071483"></script>
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
-<script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
+<script src="src/features/finances/extrato.js?v=61ccc03231fb"></script>
 <script src="src/features/shopping/mercado.js?v=32724e3ba74c"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4649b051709a"></script>
@@ -1687,7 +1687,7 @@
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
 <script src="src/services/operations.js?v=d81ab58c7d00"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
-<script src="src/core/navigation.js?v=dc579a7876bc"></script>
+<script src="src/core/navigation.js?v=00e19b0801d4"></script>
 
     <script src="src/pages/profile-menu.js?v=be4aee6ffedf"></script>
 
