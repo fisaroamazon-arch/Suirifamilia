@@ -351,6 +351,7 @@
 .arcade-page .arcade-pre-jogo h2 { color: #fff2de !important; margin: 0 0 4px; }
 .arcade-page .arcade-pre-jogo p,
 .arcade-page .arcade-pre-jogo .arcade-teclado { color: #f1e5f8; }
+.arcade-page .arcade-pre-jogo .btn-link-voltar { color: #e2d7f1; min-height: 36px; }
 .arcade-escolhas-partida { display: grid; gap: 7px; margin: 9px 0; }
 .arcade-page .arcade-escolhas-partida .btn-acao-jogo {
     display: grid;

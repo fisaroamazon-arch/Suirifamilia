@@ -13,7 +13,7 @@ const SHELL=[
   "./styles/espaco-kids.css?v=331552e30df2",
   "./manifest.json",
   "./jogos.html",
-  "./styles/pages/arcade-vila.css?v=77e1f886d50f",
+  "./styles/pages/arcade-vila.css?v=36b2105c882e",
   "./assets/images/kids/banho-parado.webp",
   "./assets/images/kids/banho.webp",
   "./assets/images/kids/casa-parado.webp",
