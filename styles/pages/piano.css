@@ -84,6 +84,33 @@
 #piano-configuracoes section { margin-bottom: 8px; }
 .piano-velocidade { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; margin-block: 5px; font-size: .78rem; }
 .piano-velocidade .painel-velocidade-bichinhos { margin: 0; }
+.piano-ritmo { display: grid; gap: .4rem; justify-items: start; }
+#piano-metronomo, .piano-figuras > summary {
+    padding: .42rem .62rem;
+    border: 1px solid #9b83be;
+    border-radius: .6rem;
+    background: #322a49;
+    color: #fff3e7;
+    min-height: 34px;
+    font-size: .78rem;
+    line-height: 1.2;
+}
+#piano-metronomo[aria-pressed="true"] { background: #a8e5dd; color: #192a3e; }
+.piano-figuras { width: 100%; }
+.piano-figuras ul { list-style: none; display: flex; flex-wrap: wrap; gap: 5px; padding: 6px 0; }
+.piano-figuras li {
+    display: inline-flex;
+    align-items: center;
+    gap: .34rem;
+    padding: .2rem .4rem;
+    font-size: .72rem;
+    border-radius: .4rem;
+    background: #242039;
+}
+.piano-figuras li::before { content: ""; width: .68rem; height: .68rem; border-radius: 3px; background: var(--figura-cor); }
+.piano-legenda-maos { border-radius: 999px; padding: 2px 8px; background: #23304c; color: #eff6ff; font-size: .72rem; }
+.piano-legenda-maos [data-piano-ambas], .piano-maos-juntas .piano-legenda-maos [data-piano-direita] { display: none; }
+.piano-maos-juntas .piano-legenda-maos [data-piano-ambas] { display: inline; }
 #piano-configuracoes :is(.piano-parte, .piano-alcance):not([hidden]) {
     display: grid;
     gap: 4px;
@@ -442,6 +469,7 @@
         margin: 0;
     }
     #tela-simon[data-painel-piano="duplo"] .teclado-compacto-livre { height: clamp(36px, 13dvh, 89px); }
+    #tela-simon.piano-maos-juntas #teclado-dueto-melodia { height: clamp(52px, 19dvh, 120px); }
     #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-meta-vida { display: none; }
     #tela-simon[data-painel-piano="duplo"] .piano-painel-dueto .piano-coracoes svg { width: 12px; height: 12px; }
 }

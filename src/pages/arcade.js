@@ -139,6 +139,37 @@
                 } catch(e) {}
             },
 
+            tocarEfeito: function(nome, variacao = 0) {
+                const efeitos = {
+                    voo: [[390, 765, .12, 0, 'sine'], [800, 1100, .06, .018, 'triangle']],
+                    impacto: [[185, 53, .23, 0, 'triangle'], [108, 46, .12, .025, 'sine']],
+                    bloco: [[325, 587, .12, 0, 'triangle'], [702, 872, .09, .032, 'sine']],
+                    rebote: [[280, 465, .09, 0, 'triangle']],
+                    bolha: [[680, 213, .10, 0, 'sine'], [1260, 480, .046, .009, 'triangle']],
+                    carta: [[480, 660, .07, 0, 'triangle']],
+                    par: [[523, 523, .18, 0, 'sine'], [659, 659, .19, .065, 'sine'], [784, 784, .22, .13, 'triangle']]
+                };
+                const ctx = this.obterCtx();
+                if (!ctx || !efeitos[nome]) return;
+                const agora = ctx.currentTime;
+                const transposicao = 2 ** (variacao / 12);
+                for (const [de, para, duracao, atraso, tipo] of efeitos[nome]) {
+                    const inicio = agora + atraso;
+                    const osc = ctx.createOscillator();
+                    const volume = ctx.createGain();
+                    osc.type = tipo;
+                    osc.frequency.setValueAtTime(de * transposicao, inicio);
+                    osc.frequency.exponentialRampToValueAtTime(para * transposicao, inicio + duracao);
+                    volume.gain.setValueAtTime(.0001, inicio);
+                    volume.gain.linearRampToValueAtTime(nome === 'impacto' ? .19 : .12, inicio + .008);
+                    volume.gain.exponentialRampToValueAtTime(.0001, inicio + duracao);
+                    osc.connect(volume).connect(this.obterSaida());
+                    osc.start(inicio);
+                    osc.stop(inicio + duracao + .01);
+                    osc.onended = () => { osc.disconnect(); volume.disconnect(); };
+                }
+            },
+
             tocarSomCaneta: function(duracao = 0.12) {
                 try {
                     const ctx = this.obterCtx();
@@ -173,6 +204,7 @@
         // =========================================================================
         const GerenciadorArcade = {
             telaAtiva: 'menu',
+            menusAntesDaPartida: new Map(),
             partidaPausada: null,
 
             chaveTrilha: function() {
@@ -363,6 +395,12 @@
                 document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                 this.telaAtiva = idJogo;
                 document.body.dataset.arcadeTela = idJogo;
+                const menu = document.getElementById(`over-${idJogo}`);
+                if (menu?.querySelector('.arcade-pre-jogo') && !this.menusAntesDaPartida.has(idJogo)) {
+                    this.menusAntesDaPartida.set(idJogo, menu.innerHTML);
+                } else if (menu && this.menusAntesDaPartida.has(idJogo)) {
+                    menu.innerHTML = this.menusAntesDaPartida.get(idJogo);
+                }
                 document.getElementById('rotulo-voltar-arcade').textContent = 'Arcade';
                 document.querySelectorAll(`#tela-${idJogo} [data-arcade-imagem]`).forEach(img => {
                     const parado = matchMedia('(prefers-reduced-motion: reduce)').matches ? '-parado' : '';
@@ -405,9 +443,94 @@
         // =========================================================================
         // 1. MOTOR DO CHUÍRI VOADOR (1P E 2P COOPERATIVO COM REVIVER)
         // =========================================================================
+        const cenariosVoo = {
+            serra: { nome: 'Serra ao amanhecer', ceu: ['#274b75', '#71bbcc', '#ffe5ad'], luz: '#ffeabb', fundo: '#739c93', perto: '#3e7774',
+                frente: '#204b50', chao: '#225e52', borda: '#8ed5a4', madeira: ['#3c303f', '#b87964', '#754851'] },
+            litoral: { nome: 'Litoral dourado', ceu: ['#265990', '#71cddd', '#ffe4b6'], luz: '#fff3cb', fundo: '#71b6c8', perto: '#3e9c9a',
+                frente: '#1e707f', chao: '#78564b', borda: '#eed093', madeira: ['#3d334b', '#b98d6b', '#675063'] },
+            estrelas: { nome: 'Céu estrelado', ceu: ['#171e44', '#433c78', '#aa82a6'], luz: '#eff2ff', fundo: '#535883', perto: '#364969',
+                frente: '#243653', chao: '#263955', borda: '#96acd8', madeira: ['#26283f', '#987d9c', '#534762'] }
+        };
+
+        const sequenciaVoo = Object.keys(cenariosVoo);
+
+        function pintarCenarioVoo(ctx, w, h, nome, cores) {
+            const ceu = ctx.createLinearGradient(0, 0, 0, h);
+            for (const [indice, cor] of cores.ceu.entries()) ceu.addColorStop(indice * .47, cor);
+            ctx.fillStyle = ceu;
+            ctx.fillRect(0,0,w,h);
+            const xLuz = w * .72, yLuz = h * .24, raio = Math.min(w * .16, 86);
+            const aurora = ctx.createRadialGradient(xLuz,yLuz,raio*.3,xLuz,yLuz,raio*1.9);
+            aurora.addColorStop(0, cores.luz + '94');
+            aurora.addColorStop(1, cores.luz + '00');
+            ctx.fillStyle = aurora;
+            ctx.fillRect(xLuz - 2*raio,yLuz - 2*raio,4*raio,4*raio);
+            ctx.fillStyle = cores.luz;
+            ctx.beginPath();
+            ctx.arc(xLuz,yLuz,raio*.7,0,2*Math.PI);
+            ctx.fill();
+            if (nome === 'estrelas') {
+                for (let i = 0; i < 49; i++) {
+                    const x = (Math.sin(i * 18.13) * .5 + .5) * w;
+                    const y = (Math.cos(i * 13.21) * .5 + .5) * h * .58;
+                    ctx.globalAlpha = .22 + (i % 4) * .15;
+                    ctx.fillRect(x, y, i % 8 === 0 ? 2 : 1, i % 8 === 0 ? 2 : 1);
+                }
+                ctx.globalAlpha = 1;
+            } else {
+                for (const [x,y,s] of [[.12,.21,.6],[.41,.15,.34],[.61,.39,.48],[.9,.31,.5]]) {
+                    ctx.fillStyle = '#fff6';
+                    ctx.beginPath();
+                    ctx.ellipse(w*x,h*y,w*s*.29,h*.023,0,0,2*Math.PI);
+                    ctx.ellipse(w*x-w*s*.14,h*y-h*.013,w*s*.19,h*.021,0,0,2*Math.PI);
+                    ctx.fill();
+                }
+            }
+            for (const [indice, cor] of [cores.fundo, cores.perto, cores.frente].entries()) {
+                ctx.fillStyle = cor;
+                ctx.beginPath();
+                for (let x = 0; x <= w + 6; x += 6) {
+                    const y = h * (.58 + indice * .096) +
+                        (Math.sin(x / w * 9 + indice * 3) * .043 + Math.sin(x / w * 22) * .018) * h;
+                    if (!x) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(w,h);
+                ctx.lineTo(0,h);
+                ctx.fill();
+            }
+            if (nome === 'litoral') {
+                ctx.strokeStyle = '#d8fbff67';
+                ctx.lineWidth = 1.1;
+                for (let i = 0; i < 25; i++) {
+                    const x = (Math.sin(i*8.8)*.5+.5) * w;
+                    const y = h * (.63 + i*.011);
+                    ctx.beginPath();
+                    ctx.moveTo(x,y);
+                    ctx.lineTo(x + 7 + (i % 6)*4,y);
+                    ctx.stroke();
+                }
+            } else {
+                for (let i = 0; i < 26; i++) {
+                    const x = i * w / 25;
+                    const y = h * (.875 + Math.sin(i * .69) * .042);
+                    const altura = 12 + ((i * 13) % 37);
+                    ctx.fillStyle = cores.frente;
+                    ctx.fillRect(x-1,y,2,altura + 55);
+                    ctx.beginPath();
+                    ctx.moveTo(x,y-altura);
+                    ctx.lineTo(x-8,y+2);
+                    ctx.lineTo(x+8,y+2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+        }
+
         const MotorFlappy = {
             canvas: null, ctx: null, anim: null, rodando: false,
             modo: 1, // 1 = Solo, 2 = Cooperativo
+            cenarioEscolhido: 'viagem',
+            cenario: 'serra',
             obstaculosPassados: 0,
             moedasGanhasPartida: 0,
             ultimoFrame: 0,
@@ -426,7 +549,6 @@
             larguraTronco: 58,
             obstaculoParaSpawnVida: 0,
             cicloAnimProfundidade: 0,
-            duplaEmContato: false,
 
             montar: function() {
                 this.canvas = document.getElementById('cv-flappy');
@@ -471,10 +593,26 @@
                 if (this.p1.el) this.p1.el.style.display = 'none';
                 if (this.p2.el) this.p2.el.style.display = 'none';
                 this.rodando = false;
+                const seletor = document.getElementById('flappy-cenario');
+                if (seletor) seletor.value = this.cenarioEscolhido;
+                this.preverCenario(this.cenarioEscolhido);
+            },
+
+            preverCenario: function(valor) {
+                this.cenarioEscolhido = Object.hasOwn(cenariosVoo, valor) ? valor : 'viagem';
+                this.cenario = this.cenarioEscolhido === 'viagem' ? 'serra' : this.cenarioEscolhido;
+                if (this.canvas && !this.rodando) {
+                    this.obstaculos = [];
+                    this.moedasNoAr = [];
+                    this.vidasNoAr = [];
+                    this.particulasVento = [];
+                    this.desenhar();
+                }
             },
 
             iniciar: function(modoEscolhido = 1) {
                 this.modo = modoEscolhido;
+                this.preverCenario(this.cenarioEscolhido);
                 this.obstaculos = [];
                 this.moedasNoAr = [];
                 this.vidasNoAr = [];
@@ -484,7 +622,6 @@
                 this.timer = 62;
                 this.centroPassagem = this.canvas.height * .48;
                 this.cicloAnimProfundidade = 0;
-                this.duplaEmContato = false;
                 document.querySelectorAll("#tela-flappy .impacto-voo").forEach(efeito => efeito.remove());
                 this.obstaculoParaSpawnVida = 0;
                 tentarVibrar(35);
@@ -541,7 +678,7 @@
                 if (!p.vivo) return;
 
                 p.vy = p.imp;
-                AudioMotor.tocarTom(jogador === 1 ? 520 : 680, 0.08);
+                AudioMotor.tocarEfeito('voo', jogador === 1 ? 0 : 3);
 
                 for (let i = 0; i < 3; i++) {
                     this.particulasVento.push({
@@ -654,7 +791,6 @@
                     }
                 }
 
-                this.detectarEncontroDaDupla();
 
                 // Se ambos caíram, fim de jogo
                 if (!this.p1.vivo && !this.p2.vivo) {
@@ -757,7 +893,7 @@
                             AudioMotor.tocarTom(880, 0.22);
                             tentarVibrar(30);
                         } else {
-                            AudioMotor.tocarTom(640, 0.06);
+                            AudioMotor.tocarEfeito('bloco');
                         }
                     }
 
@@ -806,21 +942,6 @@
                 }
             },
 
-            detectarEncontroDaDupla: function() {
-                const a = this.p1;
-                const b = this.p2;
-                const ax = a.x + a.w / 2;
-                const ay = a.y + a.h / 2;
-                const bx = b.x + b.w / 2;
-                const by = b.y + b.h / 2;
-                const contato = this.modo === 2 && a.vivo && b.vivo &&
-                    ((ax - bx) / 29) ** 2 + ((ay - by) / 34) ** 2 <= 1;
-                if (contato && !this.duplaEmContato) {
-                    this.mostrarImpacto((ax + bx) / 2, (ay + by) / 2, 'dupla');
-                }
-                this.duplaEmContato = contato;
-            },
-
             mostrarImpacto: function(x, y, tipo) {
                 const tela = document.getElementById('tela-flappy');
                 if (!tela) return;
@@ -841,7 +962,7 @@
                 this.mostrarImpacto(p.x + p.w / 2, p.y + p.h / 2, "obstaculo");
                 p.vivo = false;
                 tentarVibrar(45);
-                AudioMotor.tocarTom(220, 0.25);
+                AudioMotor.tocarEfeito('impacto');
 
                 if (p.el) {
                     p.el.style.opacity = '0';
@@ -877,7 +998,22 @@
                 const ctx = this.ctx;
                 const w = this.canvas.width;
                 const h = this.canvas.height;
-                ctx.clearRect(0, 0, w, h);
+                if (this.rodando && this.cenarioEscolhido === 'viagem') {
+                    this.cenario = sequenciaVoo[Math.floor(this.obstaculosPassados / 8) % sequenciaVoo.length];
+                }
+                const cores = cenariosVoo[this.cenario];
+                const chaveFundo = this.cenario + ':' + w + 'x' + h;
+                if (this.chaveFundo !== chaveFundo && w && h) {
+                    this.fundo ||= document.createElement('canvas');
+                    this.fundo.width = w;
+                    this.fundo.height = h;
+                    pintarCenarioVoo(this.fundo.getContext('2d'), w, h, this.cenario, cores);
+                    this.chaveFundo = chaveFundo;
+                }
+                if (this.fundo) ctx.drawImage(this.fundo, 0, 0);
+                else ctx.clearRect(0, 0, w, h);
+                const rotuloCenario = document.getElementById('hud-cenario-flappy');
+                if (rotuloCenario && rotuloCenario.textContent !== cores.nome) rotuloCenario.textContent = cores.nome;
 
                 // Partículas
                 this.particulasVento.forEach(p => {
@@ -917,9 +1053,9 @@
                 });
 
                 // Chão
-                ctx.fillStyle = '#254a49';
+                ctx.fillStyle = cores.chao;
                 ctx.fillRect(0, h - 24, w, 24);
-                ctx.fillStyle = '#78a978';
+                ctx.fillStyle = cores.borda;
                 ctx.fillRect(0, h - 24, w, 4);
                 ctx.fillStyle = '#183639';
                 ctx.fillRect(0, h - 8, w, 8);
@@ -948,10 +1084,11 @@
             desenharTronco: function(ctx, x, y, w, h, invertido) {
                 ctx.save();
                 const madeira = ctx.createLinearGradient(x, 0, x + w, 0);
-                madeira.addColorStop(0, '#4a3544');
-                madeira.addColorStop(.32, '#ab7062');
-                madeira.addColorStop(.65, '#8b5756');
-                madeira.addColorStop(1, '#513a48');
+                const [cascaEscura, cascaClara, cascaMedia] = cenariosVoo[this.cenario].madeira;
+                madeira.addColorStop(0, cascaEscura);
+                madeira.addColorStop(.32, cascaClara);
+                madeira.addColorStop(.65, cascaMedia);
+                madeira.addColorStop(1, cascaEscura);
                 ctx.fillStyle = madeira;
                 ctx.fillRect(x, y, w, h);
 
@@ -971,7 +1108,7 @@
                 const borda = invertido ? y + h - 12 : y;
                 ctx.fillStyle = '#305e54';
                 ctx.fillRect(x, borda, w, 12);
-                ctx.fillStyle = '#8fb876';
+                ctx.fillStyle = cenariosVoo[this.cenario].borda;
                 ctx.fillRect(x, invertido ? borda + 8 : borda, w, 4);
                 ctx.restore();
             },
@@ -1226,13 +1363,13 @@
 
                 if (this.bola.x - this.bola.r <= 0 || this.bola.x + this.bola.r >= this.canvas.width) {
                     this.bola.vx *= -1;
-                    AudioMotor.tocarTom(420, 0.05);
+                    AudioMotor.tocarEfeito('rebote');
                 }
 
                 if (this.modo === 1) {
                     if (this.bola.y - this.bola.r <= 0) {
                         this.bola.vy *= -1;
-                        AudioMotor.tocarTom(420, 0.05);
+                        AudioMotor.tocarEfeito('rebote');
                     }
                 } else {
                     if (this.bola.vy < 0 && this.bola.y - this.bola.r <= this.skateTopo.y + 12 && this.bola.y + this.bola.r >= this.skateTopo.y) {
@@ -1312,7 +1449,7 @@
                                 document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
                                 AudioMotor.tocarTom(880, 0.16);
                             } else {
-                                AudioMotor.tocarTom(640, 0.06);
+                                AudioMotor.tocarEfeito('bloco');
                             }
                         } else {
                             AudioMotor.tocarTom(720, 0.1);
@@ -1694,12 +1831,12 @@
                             this.estouradasJ2++;
                             const elJ2 = document.getElementById('placar-bolhas-estouradas-j2');
                             if (elJ2) elJ2.textContent = this.estouradasJ2;
-                            AudioMotor.tocarTom(920 + Math.random() * 100, 0.05);
+                            AudioMotor.tocarEfeito('bolha', 4);
                         } else {
                             this.estouradasJ1++;
                             const elJ1 = document.getElementById('placar-bolhas-estouradas');
                             if (elJ1) elJ1.textContent = this.estouradasJ1;
-                            AudioMotor.tocarTom(750 + Math.random() * 100, 0.05);
+                            AudioMotor.tocarEfeito('bolha');
                         }
 
                         this.bolhas.splice(i, 1);
@@ -1777,7 +1914,7 @@
                         this.bolhas.splice(i, 1);
 
                         if (this.modo !== 'rush') {
-                            AudioMotor.tocarTom(220, 0.15);
+                            AudioMotor.tocarEfeito('impacto');
                             tentarVibrar(40);
 
                             if (b.dono === 'j2') {
@@ -1934,6 +2071,7 @@
         const MotorVelha = {
             modo: 'ia',
             dificuldade: 'treino',
+            proximoInicio: { ia: 'X', '2p': 'X' },
             tabuleiro: Array(9).fill(''),
             turno: 'X',
             fim: false,
@@ -1988,15 +2126,16 @@
             iniciar: function() {
                 this.parar();
                 this.tabuleiro = Array(9).fill('');
-                this.turno = 'X';
+                this.turno = this.proximoInicio[this.modo];
+                this.proximoInicio[this.modo] = this.turno === 'X' ? 'O' : 'X';
                 this.fim = false;
                 const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
                 
                 const statusEl = document.getElementById('status-velha');
                 if (this.modo === '2p') {
-                    statusEl.textContent = `Vez de ${nomeJ1} (X - Caneta Azul)`;
+                    statusEl.textContent = this.turno === 'X' ? `${nomeJ1} começa (X)` : 'Jogador 2 começa (O)';
                 } else {
-                    statusEl.textContent = 'Sua vez: Você joga com X (Caneta Azul)';
+                    statusEl.textContent = this.turno === 'X' ? 'Você começa com X' : 'Chuíri começa com O';
                 }
                 
                 const linhaVitoria = document.getElementById('linha-vitoria-caneta');
@@ -2012,6 +2151,9 @@
                     c.id = `velha-casa-${i}`;
                     c.onclick = () => this.jogada(i);
                     g.appendChild(c);
+                }
+                if (this.modo === 'ia' && this.turno === 'O') {
+                    this.timerChuiri = setTimeout(() => this.jogadaChuiri(), 420);
                 }
             },
 
@@ -2030,7 +2172,7 @@
                     if (this.tabuleiro.every(x => x !== '')) return this.empate();
 
                     this.turno = this.turno === 'X' ? 'O' : 'X';
-                    const vezNome = this.turno === 'X' ? `${nomeJ1} (X)` : 'Shuiri (O)';
+                    const vezNome = this.turno === 'X' ? `${nomeJ1} (X)` : 'Jogador 2 (O)';
                     document.getElementById('status-velha').textContent = `Vez de ${vezNome}`;
                 } else {
                     if (this.turno !== 'X') return;
@@ -2160,14 +2302,14 @@
             bloqueado: false,
 
             simbolos: [
-                { id: 'estrela',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#f59e0b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
-                { id: 'coracao',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#ef4444;" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-                { id: 'coroa',    svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#d97706;" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>` },
-                { id: 'foguete',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#0284c7;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>` },
-                { id: 'patinha',  svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#10b981;" viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><circle cx="6.5" cy="8.5" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="17.5" cy="8.5" r="2.2"/></svg>` },
-                { id: 'diamante', svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#6366f1;" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>` },
-                { id: 'musica',   svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#a855f7;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
-                { id: 'sol',      svg: `<svg class="icone-svg" style="width:28px;height:28px;color:#f97316;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }
+                { id: 'foguete', nome: 'Foguete', cor: '#9ad3ff' },
+                { id: 'gato', nome: 'Gato', cor: '#ffd0a1' },
+                { id: 'borboleta', nome: 'Borboleta', cor: '#ffb9de' },
+                { id: 'sorvete', nome: 'Sorvete', cor: '#ffedad' },
+                { id: 'dino', nome: 'Dinossauro', cor: '#b8e7c1' },
+                { id: 'castelo', nome: 'Castelo', cor: '#e1c5fa' },
+                { id: 'baleia', nome: 'Baleia', cor: '#b2eee9' },
+                { id: 'robo', nome: 'Robô', cor: '#dfdfed' }
             ],
 
             trocarNivel: function(pares) {
@@ -2278,18 +2420,23 @@
                 if (!el || el.getAttribute('data-v') === '1') return;
 
                 const c = this.cartas[idx];
-                el.innerHTML = c.svg;
-                el.setAttribute('aria-label', `Carta ${idx + 1}, ${c.id}`);
+                const figura = document.createElement('img');
+                figura.src = `assets/images/arte/${c.id}.svg`;
+                figura.alt = '';
+                figura.className = 'memoria-figura';
+                el.style.setProperty('--memoria-figura-fundo', c.cor);
+                el.replaceChildren(figura);
+                el.setAttribute('aria-label', `Carta ${idx + 1}, ${c.nome}`);
                 el.classList.add('revelada');
                 el.setAttribute('data-v', '1');
-                AudioMotor.tocarTom(520, 0.08);
+                AudioMotor.tocarEfeito('carta');
                 this.viradas.push({ idx, id: c.id });
 
                 if (this.viradas.length === 2) {
                     this.jogadas++;
                     const [c1, c2] = this.viradas;
                     if (c1.id === c2.id) {
-                        AudioMotor.tocarTom(880, 0.18);
+                        AudioMotor.tocarEfeito('par');
                         tentarVibrar(30);
 
                         if (this.modo === 'solo') this.pares++;
