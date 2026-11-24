@@ -1,0 +1,189 @@
+/* Janela pequena sobre a cópia das telas. */
+#modal-tour-instrucoes {
+    --tour-borda: #edd8bf;
+    --tour-fundo: #fffdf7;
+    --tour-tinta: #241d36;
+    --tour-suave: #65566d;
+    --tour-botao: #f7ecdf;
+    --tour-luz: #ffe8ca;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+    color: var(--tour-tinta);
+    background: #f5eadd;
+}
+
+html[data-theme="dark"] #modal-tour-instrucoes {
+    --tour-borda: #706385;
+    --tour-fundo: #29263e;
+    --tour-tinta: #fff4e8;
+    --tour-suave: #dbcee1;
+    --tour-botao: #39334e;
+    --tour-luz: #433650;
+    background: #201d31;
+}
+
+#tour-tela { display: block; width: 100%; height: 100%; border: 0; }
+#tour-tela[hidden] { display: none; }
+
+#tour-guia {
+    position: absolute;
+    inset: auto 12px max(12px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    width: min(calc(100% - 24px), 355px);
+    margin-inline: auto;
+    padding: 10px 13px 11px;
+    border: 1px solid var(--tour-borda);
+    border-radius: 19px;
+    background: linear-gradient(144deg, var(--tour-fundo) 48%, var(--tour-luz));
+    box-shadow: 0 8px 28px #21163157, 0 2px 5px #21163126;
+    color: var(--tour-tinta);
+    z-index: 3;
+    overflow-wrap: anywhere;
+}
+
+#modal-tour-instrucoes[data-posicao="alto"] #tour-guia {
+    top: max(10px, env(safe-area-inset-top));
+    bottom: auto;
+}
+.tour-cabecalho { display: flex; align-items: center; gap: 7px; touch-action: none; }
+.tour-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 99px;
+    padding: 3px 7px;
+    background: var(--tour-botao);
+    font-size: .68rem;
+    font-weight: 800;
+}
+.tour-etiqueta i { width: 7px; height: 7px; border-radius: 50%; background: #f48b40; }
+#tour-passo-numero { margin-inline-start: auto; font-size: .7rem; color: var(--tour-suave); white-space: nowrap; }
+#tour-fechar, .tour-acoes button:not(.btn-principal) {
+    display: inline-grid;
+    place-items: center;
+    min-width: 37px;
+    min-height: 36px;
+    padding: 0;
+    border: 1px solid var(--tour-borda);
+    border-radius: 10px;
+    color: var(--tour-tinta);
+    background: var(--tour-botao);
+    font-size: .95rem;
+    font-weight: 800;
+}
+#tour-fechar { min-width: 33px; min-height: 32px; }
+.tour-assunto { display: block; margin-block: 3px 4px; }
+#tour-indice {
+    display: block;
+    width: 100%;
+    min-height: 30px;
+    border: 0;
+    border-radius: 5px;
+    padding: 0 19px 0 0;
+    background-color: transparent;
+    color: var(--tour-suave);
+    font-size: .75rem;
+    font-weight: 700;
+}
+#tour-indice option { color: var(--tour-tinta); background: var(--tour-fundo); }
+#tour-passo-titulo { margin: 0 0 4px; color: inherit; font-size: 1rem; line-height: 1.2; }
+#tour-passo-descricao { min-height: 2.65em; margin: 0; color: inherit; font-size: .83rem; line-height: 1.33; }
+.tour-acoes { display: flex; align-items: stretch; margin-top: 8px; gap: 6px; }
+.tour-acoes button[hidden], #tour-toque[hidden] { display: none; }
+.tour-acoes button:disabled { opacity: .42; }
+#tour-narrar[aria-pressed="true"] { background: #f9cea2; color: #382139; border-color: #cf8d4c; }
+#btn-tour-proximo { flex: 1; min-height: 36px; padding: 4px 9px; font-size: .82rem; }
+#modal-tour-instrucoes :focus-visible { outline: 2px solid #de7735; outline-offset: 2px; }
+.tour-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+#tour-toque {
+    pointer-events: none;
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: #eb6b24;
+    box-shadow: 0 2px 9px #1f1930b3;
+}
+#tour-toque.tour-toque-pulso::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid #ff984d;
+    border-radius: 50%;
+    animation: tour-onda .58s ease-out both;
+}
+@keyframes tour-onda {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(3.1); }
+}
+@media (min-width: 760px) and (min-height: 441px) {
+    #modal-tour-instrucoes[data-posicao="lado"] #tour-guia { inset-inline: auto 16px; inset-block: 18px auto; }
+}
+@media (orientation: landscape) and (max-height: 440px) {
+    #tour-tela { width: calc(100% - clamp(240px, 38vw, 340px)); }
+    #modal-tour-instrucoes #tour-guia {
+        inset: 8px 8px auto auto;
+        width: calc(clamp(240px, 38vw, 340px) - 16px);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    #tour-toque.tour-toque-pulso::after { animation: none; }
+}
+
+/* Estilos usados dentro da tela demonstrativa. */
+body.tour-cena { scrollbar-width: none; }
+body.tour-cena::-webkit-scrollbar, body.tour-cena .modal-conteudo::-webkit-scrollbar { display: none; }
+.tour-cena .tour-destaque {
+    outline: 3px solid #f38236 !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px #ff9a4f35 !important;
+}
+.tour-cena .tour-apertado { filter: brightness(.85); }
+.tour-cena .tour-foco-formulario { border-color: #f38236 !important; }
+.tour-cena .tour-exemplo-card {
+    display: grid;
+    gap: .5rem;
+    padding: .7rem .8rem;
+    margin-block: .45rem;
+    border: 1px solid #9390ab73;
+    border-radius: 14px;
+    background: var(--pastel-card, #fff8ee);
+    color: var(--texto-principal, #282339);
+    font-size: .87rem;
+}
+.tour-cena .tour-exemplo-card p { margin: 0; }
+.tour-cena .tour-linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+}
+.tour-cena .tour-linha input[type="checkbox"] { width: auto; }
+.tour-cena .tour-mini-calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.tour-cena .tour-mini-calendario > span { padding: 5px 0; border-radius: 6px; background: #d29f721f; }
+.tour-cena .tour-mini-calendario .tour-dia-marcado { background: #eeb270; color: #302036; font-weight: 800; }
+.tour-cena .tour-barras-demo { display: grid; gap: 8px; margin: 12px 0; color: inherit; font-size: .82rem; }
+.tour-cena .tour-barras-demo i { display: block; height: 12px; width: var(--parcela); background: #ef995c; border-radius: 6px; }
+.tour-cena #modal-casinha-chuiri[open] { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); }
+.tour-cena .tour-pizza-demo {
+    width: 104px;
+    aspect-ratio: 1;
+    margin: 10px auto;
+    border-radius: 50%;
+    background: conic-gradient(#ec995b 0 60%, #8183c5 60% 100%);
+}
+.tour-cena #arcade-recordes[open] { position: fixed; }

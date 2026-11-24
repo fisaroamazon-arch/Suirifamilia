@@ -331,3 +331,40 @@
 }
 .piano-convite-link { width: 100%; }
 [data-piano-entrar] .piano-convite-link { flex: 1 1 185px; min-width: 0; }
+
+.piano-regras {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+}
+.piano-contagem {
+    position: absolute;
+    z-index: 3;
+    top: 39%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100% - 24px);
+    padding: 9px 15px;
+    border: 1px solid #ddbc82;
+    border-radius: 14px;
+    background: linear-gradient(125deg, #332850f5, #243b55f5);
+    color: #fff0d9;
+    box-shadow: 0 5px 18px #1512258c;
+    font-size: clamp(.8rem, 3vw, 1.04rem);
+    font-weight: 800;
+    pointer-events: none;
+}
+.piano-contagem[data-erro="true"] { background: linear-gradient(125deg, #55344bf8, #3b2d4af8); }
+.piano-contagem strong:not(:empty) {
+    display: grid;
+    place-items: center;
+    min-width: 29px;
+    min-height: 29px;
+    border-radius: 9px;
+    background: #f7d598;
+    color: #392840;
+    font-size: 1.06rem;
+}

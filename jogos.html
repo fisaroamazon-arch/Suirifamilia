@@ -9,8 +9,8 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=f0482e02486a">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=13257a9e7452">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=87ab4d0fb3a8">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=31a03e4c64dd">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -46,6 +46,9 @@
                 </picture>
         </div>
 
+            <button type="button" class="arcade-recordes-abrir btn-modo-som-tab" onclick="RecordesArcade.abrir()">
+                <svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#game"></use></svg> Recordes
+            </button>
             <a class="entrada-arte" href="arte.html">
                 <svg aria-hidden="true" viewBox="0 0 32 32"><path d="M16 4a12 12 0 1 0 0 24h1a2.6 2.6 0 0 0 1.9-4.4 1.9 1.9 0 0 1 1.4-3.2H24a4 4 0 0 0 4-4.1A12 12 0 0 0 16 4Z"/><circle cx="10" cy="14" r="1.6"/><circle cx="15" cy="10" r="1.6"/><circle cx="21" cy="12" r="1.6"/><circle cx="9.5" cy="20" r="1.6"/></svg>
                 <span><strong>Espaço Arte</strong><small>Desenhe com o dedo ou escolha uma página para colorir.</small></span>
@@ -208,6 +211,11 @@
                 <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
             </div>
 
+            <div id="piano-contagem" class="piano-contagem" hidden>
+                <span id="piano-contagem-texto" role="status"></span>
+                <strong id="piano-contagem-pulso" aria-hidden="true"></strong>
+            </div>
+
             <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
             <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira de notas. A linha dourada indica o momento de tocar.">
                 <canvas id="cv-esteira-piano"></canvas>
@@ -297,6 +305,7 @@
                             <svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar
                         </button>
                         <button type="button" class="btn-voltar-dueto" id="piano-tela-inteira" onclick="MotorMusica.alternarTelaInteira()" hidden>Tela inteira</button>
+                        <button type="button" class="btn-voltar-dueto" onclick="RecordesArcade.abrir('simon')">Recordes</button>
                     </div>
                     <section data-config-piano="aprendizado dueto">
                         <div class="piano-repertorio">
@@ -330,7 +339,7 @@
                             <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
                         </div>
                         <div class="piano-ritmo">
-                            <button type="button" id="piano-metronomo" aria-pressed="false" onclick="MotorMusica.alternarMetronomo()">Metrônomo</button>
+                            <button type="button" id="piano-metronomo" aria-pressed="true" onclick="MotorMusica.alternarMetronomo()">Metrônomo</button>
                             <details class="piano-figuras">
                                 <summary>Cores das durações</summary>
                                 <ul id="piano-figuras"></ul>
@@ -428,6 +437,18 @@
                                 </div>
                             </div>
                         </div>
+                    </section>
+                    <section class="piano-regras">
+                        <label class="piano-alcance">Vidas
+                            <select id="piano-vidas" onchange="MotorMusica.alterarVidas(this.value)">
+                                <option value="limite">3 vidas</option>
+                                <option value="infinitas">Vidas infinitas</option>
+                            </select>
+                        </label>
+                        <label class="piano-opcao" id="piano-treino-opcao" data-config-piano="aprendizado dueto">
+                            <input id="piano-repetir-erros" type="checkbox" onchange="MotorMusica.alterarTreino(this.checked)">
+                            Treino · repetir a nota sem perder vidas
+                        </label>
                     </section>
                     <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
                 </div>
@@ -542,6 +563,12 @@
             </div>
         </div>
 
+        <dialog id="arcade-recordes" aria-labelledby="recordes-titulo">
+            <header><h2 id="recordes-titulo">Recordes</h2><button type="button" aria-label="Fechar recordes" onclick="document.getElementById('arcade-recordes').close()">✕</button></header>
+            <label>Jogo <select id="recordes-jogo"></select></label>
+            <div id="recordes-resultados" aria-live="polite"></div>
+        </dialog>
+
         <dialog id="arcade-pausa" aria-labelledby="arcade-pausa-titulo">
             <div class="painel-dialogo-arcade">
                 <button type="button" class="arcade-pausa-alca" aria-label="Continuar. Também pode deslizar para baixo"><span></span></button>
@@ -562,10 +589,11 @@
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
-    <script src="src/features/kids/piano-dueto-rede.js?v=0e0836ccbc7f"></script>
-    <script src="src/features/kids/piano.js?v=9623d69a22e2"></script>
+    <script src="src/features/kids/piano-dueto-rede.js?v=ef756f2088a2"></script>
+    <script src="src/features/kids/piano.js?v=d6a58545562c"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
-    <script src="src/pages/arcade.js?v=a09984302a01"></script>
+    <script src="src/pages/arcade-recordes.js?v=fba76cceb1b0"></script>
+    <script src="src/pages/arcade.js?v=9f483e3936e1"></script>
 </body>
 </html>
