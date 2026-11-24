@@ -81,6 +81,18 @@ try {
     motor.timbresLivres[5] = 'xilofone';
     assert.equal(motor.obterInstrumentoPorOrigem('livre-grave', 'A2'), 'cordas');
     assert.equal(motor.obterInstrumentoPorOrigem('livre-agudo', 'C6'), 'xilofone');
+    motor.modo = 'dueto';
+    motor.parteDueto = 'base';
+    motor.passoNota = 0;
+    motor.passoAcorde = motor.acordesNaEsteira.length;
+    assert.equal(motor.partidaCompleta(), true);
+    assert.equal(motor.mapearNota('E2', true).tecla, 'E2');
+    motor.parteDueto = 'melodia';
+    assert.equal(motor.partidaCompleta(), false);
+    motor.modo = 'aprendizado';
+    motor.parteSolo = 'ambas';
+    assert.equal(motor.usaPainelDuplo(), true);
+    assert.equal(motor.pistasAtivas().base, true);
     console.log('Piano: catálogo, movimentos, mapeamento, som e iluminação de oitavas verificados.');
 } finally {
     dom.window.close();
