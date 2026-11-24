@@ -1,7 +1,7 @@
 /* Suiri Família 7.0 · domínio extraído de app-operacional.js. */
 window.inicializarMotorVoz = function() {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) return;
+    if (!SpeechRec || reconhecimentoVoz) return;
 
     reconhecimentoVoz = new SpeechRec();
     reconhecimentoVoz.lang = 'pt-BR';
@@ -17,9 +17,9 @@ window.inicializarMotorVoz = function() {
         document.getElementById('btn-mic-gastos')?.classList.remove('ouvindo');
     };
 
-    reconhecimentoVoz.onerror = function() {
+    reconhecimentoVoz.onerror = function(evento) {
         document.getElementById('btn-mic-gastos')?.classList.remove('ouvindo');
-        window.mostrarToast("Não foi possível captar a voz. Tente novamente.", "erro");
+        window.mostrarToast(evento.error === "not-allowed" ? "Autorize o microfone nas configurações do navegador." : "Não foi possível captar a voz. Tente novamente.", "erro");
     };
 
     reconhecimentoVoz.onresult = function(evento) {
@@ -29,28 +29,34 @@ window.inicializarMotorVoz = function() {
 };
 
 window.ouvirComandoVoz = function() {
+    if (window.SuiriAndroid) return window.SuiriAndroid("voice");
+    window.inicializarMotorVoz();
     if (!reconhecimentoVoz) {
-        return window.mostrarToast("Reconhecimento de voz não suportado neste navegador.", "erro");
+        return window.mostrarToast("Use o ditado do teclado ou preencha os campos manualmente neste navegador.", "erro");
     }
-    try { reconhecimentoVoz.start(); } catch (e) { reconhecimentoVoz.stop(); }
+    try { reconhecimentoVoz.start(); } catch { window.mostrarToast("Aguarde o ditado atual e tente novamente.", "info"); }
 };
 
 window.processarTextoTranscrito = function(frase) {
-    if (!frase) return;
+    if (!frase?.trim()) return;
     const textoOriginal = frase.trim();
     const texto = textoOriginal.toLowerCase();
 
     let valorDetectado = 0;
-    const matchNumero = texto.match(/r\$\s*(\d+[\d.,]*)|(\d+[\d.,]*)\s*(reais|real|conto)/i);
+    const matchNumero = texto.match(/r\$\s*(\d+(?:[.,]\d+)*)|(\d+(?:[.,]\d+)*)\s*(?:reais?|contos?)\b/i)
+        || texto.match(/\b(?:recebi|ganhei|gastei|paguei|por|custou)\s+(\d+(?:[.,]\d+)*)\b/i);
     
     if (matchNumero) {
         let numStr = matchNumero[1] || matchNumero[2];
         numStr = numStr.replace(/\.(?=\d{3})/g, '').replace(',', '.');
         valorDetectado = parseFloat(numStr) || 0;
+        const centavos = texto.slice(matchNumero.index + matchNumero[0].length).match(/^\s+e\s+(\d{1,2})\s+centavos?\b/);
+        if (centavos && Number.isInteger(valorDetectado)) valorDetectado += Number(centavos[1]) / 100;
     }
 
     const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o|bonifica[cç][aã]o/i;
-    const ehReceita = padroesEntrada.test(texto);
+    const movimento = texto.match(/\b(recebi|ganhei|vendi|gastei|comprei|paguei|enviei|mandei)\b/)?.[1];
+    const ehReceita = movimento ? /^(recebi|ganhei|vendi)$/.test(movimento) : padroesEntrada.test(texto);
     const tipoTransacao = ehReceita ? 'entrada' : 'saida';
 
     let escopo = 'pessoal';
@@ -77,7 +83,7 @@ window.processarTextoTranscrito = function(frase) {
         categoria = 'Salário';
     }
 
-    let itemLimpo = textoOriginal;
+    let itemLimpo = textoOriginal.replace(/\s+e\s+\d{1,2}\s+centavos?\b/i, "");
 
     itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
 
@@ -103,16 +109,17 @@ window.processarTextoTranscrito = function(frase) {
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
     const selCat = document.getElementById('select-fin-categoria');
-    const selTipo = document.getElementById('select-fin-tipo');
     const selEscopo = document.getElementById('select-fin-escopo');
 
     if (inDesc) inDesc.value = itemLimpo;
-    if (inVal && valorDetectado > 0) inVal.value = valorDetectado.toFixed(2);
+    if (inVal) inVal.value = valorDetectado > 0 ? valorDetectado.toFixed(2) : "";
+    if (inDesc) inDesc.dataset.viaVoz = "true";
     if (selCat) selCat.value = categoria;
-    if (selTipo) selTipo.value = tipoTransacao;
+    window.selecionarTipoRegistroRapido(tipoTransacao);
     if (selEscopo) selEscopo.value = escopo;
 
     const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
+    if (!(valorDetectado > 0)) return window.mostrarToast("Confira a descrição e informe o valor.", "info");
     window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${itemLimpo})`);
 };
 
@@ -155,7 +162,7 @@ window.salvarTransacaoManual = async function() {
         categoria: categoria,
         valor: valor,
         data_transacao: hojeStr,
-        via_voz: false
+        via_voz: inDesc?.dataset.viaVoz === "true"
     };
 
     let { error } = await supabase.from('transacoes').insert([payload]);
@@ -169,13 +176,45 @@ window.salvarTransacaoManual = async function() {
         window.mostrarToast("Erro ao gravar movimentação: " + error.message, "erro");
     } else {
         window.mostrarToast(tipo === 'entrada' ? "Receita confirmada na carteira!" : "Gasto confirmado com sucesso!");
-        if (inDesc) inDesc.value = '';
+        if (inDesc) {
+            inDesc.value = '';
+            delete inDesc.dataset.viaVoz;
+        }
         if (inVal) inVal.value = '';
-        await window.carregarCarteiraIndividual();
-        if (typeof window.carregarExtratoPeriodo === 'function') window.carregarExtratoPeriodo();
-        await window.renderizarGraficoBarrasMesAnterior();
-        
-        if (typeof window.gerarRelatorio === 'function') window.gerarRelatorio();
+        const atualizar = [
+            window.carregarCarteiraIndividual,
+            window.carregarExtratoPeriodo,
+            window.renderizarGraficoBarrasMesAnterior,
+            window.gerarRelatorio
+        ];
+        Promise.allSettled(atualizar.map(renderizar => Promise.resolve().then(() => renderizar?.())));
+        return true;
     }
 };
 
+
+window.selecionarTipoRegistroRapido = function(tipo) {
+    document.getElementById('select-fin-tipo').value = tipo;
+    for (const [id, ativo, cor] of [
+        ['btn-toggle-tipo-despesa', tipo === 'saida', '#f43f5e'],
+        ['btn-toggle-tipo-receita', tipo === 'entrada', '#10b981']
+    ]) {
+        const botao = document.getElementById(id);
+        if (!botao) continue;
+        botao.setAttribute('aria-pressed', String(ativo));
+        botao.style.background = ativo ? cor : 'transparent';
+        botao.style.color = ativo ? '#fff' : '#0f172a';
+    }
+};
+
+window.confirmarRegistroRapido = async function(botao) {
+    if (botao.disabled) return;
+    botao.disabled = true;
+    try {
+        if (await window.salvarTransacaoManual()) Suiri.closeModal('modal-registro-rapido-financas');
+    } catch (error) {
+        Suiri.notifyError(error);
+    } finally {
+        botao.disabled = false;
+    }
+};

@@ -1,0 +1,33 @@
+name: Gerar APK do Suiri Família
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Compilar e assinar
+        env:
+          SUIRI_ANDROID_KEYSTORE_BASE64: ${{ secrets.SUIRI_ANDROID_KEYSTORE_BASE64 }}
+          SUIRI_ANDROID_KEY_ALIAS: ${{ secrets.SUIRI_ANDROID_KEY_ALIAS }}
+          SUIRI_ANDROID_STORE_PASSWORD: ${{ secrets.SUIRI_ANDROID_STORE_PASSWORD }}
+          SUIRI_ANDROID_KEY_PASSWORD: ${{ secrets.SUIRI_ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$SUIRI_ANDROID_KEYSTORE_BASE64"
+          export SUIRI_ANDROID_KEYSTORE="$RUNNER_TEMP/suiri-familia.keystore"
+          trap 'rm -f "$SUIRI_ANDROID_KEYSTORE"' EXIT
+          printf '%s' "$SUIRI_ANDROID_KEYSTORE_BASE64" | base64 --decode > "$SUIRI_ANDROID_KEYSTORE"
+          android/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: suiri-familia-android
+          path: android/build/suiri-familia.apk

@@ -192,25 +192,100 @@ window.aplicarValoresDetectadosMercado = async function(nome, qtd, unit) {
 // =========================================================================
 
 window.processarCupomFiscalIA = async function(evento) {
-    const arquivo=evento.target?.files?.[0];if(!arquivo)return;
-    try{
-        if(!arquivo.type.startsWith('image/')||arquivo.size>8*1024*1024)throw new Error('Use uma imagem de até 8 MB.');
-        const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(arquivo);});
-        window.mostrarToast('Lendo cupom…','info');
-        const {data,error}=await window.cliente.functions.invoke(window.SuiriConfig.aiFunction,{body:{action:'receipt',mimeType:arquivo.type,image:raw}});
-        if(error)throw new Error('O serviço de IA ainda não está configurado ou não respondeu. Consulte o guia da versão.');
+    const arquivo = evento.target?.files?.[0];
+    if (evento.target) evento.target.value = '';
+    return window.lerFotoCupomFiscal(arquivo);
+};
+
+window.lerFotoCupomFiscal = async function(arquivo) {
+    if (!arquivo) return;
+    return Suiri.once('ler-cupom', async () => {
+      try {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type) || arquivo.size > 8 * 1024 * 1024) {
+            throw new Error('Use uma foto JPEG, PNG ou WebP de até 8 MB.');
+        }
+        const cliente = obterClienteSupabase();
+        const usuario = obterUsuarioId();
+        if (!cliente || !usuario) throw new Error('Entre na sua conta para ler o cupom.');
+        const autoriza = await window.confirmarAcaoSuiri(
+            'A foto será enviada ao Google Gemini para leitura. O cupom pode conter CPF, valores e itens comprados. Deseja enviar esta foto?',
+            'Enviar foto ao Google Gemini?'
+        );
+        if (!autoriza || usuario !== obterUsuarioId()) return;
+        const raw = await new Promise((resolve, reject) => {
+            const leitor = new FileReader();
+            leitor.onload = () => resolve(String(leitor.result).split(',')[1]);
+            leitor.onerror = () => reject(new Error('Não foi possível abrir a foto.'));
+            leitor.readAsDataURL(arquivo);
+        });
+        if (usuario !== obterUsuarioId()) return;
+        window.mostrarToast('Lendo cupom…', 'info');
+        const { data, error } = await cliente.functions.invoke(window.SuiriConfig.aiFunction, {
+            body: { action: 'receipt', consent: true, mimeType: arquivo.type, image: raw }
+        });
+        if (error) {
+            const status = error.context?.status;
+            const mensagens = {
+                401: 'Entre novamente na sua conta para ler o cupom.',
+                403: 'A leitura de cupom está disponível para perfis autorizados da família.',
+                404: 'O leitor de cupom está indisponível.',
+                422: 'O cupom está ilegível. Tente outra foto.',
+                429: 'Limite de leitura atingido. Tente mais tarde.',
+                503: 'O leitor de cupom está aguardando configuração.'
+            };
+            throw new Error(mensagens[status] || 'Não foi possível ler o cupom. Confira a conexão e tente outra foto.');
+        }
+        if (usuario !== obterUsuarioId()) return;
         const cupom=data?.receipt;if(!cupom||!Array.isArray(cupom.itens))throw new Error('Resposta de cupom inválida.');
         const total=Number(cupom.total);if(!Number.isFinite(total)||total<=0)throw new Error('Total inválido no cupom.');
         const revisar=await window.confirmarAcaoSuiri(`Revisar o lançamento de ${Suiri.money(total)} em ${cupom.estabelecimento||'estabelecimento'}? A despesa só será gravada quando você confirmar o formulário.`,'Cupom lido');
-        if(!revisar)return;
+        if (!revisar || usuario !== obterUsuarioId()) return;
         document.getElementById('input-fin-descricao').value=String(cupom.estabelecimento||'Cupom Fiscal').slice(0,200);
+        delete document.getElementById('input-fin-descricao').dataset.viaVoz;
         document.getElementById('input-fin-valor').value=total.toFixed(2);
-        document.getElementById('select-fin-tipo').value='saida';
+        window.selecionarTipoRegistroRapido('saida');
+        document.getElementById('select-fin-escopo').value = 'pessoal';
         document.getElementById('select-fin-categoria').value='Supermercado';
         // Não insere itens no carrinho: evita contabilizar novamente a compra ao finalizá-lo.
         Suiri.openModal('modal-registro-rapido-financas');
         window.mostrarToast('Confira descrição e total antes de salvar. Os itens não foram enviados ao carrinho.','info');
-    }catch(error){Suiri.notifyError(error);}finally{evento.target.value='';}
+      } catch (error) { Suiri.notifyError(error); }
+    });
+};
+
+window.fotografarCupomAndroid = async function() {
+    const dialogo = document.getElementById('camera-cupom-android');
+    if (dialogo.open) return;
+    return Suiri.once('camera-cupom', async () => {
+        const video = dialogo.querySelector('video');
+        const [tirarFoto, cancelar] = dialogo.querySelectorAll('button');
+        let stream;
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 } },
+                audio: false
+            });
+            dialogo.addEventListener('close', () => {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }, { once: true });
+            video.srcObject = stream;
+            cancelar.onclick = () => dialogo.close();
+            tirarFoto.onclick = () => {
+                if (!video.videoWidth) return;
+                const quadro = document.createElement('canvas');
+                quadro.width = video.videoWidth;
+                quadro.height = video.videoHeight;
+                quadro.getContext('2d').drawImage(video, 0, 0);
+                dialogo.close();
+                quadro.toBlob(foto => window.lerFotoCupomFiscal(foto), 'image/jpeg', 0.9);
+            };
+            dialogo.showModal();
+        } catch {
+            stream?.getTracks().forEach(track => track.stop());
+            window.mostrarToast('Autorize a câmera no Android ou escolha uma imagem da galeria.', 'erro');
+        }
+    });
 };
 
 window.alternarVisualizacaoMercado = function(modo) {

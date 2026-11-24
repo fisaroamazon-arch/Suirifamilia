@@ -5,6 +5,7 @@ window.filtrarCalendarioPorTipo = function(tipo) {
 };
 
 window.navegarMesCalendario = function(direcao) {
+    window.dataCalendarioAtual.setDate(1);
     window.dataCalendarioAtual.setMonth(window.dataCalendarioAtual.getMonth() + direcao);
     window.carregarDadosCalendarioMes();
 };
@@ -16,8 +17,9 @@ window.carregarDadosCalendarioMes = async function() {
     const ano = window.dataCalendarioAtual.getFullYear();
     const mes = window.dataCalendarioAtual.getMonth();
 
-    const primeiroDia = new Date(ano, mes, 1).toISOString().split('T')[0];
-    const ultimoDia = new Date(ano, mes + 1, 0).toISOString().split('T')[0];
+    const primeiroDia = Suiri.today(new Date(ano, mes, 1));
+    const ultimoDia = Suiri.today(new Date(ano, mes + 1, 0));
+    const familia = window.familiaAtualId;
 
     const titulo = document.getElementById('mes-ano-calendario-titulo');
     if (titulo) {
@@ -25,17 +27,18 @@ window.carregarDadosCalendarioMes = async function() {
         titulo.textContent = `${nomesMeses[mes]} ${ano}`;
     }
 
-    const { data: contas } = await cli.from('agenda_financeira')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .gte('data_vencimento', primeiroDia)
-        .lte('data_vencimento', ultimoDia);
-
-    const { data: eventos } = await cli.from('compromissos_familia')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .gte('data_evento', primeiroDia)
-        .lte('data_evento', ultimoDia);
+    const [{ data: contas, error: erroContas }, { data: eventos, error: erroEventos }] = await Promise.all([
+        cli.from('agenda_financeira').select('*').eq('familia_id', familia)
+            .gte('data_vencimento', primeiroDia).lte('data_vencimento', ultimoDia),
+        cli.from('compromissos_familia').select('*').eq('familia_id', familia)
+            .gte('data_evento', primeiroDia).lte('data_evento', ultimoDia)
+    ]);
+    if (familia !== window.familiaAtualId || ano !== window.dataCalendarioAtual.getFullYear()
+        || mes !== window.dataCalendarioAtual.getMonth()) return;
+    if (erroContas || erroEventos) {
+        window.mostrarToast('Não foi possível atualizar o calendário.', 'erro');
+        return;
+    }
 
     window.contasCalendarioAtual = contas || [];
     window.eventosCalendarioAtual = eventos || [];

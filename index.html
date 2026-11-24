@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <script src="src/core/config.js?v=50eb0e2f989b"></script>
-<script src="src/core/foundation.js?v=43a15d70093e"></script>
+<script src="src/core/foundation.js?v=134013abdc96"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Suiri Gestão Familiar</title>
@@ -37,6 +37,17 @@
 </head>
 <body>
 
+    <script>
+        if (navigator.userAgent.includes('SuiriFamiliaAndroid/1')) {
+            window.SuiriAndroid = action => { location.href = 'suiri-native://' + action; };
+        } else if (typeof fetch === "function") fetch("https://api.github.com/repos/fisaroamazon-arch/Suirifamilia/releases/latest")
+            .then(response => response.ok ? response.json() : null)
+            .then(release => {
+                const apk = release?.assets?.find(asset => asset.name === "suiri-familia.apk");
+                const link = document.getElementById("link-apk-android");
+                if (apk && link && !window.SuiriAndroid) { link.href = apk.browser_download_url; link.hidden = false; }
+            }).catch(() => {});
+    </script>
     <div id="google_translate_element" style="display:none;"></div>
     <div id="toast-container"></div>
 
@@ -64,6 +75,7 @@
                         <button type="button" onclick="window.abrirModalRecuperarSenha()" style="background: none; border: none; font-size: 12.5px; font-weight: 700; color: #ea580c; text-decoration: underline; cursor: pointer; padding: 6px 10px;">Esqueci a minha senha</button>
                     </div>
                 </div>
+                <p><a id="link-apk-android" href="https://github.com/fisaroamazon-arch/Suirifamilia/releases/latest" hidden>Baixar APK para Android</a></p>
                 <div id="bloco-form-cadastro" class="oculto" style="display: flex; flex-direction: column; gap: 11px;">
                     <input type="text" id="cad-nome-familia" placeholder="Nome da Família (ex: Nosso Lar)">
                     <input type="text" id="cad-nome-adm" placeholder="Seu Nome Completo">
@@ -692,6 +704,12 @@
         </ul>
     </nav>
 
+    <dialog id="camera-cupom-android" aria-label="Fotografar cupom">
+        <video autoplay playsinline muted style="display:block; max-width:100%; max-height:65vh;"></video>
+        <button type="button" class="btn-principal">Tirar foto</button>
+        <button type="button" class="btn-secundario">Cancelar</button>
+    </dialog>
+
     <!-- MODAL UNIFICADO DE REGISTRO DE FINANÇAS -->
     <div id="modal-registro-rapido-financas" class="modal-overlay modal-overlay-bottom oculto">
         <div class="modal-conteudo modal-bottom-sheet">
@@ -701,14 +719,14 @@
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top:10px;">
-                <button type="button" id="btn-toggle-tipo-despesa" class="btn-principal" style="background:#f43f5e !important; color:#fff !important; border:none;" onclick="document.getElementById('select-fin-tipo').value='saida'; this.style.background='#f43f5e'; this.style.color='#fff'; document.getElementById('btn-toggle-tipo-receita').style.background='transparent'; document.getElementById('btn-toggle-tipo-receita').style.color='#0f172a';">Despesa (Saída)</button>
-                <button type="button" id="btn-toggle-tipo-receita" class="btn-secundario" onclick="document.getElementById('select-fin-tipo').value='entrada'; this.style.background='#10b981'; this.style.color='#fff'; document.getElementById('btn-toggle-tipo-despesa').style.background='transparent'; document.getElementById('btn-toggle-tipo-despesa').style.color='#0f172a';">Receita (Entrada)</button>
+                <button type="button" id="btn-toggle-tipo-despesa" class="btn-principal" style="background:#f43f5e; color:#fff;" aria-pressed="true" onclick="window.selecionarTipoRegistroRapido('saida')">Despesa (Saída)</button>
+                <button type="button" id="btn-toggle-tipo-receita" aria-pressed="false" class="btn-secundario" onclick="window.selecionarTipoRegistroRapido('entrada')">Receita (Entrada)</button>
                 <input type="hidden" id="select-fin-tipo" value="saida">
             </div>
 
             <div style="position: relative; margin-bottom: 12px;">
                 <input type="text" id="input-fin-descricao" placeholder="Descrição ou use a voz..." style="width: 100%;">
-                <button type="button" style="position: absolute; right: 10px; top: 12px; background: transparent; border: none; cursor: pointer;" onclick="window.ouvirComandoVoz()">
+                <button type="button" id="btn-mic-gastos" aria-label="Ditado de lançamento" style="position: absolute; right: 10px; top: 12px; background: transparent; border: none; cursor: pointer;" onclick="window.ouvirComandoVoz()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                 </button>
             </div>
@@ -720,6 +738,10 @@
                     <option value="Supermercado">Supermercado</option>
                     <option value="Moradia">Moradia</option>
                     <option value="Lazer">Lazer</option>
+                    <option value="Alimentação">Alimentação</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Saúde">Saúde</option>
+                    <option value="Educação">Educação</option>
                     <option value="Salário">Renda/Salário</option>
                 </select>
             </div>
@@ -729,7 +751,7 @@
                 <option value="pessoal">Meu Gasto (Pessoal)</option>
             </select>
 
-            <button type="button" class="btn-principal" style="width: 100%; padding: 14px; border-radius: 14px;" onclick="window.salvarTransacaoManual(); setTimeout(() => { if(document.getElementById('input-fin-descricao').value === '') document.getElementById('modal-registro-rapido-financas').classList.add('oculto'); }, 150);">Confirmar Lançamento</button>
+            <button type="button" class="btn-principal" style="width: 100%; padding: 14px; border-radius: 14px;" onclick="window.confirmarRegistroRapido(this)">Confirmar Lançamento</button>
         </div>
     </div>
 
@@ -1590,7 +1612,7 @@
     </div>
 
     <!-- Scripts Modulares -->
-    <script src="src/core/session.js?v=4ecd6a642968"></script>
+    <script src="src/core/session.js?v=8f7c4db13d39"></script>
 <script src="src/core/offline.js?v=63b990511789"></script>
     <script src="src/ui/icons.js?v=8be3e6f08036"></script>
     <script src="src/features/rewards/gamificacao.js?v=916057bb2471"></script>
@@ -1598,23 +1620,23 @@
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
 <script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
-<script src="src/features/shopping/mercado.js?v=ec31ec76d512"></script>
+<script src="src/features/shopping/mercado.js?v=ffa4f0ee9b8d"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4649b051709a"></script>
 <script src="src/features/missions/kids.js?v=c488417695da"></script>
 <script src="src/core/swipe.js?v=882c9d3b2682"></script>
 <script src="src/features/missions/missoes.js?v=5c5d214daed4"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
-<script src="src/features/finances/voice-and-entry.js?v=9b15b379c69b"></script>
+<script src="src/features/finances/voice-and-entry.js?v=b3be37020d20"></script>
 <script src="src/features/finances/wallet.js?v=2666571ad62c"></script>
 <script src="src/features/savings/cofres.js?v=476f0fdddf3a"></script>
 <script src="src/features/notices/recados.js?v=7da866d472eb"></script>
 <script src="src/features/goals/metas-anuais.js?v=f93c6ad566c2"></script>
-<script src="src/core/lifecycle.js?v=4887334ced4f"></script>
+<script src="src/core/lifecycle.js?v=15c07ed47acc"></script>
     <script src="src/features/family/membros.js?v=66a1a83137fe"></script>
-<script src="src/features/agenda/calendario.js?v=346d86283b57"></script>
-<script src="src/features/notifications/painel.js?v=658db5d6041d"></script>
-<script src="src/core/realtime.js?v=b43020086885"></script>
+<script src="src/features/agenda/calendario.js?v=5d3a86357091"></script>
+<script src="src/features/notifications/painel.js?v=430ec365766e"></script>
+<script src="src/core/realtime.js?v=f81ce057c2e0"></script>
     <script src="src/features/reports/relatorios.js?v=f95ceb167fd9"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
     <script src="src/features/kids/mascote.js?v=643ef4fc2ed0"></script>

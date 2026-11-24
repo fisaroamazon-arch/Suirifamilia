@@ -3,7 +3,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.49.8';
 
 Deno.serve(async (request: Request) => {
     const origin = request.headers.get('Origin') || '';
-    const allowed = (Deno.env.get('SUIRI_ALLOWED_ORIGINS') || '').split(',').map(x => x.trim()).filter(Boolean);
+    const allowed = (Deno.env.get('SUIRI_ALLOWED_ORIGINS') || 'https://fisaroamazon-arch.github.io').split(',').map(x => x.trim()).filter(Boolean);
     const cors = { 'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : '', 'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Vary': 'Origin' };
     const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (request.method === 'OPTIONS') return new Response(null, { status: allowed.includes(origin) ? 204 : 403, headers: cors });
@@ -23,9 +23,13 @@ Deno.serve(async (request: Request) => {
         for (;;) { const { value, done } = await reader.read(); if (done) break; size += value.length; if (size > 12_000_000) { await reader.cancel(); return reply({ error: 'Imagem muito grande.' }, 413); } chunks.push(value); }
         const bytes = new Uint8Array(size); let offset = 0; for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
         const input = JSON.parse(new TextDecoder().decode(bytes));
+        if (input?.consent !== true) return reply({ error: 'Confirme o envio da foto ao Google Gemini.' }, 400);
         if (input.action !== 'receipt' || !['image/jpeg', 'image/png', 'image/webp'].includes(input.mimeType) || typeof input.image !== 'string' || input.image.length > 11_200_000 || !/^[A-Za-z0-9+/]+=*$/.test(input.image)) return reply({ error: 'Imagem inválida.' }, 400);
-        const { error: quotaError } = await client.rpc('suiri_reservar_cota_ia_v7');
-        if (quotaError) return reply({ error: 'Limite de leitura atingido ou cota ainda não configurada.' }, 429);
+        const { data: quota, error: quotaError } = await client.rpc('suiri_reservar_cota_ia_v7');
+        if (quotaError?.message.includes('Limite de 20 leituras')) return reply({ error: 'Limite de leitura atingido.' }, 429);
+        if (quotaError?.message.includes('Perfil não autorizado')) return reply({ error: 'Perfil não autorizado.' }, 403);
+        if (quotaError) return reply({ error: 'Não foi possível reservar a cota de leitura.' }, 503);
+        if (quota !== true) return reply({ error: 'Limite de leitura atingido.' }, 429);
         const model = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
             method: 'POST', signal: AbortSignal.timeout(45_000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
