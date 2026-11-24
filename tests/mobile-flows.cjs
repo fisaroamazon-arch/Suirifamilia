@@ -82,6 +82,9 @@ async function main() {
     assert.equal(alteracao.atribuido_a, 'kid-test');
     assert(field('modal-editar-missao').classList.contains('oculto'));
 
+    window.matchMedia = () => ({ matches: true });
+    window.eval(fs.readFileSync('src/features/finances/graficos.js', 'utf8'));
+    window.eval(fs.readFileSync('src/features/finances/planejamento.js', 'utf8'));
     window.eval(fs.readFileSync('src/features/reports/relatorios.js', 'utf8'));
     const relatorio = window.eval(`agrupamentoCategoriasRelatorio([
         { tipo: 'saida', valor: 10.1, categoria: 'Mercado', subcategoria: 'Feira' },
@@ -101,13 +104,25 @@ async function main() {
         destroy() {}
     };
     field('relatorio-grupo-grafico').value = 'subcategoria';
-    for (const [formato, tipo, eixo] of [['colunas', 'bar', 'x'], ['barras', 'bar', 'y'], ['pizza', 'pie', 'x']]) {
+    for (const [formato, tipo, eixo] of [['colunas', 'bar', 'x'], ['barras', 'bar', 'y'], ['pizza', 'doughnut', undefined]]) {
         field('relatorio-formato-grafico').value = formato;
         window.renderizarGraficoCategorias();
         assert.equal(grafico.type, tipo);
         assert.equal(grafico.options.indexAxis, eixo);
         assert.equal(grafico.data.labels[0], 'Mercado › Feira');
+        assert.match(field('legenda-grafico-categorias').textContent, /Mercado › Feira.*71,1%/);
     }
+    window.Suiri.today = date => [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+        .map((value, index) => String(value).padStart(index ? 2 : 4, '0')).join('-');
+    const previsao = window.Suiri.planejamentoFinanceiro.calcular([
+        { tipo: 'saida', categoria: 'Mercado', valor: 190, data_transacao: '2026-09-07' },
+        { tipo: 'saida', categoria: 'Mercado', valor: 210, data_transacao: '2026-10-07' },
+        { tipo: 'saida', categoria: 'Mercado', valor: 145, data_transacao: '2026-11-14' },
+        { tipo: 'saida', categoria: 'Transferência', valor: 100000, data_transacao: '2026-11-14' }
+    ], new Date(2026, 10, 15));
+    assert.equal(previsao.ritmo, 29000);
+    assert.deepEqual(Array.from(previsao.faixa), [19000, 21000]);
+    assert.match(previsao.alerta, /podem ultrapassar/);
 
     let reminders = 0;
     window.familiaAtualId = 'family-test';

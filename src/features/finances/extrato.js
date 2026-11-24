@@ -63,33 +63,26 @@ window.garantirBarraBuscaExtrato = function() {
 
     const barra = document.createElement('div');
     barra.id = 'barra-busca-rapida-extrato';
-    barra.style.cssText = 'display:flex; gap:8px; margin-bottom:12px; align-items:center;';
+    barra.className = 'fin-extrato-filtros';
     barra.innerHTML = `
-        <input type="text" id="input-busca-texto-extrato" placeholder="Buscar no extrato" aria-label="Buscar no extrato por descrição, categoria ou nome"
-               style="flex:1; padding:9px 12px; font-size:12.5px; border-radius:12px; border:1px solid #cbd5e1; background:#ffffff;" 
-               oninput="window.filtrarListaExtratoMemoria()">
-        <select id="select-busca-categoria-extrato" style="width:135px; padding:9px 28px 9px 10px; font-size:12px; border-radius:12px; border:1px solid #cbd5e1; background-color:#ffffff;" onchange="window.filtrarListaExtratoMemoria()">
-            <option value="todas">Categorias</option>
-            <option value="Supermercado">Supermercado</option>
-            <option value="Alimentação">Alimentação</option>
-            <option value="Moradia">Moradia</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Saúde">Saúde</option>
-            <option value="Lazer">Lazer</option>
-            <option value="Educação">Educação</option>
-            <option value="Salário">Salário</option>
-            <option value="Transferência">Transferência</option>
-            <option value="Geral">Geral</option>
-        </select>
+        <input type="search" id="input-busca-texto-extrato" placeholder="Buscar no extrato" aria-label="Buscar por descrição, categoria ou nome"
+            oninput="window.filtrarListaExtratoMemoria()">
+        <select id="select-busca-categoria-extrato" aria-label="Categoria do extrato" onchange="window.filtrarListaExtratoMemoria()"></select>
     `;
     containerLista.parentNode.insertBefore(barra, containerLista);
 };
+
+let versaoExtratoNominal = 0;
 
 window.carregarExtratoPeriodo = async function() {
     const container = document.getElementById('lista-extrato-carteira');
     const cli = obterClienteSupabase();
     if (!container || !window.familiaAtualId || !cli) return;
 
+    const familia = window.familiaAtualId;
+    const membro = obterUsuarioId();
+    const pedido = ++versaoExtratoNominal;
+    const aindaAtual = () => pedido === versaoExtratoNominal && familia === window.familiaAtualId && membro === obterUsuarioId();
     window.garantirBarraBuscaExtrato();
     window.aplicarPreferenciaEscopoFormulario();
 
@@ -109,35 +102,40 @@ window.carregarExtratoPeriodo = async function() {
         if (elFim) elFim.value = dtFim;
     }
 
-    container.innerHTML = '<span class="status-texto" style="font-size:12px; text-align:center; display:block; padding:12px 0;">Carregando extrato...</span>';
+    if (dtInicio > dtFim) {
+        container.textContent = 'A data inicial deve ser anterior ou igual à final.';
+        return;
+    }
+    container.textContent = 'Carregando extrato…';
 
     if (!window.listaMembrosFamilia || window.listaMembrosFamilia.length === 0) {
         const { data: membros } = await cli.from('membros')
             .select('id, nome, papel')
-            .eq('familia_id', window.familiaAtualId);
+            .eq('familia_id', familia);
+        if (!aindaAtual()) return;
         window.listaMembrosFamilia = membros || [];
     }
 
-    let { data: transacoes, error } = await Suiri.transactionQuery().select('*')
-        .eq('familia_id', window.familiaAtualId)
+    const { data: transacoes, error } = await Suiri.transactionQuery().select('*')
+        .eq('familia_id', familia)
         .gte('data_transacao', dtInicio)
         .lte('data_transacao', dtFim)
         .order('data_transacao', { ascending: false })
         .order('criado_em', { ascending: false });
 
-    if (error && error.message && error.message.includes('relation "public.transacoes" does not exist')) {
-        const resFallback = await cli.from('transacoes_financeiras')
-            .select('*')
-            .eq('familia_id', window.familiaAtualId)
-            .gte('data_transacao', dtInicio)
-            .lte('data_transacao', dtFim)
-            .order('data_transacao', { ascending: false });
-        transacoes = resFallback.data;
-        error = resFallback.error;
+    if (!aindaAtual()) return;
+    if (error) {
+        container.textContent = 'Não foi possível carregar o extrato.';
+        return;
     }
-
-    if(error){container.textContent="Não foi possível carregar o extrato. "+error.message;return;}
     window.cacheTransacoesExtrato = transacoes || [];
+    const categorias = new Set(window.cacheTransacoesExtrato.map(t =>
+        (t.escopo === 'pessoal' || t.eh_privado) && t.membro_id !== membro ? 'Privativo' : t.categoria || 'Geral'));
+    const filtro = document.getElementById('select-busca-categoria-extrato');
+    const anterior = filtro.value;
+    filtro.replaceChildren(new Option('Todas as categorias', 'todas'),
+        ...[...categorias].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(nome => new Option(nome, nome)));
+    filtro.value = categorias.has(anterior) ? anterior : 'todas';
     window.filtrarListaExtratoMemoria();
 };
 
@@ -153,6 +151,7 @@ window.filtrarListaExtratoMemoria = function() {
         const ehMeuLancamento = (t.membro_id === usuarioConectadoId);
         const ehPrivativo = (t.escopo === 'pessoal' || t.eh_privado === true);
         const ehEntrada = t.tipo === 'entrada' || (t.valor > 0 && t.tipo !== 'saida');
+        const subVisivel = ehPrivativo && !ehMeuLancamento ? '' : t.subcategoria || '';
 
         let descVisivel = t.descricao || 'Sem descrição';
         let catVisivel = t.categoria || 'Geral';
@@ -171,7 +170,7 @@ window.filtrarListaExtratoMemoria = function() {
                 const m = window.listaMembrosFamilia.find(x => x.id === t.membro_id);
                 if (m && m.nome) nomeMembro = m.nome.toLowerCase();
             }
-            const textoCombinado = `${descVisivel} ${catVisivel} ${esc(nomeMembro)} ${t.valor || ''}`.toLowerCase();
+            const textoCombinado = `${descVisivel} ${catVisivel} ${subVisivel} ${nomeMembro} ${t.valor || ''}`.toLowerCase();
             if (!textoCombinado.includes(termoBusca)) return false;
         }
 
@@ -187,14 +186,11 @@ window.filtrarListaExtratoMemoria = function() {
 
     listaFiltrada.forEach(t => {
         const item = document.createElement('div');
-        item.className = 'cartao-geral';
-        item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:11px 15px; margin-bottom:8px; border-radius:14px; border:1px solid rgba(226, 232, 240, 0.85); box-shadow:0 1px 3px rgba(15,23,42,0.02); transition:transform 0.15s ease;';
+        item.className = 'fin-extrato-item fin-extrato-nominal';
 
         const ehEntrada = t.tipo === 'entrada' || (t.valor > 0 && t.tipo !== 'saida');
-        const cor = ehEntrada ? 'var(--cor-sucesso, #10b981)' : 'var(--cor-erro, #f43f5e)';
-        const sinal = ehEntrada ? '+' : '-';
+        const sinal = ehEntrada ? '+' : '−';
         const dataFmt = t.data_transacao ? t.data_transacao.split('-').reverse().slice(0, 2).join('/') : '--/--';
-        const tCodificado = encodeURIComponent(JSON.stringify(t)).replace(/'/g, "%27");
 
         let nomeResponsavel = 'Familiar';
         if (window.listaMembrosFamilia) {
@@ -217,46 +213,30 @@ window.filtrarListaExtratoMemoria = function() {
             categoriaVisivel = 'Privativo';
         }
 
-        const verboTipo = ehEntrada ? 'recebeu' : 'gastou';
-        const linhaNominalDestaque = `${esc(nomeResponsavel)} ${verboTipo} ${categoriaVisivel.toLowerCase()} R$ ${Number(t.valor || 0).toFixed(2)}`;
-        const marcadorDot = `<span style="width:8px; height:8px; border-radius:50%; background:${cor}; display:inline-block; margin-right:7px; flex-shrink:0;"></span>`;
-
-        const tagEscopoSvg = ehPrivativo
-            ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; color:var(--texto-suave);"><img src="assets/icons-modern/icone-pessoa-escopo.svg" alt="Pessoal" style="width:13px; height:13px; object-fit:contain;"> Pessoal</span>`
-            : `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; color:var(--texto-suave);"><img src="assets/icons-modern/icone-casa-escopo.svg" alt="Casa" style="width:13px; height:13px; object-fit:contain;"> Casa</span>`;
-
-        const descSegura = window.esc ? window.esc(descricaoVisivel) : descricaoVisivel;
-
-        const botoesAcaoHtml = ehMeuLancamento ? `
-            <button type="button" class="btn-secundario" style="padding:6px 9px; font-size:11px; border-radius:9px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarTransacao('${tCodificado}')" title="Editar">
-                <img src="assets/icons-modern/icone-editar.svg" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
-            </button>
-            <button type="button" class="btn-erro" style="padding:6px 9px; font-size:11px; border-radius:9px; display:inline-flex; align-items:center;" onclick="window.excluirTransacaoCarteira('${t.id}')" title="Excluir">
-                <img src="assets/icons-modern/icone-lixo.svg" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
-            </button>
-        ` : `
-            <span style="font-size:10.5px; color:var(--texto-suave, #94a3b8); font-style:italic; padding:0 4px;">Leitura</span>
-        `;
-
+        const subcategoria = ehPrivativo && !ehMeuLancamento ? '' : t.subcategoria;
         item.innerHTML = `
-            <div style="flex:1; min-width:0; padding-right:8px;">
-                <div style="font-size:13.5px; font-weight:800; color:var(--texto-principal, #0f172a); display:flex; align-items:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    ${marcadorDot}
-                    <span style="overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums;">${esc(linhaNominalDestaque)}</span>
-                </div>
-                <div style="font-size:11.5px; color:var(--texto-suave, #64748b); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                    <span style="font-variant-numeric:tabular-nums;">${dataFmt}</span>
-                    <span>•</span>
-                    <span>Ref: <em>${descSegura}</em></span>
-                    <span>•</span>
-                    ${tagEscopoSvg}
-                </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                <strong style="color:${cor}; font-size:13.5px; white-space:nowrap; font-variant-numeric:tabular-nums;">${sinal} R$ ${Number(t.valor || 0).toFixed(2)}</strong>
-                ${botoesAcaoHtml}
+            <span class="fin-extrato-texto" title="${esc(descricaoVisivel)}">${esc(descricaoVisivel)}</span>
+            <strong class="fin-extrato-valor ${ehEntrada ? 'fin-entrada' : 'fin-saida'}">${sinal} ${Suiri.money(Number(t.valor || 0))}</strong>
+            <small class="fin-extrato-texto">${esc(nomeResponsavel)} · ${esc(categoriaVisivel)}${subcategoria ? ' › ' + esc(subcategoria) : ''}</small>
+            <div class="fin-extrato-acoes">
+                <span>${dataFmt} · ${ehPrivativo ? 'Pessoal' : 'Casa'}</span>
             </div>
         `;
+        if (ehMeuLancamento) {
+            const acoes = item.querySelector('.fin-extrato-acoes');
+            for (const [rotulo, icone, estilo, acao] of [
+                ['Editar', 'editar', 'btn-secundario', () => window.abrirModalEditarTransacao(t)],
+                ['Excluir', 'lixo', 'btn-erro', () => window.excluirTransacaoCarteira(t.id)]
+            ]) {
+                const botao = document.createElement('button');
+                botao.type = 'button';
+                botao.className = estilo;
+                botao.title = rotulo;
+                botao.innerHTML = `<img src="assets/icons-modern/icone-${icone}.svg" alt="${rotulo}">`;
+                botao.addEventListener('click', acao);
+                acoes.append(botao);
+            }
+        }
         container.appendChild(item);
     });
 };
@@ -284,6 +264,7 @@ window.abrirModalEditarTransacao = function(tJson) {
     if (elTipo) elTipo.value = t.tipo || 'saida';
     if (elEscopo) elEscopo.value = t.escopo || 'pessoal';
     if (elCat) elCat.value = t.categoria || 'Geral';
+    document.getElementById('edit-transacao-subcategoria').value = t.subcategoria || '';
     if (elData) elData.value = t.data_transacao || '';
 
     document.getElementById('modal-editar-transacao')?.classList.remove('oculto');
@@ -299,10 +280,12 @@ window.salvarEdicaoTransacao = async function() {
     const valor = parseFloat(document.getElementById('edit-transacao-valor')?.value);
     const tipo = document.getElementById('edit-transacao-tipo')?.value || 'saida';
     const escopo = document.getElementById('edit-transacao-escopo')?.value || 'pessoal';
-    const categoria = document.getElementById('edit-transacao-categoria')?.value || 'Geral';
+    const categoria = normalizarNomeFinanceiro(document.getElementById('edit-transacao-categoria')?.value) || 'Geral';
+    const subcategoria = normalizarNomeFinanceiro(document.getElementById('edit-transacao-subcategoria')?.value);
     const data_transacao = document.getElementById('edit-transacao-data')?.value;
     const cli = obterClienteSupabase();
     const usuarioConectadoId = obterUsuarioId();
+    const familia = window.familiaAtualId;
 
     if (!descricao || isNaN(valor) || valor <= 0) {
         return window.mostrarToast("Informe descrição e valor válidos.", "erro");
@@ -321,6 +304,7 @@ window.salvarEdicaoTransacao = async function() {
         escopo: escopo,
         eh_privado: (escopo === 'pessoal'),
         categoria: categoria,
+        subcategoria: subcategoria || null,
         data_transacao: data_transacao
     };
 
@@ -339,10 +323,11 @@ window.salvarEdicaoTransacao = async function() {
         return window.mostrarToast("Erro ao salvar: " + error.message, "erro");
     }
 
+    if (familia !== window.familiaAtualId || usuarioConectadoId !== obterUsuarioId()) return;
+    lembrarCategoriaFinanceira({ tipo, categoria, subcategoria });
     window.fecharModalEditarTransacao();
     window.mostrarToast("Lançamento confirmado e atualizado!");
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
-    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 
@@ -379,7 +364,6 @@ window.excluirTransacaoCarteira = async function(id) {
 
     window.mostrarToast("Lançamento removido com sucesso!");
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
-    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 
@@ -424,7 +408,6 @@ window.salvarAjusteCarteira = async function() {
     if (inputReal) inputReal.value = '';
     window.fecharModalCorrecaoCarteira();
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();
-    if (typeof window.renderizarGraficoBarrasMesAnterior === 'function') await window.renderizarGraficoBarrasMesAnterior();
     window.carregarExtratoPeriodo();
 };
 

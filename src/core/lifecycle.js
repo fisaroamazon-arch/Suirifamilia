@@ -2,7 +2,7 @@
 window.verificarGatilhoPenseSeteManha = function() { window.Suiri?.Pense?.agendar(); };
 
 // =========================================================================
-// 19. GATILHO DE NAVEGAÇÃO ENTRE TELAS COM BALANÇO AUTOMÁTICO EM FINANÇAS
+// 19. DATAS INICIAIS DO BALANÇO EM FINANÇAS
 // =========================================================================
 
 const navegarOriginal = window.navegarParaTela;
@@ -25,14 +25,6 @@ window.navegarParaTela = function(nomeTela) {
 
         if (inInicio && !inInicio.value) inInicio.value = dtInicio;
         if (inFim && !inFim.value) inFim.value = dtFim;
-
-        document.getElementById('relatorio-pdf-container')?.classList.remove('oculto');
-
-        setTimeout(() => {
-            if (typeof window.gerarRelatorio === 'function') {
-                window.gerarRelatorio();
-            }
-        }, 150);
     }
 };
 

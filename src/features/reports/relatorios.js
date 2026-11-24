@@ -1,15 +1,58 @@
-// =========================================================================
-// SUIRI GESTÃO FAMILIAR - APP-RELATORIOS.JS (100% COMPLETO E INTEGRAL)
-// 1. Relatório em PDF com tabela completa (Mais recentes no topo).
-// 2. Agrupamento por Dia com Total de Débitos e Saldo Acumulado (Rolagem Real).
-// 3. Máscara de Privacidade: Gasto Privado para terceiros, real para o dono.
-// 4. Renderização Estática do Canvas para eliminar falhas do html2pdf.
-// 5. Balanço Familiar Consolidado em 4 Dimensões.
-// Design System Warm Tech: Linho Orgânico, Números Tabulares e Elevações
-// =========================================================================
-
-let instanciaGraficoRendaGastos = null;
+/* Balanço familiar, extrato por dia e exportação do relatório. */
 let versaoRelatorio = 0;
+let escopoRelatorio = null;
+
+document.addEventListener('suiri:session-ready', () => {
+    const escopo = JSON.stringify([window.familiaAtualId, obterUsuarioId()]);
+    if (escopo === escopoRelatorio) return;
+    ++versaoRelatorio;
+    escopoRelatorio = escopo;
+    window.ultimoResumoRelatorio = null;
+    document.getElementById('relatorio-status').hidden = true;
+    document.getElementById('relatorio-pdf-container').classList.add('oculto');
+    document.getElementById('acoes-botoes-relatorio').classList.add('oculto');
+    document.getElementById('area-resultados-relatorio').replaceChildren();
+});
+
+function resumoRecolhivel(titulo, html, classe = '') {
+    return `<details class="cartao-geral fin-painel ${classe}" data-fin-exportar-aberto>
+        <summary class="fin-resumo"><span>${titulo}</span><span class="fin-ver-mais" aria-hidden="true"></span></summary>
+        <div class="fin-painel-corpo">${html}</div>
+    </details>`;
+}
+
+function compararMembrosRelatorio(transacoes) {
+    const membros = new Map((window.listaMembrosFamilia || []).map(membro =>
+        [membro.id, { nome: membro.nome, entrada: 0, saida: 0 }]));
+    for (const t of transacoes) {
+        if (t.transferencia_interna || t.categoria === 'Transferência' || !['entrada', 'saida'].includes(t.tipo)) continue;
+        if (!membros.has(t.membro_id)) {
+            membros.set(t.membro_id, { nome: obterNomeMembroPorId(t.membro_id), entrada: 0, saida: 0 });
+        }
+        const valor = Math.round(Number(t.valor) * 100);
+        if (Number.isFinite(valor) && valor > 0) membros.get(t.membro_id)[t.tipo] += valor;
+    }
+    const conjunto = [...membros.values()];
+    const maior = Math.max(1, ...conjunto.flatMap(membro => [membro.entrada, membro.saida]));
+    const total = tipo => conjunto.reduce((soma, m) => soma + m[tipo], 0);
+    const percentual = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 1 });
+    const barra = (titulo, valor, totalTipo, classe) => `<div class="fin-comparacao-linha ${classe}">
+        <span>${titulo}</span><strong>${Suiri.money(valor / 100)} · ${percentual.format(totalTipo ? valor / totalTipo : 0)}</strong>
+        <span class="fin-comparacao-trilho" aria-hidden="true"><i style="width:${valor / maior * 100}%"></i></span>
+    </div>`;
+    const totalEntrada = total('entrada');
+    const totalSaida = total('saida');
+    const paineis = conjunto.map(membro => `<li>
+        <h4>${esc(membro.nome || 'Familiar')}</h4>
+        ${barra('Receitas', membro.entrada, totalEntrada, 'fin-entrada')}
+        ${barra('Despesas', membro.saida, totalSaida, 'fin-saida')}
+    </li>`).join('');
+    return paineis ? `<section class="cartao-geral fin-visualizacao">
+        <h3>Comparação entre membros</h3>
+        <p class="fin-mensagem">As barras usam a mesma escala em reais. O percentual mostra a parcela de cada membro no total da casa.</p>
+        <ul class="fin-comparacao">${paineis}</ul>
+    </section>` : '';
+}
 
 function agrupamentoCategoriasRelatorio(transacoes, membroId) {
     const movimento = { entrada: new Map(), saida: new Map() };
@@ -39,7 +82,7 @@ function tabelaCategoriasRelatorio(agrupamento) {
                 <td>${Suiri.money(grupo.total / 100)}</td><td><ul>${subcategorias}</ul></td></tr>`;
         }).join('');
         return `<h3>${titulo}</h3>
-            ${linhas ? `<table style="width:100%; text-align:left;"><thead><tr><th>Categoria</th><th>Total</th><th>Subcategorias</th></tr></thead>
+            ${linhas ? `<table class="fin-tabela-categorias"><thead><tr><th>Categoria</th><th>Total</th><th>Subcategorias</th></tr></thead>
                <tbody>${linhas}</tbody></table>` : '<p>Sem movimentações neste período.</p>'}`;
     }).join('');
 }
@@ -54,7 +97,7 @@ function obterNomeMembroPorId(membroId) {
 // =========================================================================
 // 1. COMPILAÇÃO DO BALANÇO FINANCEIRO E DO EXTRATO DETALHADO
 // =========================================================================
-window.gerarRelatorio = async function() {
+window.gerarRelatorio = async function(mostrarGrafico = false) {
     const supabase = window.clienteSupabase || window.cliente;
     if (!window.familiaAtualId || !supabase) {
         return window.mostrarToast("Sessão da família não identificada.", "erro");
@@ -87,10 +130,10 @@ window.gerarRelatorio = async function() {
     }
 
     if (dtInicio > dtFim) return window.mostrarToast('A data inicial deve ser anterior ou igual à final.', 'erro');
-    if (areaResultados) {
-        areaResultados.innerHTML = '<p class="status-texto" style="text-align:center; padding:18px 0; color:#ea580c; font-size:12.5px; font-weight:800;">A compilar métricas e extrato detalhado...</p>';
-    }
-    if (containerPdf) containerPdf.classList.remove('oculto');
+    const aviso = document.getElementById('relatorio-status');
+    aviso.hidden = false;
+    aviso.textContent = 'Carregando o balanço…';
+    containerPdf?.classList.add('oculto');
 
     let queryAnt = Suiri.transactionQuery().select('tipo, valor').eq('familia_id', familia).lt('data_transacao', dtInicio);
     let query = Suiri.transactionQuery().select('*').eq('familia_id', familia)
@@ -102,10 +145,10 @@ window.gerarRelatorio = async function() {
     }
     blocoBotoes?.classList.add('oculto');
     window.ultimoResumoRelatorio = null;
-    const [anterior, periodo] = await Promise.all([queryAnt, query]);
+    const [anterior, periodo] = await Promise.all([queryAnt, query]).catch(error => [{ error }, {}]);
     if (versao !== versaoRelatorio || familia !== window.familiaAtualId || meuId !== obterUsuarioId()) return;
     if (anterior.error || periodo.error) {
-        if (areaResultados) areaResultados.textContent = 'Não foi possível carregar este relatório.';
+        aviso.textContent = 'Não foi possível carregar este relatório.';
         return Suiri.notifyError(anterior.error || periodo.error);
     }
 
@@ -159,8 +202,8 @@ window.gerarRelatorio = async function() {
 
     const dataInicioFmt = dtInicio.split('-').reverse().join('/');
     const dataFimFmt = dtFim.split('-').reverse().join('/');
-    const corSaldoHex = saldoLiquidoPeriodo >= 0 ? '#10b981' : '#f43f5e';
-    const nomeFamilia = window.dadosFamiliaAtual?.nome_familia || 'Suiri Gestão Familiar';
+    const nomeFamilia = window.dadosFamiliaAtual?.nome_familia || 'Suíri Família';
+    document.getElementById('periodo-grafico-balanco').textContent = `${nomeFamilia} · ${dataInicioFmt} a ${dataFimFmt}`;
 
     // 5. Agrupamento por Dia e Cálculo do Saldo Acumulado (Rolagem Real)
     const diasAgrupados = {};
@@ -187,173 +230,63 @@ window.gerarRelatorio = async function() {
         diasAgrupados[d].saldoFinal = saldoAcumulado;
     });
 
-    // 6. Montagem da Tabela (Mais recente ao mais antigo)
-    let linhasTabelaExtrato = '';
-    const datasDecrescentes = [...datasOrdem].reverse();
+    const dias = [...datasOrdem].reverse().map(data => {
+        const dia = diasAgrupados[data];
+        const linhas = [...dia.transacoes].reverse().map(t => {
+            const privado = (t.escopo === 'pessoal' || t.eh_privado) && t.membro_id !== meuId;
+            const entrada = t.tipo === 'entrada';
+            const descricao = privado ? (entrada ? 'Entrada Privada' : 'Gasto Privado') : t.descricao || 'Movimentação';
+            const categoria = privado ? 'Privativo' : t.categoria || 'Geral';
+            const subcategoria = !privado && t.subcategoria ? ' › ' + t.subcategoria : '';
+            return `<li class="fin-extrato-item">
+                <span class="fin-extrato-texto" title="${esc(descricao)}">${esc(descricao)}</span>
+                <strong class="fin-extrato-valor ${entrada ? 'fin-entrada' : 'fin-saida'}">${entrada ? '+' : '−'} ${Suiri.money(Number(t.valor || 0))}</strong>
+                <small class="fin-extrato-texto">${esc(obterNomeMembroPorId(t.membro_id))} · ${esc(categoria + subcategoria)}</small>
+            </li>`;
+        }).join('');
+        return `<section class="fin-extrato-dia">
+            <h4>${esc(data.split('-').reverse().join('/'))}</h4>
+            <ul class="fin-extrato-lista">${linhas}</ul>
+            <p class="fin-extrato-rodape">Débitos do dia <strong>${Suiri.money(dia.saidas)}</strong>
+                <span>Saldo acumulado <strong>${Suiri.money(dia.saldoFinal)}</strong></span></p>
+        </section>`;
+    }).join('');
 
-    datasDecrescentes.forEach(d => {
-        const diaDados = diasAgrupados[d];
-        const dataExtenso = d !== '--' ? d.split('-').reverse().join('/') : '--/--/----';
-        
-        linhasTabelaExtrato += `
-            <tr style="background-color: #f1f5f9; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1;">
-                <td colspan="5" style="padding: 7px 10px; font-weight: 800; color: #0f172a; text-align: left; font-size: 11px; letter-spacing: 0.5px;">
-                    🗓️ MOVIMENTAÇÕES DE ${dataExtenso}
-                </td>
-            </tr>
-        `;
+    const indicadores = `<dl class="fin-totais">
+        <div><dt>Receitas</dt><dd class="fin-entrada">${Suiri.money(totalEntradas)}</dd></div>
+        <div><dt>Despesas</dt><dd class="fin-saida">${Suiri.money(totalSaidasGeral)}</dd></div>
+        <div><dt>Saldo do período</dt><dd>${Suiri.money(saldoLiquidoPeriodo)}</dd></div>
+    </dl>`;
+    const totais = `<dl class="fin-totais">
+        <div><dt>Despesas da casa</dt><dd>${Suiri.money(totalGastosCasa)}</dd></div>
+        <div><dt>Supermercado</dt><dd>${Suiri.money(totalSupermercado)}</dd></div>
+        <div><dt>Gastos pessoais</dt><dd>${Suiri.money(totalGastosPessoais)}</dd></div>
+        <div><dt>Transferências internas</dt><dd>${Suiri.money(totalTransferenciasInternas)}</dd></div>
+    </dl>`;
+    areaResultados.innerHTML = `
+        ${filtroMembro === 'todos' ? compararMembrosRelatorio(transacoes) : ''}
+        ${resumoRecolhivel('Extrato do balanço', dias || '<p>Nenhuma movimentação registrada no período.</p>', 'fin-extrato-balanco')}
+        ${resumoRecolhivel('Totais e categorias', indicadores + totais + tabelaCategoriasRelatorio(categorias))}
+    `;
 
-        const transDiaDecrescente = [...diaDados.transacoes].reverse();
-        
-        transDiaDecrescente.forEach(t => {
-            const ehMeu = t.membro_id === meuId;
-            const ehPrivado = (t.escopo === 'pessoal' || t.eh_privado === true);
-            const nomeMembro = obterNomeMembroPorId(t.membro_id);
-            
-            let descricaoExibida = t.descricao || 'Despesa';
-            let categoriaExibida = t.categoria || 'Geral';
-            let subcategoriaExibida = t.subcategoria || '';
-
-            if (ehPrivado && !ehMeu) {
-                descricaoExibida = 'Gasto Privado';
-                categoriaExibida = 'Privativo';
-                subcategoriaExibida = '';
-            }
-
-            const val = Number(t.valor || 0);
-            const ehEntrada = t.tipo === 'entrada';
-            const corValor = ehEntrada ? '#10b981' : '#f43f5e';
-            const sinal = ehEntrada ? '+' : '-';
-            const dataApenasDiaMes = d !== '--' ? d.split('-').reverse().slice(0, 2).join('/') : '--/--';
-
-            linhasTabelaExtrato += `
-                <tr style="border-bottom: 1px solid #f1f5f9; font-size: 11.5px;">
-                    <td style="padding: 7px 6px; color: #64748b; white-space: nowrap; font-variant-numeric: tabular-nums;">${dataApenasDiaMes}</td>
-                    <td style="padding: 7px 6px; font-weight: 800; color: #0f172a;">${esc(nomeMembro)}</td>
-                    <td style="padding: 7px 6px; color: #334155; font-weight: 600;">${window.esc ? window.esc(descricaoExibida) : descricaoExibida}</td>
-                    <td style="padding: 7px 6px; color: #64748b;">${esc(categoriaExibida)}${subcategoriaExibida ? ' › ' + esc(subcategoriaExibida) : ''}</td>
-                    <td style="padding: 7px 6px; text-align: right; font-weight: 800; color: ${corValor}; white-space: nowrap; font-variant-numeric: tabular-nums;">
-                        ${sinal} R$ ${val.toFixed(2)}
-                    </td>
-                </tr>
-            `;
-        });
-
-        // Rodapé do Dia com Rolagem Real
-        const corSaldo = diaDados.saldoFinal >= 0 ? '#10b981' : '#f43f5e';
-        const sinalSaldo = diaDados.saldoFinal >= 0 ? '' : '-';
-        
-        linhasTabelaExtrato += `
-            <tr style="background-color: #faf8f5; border-bottom: 2px solid #cbd5e1;">
-                <td colspan="4" style="padding: 7px 8px; font-weight: 700; text-align: right; color: #475569; font-size: 11px;">
-                    TOTAL DÉBITOS DO DIA: <strong style="color: #f43f5e; font-variant-numeric: tabular-nums;">R$ ${diaDados.saidas.toFixed(2)}</strong> &nbsp;|&nbsp; 
-                    SALDO ACUMULADO:
-                </td>
-                <td style="padding: 7px 6px; font-weight: 800; text-align: right; color: ${corSaldo}; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums;">
-                    ${sinalSaldo} R$ ${Math.abs(diaDados.saldoFinal).toFixed(2)}
-                </td>
-            </tr>
-        `;
-    });
-
-    if (datasDecrescentes.length === 0) {
-        linhasTabelaExtrato = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#64748b; font-size:12px;">Nenhuma movimentação registrada no período.</td></tr>`;
-    }
-
-    // 7. Renderização Estruturada no DOM
-    if (areaResultados) {
-        areaResultados.innerHTML = `
-            <div style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 18px; padding: 18px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);">
-                
-                <!-- Cabeçalho Oficial do Relatório -->
-                <div style="text-align: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
-                    <h2 style="margin: 0; font-size: 19px; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900;">${esc(nomeFamilia)}</h2>
-                    <span style="font-size: 12px; font-weight: 700; color: #64748b; display: block; margin-top: 4px;">
-                        Balanço & Extrato Consolidado • ${dataInicioFmt} até ${dataFimFmt}
-                    </span>
-                </div>
-
-                <!-- Resumo dos Totais em Cards -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                    <div style="background: #ecfdf5; padding: 12px; border-radius: 14px; border: 1px solid #a7f3d0;">
-                        <span style="font-size: 11px; color: #065f46; font-weight: 800; text-transform: uppercase; display: block;">Total Receitas</span>
-                        <strong style="color: #059669; font-size: 16px; font-variant-numeric: tabular-nums;">+ R$ ${totalEntradas.toFixed(2)}</strong>
-                    </div>
-                    <div style="background: #fff1f2; padding: 12px; border-radius: 14px; border: 1px solid #fecdd3;">
-                        <span style="font-size: 11px; color: #9f1239; font-weight: 800; text-transform: uppercase; display: block;">Total Despesas</span>
-                        <strong style="color: #e11d48; font-size: 16px; font-variant-numeric: tabular-nums;">- R$ ${totalSaidasGeral.toFixed(2)}</strong>
-                    </div>
-                </div>
-
-                <!-- Quadro Detalhado dos 4 Eixos -->
-                <div style="background: #f8fafc; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 14px; padding: 12px 14px; margin-bottom: 16px; font-size: 12.5px; line-height: 1.85;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #475569;">Despesas da Casa:</span>
-                        <strong style="color: #0f172a; font-variant-numeric: tabular-nums;">R$ ${totalGastosCasa.toFixed(2)}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #475569;">Dos gastos acima, supermercado:</span>
-                        <strong style="color: #0f172a; font-variant-numeric: tabular-nums;">R$ ${totalSupermercado.toFixed(2)}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #475569;">Gastos Próprios dos Membros:</span>
-                        <strong style="color: #0f172a; font-variant-numeric: tabular-nums;">R$ ${totalGastosPessoais.toFixed(2)}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 5px; margin-top: 5px; color: #7c3aed;">
-                        <span style="font-weight: 800;">Transferências entre Carteiras:</span>
-                        <strong style="color: #7c3aed; font-variant-numeric: tabular-nums;">R$ ${totalTransferenciasInternas.toFixed(2)}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-top: 1.5px solid #e2e8f0; padding-top: 8px; margin-top: 8px; font-size: 13.5px;">
-                        <span style="font-weight: 800; color: #0f172a;">Resultado Líquido do Período:</span>
-                        <strong style="color: ${corSaldoHex}; font-size: 16px; font-variant-numeric: tabular-nums;">R$ ${saldoLiquidoPeriodo.toFixed(2)}</strong>
-                    </div>
-                </div>
-
-                ${tabelaCategoriasRelatorio(categorias)}
-
-                <!-- Tabela com Extrato Completo e Detalhado dos Gastos -->
-                <div style="margin-top: 16px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 13.5px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 6px; font-weight: 800;">
-                        Extrato Detalhado de Movimentações
-                    </h3>
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #cbd5e1; font-size: 11px; color: #475569; text-transform: uppercase;">
-                                <th style="padding: 6px;">Data</th>
-                                <th style="padding: 6px;">Membro</th>
-                                <th style="padding: 6px;">Descrição</th>
-                                <th style="padding: 6px;">Categoria</th>
-                                <th style="padding: 6px; text-align: right;">Valor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${linhasTabelaExtrato}
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        `;
-    }
-
-    if (blocoBotoes) blocoBotoes.classList.remove('oculto');
+    aviso.hidden = true;
+    containerPdf?.classList.remove('oculto');
+    blocoBotoes?.classList.remove('oculto');
     window.renderizarGraficoCategorias();
+    if (mostrarGrafico) {
+        document.getElementById('titulo-grafico-categorias').focus({ preventScroll: true });
+        document.getElementById('bloco-grafico-categorias').scrollIntoView({ block: 'start' });
+    }
 };
 
-// =========================================================================
-// 2. RENDERIZAÇÃO DO GRÁFICO (Chart.js)
-// =========================================================================
 window.renderizarGraficoCategorias = function() {
-    const canvas = document.getElementById('grafico-barras-renda-gastos');
     const resumo = window.ultimoResumoRelatorio;
-    if (!canvas || !resumo || typeof Chart === 'undefined') return;
-    const escuro = document.documentElement.dataset.theme === 'dark';
-    const rotulo = escuro ? '#eef4f8' : '#0f172a';
+    if (!resumo) return;
     const formato = document.getElementById('relatorio-formato-grafico').value;
     const tipo = document.getElementById('relatorio-tipo-grafico').value;
     const detalhes = document.getElementById('relatorio-grupo-grafico').value === 'subcategoria';
-    const titulo = `${tipo === 'entrada' ? 'Receitas' : 'Despesas'} por ${detalhes ? 'subcategoria' : 'categoria'}`;
-    document.getElementById('titulo-grafico-categorias').textContent = titulo;
+    document.getElementById('titulo-grafico-categorias').textContent =
+        `${tipo === 'entrada' ? 'Receitas' : 'Despesas'} por ${detalhes ? 'subcategoria' : 'categoria'}`;
     const series = [];
     for (const [nome, grupo] of resumo.categorias[tipo]) {
         if (detalhes) {
@@ -365,37 +298,12 @@ window.renderizarGraficoCategorias = function() {
         }
     }
     series.sort((a, b) => b[1] - a[1]);
-    instanciaGraficoRendaGastos?.destroy();
-    instanciaGraficoRendaGastos = null;
-    const desenhar = series.length > 0;
-    canvas.parentElement.hidden = !desenhar;
-    document.getElementById('titulo-grafico-categorias').textContent = desenhar ? titulo : titulo + ' · Sem dados';
-    if (!desenhar) return;
-    canvas.parentElement.style.height = formato === 'barras' ? `${Math.max(250, series.length * 28)}px` : '270px';
-    instanciaGraficoRendaGastos = new Chart(canvas.getContext('2d'), {
-        type: formato === 'pizza' ? 'pie' : 'bar',
-        data: {
-            labels: series.map(([nome]) => nome),
-            datasets: [{
-                label: titulo,
-                data: series.map(([, valor]) => valor / 100),
-                backgroundColor: series.map((_, i) => `hsl(${i * 137.508 % 360} 63% 45%)`)
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            indexAxis: formato === 'barras' ? 'y' : 'x',
-            plugins: { legend: { display: formato === 'pizza', position: 'bottom', labels: { color: rotulo } } },
-            ...(formato === 'pizza' ? {} : {
-                scales: Object.fromEntries(['x', 'y'].map(eixo => [eixo, {
-                    ticks: { color: rotulo }, grid: { color: escuro ? '#3b4a59' : '#e2e8f0' }
-                }]))
-            })
-        }
-    });
+    Suiri.graficosFinanceiros.desenhar(document.getElementById('grafico-barras-renda-gastos'),
+        document.getElementById('legenda-grafico-categorias'), series, formato);
 };
+new MutationObserver(() => window.renderizarGraficoCategorias()).observe(document.documentElement, {
+    attributes: true, attributeFilter: ['data-theme']
+});
 
 // =========================================================================
 // 3. EXPORTAÇÃO EM PDF (ROBUSTA, TOTALMENTE COMPATÍVEL COM CELULAR)
@@ -447,7 +355,10 @@ window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
     let imgSubstituta = null;
     const exibicaoCanvas = canvas?.style.display;
 
-    if (canvas && instanciaGraficoRendaGastos) {
+    const grafico = Suiri.graficosFinanceiros.obter(canvas);
+    if (canvas && grafico) {
+        grafico.stop?.();
+        grafico.update?.('none');
         try {
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
             imgSubstituta = document.createElement('img');
@@ -479,7 +390,11 @@ window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
     };
 
     try {
-        const pdf = html2pdf().set(opt).from(elemento);
+        const copia = elemento.cloneNode(true);
+        copia.querySelectorAll('[data-fin-exportar-aberto]').forEach(painel => { painel.open = true; });
+        copia.querySelectorAll('[data-fin-controles]').forEach(controle => controle.remove());
+        copia.classList.add('fin-copia-pdf');
+        const pdf = html2pdf().set(opt).from(copia);
         if (window.SuiriAndroid) {
             if (!navigator.userAgent.includes('SuiriFamiliaPDF/1')) {
                 throw new Error('Atualize o APK para salvar PDF pelo Android.');

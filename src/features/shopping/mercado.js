@@ -245,7 +245,7 @@ window.lerFotoCupomFiscal = async function(arquivo) {
         document.getElementById('input-fin-valor').value=total.toFixed(2);
         window.selecionarTipoRegistroRapido('saida');
         document.getElementById('select-fin-escopo').value = 'pessoal';
-        window.preencherCategoriasFinanceiras('Supermercado');
+        window.preencherCategoriasFinanceiras('Supermercado', '');
         // Não insere itens no carrinho: evita contabilizar novamente a compra ao finalizá-lo.
         await window.abrirRegistroRapido();
         window.mostrarToast('Confira descrição e total antes de salvar. Os itens não foram enviados ao carrinho.','info');
@@ -681,31 +681,11 @@ window.removerItemMercado = async function(id) {
 // finalizarCompraMercado está em src/services/operations.js.
 
 window.gerarGraficosFechamentoMercado = function(segmentos) {
-    const ctxPizza = document.getElementById('grafico-pizza-segmentos')?.getContext('2d');
-    if (!ctxPizza || typeof Chart === 'undefined') return;
-    
-    const labels = Object.keys(segmentos);
-    const data = Object.values(segmentos);
-    
-    if (window.chartPizzaMercado) window.chartPizzaMercado.destroy();
-    
-    window.chartPizzaMercado = new Chart(ctxPizza, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: ['#38bdf8', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#64748b', '#14b8a6']
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10.5 } } } 
-            } 
-        }
-    });
+    const canvas = document.getElementById('grafico-pizza-segmentos');
+    if (!canvas) return;
+    const series = Object.entries(segmentos).map(([nome, valor]) => [nome, Math.round(Number(valor) * 100)])
+        .filter(([, valor]) => Number.isFinite(valor) && valor > 0).sort((a, b) => b[1] - a[1]);
+    Suiri.graficosFinanceiros.desenhar(canvas, document.getElementById('legenda-grafico-mercado'), series, 'pizza');
 };
 
 window.fecharModalGraficosMercado = function() { 
