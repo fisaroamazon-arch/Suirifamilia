@@ -15,7 +15,10 @@ window.AudioMotor = window.AudioMotor || {
     instrumento: 'piano',
     amostras: {
         piano: {duracao: 6, soltura: .23},
-        cordas: {duracao: 12, soltura: .16},
+        cordas: {
+            arquivo: 'violino-solo', duracao: 7, soltura: .22, repeticao: [1.5, 6.3],
+            notas: [55, 60, 64, 67, 72, 76, 81, 84, 88, 93, 96]
+        },
         xilofone: {duracao: 3, soltura: .28}
     },
 
@@ -80,7 +83,7 @@ window.AudioMotor = window.AudioMotor || {
         const ctx = this.obterCtx();
         if (!amostra || !ctx) return Promise.resolve(null);
         if (!amostra.carregando) {
-            amostra.carregando = fetch(`assets/audio/piano/${tipo}.mp3`)
+            amostra.carregando = fetch(`assets/audio/piano/${amostra.arquivo || tipo}.mp3`)
                 .then(resposta => {
                     if (!resposta.ok) throw new Error('Amostra indisponível');
                     return resposta.arrayBuffer();
@@ -95,12 +98,14 @@ window.AudioMotor = window.AudioMotor || {
     iniciarAmostra: function(chave, freq, volume, amostra) {
         const ctx = this.ctx;
         const midi = 69 + 12 * Math.log2(freq / 440);
-        const indice = Math.max(0, Math.min(8, Math.round((midi - 36) / 6)));
+        const notas = amostra.notas || [36, 42, 48, 54, 60, 66, 72, 78, 84];
+        const indice = notas.reduce((melhor, nota, i) =>
+            Math.abs(nota - midi) < Math.abs(notas[melhor] - midi) ? i : melhor, 0);
         const fonte = ctx.createBufferSource();
         const saida = ctx.createGain();
         const voz = {fontes: [fonte], saida, soltura: amostra.soltura};
         fonte.buffer = amostra.buffer;
-        fonte.playbackRate.value = 2 ** ((midi - 36 - indice * 6) / 12);
+        fonte.playbackRate.value = 2 ** ((midi - notas[indice]) / 12);
         saida.gain.value = Math.min(volume, 1) * .88;
         fonte.connect(saida).connect(this.obterSaida());
         fonte.onended = () => {
@@ -109,7 +114,16 @@ window.AudioMotor = window.AudioMotor || {
             saida.disconnect();
         };
         this.vozesAtivas[chave] = voz;
-        fonte.start(0, indice * amostra.duracao, amostra.duracao);
+        const posicao = indice * amostra.duracao;
+        if (amostra.repeticao) {
+            const [inicio, fim] = amostra.repeticao;
+            fonte.loop = true;
+            fonte.loopStart = posicao + inicio;
+            fonte.loopEnd = posicao + fim;
+            fonte.start(0, posicao);
+        } else {
+            fonte.start(0, posicao, amostra.duracao);
+        }
     },
 
     iniciarVozPiano: function(chave, freq, fatorVolume = 1.0, tipoInstrumento = null) {
@@ -771,7 +785,7 @@ window.MotorMusica = {
 
         if (fator === 'toque') {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Modo Toque Ativo");
+            this.atualizarBotoesPlayVisual(true, "Pausar");
         } else if (this.tocandoMusica) {
             this.iniciarAnimacaoEsteira();
         }
@@ -816,7 +830,7 @@ window.MotorMusica = {
             this.pausarMusica();
         } else if (this.fatorVelocidade === 'toque') {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Modo Toque Ativo");
+            this.atualizarBotoesPlayVisual(true, "Pausar");
             this.atualizarDisplays();
             this.renderizarTodasEsteiras();
         } else {
@@ -872,7 +886,7 @@ window.MotorMusica = {
         this.renderizarTodasEsteiras();
         if (this.fatorVelocidade === 'toque') {
             this.tocandoMusica = true;
-            this.atualizarBotoesPlayVisual(true, "Modo Toque Ativo");
+            this.atualizarBotoesPlayVisual(true, "Pausar");
         } else {
             this.atualizarBotoesPlayVisual(false, "Jogar");
         }

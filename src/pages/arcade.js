@@ -424,7 +424,6 @@
             particulasVento: [],
             timer: 0,
             larguraTronco: 58,
-            espacoPassagemBase: 215,
             obstaculoParaSpawnVida: 0,
             cicloAnimProfundidade: 0,
             duplaEmContato: false,
@@ -482,7 +481,8 @@
                 this.particulasVento = [];
                 this.obstaculosPassados = 0;
                 this.moedasGanhasPartida = 0;
-                this.timer = 0;
+                this.timer = 62;
+                this.centroPassagem = this.canvas.height * .48;
                 this.cicloAnimProfundidade = 0;
                 this.duplaEmContato = false;
                 document.querySelectorAll("#tela-flappy .impacto-voo").forEach(efeito => efeito.remove());
@@ -591,8 +591,9 @@
             },
 
             obterEspacoAtual: function() {
-                const reducao = Math.min(45, Math.floor(this.obstaculosPassados / 5) * 4);
-                return this.espacoPassagemBase - reducao;
+                const larguraInicial = Math.min(258, this.canvas.height * .56);
+                const progresso = Math.min(1, this.obstaculosPassados / 36);
+                return larguraInicial * (1 - .24 * progresso);
             },
 
             atualizar: function() {
@@ -671,13 +672,15 @@
 
                 // Spawn de troncos e itens
                 this.timer++;
-                const intervaloSpawn = Math.max(75, 125 - Math.floor(this.obstaculosPassados / 8) * 3);
+                const progressoVoo = Math.min(1, this.obstaculosPassados / 36);
+                const intervaloSpawn = 124 - progressoVoo * 30;
                 if (this.timer > intervaloSpawn) {
                     this.timer = 0;
                     const espaco = this.obterEspacoAtual();
-                    const alturaMin = 50;
-                    const alturaMax = this.canvas.height - espaco - 80;
-                    const topo = Math.floor(Math.random() * (alturaMax - alturaMin)) + alturaMin;
+                    const variacao = this.canvas.height * (.045 + .105 * progressoVoo);
+                    const centro = this.centroPassagem + (Math.random() * 2 - 1) * variacao;
+                    const topo = Math.max(20, Math.min(this.canvas.height - espaco - 37, centro - espaco / 2));
+                    this.centroPassagem = topo + espaco / 2;
 
                     this.obstaculos.push({
                         x: this.canvas.width,
@@ -705,7 +708,7 @@
                     }
                 }
 
-                const velRolagem = 2.2 + Math.min(1.0, (this.obstaculosPassados * 0.02));
+                const velRolagem = 2.05 + progressoVoo * 1.45;
 
                 // Movimento e colisão com troncos
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
@@ -1001,6 +1004,7 @@
             canvas: null, ctx: null, anim: null, rodando: false,
             modo: 1,
             faseAtual: 1,
+            vidas: 3,
             skate: { x: 140, y: 0, w: 98, h: 22 },
             skateTopo: { x: 140, y: 65, w: 98, h: 22 },
             pontosJ1: 0,
@@ -1070,6 +1074,7 @@
             iniciar: function(modoEscolhido = 1) {
                 this.modo = modoEscolhido;
                 this.faseAtual = 1;
+                this.vidas = 3;
                 this.totalDestruidos = 0;
                 this.moedasGanhas = 0;
                 this.pontosJ1 = 0;
@@ -1095,6 +1100,7 @@
                     hudNormal.style.display = 'flex';
                     hudPong.style.display = 'none';
                     document.getElementById('placar-quebrablocos-fase').textContent = '1';
+                    document.getElementById('placar-quebrablocos-vidas').textContent = this.vidas;
                     document.getElementById('placar-quebrablocos-blocos').textContent = '0';
                     document.getElementById('placar-quebrablocos-moedas').textContent = '0';
                     if (this.chuiriGifEl) {
@@ -1109,6 +1115,8 @@
                 const arena = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = Math.round(arena.width);
                 this.canvas.height = Math.round(arena.height);
+                this.skate.w = this.modo === 1 ? Math.min(116, this.canvas.width * .35) : 98;
+                this.skateTopo.w = 98;
                 this.teclas.clear();
                 this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
@@ -1120,8 +1128,10 @@
                 this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
                 this.bola.vy = (Math.random() < 0.5 ? -1 : 1) * 3.4;
 
-                if (this.modo === 1) this.gerarGradeBlocos();
-                else this.blocos = [];
+                if (this.modo === 1) {
+                    this.gerarGradeBlocos();
+                    this.servirBolaSolo();
+                } else this.blocos = [];
 
                 this.rodando = true;
                 GerenciadorArcade.atualizarControlePausa(true, this);
@@ -1132,12 +1142,13 @@
 
             gerarGradeBlocos: function() {
                 this.blocos = [];
-                const linhas = 4 + (this.faseAtual - 1);
-                const colunas = 7;
+                const limite = Math.max(1, Math.floor((this.skate.y - 91) / 20));
+                const linhas = Math.min(8, this.faseAtual + 2, limite);
+                const colunas = this.faseAtual < 3 ? 6 : 7;
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
                 const alturaBloco = 14;
-                const paletaCores = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#38bdf8', '#8b5cf6'];
+                const paletaCores = ['#f66b91', '#fca96a', '#ffd577', '#6eddb4', '#69cafa', '#b490fc'];
 
                 for (let l = 0; l < linhas; l++) {
                     const cor = paletaCores[l % paletaCores.length];
@@ -1224,7 +1235,7 @@
                         AudioMotor.tocarTom(420, 0.05);
                     }
                 } else {
-                    if (this.bola.y - this.bola.r <= this.skateTopo.y + 12 && this.bola.y + this.bola.r >= this.skateTopo.y) {
+                    if (this.bola.vy < 0 && this.bola.y - this.bola.r <= this.skateTopo.y + 12 && this.bola.y + this.bola.r >= this.skateTopo.y) {
                         if (this.bola.x >= this.skateTopo.x && this.bola.x <= this.skateTopo.x + this.skateTopo.w) {
                             this.bola.vy = Math.abs(this.bola.vy);
                             const centro = this.skateTopo.x + this.skateTopo.w / 2;
@@ -1260,7 +1271,7 @@
                     }
                 }
 
-                if (this.bola.y + this.bola.r >= this.skate.y && this.bola.y - this.bola.r <= this.skate.y + 12) {
+                if (this.bola.vy > 0 && this.bola.y + this.bola.r >= this.skate.y && this.bola.y - this.bola.r <= this.skate.y + 12) {
                     if (this.bola.x >= this.skate.x && this.bola.x <= this.skate.x + this.skate.w) {
                         this.bola.vy = -Math.abs(this.bola.vy);
                         const centro = this.skate.x + this.skate.w / 2;
@@ -1317,14 +1328,27 @@
                         GerenciadorArcade.adicionarMoedas(3);
                         document.getElementById('placar-quebrablocos-fase').textContent = this.faseAtual;
                         document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
+                        const centro = this.skate.x + this.skate.w / 2;
+                        this.skate.w = Math.max(72, this.skate.w - 4);
+                        this.moverSkate(false, centro);
                         this.gerarGradeBlocos();
-                        this.bola.vy *= 1.05;
+                        this.servirBolaSolo();
                     }
 
                     if (this.bola.y - this.bola.r > this.canvas.height) {
-                        this.fim();
+                        this.vidas--;
+                        document.getElementById('placar-quebrablocos-vidas').textContent = this.vidas;
+                        if (!this.vidas) this.fim();
+                        else this.servirBolaSolo();
                     }
                 }
+            },
+
+            servirBolaSolo: function() {
+                this.bola.x = this.skate.x + this.skate.w / 2;
+                this.bola.y = this.skate.y - this.bola.r - 12;
+                this.bola.vx = (Math.random() < .5 ? -1 : 1) * 1.65;
+                this.bola.vy = -Math.min(5.8, 2.65 + (this.faseAtual - 1) * .32);
             },
 
             resetarBolaPong: function(direcaoY) {
@@ -1590,7 +1614,10 @@
                     dono = Math.random() < 0.5 ? 'j1' : 'j2';
                 }
 
-                const velBase = this.modo === 'rush' ? 2.2 : 1.3;
+                const progresso = this.obterProgresso();
+                const velBase = this.modo === 'rush' ? 1.65 + .9 * progresso : .95 + .95 * progresso;
+                const variacao = .45 + .95 * progresso;
+                const raio = 32 - 9 * progresso + Math.random() * 6;
                 let x, y, vx, vy;
 
                 if (this.modo === 'rush') {
@@ -1599,28 +1626,28 @@
                         x = Math.random() * (this.canvas.width - 60) + 30;
                         y = this.canvas.height + 25;
                         vx = (Math.random() - 0.5) * 1.8;
-                        vy = -(velBase + Math.random() * 1.4);
+                        vy = -(velBase + Math.random() * variacao);
                     } else if (borda === 1) {
                         x = Math.random() * (this.canvas.width - 60) + 30;
                         y = -25;
                         vx = (Math.random() - 0.5) * 1.8;
-                        vy = (velBase + Math.random() * 1.4);
+                        vy = velBase + Math.random() * variacao;
                     } else if (borda === 2) {
                         x = -25;
                         y = Math.random() * (this.canvas.height - 60) + 30;
-                        vx = (velBase + Math.random() * 1.4);
+                        vx = velBase + Math.random() * variacao;
                         vy = (Math.random() - 0.5) * 1.8;
                     } else {
                         x = this.canvas.width + 25;
                         y = Math.random() * (this.canvas.height - 60) + 30;
-                        vx = -(velBase + Math.random() * 1.4);
+                        vx = -(velBase + Math.random() * variacao);
                         vy = (Math.random() - 0.5) * 1.8;
                     }
                 } else {
-                    x = Math.random() * (this.canvas.width - 60) + 30;
+                    x = Math.random() * Math.max(0, this.canvas.width - 2 * raio) + raio;
                     y = this.canvas.height + 25;
                     vx = (Math.random() - 0.5) * 0.9;
-                    vy = -(velBase + Math.random() * 1.4);
+                    vy = -(velBase + Math.random() * variacao);
                 }
 
                 this.bolhas.push({
@@ -1629,10 +1656,15 @@
                     y: y,
                     vx: vx,
                     vy: vy,
-                    r: 24 + Math.random() * 8,
+                    r: raio,
                     oscilacao: Math.random() * Math.PI * 2,
                     entrouNaTela: false
                 });
+            },
+
+            obterProgresso: function() {
+                if (this.modo === 'rush') return 1 - this.segundosRestantesRush / 180;
+                return Math.min(1, (this.estouradasJ1 + this.estouradasJ2) / 42);
             },
 
             gerarGotas: function(bx, by, cor = '#38bdf8') {
@@ -1706,12 +1738,14 @@
                     }
                     if (!segundos) return this.fim();
                 }
-                const intervalo = this.modo === 'rush' ? 240 : (this.modo === 'duelo' ? 820 : 1100);
+                const progresso = this.obterProgresso();
+                const intervalo = this.modo === 'rush' ? 465 - progresso * 245 :
+                    (this.modo === 'duelo' ? 1000 : 1230) - progresso * 410;
 
                 if (agora - this.ultimoSpawn > intervalo) {
                     this.ultimoSpawn = agora;
                     this.criarBolha();
-                    if (this.modo === 'rush') {
+                    if (this.modo === 'rush' && progresso >= .32) {
                         this.criarBolha();
                     }
                 }
@@ -1899,6 +1933,7 @@
         // =========================================================================
         const MotorVelha = {
             modo: 'ia',
+            dificuldade: 'treino',
             tabuleiro: Array(9).fill(''),
             turno: 'X',
             fim: false,
@@ -1907,6 +1942,7 @@
                 this.modo = novoModo;
                 const tabIA = document.getElementById('tab-velha-ia');
                 const tab2P = document.getElementById('tab-velha-2p');
+                document.getElementById('velha-nivel').hidden = novoModo !== 'ia';
                 if (novoModo === 'ia') {
                     tabIA.classList.add('ativo');
                     tab2P.classList.remove('ativo');
@@ -2022,7 +2058,7 @@
                     if (contO === 2 && vazia !== undefined) { escolhida = vazia; break; }
                 }
 
-                if (escolhida === null) {
+                if (escolhida === null && (this.dificuldade === 'desafio' || Math.random() < .44)) {
                     for (let item of this.linhasVitoria) {
                         const contX = item.linha.filter(idx => this.tabuleiro[idx] === 'X').length;
                         const vazia = item.linha.find(idx => this.tabuleiro[idx] === '');
@@ -2030,7 +2066,7 @@
                     }
                 }
 
-                if (escolhida === null && this.tabuleiro[4] === '') escolhida = 4;
+                if (escolhida === null && this.dificuldade === 'desafio' && this.tabuleiro[4] === '') escolhida = 4;
                 if (escolhida === null) {
                     const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
                     if (vazias.length > 0) escolhida = vazias[Math.floor(Math.random() * vazias.length)];
@@ -2113,7 +2149,7 @@
         // =========================================================================
         const MotorMemoria = {
             modo: 'solo',
-            totalPares: 8,
+            totalPares: 4,
             jogadas: 0,
             cartas: [],
             viradas: [],
@@ -2266,7 +2302,9 @@
                             botao.setAttribute('aria-disabled', 'true');
                         }
                         if (this.pares + this.paresJ1 + this.paresJ2 === this.totalPares) {
-                            const premio = this.totalPares === 4 ? 10 : (this.modo === '2p' ? 25 : 50);
+                            const premio = this.totalPares === 4 ? 10 :
+                                this.totalPares === 6 ? (this.modo === '2p' ? 16 : 28) :
+                                    (this.modo === '2p' ? 25 : 50);
                             GerenciadorArcade.adicionarMoedas(premio);
                             this.timerCartas = setTimeout(() => this.fimDeJogo(premio), 450);
                         }
@@ -2284,7 +2322,7 @@
                             }
                             this.viradas = [];
                             this.bloqueado = false;
-                        }, 700);
+                        }, {4: 1080, 6: 880, 8: 700}[this.totalPares]);
                     }
                 }
             },

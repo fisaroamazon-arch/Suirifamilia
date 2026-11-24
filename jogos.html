@@ -9,8 +9,8 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=4c75e581dcc9">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=cf60b4498f12">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=2826b72c7475">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=84f690e56e16">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=d9f0eddd3e59">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -109,7 +109,7 @@
                     </span>
                     <strong class="arcade-card-titulo">Memória 3D</strong>
                     <span class="arcade-card-descricao">Encontre os pares de cartas.</span>
-                    <span class="tag-premio-card">De 4 a 8 pares</span>
+                    <span class="tag-premio-card">4, 6 ou 8 pares</span>
                 </button>
             </div>
         </main>
@@ -158,6 +158,7 @@
             <div class="painel-placar-flappy" id="hud-quebrablocos-normal">
                 <div class="placar-item">Fase: <strong id="placar-quebrablocos-fase" style="color:#0284c7;">1</strong></div>
                 <div class="placar-item">Blocos: <strong id="placar-quebrablocos-blocos">0</strong></div>
+                <div class="placar-item">Vidas: <strong id="placar-quebrablocos-vidas">3</strong></div>
                 <div class="placar-item" style="color:#b45309;">Moedas: <strong id="placar-quebrablocos-moedas" style="color:#d97706;">0</strong></div>
             </div>
 
@@ -172,7 +173,7 @@
             <div id="over-quebrablocos" class="overlay-jogo">
                 <div class="painel-dialogo-arcade">
                     <h2>Quebra-Blocos & Pong</h2>
-                    <p>Arraste o skate para rebater a bola. No Pong, cada pessoa joga em uma metade da tela.</p>
+                    <p>Arraste o skate para rebater a bola. No modo solo, você tem três vidas. No Pong, cada pessoa joga em uma metade da tela.</p>
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)">👤 1 Jogador (Quebra-Blocos)</button>
                         <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)">👥 2 jogadores · Skate Pong</button>
@@ -197,7 +198,7 @@
 
             <header class="piano-estudio">
                 <h2>Piano do Chuíri</h2>
-                <p>Toque a tecla iluminada e siga a música.</p>
+                <p>Toque a tecla iluminada. <span class="piano-girar">Vire o celular para jogar na horizontal.</span></p>
             </header>
 
             <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
@@ -205,9 +206,9 @@
                 <div class="piano-repertorio">
                     <label>Estilo
                         <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
-                            <option value="infantil">Infantil · 20</option>
-                            <option value="classicas">Clássicas · 20</option>
-                            <option value="pop">Pop · 20</option>
+                            <option value="infantil">Infantil</option>
+                            <option value="classicas">Clássicas</option>
+                            <option value="pop">Pop original</option>
                         </select>
                     </label>
                     <label>Música
@@ -255,7 +256,7 @@
                 <div class="piano-placar">
                     <div class="estrelinha-alvo-box">
                         <span class="estrelinha-icone"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> </span>
-                        <span style="font-size:12px; font-weight:800; color:#475569;">Próxima:</span>
+                        <span class="piano-rotulo-proxima">Próxima</span>
                         <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
                     </div>
                     <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
@@ -475,9 +476,9 @@
                         <div class="piano-repertorio">
                             <label>Estilo
                                 <select data-estilo-piano onchange="MotorMusica.selecionarEstilo(this.value)">
-                                    <option value="infantil">Infantil · 20</option>
-                                    <option value="classicas">Clássicas · 20</option>
-                                    <option value="pop">Pop · 20</option>
+                                    <option value="infantil">Infantil</option>
+                                    <option value="classicas">Clássicas</option>
+                                    <option value="pop">Pop original</option>
                                 </select>
                             </label>
                             <label>Música
@@ -594,6 +595,13 @@
                 <span id="status-velha" role="status" style="font-size:13px; color:#0f172a; font-weight:800;">Sua vez: Você joga com X (Caneta Azul)</span>
             </div>
 
+            <label class="velha-nivel" id="velha-nivel">Nível
+                <select onchange="MotorVelha.dificuldade = this.value; MotorVelha.iniciar()">
+                    <option value="treino">Treino</option>
+                    <option value="desafio">Desafio</option>
+                </select>
+            </label>
+
             <div class="area-velha-caderno">
                 <div class="linha-caneta linha-caneta-h1"></div>
                 <div class="linha-caneta linha-caneta-h2"></div>
@@ -615,8 +623,9 @@
             </div>
 
             <div id="memoria-niveis" class="alternador-modos-som" aria-label="Tamanho do tabuleiro">
-                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="4" onclick="MotorMemoria.trocarNivel(4)">4 pares</button>
-                <button type="button" class="btn-modo-som-tab ativo" aria-pressed="true" data-memoria-pares="8" onclick="MotorMemoria.trocarNivel(8)">8 pares</button>
+                <button type="button" class="btn-modo-som-tab ativo" aria-pressed="true" data-memoria-pares="4" onclick="MotorMemoria.trocarNivel(4)">4 pares</button>
+                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="6" onclick="MotorMemoria.trocarNivel(6)">6 pares</button>
+                <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="8" onclick="MotorMemoria.trocarNivel(8)">8 pares</button>
             </div>
             <div class="painel-placar-flappy" id="hud-placar-memoria" role="status" style="position:static; transform:none; margin:2px auto 6px auto; display:inline-flex; gap:12px;">
                 <div id="status-memoria-solo" style="font-size:13px; font-weight:900; color:#6d28d9;">
@@ -660,8 +669,8 @@
 
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
-    <script src="src/features/kids/piano.js?v=716bee7e7b84"></script>
+    <script src="src/features/kids/piano.js?v=47a867a2e189"></script>
 
-    <script src="src/pages/arcade.js?v=ad07cae2e6d6"></script>
+    <script src="src/pages/arcade.js?v=e55cfc8ae9a2"></script>
 </body>
 </html>

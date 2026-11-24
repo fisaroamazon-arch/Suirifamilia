@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>Espaço Arte · Suiri Família</title>
-    <link rel="stylesheet" href="styles/pages/arte.css?v=82679152bf8e">
-    <script src="src/pages/arte.js?v=3dc03c495f89" defer></script>
+    <link rel="stylesheet" href="styles/pages/arte.css?v=cd92c6559962">
+    <script src="src/pages/arte.js?v=aa2f8adfdf78" defer></script>
 </head>
 <body>
     <main class="atelier">
@@ -15,42 +15,49 @@
             <h1>Espaço Arte</h1>
         </header>
 
-        <section class="ferramentas" aria-label="Ferramentas de desenho">
-            <div class="linha">
-                <div class="pinceis" role="group" aria-label="Tipo de pincel">
-                    <button type="button" data-pincel="lapis" aria-pressed="false">Lápis</button>
-                    <button type="button" data-pincel="pincel" aria-pressed="true" title="Pincel de cerdas">Cerdas</button>
-                    <button type="button" data-pincel="marca" aria-pressed="false">Marcador</button>
-                    <button type="button" data-pincel="spray" aria-pressed="false">Spray</button>
-                    <button type="button" data-pincel="borracha" aria-pressed="false">Borracha</button>
+        <div class="mesa-arte">
+            <section class="ferramentas" aria-label="Ferramentas de desenho">
+                <div class="linha">
+                    <div class="pinceis" role="group" aria-label="Tipo de pincel">
+                        <button type="button" data-pincel="pincel" aria-pressed="true">Pincel</button>
+                        <button type="button" data-pincel="lapis" aria-pressed="false">Lápis</button>
+                        <button type="button" data-pincel="cerdas" aria-pressed="false">Cerdas</button>
+                        <button type="button" data-pincel="marca" aria-pressed="false">Marcador</button>
+                        <button type="button" data-pincel="spray" aria-pressed="false">Spray</button>
+                        <button type="button" data-pincel="borracha" aria-pressed="false">Borracha</button>
+                    </div>
+                    <label class="espessura">
+                        Espessura
+                        <input id="espessura" type="range" min="2" max="64" value="14">
+                        <span class="previa-pincel" aria-hidden="true"><i></i></span>
+                    </label>
                 </div>
-                <label class="espessura">Traço <input id="espessura" type="range" min="2" max="48" value="12"></label>
-            </div>
-            <div class="paleta" role="group" aria-label="Paleta de cores">
-                <button type="button" aria-label="Roxo" data-cor="#7847c9" style="--cor:#7847c9" aria-pressed="true"></button>
-                <button type="button" aria-label="Rosa" data-cor="#e45085" style="--cor:#e45085" aria-pressed="false"></button>
-                <button type="button" aria-label="Vermelho" data-cor="#df4545" style="--cor:#df4545" aria-pressed="false"></button>
-                <button type="button" aria-label="Laranja" data-cor="#f18839" style="--cor:#f18839" aria-pressed="false"></button>
-                <button type="button" aria-label="Amarelo" data-cor="#f3d14d" style="--cor:#f3d14d" aria-pressed="false"></button>
-                <button type="button" aria-label="Verde" data-cor="#45af79" style="--cor:#45af79" aria-pressed="false"></button>
-                <button type="button" aria-label="Azul" data-cor="#3899ed" style="--cor:#3899ed" aria-pressed="false"></button>
-                <button type="button" aria-label="Preto" data-cor="#252030" style="--cor:#252030" aria-pressed="false"></button>
-                <label class="personalizada" title="Escolher outra cor">
-                    <span aria-hidden="true">+</span>
-                    <input id="cor-livre" type="color" value="#7847c9" aria-label="Escolher outra cor">
-                </label>
-            </div>
-        </section>
+                <div class="paleta" role="group" aria-label="Paleta de cores">
+                    <button type="button" aria-label="Roxo" data-cor="#7847c9" style="--cor:#7847c9" aria-pressed="true"></button>
+                    <button type="button" aria-label="Rosa" data-cor="#e45085" style="--cor:#e45085" aria-pressed="false"></button>
+                    <button type="button" aria-label="Vermelho" data-cor="#df4545" style="--cor:#df4545" aria-pressed="false"></button>
+                    <button type="button" aria-label="Laranja" data-cor="#f18839" style="--cor:#f18839" aria-pressed="false"></button>
+                    <button type="button" aria-label="Amarelo" data-cor="#f3d14d" style="--cor:#f3d14d" aria-pressed="false"></button>
+                    <button type="button" aria-label="Verde" data-cor="#45af79" style="--cor:#45af79" aria-pressed="false"></button>
+                    <button type="button" aria-label="Azul" data-cor="#3899ed" style="--cor:#3899ed" aria-pressed="false"></button>
+                    <button type="button" aria-label="Preto" data-cor="#252030" style="--cor:#252030" aria-pressed="false"></button>
+                    <label class="personalizada" title="Escolher outra cor">
+                        <span aria-hidden="true">+</span>
+                        <input id="cor-livre" type="color" value="#7847c9" aria-label="Escolher outra cor">
+                    </label>
+                </div>
+            </section>
 
-        <div class="folha" id="folha">
-            <canvas id="papel" width="640" height="640" aria-label="Área de desenho. Use o dedo ou o mouse para desenhar."></canvas>
-        </div>
+            <div class="folha" id="folha">
+                <canvas id="papel" width="640" height="640" aria-label="Área de desenho. Use o dedo ou o mouse para desenhar."></canvas>
+            </div>
 
-        <div class="acoes" role="group" aria-label="Ações do desenho">
-            <button id="desfazer" type="button" disabled>↶ Desfazer</button>
-            <button id="refazer" type="button" disabled>↷ Refazer</button>
-            <button id="folha-nova" type="button">Folha em branco</button>
-            <button id="baixar-arte" type="button">Salvar PNG</button>
+            <div class="acoes" role="group" aria-label="Ações do desenho">
+                <button id="desfazer" type="button" disabled>↶ Desfazer</button>
+                <button id="refazer" type="button" disabled>↷ Refazer</button>
+                <button id="folha-nova" type="button">Folha em branco</button>
+                <button id="baixar-arte" type="button">Salvar PNG</button>
+            </div>
         </div>
 
         <section class="caderno" aria-labelledby="titulo-caderno">
