@@ -189,9 +189,13 @@
     border-radius: 14px;
     background: #211b3be8;
     color: #fff4d7;
-    font-size: 20px;
-    font-weight: 850;
     cursor: pointer;
+}
+.arcade-pausar > span {
+    box-sizing: border-box;
+    width: 12px;
+    height: 16px;
+    border-inline: 4px solid currentColor;
 }
 #arcade-pausa {
     width: min(88%, 326px);
@@ -311,7 +315,7 @@
     .arcade-page .card-jogo-grade { transition: none; }
 }
 
-.arcade-pausa-alca {
+.arcade-pausa-alca, .arcade-recordes-alca {
     display: grid;
     place-items: center;
     width: 56px;
@@ -323,7 +327,7 @@
     touch-action: none;
     cursor: grab;
 }
-.arcade-pausa-alca span { width: 32px; height: 4px; border-radius: 9px; background: #a48eaf; }
+:is(.arcade-pausa-alca, .arcade-recordes-alca) span { width: 32px; height: 4px; border-radius: 9px; background: #a48eaf; }
 
 .arcade-page .carta-arcade.revelada:has(.memoria-figura) {
     background: radial-gradient(circle at 30% 15%, #fff8, transparent 80%), var(--memoria-figura-fundo, #f5d7ff);
@@ -402,32 +406,42 @@
 
 .arcade-page #memoria-niveis { flex-wrap: wrap; justify-content: center; gap: 5px; }
 .arcade-page #memoria-niveis button { flex: 0 1 auto; }
-.arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) {
+.arcade-page .grade-memoria-full:is([data-pares="12"], [data-pares="16"], [data-pares="24"], [data-pares="32"]) {
     --colunas-memoria: 4;
     max-width: min(800px, 100%);
     grid-template-columns: repeat(var(--colunas-memoria), minmax(0, 1fr));
     gap: 6px;
 }
-.arcade-page .grade-memoria-full[data-pares="32"] { --colunas-memoria: 6; }
+.arcade-page .grade-memoria-full:is([data-pares="24"], [data-pares="32"]) { --colunas-memoria: 6; }
 @media (orientation: landscape), (min-width: 600px) {
-    .arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) { --colunas-memoria: 8; }
+    .arcade-page .grade-memoria-full:is([data-pares="12"], [data-pares="16"], [data-pares="24"], [data-pares="32"]) { --colunas-memoria: 8; }
 }
-.arcade-page .grade-memoria-full:is([data-pares="16"], [data-pares="32"]) .carta-arcade {
+.arcade-page .grade-memoria-full:is([data-pares="12"], [data-pares="16"], [data-pares="24"], [data-pares="32"]) .carta-arcade {
     min-width: 0;
     min-height: 42px;
     font-size: clamp(14px, 4vw, 22px);
 }
 
 .arcade-page .arcade-recordes-abrir {
-    display: inline-flex;
+    display: grid;
+    grid-template-columns: 25px minmax(0, 1fr) 18px;
     align-items: center;
-    justify-content: center;
-    align-self: flex-start;
-    min-height: 40px;
-    gap: 7px;
-    color: #ffedcd;
-    background: #413453;
+    width: 100%;
+    min-height: 48px;
+    gap: 10px;
+    padding: 8px 14px;
+    text-align: start;
+    color: #fff0d4;
+    background: linear-gradient(115deg, #493955, #292940);
+    border: 1px solid #a589ab;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: .92rem;
+    font-weight: 800;
 }
+.arcade-recordes-abrir svg { width: 23px; height: 23px; color: #ffdb94; }
+.arcade-recordes-seta { justify-self: end; color: #ffdb94; font-size: 1.35rem; line-height: 1; }
+.arcade-recordes-abrir:focus-visible { outline: 2px solid #ffde9e; outline-offset: 2px; }
 #arcade-recordes {
     inset: 0;
     width: min(410px, calc(100% - 24px));
@@ -443,7 +457,9 @@
 }
 #arcade-recordes::backdrop { background: #151028af; backdrop-filter: blur(3px); }
 #arcade-recordes header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-#arcade-recordes header button, #recordes-jogo {
+#arcade-recordes .arcade-recordes-alca { margin: -8px auto 0; }
+#arcade-recordes .arcade-recordes-alca span { background: #cfb9eb; }
+#arcade-recordes header button, #arcade-recordes select {
     min-height: 38px;
     padding: 4px 10px;
     border: 1px solid #a58ec4;
@@ -451,10 +467,71 @@
     background: #332b49;
     color: #fff2ea;
 }
-#arcade-recordes label { display: grid; margin: 10px 0; gap: 4px; font-size: .8rem; }
+#arcade-recordes select { min-width: 0; width: 100%; }
+#arcade-recordes label:not([hidden]) { display: grid; margin: 10px 0; gap: 4px; font-size: .8rem; }
 #recordes-resultados { font-size: .86rem; }
 #recordes-resultados h3 { font-size: .92rem; margin-block: 12px 5px; }
 #recordes-resultados ol { list-style-position: inside; }
 #recordes-resultados li { border-top: 1px solid #d6b9fb3b; padding: 7px 3px; }
 #recordes-resultados li strong { margin-inline-start: 5px; }
 #recordes-resultados li span { display: block; margin: 3px 0 0 1.45rem; color: #e6d3ec; }
+
+#arcade-recordes #recordes-resultados ol {
+    display: grid;
+    gap: 5px;
+    list-style: none;
+    counter-reset: melhor;
+}
+#arcade-recordes #recordes-resultados li {
+    counter-increment: melhor;
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    align-items: center;
+    gap: 1px 7px;
+    padding: 7px 8px;
+    border: 1px solid #cba6e847;
+    border-radius: 10px;
+    background: #d0b8eb13;
+}
+#arcade-recordes #recordes-resultados li::before {
+    content: counter(melhor) "º";
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    color: #312840;
+    background: #d7c9ec;
+    font-weight: 850;
+}
+#arcade-recordes #recordes-resultados li:first-child::before { background: #ffdb96; }
+#arcade-recordes #recordes-resultados li :is(strong, span) { margin: 0; grid-column: 2; }
+.arcade-dica-palco {
+    position: absolute;
+    z-index: 40;
+    top: 27%;
+    left: 50%;
+    width: max-content;
+    max-width: calc(100% - 28px);
+    transform: translateX(-50%);
+    pointer-events: none;
+    text-align: center;
+    border: 1px solid #e7b98c;
+    border-radius: 13px;
+    background: #22223bec;
+    color: #ffeccf;
+    padding: 7px 11px;
+    font-size: .83rem;
+    font-weight: 750;
+}
+.arcade-dica-saque { top: auto; bottom: 29%; }
+.arcade-dica-turno { margin: 4px auto 6px; font-size: .8rem; color: #fff0d6; }
+.arcade-page .casa-velha-livre.casa-velha-dica {
+    background: #ffe59491;
+    box-shadow: inset 0 0 0 2px #8d531d;
+    border-radius: 9px;
+}
+.memoria-acoes { margin-top: 7px; display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.memoria-acoes > button { padding: 7px 12px; min-height: 38px; }
+.memoria-acoes > button:disabled { opacity: .55; }

@@ -139,13 +139,58 @@
                 } catch(e) {}
             },
 
+            tocarEstouro: function(variacao, atraso = 0, intensidade = 1) {
+                const ctx = this.obterCtx();
+                if (!ctx) return;
+                const inicio = ctx.currentTime + atraso;
+                const tom = 2 ** (variacao / 12);
+                const saida = this.obterSaida();
+                if (!this.ruidoBolha) {
+                    const amostras = Math.round(ctx.sampleRate * .06);
+                    this.ruidoBolha = ctx.createBuffer(1, amostras, ctx.sampleRate);
+                    const dados = this.ruidoBolha.getChannelData(0);
+                    for (let i = 0; i < amostras; i++) {
+                        dados[i] = (Math.random() * 2 - 1) * Math.exp(-6.5 * i / amostras);
+                    }
+                }
+                const estalo = ctx.createBufferSource();
+                const filtro = ctx.createBiquadFilter();
+                const volumeEstalo = ctx.createGain();
+                estalo.buffer = this.ruidoBolha;
+                filtro.type = 'bandpass';
+                filtro.frequency.value = 1850 * tom;
+                filtro.Q.value = .65;
+                volumeEstalo.gain.value = .48 * intensidade;
+                estalo.connect(filtro).connect(volumeEstalo).connect(saida);
+                estalo.start(inicio);
+                estalo.onended = () => { estalo.disconnect(); filtro.disconnect(); volumeEstalo.disconnect(); };
+
+                const gota = ctx.createOscillator();
+                const volumeGota = ctx.createGain();
+                gota.frequency.setValueAtTime(590 * tom, inicio);
+                gota.frequency.exponentialRampToValueAtTime(165 * tom, inicio + .075);
+                volumeGota.gain.setValueAtTime(.001, inicio);
+                volumeGota.gain.linearRampToValueAtTime(.28 * intensidade, inicio + .006);
+                volumeGota.gain.exponentialRampToValueAtTime(.001, inicio + .085);
+                gota.connect(volumeGota).connect(saida);
+                gota.start(inicio);
+                gota.stop(inicio + .09);
+                gota.onended = () => { gota.disconnect(); volumeGota.disconnect(); };
+            },
+
             tocarEfeito: function(nome, variacao = 0) {
+                if (nome === 'bolha') return this.tocarEstouro(variacao);
+                if (nome === 'bomba-bolhas') {
+                    this.tocarEstouro(-7);
+                    this.tocarEstouro(2, .055, .8);
+                    this.tocarEstouro(7, .12, .65);
+                    return;
+                }
                 const efeitos = {
                     voo: [[390, 765, .12, 0, 'sine'], [800, 1100, .06, .018, 'triangle']],
                     impacto: [[185, 53, .23, 0, 'triangle'], [108, 46, .12, .025, 'sine']],
                     bloco: [[325, 587, .12, 0, 'triangle'], [702, 872, .09, .032, 'sine']],
                     rebote: [[280, 465, .09, 0, 'triangle']],
-                    bolha: [[680, 213, .10, 0, 'sine'], [1260, 480, .046, .009, 'triangle']],
                     carta: [[480, 660, .07, 0, 'triangle']],
                     par: [[523, 523, .18, 0, 'sine'], [659, 659, .19, .065, 'sine'], [784, 784, .22, .13, 'triangle']]
                 };
@@ -268,6 +313,8 @@
                 motor.ultimoFrame = instante;
                 if (motor === MotorBolhas) {
                     motor.ultimoSpawn += instante - agora;
+                    motor.proximaBomba += instante - agora;
+                    if (motor.fimAvisoBonus) motor.fimAvisoBonus += instante - agora;
                     if (motor.prazoRush) motor.prazoRush += instante - agora;
                 }
                 motor.canvas.focus({ preventScroll: true });
@@ -617,7 +664,7 @@
                 this.particulasVento = [];
                 this.obstaculosPassados = 0;
                 this.moedasGanhasPartida = 0;
-                this.timer = 62;
+                this.timer = 91;
                 this.centroPassagem = this.canvas.height * .48;
                 this.cicloAnimProfundidade = 0;
                 document.querySelectorAll("#tela-flappy .impacto-voo").forEach(efeito => efeito.remove());
@@ -663,8 +710,15 @@
                 this.rodando = true;
                 GerenciadorArcade.atualizarControlePausa(true, this);
                 this.canvas.focus({ preventScroll: true });
-                this.pular(1);
-                if (this.modo === 2) this.pular(2);
+                this.aguardandoPrimeiroToque = true;
+                for (const jogador of [this.p1, this.p2]) {
+                    jogador.x = jogador.xBase;
+                    if (!jogador.el) continue;
+                    jogador.el.style.left = `${jogador.x}px`;
+                    jogador.el.style.top = `${jogador.y}px`;
+                    jogador.el.style.transform = '';
+                }
+                document.getElementById('flappy-primeiro-toque').hidden = false;
 
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
@@ -675,6 +729,14 @@
                 const p = (jogador === 1) ? this.p1 : this.p2;
                 if (!p.vivo) return;
 
+                if (this.aguardandoPrimeiroToque) {
+                    this.aguardandoPrimeiroToque = false;
+                    document.getElementById('flappy-primeiro-toque').hidden = true;
+                    if (this.modo === 2) {
+                        const parceiro = jogador === 1 ? this.p2 : this.p1;
+                        parceiro.vy = parceiro.imp;
+                    }
+                }
                 p.vy = p.imp;
                 AudioMotor.tocarEfeito('voo', jogador === 1 ? 0 : 3);
 
@@ -708,6 +770,7 @@
                 GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 this.anim = null;
+                document.getElementById('flappy-primeiro-toque').hidden = true;
                 if (this.p1.el) this.p1.el.style.display = 'none';
                 if (this.p2.el) this.p2.el.style.display = 'none';
             },
@@ -725,13 +788,17 @@
                 }
             },
 
+            obterProgresso: function() {
+                return Math.min(1, Math.max(0, (this.obstaculosPassados - 4) / 38));
+            },
+
             obterEspacoAtual: function() {
-                const larguraInicial = Math.min(258, this.canvas.height * .56);
-                const progresso = Math.min(1, this.obstaculosPassados / 36);
-                return larguraInicial * (1 - .24 * progresso);
+                const espacoInicial = Math.min(290, this.canvas.height * .62);
+                return espacoInicial * (1 - .31 * this.obterProgresso());
             },
 
             atualizar: function() {
+                if (this.aguardandoPrimeiroToque) return;
                 // Ciclo senoidal suave de troca de profundidade e avanço/recuo
                 this.cicloAnimProfundidade += 0.045;
                 const balancoX = Math.sin(this.cicloAnimProfundidade) * 22;
@@ -806,12 +873,12 @@
 
                 // Spawn de troncos e itens
                 this.timer++;
-                const progressoVoo = Math.min(1, this.obstaculosPassados / 36);
-                const intervaloSpawn = 124 - progressoVoo * 30;
+                const progressoVoo = this.obterProgresso();
+                const intervaloSpawn = 137 - progressoVoo * 41;
                 if (this.timer > intervaloSpawn) {
                     this.timer = 0;
                     const espaco = this.obterEspacoAtual();
-                    const variacao = this.canvas.height * (.045 + .105 * progressoVoo);
+                    const variacao = this.canvas.height * (.017 + .13 * progressoVoo);
                     const centro = this.centroPassagem + (Math.random() * 2 - 1) * variacao;
                     const topo = Math.max(20, Math.min(this.canvas.height - espaco - 37, centro - espaco / 2));
                     this.centroPassagem = topo + espaco / 2;
@@ -842,7 +909,7 @@
                     }
                 }
 
-                const velRolagem = 2.05 + progressoVoo * 1.45;
+                const velRolagem = 2.12 + progressoVoo * 1.4;
 
                 // Movimento e colisão com troncos
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
@@ -1182,12 +1249,23 @@
                     mover(e);
                 };
                 this.canvas.onpointermove = mover;
-                this.canvas.onlostpointercapture = this.canvas.onpointercancel =
-                    this.canvas.onpointerup = e => ponteiros.delete(e.pointerId);
+                this.canvas.onlostpointercapture = this.canvas.onpointercancel = e => ponteiros.delete(e.pointerId);
+                this.canvas.onpointerup = e => {
+                    if (!ponteiros.has(e.pointerId)) return;
+                    mover(e);
+                    ponteiros.delete(e.pointerId);
+                    this.lancarBolaSolo();
+                };
 
                 this.teclas = new Set();
                 this.canvas.onkeydown = e => {
-                    if (!this.rodando || e.altKey || e.ctrlKey || e.metaKey || !['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(e.code)) return;
+                    if (!this.rodando || e.altKey || e.ctrlKey || e.metaKey) return;
+                    if (e.code === 'Space' && this.modo === 1) {
+                        e.preventDefault();
+                        if (!e.repeat) this.lancarBolaSolo();
+                        return;
+                    }
+                    if (!['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(e.code)) return;
                     e.preventDefault();
                     this.teclas.add(e.code);
                 };
@@ -1217,6 +1295,7 @@
                 this.pontosJ1 = 0;
                 this.pontosJ2 = 0;
                 this.estilhacos = [];
+                this.bolaEmEspera = false;
                 this.obstaculoTimer = 0;
                 tentarVibrar(35);
 
@@ -1279,23 +1358,25 @@
 
             gerarGradeBlocos: function() {
                 this.blocos = [];
-                const limite = Math.max(1, Math.floor((this.skate.y - 91) / 20));
-                const linhas = Math.min(8, this.faseAtual + 2, limite);
-                const colunas = this.faseAtual < 3 ? 6 : 7;
+                const alturaBloco = 22;
+                const distancia = alturaBloco + 7;
+                const limite = Math.max(1, Math.floor((this.skate.y - 83) / distancia));
+                const linhas = Math.min(7, this.faseAtual + 1, limite);
+                const colunas = Math.min(7, this.faseAtual + 4);
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
-                const alturaBloco = 14;
-                const paletaCores = ['#f66b91', '#fca96a', '#ffd577', '#6eddb4', '#69cafa', '#b490fc'];
+                const paletaCores = ['#f780a3', '#ffac6f', '#ffda76', '#75e1ba', '#77cefa', '#bf9dff'];
 
                 for (let l = 0; l < linhas; l++) {
                     const cor = paletaCores[l % paletaCores.length];
                     for (let c = 0; c < colunas; c++) {
                         this.blocos.push({
                             x: margemX + c * larguraBloco,
-                            y: 36 + l * (alturaBloco + 6),
-                            w: larguraBloco - 5,
+                            y: 43 + l * distancia,
+                            w: larguraBloco - 6,
                             h: alturaBloco,
                             cor: cor,
+                            resistencia: this.faseAtual >= 4 && (l * 2 + c) % 4 === 0 ? 2 : 1,
                             vivo: true
                         });
                     }
@@ -1320,6 +1401,7 @@
             parar: function() {
                 this.rodando = false;
                 this.teclas?.clear();
+                document.getElementById('blocos-dica-saque').hidden = true;
                 GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
@@ -1358,10 +1440,24 @@
                 const topo = direcao('KeyD', 'KeyA');
                 if (base) this.moverSkate(false, this.skate.x + this.skate.w / 2 + base * 7);
                 if (topo && this.modo === 2) this.moverSkate(true, this.skateTopo.x + this.skateTopo.w / 2 + topo * 7);
+                for (let i = this.estilhacos.length - 1; i >= 0; i--) {
+                    const est = this.estilhacos[i];
+                    est.x += est.vx;
+                    est.y += est.vy;
+                    est.vy += 0.2;
+                    est.alpha -= 0.04;
+                    if (est.alpha <= 0) this.estilhacos.splice(i, 1);
+                }
+                if (this.bolaEmEspera) {
+                    this.posicionarBolaNoSkate();
+                    return;
+                }
+                const anterior = { x: this.bola.x, y: this.bola.y };
                 this.bola.x += this.bola.vx;
                 this.bola.y += this.bola.vy;
 
                 if (this.bola.x - this.bola.r <= 0 || this.bola.x + this.bola.r >= this.canvas.width) {
+                    this.bola.x = Math.max(this.bola.r, Math.min(this.canvas.width - this.bola.r, this.bola.x));
                     this.bola.vx *= -1;
                     AudioMotor.tocarEfeito('rebote');
                 }
@@ -1400,7 +1496,7 @@
                     }
 
                     this.obstaculoTimer++;
-                    if (this.obstaculoTimer > 280) {
+                    if (this.pontosJ1 + this.pontosJ2 >= 2 && this.obstaculoTimer > 310) {
                         this.obstaculoTimer = 0;
                         if (this.blocos.filter(b => b.vivo).length < 3) {
                             this.adicionarObstaculoCentroPong();
@@ -1413,53 +1509,20 @@
                         this.bola.vy = -Math.abs(this.bola.vy);
                         const centro = this.skate.x + this.skate.w / 2;
                         const offset = (this.bola.x - centro) / (this.skate.w / 2);
-                        this.bola.vx = offset * 4.4;
+                        this.bola.vx = this.modo === 1 && Math.abs(offset) < .16 ?
+                            .75 * (Math.sign(this.bola.vx) || 1) : offset * 4.4;
                         AudioMotor.tocarTom(550, 0.08);
                         tentarVibrar(15);
                     }
                 }
 
-                for (let i = this.estilhacos.length - 1; i >= 0; i--) {
-                    const est = this.estilhacos[i];
-                    est.x += est.vx;
-                    est.y += est.vy;
-                    est.vy += 0.2;
-                    est.alpha -= 0.04;
-                    if (est.alpha <= 0) this.estilhacos.splice(i, 1);
-                }
-
-                let vivos = 0;
-                this.blocos.forEach(b => {
-                    if (!b.vivo) return;
-                    vivos++;
-
-                    if (this.bola.x + this.bola.r > b.x && this.bola.x - this.bola.r < b.x + b.w &&
-                        this.bola.y + this.bola.r > b.y && this.bola.y - this.bola.r < b.y + b.h) {
-                        b.vivo = false;
-                        this.bola.vy *= -1;
-                        this.gerarEstilhacos(b.x, b.y, b.w, b.h, b.cor);
-
-                        if (this.modo === 1) {
-                            this.totalDestruidos++;
-                            document.getElementById('placar-quebrablocos-blocos').textContent = this.totalDestruidos;
-
-                            if (this.totalDestruidos % 5 === 0) {
-                                this.moedasGanhas++;
-                                GerenciadorArcade.adicionarMoedas(1);
-                                document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
-                                AudioMotor.tocarTom(880, 0.16);
-                            } else {
-                                AudioMotor.tocarEfeito('bloco');
-                            }
-                        } else {
-                            AudioMotor.tocarTom(720, 0.1);
-                            tentarVibrar(25);
-                        }
-                    }
-                });
+                const { x, y, r } = this.bola;
+                const bloco = this.blocos.find(b => b.vivo &&
+                    x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h);
+                if (bloco) this.rebaterNoBloco(bloco, anterior);
 
                 if (this.modo === 1) {
-                    if (vivos === 0) {
+                    if (!this.blocos.some(b => b.vivo)) {
                         this.faseAtual++;
                         this.moedasGanhas += 3;
                         GerenciadorArcade.adicionarMoedas(3);
@@ -1481,11 +1544,64 @@
                 }
             },
 
-            servirBolaSolo: function() {
+            rebaterNoBloco: function(bloco, anterior) {
+                const bola = this.bola;
+                if (anterior.y - bola.r >= bloco.y + bloco.h) {
+                    bola.y = bloco.y + bloco.h + bola.r;
+                    bola.vy = Math.abs(bola.vy);
+                } else if (anterior.y + bola.r <= bloco.y) {
+                    bola.y = bloco.y - bola.r;
+                    bola.vy = -Math.abs(bola.vy);
+                } else if (anterior.x < bloco.x + bloco.w / 2) {
+                    bola.x = bloco.x - bola.r;
+                    bola.vx = -Math.abs(bola.vx);
+                } else {
+                    bola.x = bloco.x + bloco.w + bola.r;
+                    bola.vx = Math.abs(bola.vx);
+                }
+                if (bloco.resistencia > 1) {
+                    bloco.resistencia--;
+                    AudioMotor.tocarEfeito('rebote', -4);
+                    return;
+                }
+                bloco.vivo = false;
+                this.gerarEstilhacos(bloco.x, bloco.y, bloco.w, bloco.h, bloco.cor);
+                if (this.modo === 2) {
+                    AudioMotor.tocarTom(720, .1);
+                    tentarVibrar(25);
+                    return;
+                }
+                this.totalDestruidos++;
+                document.getElementById('placar-quebrablocos-blocos').textContent = this.totalDestruidos;
+                if (this.totalDestruidos % 5 === 0) {
+                    this.moedasGanhas++;
+                    GerenciadorArcade.adicionarMoedas(1);
+                    document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
+                    AudioMotor.tocarTom(880, .16);
+                } else {
+                    AudioMotor.tocarEfeito('bloco');
+                }
+            },
+
+            posicionarBolaNoSkate: function() {
                 this.bola.x = this.skate.x + this.skate.w / 2;
-                this.bola.y = this.skate.y - this.bola.r - 12;
-                this.bola.vx = (Math.random() < .5 ? -1 : 1) * 1.65;
-                this.bola.vy = -Math.min(5.8, 2.65 + (this.faseAtual - 1) * .32);
+                this.bola.y = this.skate.y - this.bola.r - 5;
+            },
+
+            servirBolaSolo: function() {
+                this.bolaEmEspera = true;
+                this.posicionarBolaNoSkate();
+                document.getElementById('blocos-dica-saque').hidden = false;
+            },
+
+            lancarBolaSolo: function() {
+                if (!this.rodando || this.modo !== 1 || !this.bolaEmEspera) return;
+                this.bolaEmEspera = false;
+                this.posicionarBolaNoSkate();
+                this.bola.vx = this.bola.x <= this.canvas.width / 2 ? 1.35 : -1.35;
+                this.bola.vy = -Math.min(5.65, 2.45 + (this.faseAtual - 1) * .38);
+                document.getElementById('blocos-dica-saque').hidden = true;
+                AudioMotor.tocarEfeito('rebote');
             },
 
             resetarBolaPong: function(direcaoY) {
@@ -1507,28 +1623,10 @@
                     ctx.restore();
                 });
 
-                ctx.save();
-                ctx.fillStyle = '#0f172a';
-                ctx.beginPath();
-                ctx.roundRect(this.skate.x, this.skate.y + 2, this.skate.w, 9, 6);
-                ctx.fill();
-                ctx.fillStyle = '#fbbf24';
-                ctx.beginPath();
-                ctx.roundRect(this.skate.x + 2, this.skate.y, this.skate.w - 4, 6, 4);
-                ctx.fill();
-                ctx.restore();
+                this.desenharSkate(this.skate);
 
                 if (this.modo === 2) {
-                    ctx.save();
-                    ctx.fillStyle = '#0f172a';
-                    ctx.beginPath();
-                    ctx.roundRect(this.skateTopo.x, this.skateTopo.y - 2, this.skateTopo.w, 9, 6);
-                    ctx.fill();
-                    ctx.fillStyle = '#f87171';
-                    ctx.beginPath();
-                    ctx.roundRect(this.skateTopo.x + 2, this.skateTopo.y, this.skateTopo.w - 4, 6, 4);
-                    ctx.fill();
-                    ctx.restore();
+                    this.desenharSkate(this.skateTopo, true);
 
                     ctx.save();
                     ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
@@ -1550,20 +1648,85 @@
                 ctx.fill();
                 ctx.restore();
 
-                this.blocos.forEach(b => {
-                    if (!b.vivo) return;
-                    const brilho = ctx.createLinearGradient(0, b.y, 0, b.y + b.h);
-                    brilho.addColorStop(0, '#fff7df');
-                    brilho.addColorStop(.24, b.cor);
-                    brilho.addColorStop(.78, b.cor);
-                    brilho.addColorStop(1, '#403351');
-                    ctx.fillStyle = brilho;
+                for (const bloco of this.blocos) if (bloco.vivo) this.desenharBloco(bloco);
+            },
+
+            desenharSkate: function(skate, invertido = false) {
+                const ctx = this.ctx;
+                const {x, y, w} = skate;
+                ctx.save();
+                ctx.translate(x, invertido ? y + 12 : y);
+                if (invertido) ctx.scale(1, -1);
+                for (const roda of [w * .22, w * .78]) {
+                    ctx.fillStyle = '#b5c7db';
+                    ctx.fillRect(roda - 3, 6, 6, 10);
                     ctx.beginPath();
-                    ctx.roundRect(b.x, b.y, b.w, b.h, 5);
+                    ctx.arc(roda, 17, 7, 0, Math.PI * 2);
+                    ctx.fillStyle = invertido ? '#ffaecc' : '#7fe7d1';
                     ctx.fill();
-                    ctx.strokeStyle = '#fff5dc55';
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#263447';
                     ctx.stroke();
-                });
+                    ctx.fillStyle = '#f6faff';
+                    ctx.beginPath();
+                    ctx.arc(roda, 17, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                const deck = ctx.createLinearGradient(0, -3, 0, 11);
+                deck.addColorStop(0, invertido ? '#ffd0ed' : '#fff0b6');
+                deck.addColorStop(.48, invertido ? '#eb73ac' : '#ee9d51');
+                deck.addColorStop(1, invertido ? '#602e62' : '#914439');
+                ctx.fillStyle = deck;
+                ctx.beginPath();
+                ctx.moveTo(0, -2);
+                ctx.quadraticCurveTo(8, 4, 17, 0);
+                ctx.lineTo(w - 17, 0);
+                ctx.quadraticCurveTo(w - 8, 4, w, -2);
+                ctx.quadraticCurveTo(w, 11, w - 16, 10);
+                ctx.lineTo(16, 10);
+                ctx.quadraticCurveTo(0, 11, 0, -2);
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#fff6c6';
+                ctx.stroke();
+                ctx.fillStyle = '#233345';
+                ctx.beginPath();
+                ctx.roundRect(15, 0, w - 30, 3.5, 2);
+                ctx.fill();
+                ctx.restore();
+            },
+
+            desenharBloco: function(bloco) {
+                const ctx = this.ctx;
+                const {x, y, w, h, cor, resistencia} = bloco;
+                const face = ctx.createLinearGradient(x, y, x + w * .7, y + h);
+                face.addColorStop(0, '#fff7df');
+                face.addColorStop(.31, cor);
+                face.addColorStop(.68, cor);
+                face.addColorStop(1, '#645175');
+                ctx.fillStyle = '#171329a8';
+                ctx.beginPath();
+                ctx.roundRect(x, y + 3, w, h + 1, 6);
+                ctx.fill();
+                ctx.fillStyle = face;
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, 6);
+                ctx.fill();
+                ctx.strokeStyle = '#fff4e69c';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.fillStyle = '#fff9d66e';
+                ctx.beginPath();
+                ctx.roundRect(x + 5, y + 3, w - 10, 3, 2);
+                ctx.fill();
+                if (resistencia > 1) {
+                    ctx.fillStyle = '#4e395c';
+                    for (const centro of [x + w * .3, x + w * .7]) {
+                        ctx.beginPath();
+                        ctx.arc(centro, y + h * .62, 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
             },
 
             fim: function() {
@@ -1669,6 +1832,10 @@
                 this.gotas = [];
                 this.ultimoSpawn = performance.now();
                 this.prazoRush = 0;
+                this.proximaBomba = this.ultimoSpawn + 13500;
+                this.bomba = null;
+                this.onda = null;
+                this.fimAvisoBonus = 0;
                 tentarVibrar(35);
 
                 const hudTempo = document.getElementById('hud-bolhas-tempo-rush');
@@ -1732,8 +1899,8 @@
                 this.rodando = true;
                 GerenciadorArcade.atualizarControlePausa(true, this);
                 this.canvas.focus({ preventScroll: true });
-                const qtdInicial = this.modo === 'rush' ? 12 : (this.modo === 'duelo' ? 8 : 4);
-                for (let i = 0; i < qtdInicial; i++) this.criarBolha();
+                this.criarBolha(.34, 'j1');
+                if (this.modo !== 'solo') this.criarBolha(.68, 'j2');
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
             },
@@ -1750,18 +1917,19 @@
                 GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 this.anim = null;
+                this.mostrarBonus('');
             },
 
-            criarBolha: function() {
+            criarBolha: function(fracaoInicial, donoInicial) {
                 let dono = 'j1';
                 if (this.modo === 'duelo' || this.modo === 'rush') {
                     dono = Math.random() < 0.5 ? 'j1' : 'j2';
                 }
 
                 const progresso = this.obterProgresso();
-                const velBase = this.modo === 'rush' ? 1.65 + .9 * progresso : .95 + .95 * progresso;
-                const variacao = .45 + .95 * progresso;
-                const raio = 32 - 9 * progresso + Math.random() * 6;
+                const velBase = this.modo === 'rush' ? 1.18 + 1.45 * progresso : .86 + 1.15 * progresso;
+                const variacao = .3 + .95 * progresso;
+                const raio = 36 - 13 * progresso + Math.random() * 5;
                 let x, y, vx, vy;
 
                 if (this.modo === 'rush') {
@@ -1794,6 +1962,13 @@
                     vy = -(velBase + Math.random() * variacao);
                 }
 
+                if (fracaoInicial !== undefined) {
+                    dono = donoInicial;
+                    x = this.canvas.width * fracaoInicial;
+                    y = this.canvas.height * .7;
+                    vx = 0;
+                    vy = -velBase;
+                }
                 this.bolhas.push({
                     dono: dono,
                     x: x,
@@ -1807,8 +1982,8 @@
             },
 
             obterProgresso: function() {
-                if (this.modo === 'rush') return 1 - this.segundosRestantesRush / 180;
-                return Math.min(1, (this.estouradasJ1 + this.estouradasJ2) / 42);
+                if (this.modo === 'rush') return Math.min(1, Math.max(0, (166 - this.segundosRestantesRush) / 166));
+                return Math.min(1, Math.max(0, (this.estouradasJ1 + this.estouradasJ2 - 5) / 56));
             },
 
             gerarGotas: function(bx, by, cor = '#38bdf8') {
@@ -1825,37 +2000,77 @@
                 }
             },
 
+            mostrarBonus: function(texto) {
+                const status = document.getElementById('bolhas-bonus-status');
+                status.hidden = !texto;
+                status.textContent = texto;
+            },
+
+            contabilizarEstouros: function(j1, j2) {
+                const anterior = this.estouradasJ1 + this.estouradasJ2;
+                this.estouradasJ1 += j1;
+                this.estouradasJ2 += j2;
+                document.getElementById('placar-bolhas-estouradas').textContent = this.estouradasJ1;
+                document.getElementById('placar-bolhas-estouradas-j2').textContent = this.estouradasJ2;
+                const moedas = Math.floor((anterior + j1 + j2) / 20) - Math.floor(anterior / 20);
+                if (moedas) GerenciadorArcade.adicionarMoedas(moedas);
+                return moedas;
+            },
+
             estourarNaPosicao: function(x, y) {
+                const bomba = this.bomba;
+                if (bomba && Math.hypot(x - bomba.x, y - bomba.y) <= bomba.r + 12) {
+                    const naTela = this.bolhas.filter(b => b.x + b.r >= 0 && b.x - b.r <= this.canvas.width &&
+                        b.y + b.r >= 0 && b.y - b.r <= this.canvas.height);
+                    const rosas = naTela.filter(b => b.dono === 'j2').length;
+                    this.contabilizarEstouros(naTela.length - rosas, rosas);
+                    for (const b of naTela.slice(0, 18)) {
+                        this.gerarGotas(b.x, b.y, b.dono === 'j2' ? '#f6a6ca' : '#8af2f7');
+                    }
+                    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        this.onda = { x: bomba.x, y: bomba.y, r: bomba.r, alpha: .85 };
+                    }
+                    this.bolhas = [];
+                    this.bomba = null;
+                    this.mostrarBonus(naTela.length ? `Bomba dourada · +${naTela.length} ${naTela.length === 1 ? 'bolha' : 'bolhas'}` : 'Bomba dourada estourada');
+                    this.fimAvisoBonus = performance.now() + 2100;
+                    AudioMotor.tocarEfeito('bomba-bolhas');
+                    tentarVibrar([24, 26, 18]);
+                    return;
+                }
                 for (let i = this.bolhas.length - 1; i >= 0; i--) {
                     const b = this.bolhas[i];
-                    const dist = Math.hypot(x - b.x, y - b.y);
+                    if (Math.hypot(x - b.x, y - b.y) > b.r + 13) continue;
+                    const rosa = b.dono === 'j2';
+                    this.gerarGotas(b.x, b.y, rosa ? '#f6a6ca' : '#8af2f7');
+                    this.bolhas.splice(i, 1);
+                    AudioMotor.tocarEfeito('bolha', rosa ? 4 : Math.random() * 3);
+                    tentarVibrar(20);
+                    if (this.contabilizarEstouros(rosa ? 0 : 1, rosa ? 1 : 0)) AudioMotor.tocarTom(880, 0.18);
+                    return;
+                }
+            },
 
-                    if (dist < b.r + 20) {
-                        const corGota = b.dono === 'j2' ? '#f43f5e' : '#38bdf8';
-                        this.gerarGotas(b.x, b.y, corGota);
-
-                        if (b.dono === 'j2') {
-                            this.estouradasJ2++;
-                            const elJ2 = document.getElementById('placar-bolhas-estouradas-j2');
-                            if (elJ2) elJ2.textContent = this.estouradasJ2;
-                            AudioMotor.tocarEfeito('bolha', 4);
-                        } else {
-                            this.estouradasJ1++;
-                            const elJ1 = document.getElementById('placar-bolhas-estouradas');
-                            if (elJ1) elJ1.textContent = this.estouradasJ1;
-                            AudioMotor.tocarEfeito('bolha');
-                        }
-
-                        this.bolhas.splice(i, 1);
-                        tentarVibrar(20);
-
-                        const totalGeral = this.estouradasJ1 + this.estouradasJ2;
-                        if (totalGeral % 20 === 0) {
-                            GerenciadorArcade.adicionarMoedas(1);
-                            AudioMotor.tocarTom(880, 0.18);
-                        }
-                        break;
+            atualizarBomba: function(agora) {
+                if (this.fimAvisoBonus && agora >= this.fimAvisoBonus) {
+                    this.fimAvisoBonus = 0;
+                    this.mostrarBonus('');
+                }
+                if (this.bomba) {
+                    this.bomba.y += 2.8;
+                    if (this.bomba.y > this.canvas.height + this.bomba.r) {
+                        this.bomba = null;
+                        this.mostrarBonus('');
                     }
+                } else if (agora >= this.proximaBomba) {
+                    this.bomba = { x: this.canvas.width * (.2 + Math.random() * .6), y: -30, r: 26 };
+                    this.proximaBomba = agora + 16500 + Math.random() * 5500;
+                    this.mostrarBonus('Toque na bomba dourada para estourar todas!');
+                }
+                if (this.onda) {
+                    this.onda.r += 23;
+                    this.onda.alpha -= .05;
+                    if (this.onda.alpha <= 0) this.onda = null;
                 }
             },
 
@@ -1883,13 +2098,14 @@
                     if (!segundos) return this.fim();
                 }
                 const progresso = this.obterProgresso();
-                const intervalo = this.modo === 'rush' ? 465 - progresso * 245 :
-                    (this.modo === 'duelo' ? 1000 : 1230) - progresso * 410;
+                const intervalo = this.modo === 'rush' ? 1100 - progresso * 805 :
+                    (this.modo === 'duelo' ? 1330 : 1470) - progresso * 820;
+                this.atualizarBomba(agora);
 
                 if (agora - this.ultimoSpawn > intervalo) {
                     this.ultimoSpawn = agora;
                     this.criarBolha();
-                    if (this.modo === 'rush' && progresso >= .32) {
+                    if (this.modo === 'rush' && progresso >= .72 && Math.random() < .22) {
                         this.criarBolha();
                     }
                 }
@@ -1987,6 +2203,60 @@
                     ctx.fill();
                     ctx.restore();
                 });
+                if (this.onda) {
+                    ctx.save();
+                    ctx.globalAlpha = this.onda.alpha;
+                    ctx.strokeStyle = '#ffe5a0';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(this.onda.x, this.onda.y, this.onda.r, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                if (this.bomba) this.desenharBomba();
+            },
+
+            desenharBomba: function() {
+                const ctx = this.ctx;
+                const {x, y, r} = this.bomba;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#ffdd96';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(8, -18);
+                ctx.quadraticCurveTo(10, -32, 20, -33);
+                ctx.stroke();
+                ctx.strokeStyle = '#fff5c6';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const angulo = i * Math.PI / 3;
+                    ctx.beginPath();
+                    ctx.moveTo(22 + Math.cos(angulo) * 4, -34 + Math.sin(angulo) * 4);
+                    ctx.lineTo(22 + Math.cos(angulo) * 8, -34 + Math.sin(angulo) * 8);
+                    ctx.stroke();
+                }
+                const dourado = ctx.createRadialGradient(-9, -10, 2, 0, 1, r);
+                dourado.addColorStop(0, '#fffce1');
+                dourado.addColorStop(.5, '#ffcc72');
+                dourado.addColorStop(1, '#ad581e');
+                ctx.fillStyle = dourado;
+                ctx.strokeStyle = '#ffeabb';
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = '#86421d';
+                ctx.beginPath();
+                for (let i = 0; i < 10; i++) {
+                    const angulo = i * Math.PI / 5 - Math.PI / 2;
+                    const raio = i % 2 === 0 ? 14 : 6;
+                    ctx.lineTo(Math.cos(angulo) * raio, Math.sin(angulo) * raio);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
             },
 
             fim: function() {
@@ -2165,6 +2435,7 @@
                 if (this.modo === 'ia' && this.turno === 'O') {
                     this.timerChuiri = setTimeout(() => this.jogadaChuiri(), 420);
                 }
+                this.atualizarDica();
             },
 
             jogada: function(i) {
@@ -2195,6 +2466,7 @@
                     if (this.tabuleiro.every(x => x !== '')) return this.empate();
 
                     this.turno = 'O';
+                    this.atualizarDica();
                     document.getElementById('status-velha').textContent = 'Chuíri a riscar...';
                     this.timerChuiri = setTimeout(() => this.jogadaChuiri(), 420);
                 }
@@ -2202,29 +2474,8 @@
 
             jogadaChuiri: function() {
                 if (this.fim || this.modo !== 'ia') return;
-                let escolhida = null;
-
-                for (let item of this.linhasVitoria) {
-                    const contO = item.linha.filter(idx => this.tabuleiro[idx] === 'O').length;
-                    const vazia = item.linha.find(idx => this.tabuleiro[idx] === '');
-                    if (contO === 2 && vazia !== undefined) { escolhida = vazia; break; }
-                }
-
-                if (escolhida === null && (this.dificuldade === 'desafio' || Math.random() < .44)) {
-                    for (let item of this.linhasVitoria) {
-                        const contX = item.linha.filter(idx => this.tabuleiro[idx] === 'X').length;
-                        const vazia = item.linha.find(idx => this.tabuleiro[idx] === '');
-                        if (contX === 2 && vazia !== undefined) { escolhida = vazia; break; }
-                    }
-                }
-
-                if (escolhida === null && this.dificuldade === 'desafio' && this.tabuleiro[4] === '') escolhida = 4;
-                if (escolhida === null) {
-                    const vazias = this.tabuleiro.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
-                    if (vazias.length > 0) escolhida = vazias[Math.floor(Math.random() * vazias.length)];
-                }
-
-                if (escolhida !== null) {
+                const escolhida = this.escolherJogada();
+                if (escolhida !== undefined) {
                     this.marcar(escolhida, 'O');
                     AudioMotor.tocarSomCaneta(0.18);
                     tentarVibrar(25);
@@ -2234,7 +2485,73 @@
                 if (vitoriaInfo) return this.vitoria('O', vitoriaInfo);
                 if (this.tabuleiro.every(x => x !== '')) return this.empate();
                 this.turno = 'X';
+                this.atualizarDica();
                 document.getElementById('status-velha').textContent = 'Sua vez: Você joga com X (Caneta Azul)';
+            },
+
+            casaQueFechaTrinca: function(p) {
+                for (const {linha} of this.linhasVitoria) {
+                    if (linha.filter(i => this.tabuleiro[i] === p).length !== 2) continue;
+                    const casa = linha.find(i => !this.tabuleiro[i]);
+                    if (casa !== undefined) return casa;
+                }
+            },
+
+            escolherJogada: function() {
+                const vazias = [4, 0, 2, 6, 8, 1, 3, 5, 7].filter(i => !this.tabuleiro[i]);
+                if (this.dificuldade === 'desafio') return this.melhorJogada(vazias);
+                const vitoria = this.casaQueFechaTrinca('O');
+                if (vitoria !== undefined) return vitoria;
+                if (this.dificuldade === 'intermediario') return this.casaQueFechaTrinca('X') ?? vazias[0];
+                return vazias[Math.floor(Math.random() * vazias.length)];
+            },
+
+            melhorJogada: function(vazias) {
+                const tabuleiro = this.tabuleiro.slice();
+                const cache = new Map();
+                const venceu = p => this.linhasVitoria.some(({linha}) => linha.every(i => tabuleiro[i] === p));
+                const avaliar = (vez, livres) => {
+                    if (venceu('O')) return livres.length + 1;
+                    if (venceu('X')) return -(livres.length + 1);
+                    if (!livres.length) return 0;
+                    const chave = vez + tabuleiro.map(casa => casa || '-').join('');
+                    if (cache.has(chave)) return cache.get(chave);
+                    const pontuacoes = livres.map(i => {
+                        tabuleiro[i] = vez;
+                        const valor = avaliar(vez === 'O' ? 'X' : 'O', livres.filter(casa => casa !== i));
+                        tabuleiro[i] = '';
+                        return valor;
+                    });
+                    const melhor = vez === 'O' ? Math.max(...pontuacoes) : Math.min(...pontuacoes);
+                    cache.set(chave, melhor);
+                    return melhor;
+                };
+                let melhor;
+                let maior = -Infinity;
+                for (const i of vazias) {
+                    tabuleiro[i] = 'O';
+                    const valor = avaliar('X', vazias.filter(casa => casa !== i));
+                    tabuleiro[i] = '';
+                    if (valor <= maior) continue;
+                    melhor = i;
+                    maior = valor;
+                }
+                return melhor;
+            },
+
+            atualizarDica: function() {
+                const dica = document.getElementById('velha-dica');
+                document.querySelector('.casa-velha-dica')?.classList.remove('casa-velha-dica');
+                dica.hidden = this.fim || this.modo !== 'ia' || this.dificuldade !== 'treino';
+                if (dica.hidden) return;
+                dica.textContent = 'Junte três marcas em linha, coluna ou diagonal.';
+                if (this.turno !== 'X') return;
+                const vitoria = this.casaQueFechaTrinca('X');
+                const casa = vitoria ?? this.casaQueFechaTrinca('O');
+                if (casa === undefined) return;
+                document.getElementById(`velha-casa-${casa}`)?.classList.add('casa-velha-dica');
+                dica.textContent = vitoria !== undefined ? 'Toque na casa destacada para fechar a trinca.' :
+                    'Toque na casa destacada para bloquear a trinca do Chuíri.';
             },
 
             marcar: function(i, p) {
@@ -2272,10 +2589,13 @@
             vitoria: function(p, vInfo) {
                 if (p === 'X' || this.modo === '2p') {
                     const jogadas = this.tabuleiro.filter(Boolean).length;
-                    window.RecordesArcade?.registrar('velha', this.modo === '2p' ? 'Dois jogadores' : this.dificuldade === 'desafio' ? 'Contra Chuíri · Desafio' : 'Contra Chuíri · Treino',
+                    const niveis = { treino: 'Treino', intermediario: 'Intermediário', desafio: 'Desafio' };
+                    const modalidade = this.modo === '2p' ? 'Dois jogadores' : `Contra Chuíri · ${niveis[this.dificuldade]}`;
+                    window.RecordesArcade?.registrar('velha', modalidade,
                         -jogadas, `Vitória em ${jogadas} jogadas`, `Trinca com ${p}`);
                 }
                 this.fim = true;
+                this.atualizarDica();
                 this.riscarLinhaVitoria(vInfo);
                 const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
 
@@ -2297,6 +2617,7 @@
 
             empate: function() {
                 this.fim = true;
+                this.atualizarDica();
                 document.getElementById('status-velha').innerHTML = '<strong>Deu velha! Ninguém riscou a trinca.</strong>';
             }
         };
@@ -2349,7 +2670,7 @@
             },
 
             trocarNivel: function(pares) {
-                if (![4, 6, 8, 16, 32].includes(pares)) return;
+                if (![4, 6, 8, 12, 16, 24, 32].includes(pares)) return;
                 this.totalPares = pares;
                 for (const botao of document.querySelectorAll('[data-memoria-pares]')) {
                     const ativo = Number(botao.dataset.memoriaPares) === pares;
@@ -2423,6 +2744,10 @@
                 this.paresJ2 = 0;
                 this.turno = 1;
                 this.bloqueado = false;
+                this.usouDica = false;
+                const dica = document.getElementById('memoria-espiar');
+                dica.hidden = this.modo !== 'solo' || this.totalPares > 8;
+                dica.disabled = false;
                 this.atualizarPlacar();
 
                 grade.dataset.pares = this.totalPares;
@@ -2452,11 +2777,7 @@
                 carta.removeAttribute('data-v');
             },
 
-            virar: function(idx) {
-                if (this.bloqueado || this.viradas.length >= 2) return;
-                const el = document.getElementById(`carta-memoria-${idx}`);
-                if (!el || el.getAttribute('data-v') === '1') return;
-
+            revelarCarta: function(el, idx) {
                 const c = this.cartas[idx];
                 const figura = document.createElement('img');
                 figura.src = this.figura(c);
@@ -2466,6 +2787,29 @@
                 el.replaceChildren(figura);
                 el.setAttribute('aria-label', `Carta ${idx + 1}, ${c.nome}`);
                 el.classList.add('revelada');
+            },
+
+            espiar: function() {
+                const dica = document.getElementById('memoria-espiar');
+                if (dica.hidden || dica.disabled || this.bloqueado) return;
+                dica.disabled = true;
+                this.usouDica = true;
+                this.bloqueado = true;
+                const cartas = [...document.getElementById('grade-memoria-arcade').children];
+                cartas.forEach((carta, idx) => this.revelarCarta(carta, idx));
+                this.timerCartas = setTimeout(() => {
+                    cartas.forEach((carta, idx) => this.ocultarCarta(carta, idx));
+                    this.bloqueado = false;
+                }, 2000);
+            },
+
+            virar: function(idx) {
+                if (this.bloqueado || this.viradas.length >= 2) return;
+                const el = document.getElementById(`carta-memoria-${idx}`);
+                if (!el || el.getAttribute('data-v') === '1') return;
+                document.getElementById('memoria-espiar').disabled = true;
+                const c = this.cartas[idx];
+                this.revelarCarta(el, idx);
                 el.setAttribute('data-v', '1');
                 AudioMotor.tocarEfeito('carta');
                 this.viradas.push({ idx, id: c.id });
@@ -2507,13 +2851,13 @@
                             }
                             this.viradas = [];
                             this.bloqueado = false;
-                        }, {4: 1080, 6: 880, 8: 700, 16: 850, 32: 980}[this.totalPares]);
+                        }, {4: 1280, 6: 1150, 8: 1030, 12: 970, 16: 910, 24: 870, 32: 830}[this.totalPares]);
                     }
                 }
             },
 
             fimDeJogo: function(premio) {
-                const modalidade = `${this.totalPares} pares · ${this.modo === '2p' ? 'Dupla' : 'Solo'}`;
+                const modalidade = `${this.totalPares} pares · ${this.modo === '2p' ? 'Dupla' : 'Solo'}${this.usouDica ? ' · Com dica' : ''}`;
                 if (this.modo === '2p') {
                     window.RecordesArcade?.registrar('memoria', modalidade, this.paresJ1,
                         `${this.paresJ1} pares`, `${this.jogadas} jogadas na partida`);
@@ -2585,27 +2929,30 @@
                 evento.preventDefault();
                 GerenciadorArcade.continuar();
             });
-            const alca = dialogo?.querySelector('.arcade-pausa-alca');
-            let toque = null;
-            let ignorarCliqueAte = 0;
-            alca?.addEventListener('click', () => {
-                if (performance.now() > ignorarCliqueAte) GerenciadorArcade.continuar();
-            });
-            alca?.addEventListener('pointerdown', e => {
-                if (e.button !== 0) return;
-                ignorarCliqueAte = 0;
-                toque = { id: e.pointerId, x: e.clientX, y: e.clientY };
-                alca.setPointerCapture?.(e.pointerId);
-            });
-            alca?.addEventListener('pointercancel', () => { toque = null; });
-            alca?.addEventListener('pointerup', e => {
-                if (toque?.id !== e.pointerId) return;
-                const dy = e.clientY - toque.y;
-                const dx = Math.abs(e.clientX - toque.x);
-                if (Math.max(Math.abs(dy), dx) > 8) ignorarCliqueAte = performance.now() + 400;
-                if (dy > 48 && dy > dx) GerenciadorArcade.continuar();
-                toque = null;
-            });
+            for (const alca of document.querySelectorAll('dialog [data-arcade-fechar-gesto]')) {
+                const janela = alca.closest('dialog');
+                const fechar = janela === dialogo ? () => GerenciadorArcade.continuar() : () => janela.close();
+                let toque = null;
+                let ignorarCliqueAte = 0;
+                alca.addEventListener('click', () => {
+                    if (performance.now() > ignorarCliqueAte) fechar();
+                });
+                alca.addEventListener('pointerdown', e => {
+                    if (e.button !== 0) return;
+                    ignorarCliqueAte = 0;
+                    toque = { id: e.pointerId, x: e.clientX, y: e.clientY };
+                    alca.setPointerCapture?.(e.pointerId);
+                });
+                alca.addEventListener('pointercancel', () => { toque = null; });
+                alca.addEventListener('pointerup', e => {
+                    if (toque?.id !== e.pointerId) return;
+                    const dy = e.clientY - toque.y;
+                    const dx = Math.abs(e.clientX - toque.x);
+                    if (Math.max(Math.abs(dy), dx) > 8) ignorarCliqueAte = performance.now() + 400;
+                    if (dy > 48 && dy > dx) fechar();
+                    toque = null;
+                });
+            }
             document.addEventListener('keydown', evento => {
                 if (evento.defaultPrevented || evento.key !== 'Escape' || GerenciadorArcade.partidaPausada) return;
                 GerenciadorArcade.pausar();
