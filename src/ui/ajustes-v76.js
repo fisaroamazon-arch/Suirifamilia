@@ -14,34 +14,149 @@
   for(const topic of ['geral','fertilidade','libido','energia'])document.getElementById('btn-modal-topico-'+topic)?.setAttribute('aria-pressed',String((window.topicoModalAtivoAtual||'geral')===topic));
  }
  const render=window.renderizarConteudoModalOrientacoes;if(render)window.renderizarConteudoModalOrientacoes=function(...args){const value=render.apply(this,args);seasonUI();return value;};
- const dismiss=modal=>{
-  if(modal.id==='modal-modo-acolhimento')return window.fecharModoAcolhimento?.();
-  if(modal.id==='modal-crop-imagem')return window.fecharModalCrop?.();
-  if(modal.id==='modal-confirmacao-nativo-suiri'){modal.querySelector('[id*="cancelar"]')?.click();return;}
+ const dismiss = modal => {
+  if (modal.id === 'modal-modo-acolhimento') return window.fecharModoAcolhimento?.();
+  if (modal.id === 'modal-crop-imagem') return window.fecharModalCrop?.();
+  if (modal.id === 'modal-confirmar-exclusao-agenda') return window.fecharModalConfirmarExclusaoAgenda?.();
+  if (modal.id === 'modal-confirmacao-nativo-suiri') {
+   modal.querySelector('[id*="cancelar"]')?.click();
+   return;
+  }
+  if (modal.id === 'modal-casinha-chuiri') return window.TamagotchiKids?.fecharCasinha();
+  if (modal.matches('dialog')) return modal.close();
   S.closeModal(modal.id);
  };
- const initialized=new WeakSet();
- function setup(modal){
-  const panel=modal.firstElementChild;if(!panel||initialized.has(panel))return;initialized.add(panel);panel.classList.add('suiri-sheet');
-  const handle=document.createElement('button');handle.type='button';handle.className='sheet-drag-handle';handle.setAttribute('aria-label','Puxe para baixo para fechar');handle.innerHTML='<span></span>';panel.prepend(handle);
-  handle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();dismiss(modal);}});
-  modal.addEventListener('click',e=>{if(e.target===modal)dismiss(modal);});
-  let gesture=null;
-  panel.addEventListener('pointerdown',e=>{
-   if(!e.target.closest('.sheet-drag-handle,.modal-header'))return;if(e.target.closest('button,input,a')&&!e.target.closest('.sheet-drag-handle'))return;
-   gesture={x:e.clientX,y:e.clientY,id:e.pointerId};try{e.target.setPointerCapture?.(e.pointerId);}catch{}
+
+ const initialized = new WeakSet();
+ const backdrops = new WeakSet();
+ const overlaySelector = S.isHome ? '.modal-overlay, dialog' : '.modal-overlay';
+
+ function setup(modal) {
+  const native = modal.matches('dialog');
+  if (native && !S.isHome) return;
+  const panel = native ? modal : modal.firstElementChild;
+  if (!panel || initialized.has(panel)) return;
+  initialized.add(panel);
+  panel.classList.add(native ? 'suiri-swipe-dialog' : 'suiri-sheet');
+
+  const handle = document.createElement('button');
+  handle.type = 'button';
+  handle.className = 'sheet-drag-handle';
+  handle.setAttribute('aria-label', 'Fechar janela. Também pode deslizar para baixo.');
+  handle.innerHTML = '<span></span>';
+  panel.prepend(handle);
+
+  let gesture = null;
+  let ignoreHandleClickUntil = 0;
+  const isOpen = () => native ? modal.open : !modal.classList.contains('oculto') && !modal.hidden;
+  const dismissIfOpen = () => { if (isOpen()) dismiss(modal); };
+
+  handle.addEventListener('click', () => {
+   if (performance.now() >= ignoreHandleClickUntil) dismissIfOpen();
   });
-  panel.addEventListener('pointermove',e=>{if(!gesture||e.pointerId!==gesture.id)return;const dy=Math.max(0,e.clientY-gesture.y);if(dy>8&&Math.abs(e.clientX-gesture.x)<dy){if(e.cancelable)e.preventDefault();panel.style.setProperty('--sheet-drag',Math.min(180,dy)+'px');}});
-  function end(e){if(!gesture||e.pointerId!==gesture.id)return;const dy=e.clientY-gesture.y,dx=Math.abs(e.clientX-gesture.x);gesture=null;panel.style.removeProperty('--sheet-drag');if(e.type!=='pointercancel'&&dy>65&&dy>dx)dismiss(modal);}
-  panel.addEventListener('pointerup',end);panel.addEventListener('pointercancel',end);
-  if(modal.id==='modal-orientacoes-estagio-fase'){
-   const phases=document.getElementById('btn-modal-fase-1')?.parentElement,topics=document.getElementById('btn-modal-topico-geral')?.parentElement;
-   phases?.classList.add('phase-tabs');topics?.classList.add('phase-topics');
+  if (!native && !backdrops.has(modal)) {
+   backdrops.add(modal);
+   modal.addEventListener('click', event => { if (event.target === modal) dismissIfOpen(); });
+  }
+
+  const clear = () => {
+   gesture = null;
+   panel.style.removeProperty('--sheet-drag');
+  };
+  if (native) modal.addEventListener('close', clear);
+
+  function begin(target, point, source, id) {
+   if (!isOpen() || gesture) return false;
+   const grip = target === handle || handle.contains(target);
+   const header = target.closest('.modal-header, .chuiri-casa-topo');
+   const interactive = target.closest('button, input, select, textarea, a, label, [role="button"], [contenteditable], canvas, video');
+   if (interactive && !grip) return false;
+   if (!grip && !header) {
+    if (source !== 'touch' || !S.isHome) return false;
+    for (let element = target; element && panel.contains(element); element = element.parentElement) {
+     if (element.scrollTop > 0) return false;
+    }
+   }
+   if (grip) ignoreHandleClickUntil = 0;
+   gesture = { source, id, x: point.clientX, y: point.clientY, grip, dragging: false };
+   return true;
+  }
+
+  function move(event, point, source, id) {
+   if (!gesture || gesture.source !== source || gesture.id !== id) return;
+   const dy = point.clientY - gesture.y;
+   const dx = Math.abs(point.clientX - gesture.x);
+   if (!gesture.dragging) {
+    if (Math.max(dx, Math.abs(dy)) <= 8) return;
+    if (gesture.grip) ignoreHandleClickUntil = performance.now() + 400;
+    if (dy <= dx || !event.cancelable) return clear();
+    gesture.dragging = true;
+   }
+   if (event.cancelable) event.preventDefault();
+   panel.style.setProperty('--sheet-drag', Math.max(0, Math.min(180, dy)) + 'px');
+  }
+
+  function end(point, source, id, cancelled = false) {
+   if (!gesture || gesture.source !== source || gesture.id !== id) return;
+   const dy = cancelled ? 0 : point.clientY - gesture.y;
+   const dx = cancelled ? 0 : Math.abs(point.clientX - gesture.x);
+   const close = (gesture.dragging || source === 'pointer') && dy > 65 && dy > dx;
+   if (gesture.grip && (gesture.dragging || close)) ignoreHandleClickUntil = performance.now() + 400;
+   clear();
+   if (close) dismissIfOpen();
+  }
+
+  panel.addEventListener('pointerdown', event => {
+   if (event.pointerType === 'touch' || event.button !== 0) return;
+   if (begin(event.target, event, 'pointer', event.pointerId)) {
+    try { event.target.setPointerCapture?.(event.pointerId); } catch {}
+   }
+  });
+  panel.addEventListener('pointermove', event => move(event, event, 'pointer', event.pointerId));
+  panel.addEventListener('pointerup', event => end(event, 'pointer', event.pointerId));
+  panel.addEventListener('pointercancel', event => end(event, 'pointer', event.pointerId, true));
+
+  panel.addEventListener('touchstart', event => {
+   if (event.touches.length !== 1) return clear();
+   const touch = event.touches[0];
+   begin(event.target, touch, 'touch', touch.identifier);
+  }, { passive: true });
+  panel.addEventListener('touchmove', event => {
+   if (event.touches.length !== 1) return clear();
+   const touch = event.touches[0];
+   move(event, touch, 'touch', touch.identifier);
+  }, { passive: false });
+  panel.addEventListener('touchend', event => {
+   for (const touch of event.changedTouches) end(touch, 'touch', touch.identifier);
+  }, { passive: true });
+  panel.addEventListener('touchcancel', clear, { passive: true });
+
+  if (modal.id === 'modal-orientacoes-estagio-fase') {
+   const phases = document.getElementById('btn-modal-fase-1')?.parentElement;
+   const topics = document.getElementById('btn-modal-topico-geral')?.parentElement;
+   phases?.classList.add('phase-tabs');
+   topics?.classList.add('phase-topics');
   }
  }
- function scan(scope){if(scope.matches?.('.modal-overlay'))setup(scope);scope.querySelectorAll?.('.modal-overlay').forEach(setup);seasonUI();}
+ function scan(scope) {
+  if (scope.matches?.(overlaySelector)) setup(scope);
+  scope.querySelectorAll?.(overlaySelector).forEach(setup);
+ }
  scan(document.body);
- new MutationObserver(records=>{let added=false;for(const r of records)for(const node of r.addedNodes)if(node.nodeType===1&&!node.closest('svg,.season-symbol,.sheet-drag-handle')){const owner=node.closest('.modal-overlay');if(owner)setup(owner);if(node.matches('.modal-overlay')||node.querySelector('.modal-overlay'))scan(node);added=true;}if(added)seasonUI();}).observe(document.body,{childList:true,subtree:true});
+ seasonUI();
+ new MutationObserver(records => {
+  let added = false;
+  for (const record of records) {
+   for (const node of record.addedNodes) {
+    if (node.nodeType !== 1 || node.closest('svg,.season-symbol,.sheet-drag-handle')) continue;
+    const owner = node.closest(overlaySelector);
+    if (owner) setup(owner);
+    scan(node);
+    added = true;
+   }
+  }
+  if (added) seasonUI();
+ }).observe(document.body, { childList: true, subtree: true });
  function viewport(){document.documentElement.style.setProperty('--suiri-modal-vh',(window.visualViewport?.height||innerHeight)+'px');document.documentElement.style.setProperty('--suiri-modal-top',(window.visualViewport?.offsetTop||0)+'px');}
  viewport();window.addEventListener('resize',viewport);window.visualViewport?.addEventListener('resize',viewport);
 })();

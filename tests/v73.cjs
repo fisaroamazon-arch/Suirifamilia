@@ -50,17 +50,38 @@ async function load(name,logged=true){
 async function test(name,fn){await fn();checks.push({name,passed:true});}
 (async()=>{
  const main=await load('index.html'),w=main.w,d=w.document;w.localStorage.setItem('suiri:v72:apoio:'+w.perfilAtual.id,String(Date.now()));
- await test('Pense abre preenchido e registra a data local somente ao exibir',async()=>{
+ await test('Pense abre preenchido e registra a data local somente ao exibir',()=>{
   d.querySelectorAll('.modal-overlay').forEach(el=>el.classList.add('oculto'));
   const key='suiri:pense:v73:'+w.perfilAtual.id;
-  w.localStorage.removeItem(key);
-  w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));
-  const modal=d.getElementById('modal-pilula-dia');assert(!modal.classList.contains('oculto'));assert(d.querySelector('#pilula-frase-filosofica blockquote').textContent.length>30);
-  assert.equal(w.localStorage.getItem(key),w.Suiri.today());
-  w.fecharModalPilulaDia();w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));
-  assert.equal(w.abrirModalPilulaDia(),true);assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
-  w.localStorage.setItem(key,'2000-01-01');d.getElementById('modal-nova-missao').classList.remove('oculto');w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));assert.equal(w.localStorage.getItem(key),'2000-01-01');d.getElementById('modal-nova-missao').classList.add('oculto');
-  w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
+  const modal=d.getElementById('modal-pilula-dia');
+  const setTimer=w.setTimeout,clearTimer=w.clearTimeout;
+  const fila=new Map();
+  let proximoId=-1;
+  w.setTimeout=(callback,atraso,...args)=>{
+   if(atraso!==600 && atraso!==1500) return setTimer.call(w,callback,atraso,...args);
+   const id=proximoId--;fila.set(id,()=>callback(...args));return id;
+  };
+  w.clearTimeout=id=>id<0?fila.delete(id):clearTimer.call(w,id);
+  const executarAgendamento=()=>{
+   const [agendado]=fila.entries();assert(agendado,'Reflexão agendada');
+   const [id,callback]=agendado;fila.delete(id);callback();
+  };
+  try {
+   w.localStorage.removeItem(key);
+   w.Suiri.Pense.agendar();executarAgendamento();
+   assert(!modal.classList.contains('oculto'));assert(d.querySelector('#pilula-frase-filosofica blockquote').textContent.length>30);
+   assert.equal(w.localStorage.getItem(key),w.Suiri.today());
+   w.fecharModalPilulaDia();w.Suiri.Pense.agendar();
+   assert(modal.classList.contains('oculto'));assert.equal(fila.size,0);
+   assert.equal(w.abrirModalPilulaDia(),true);assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
+   w.localStorage.setItem(key,'2000-01-01');d.getElementById('modal-nova-missao').classList.remove('oculto');
+   w.Suiri.Pense.agendar();executarAgendamento();
+   assert(modal.classList.contains('oculto'));assert.equal(w.localStorage.getItem(key),'2000-01-01');
+   d.getElementById('modal-nova-missao').classList.add('oculto');executarAgendamento();
+   assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
+  } finally {
+   w.setTimeout=setTimer;w.clearTimeout=clearTimer;
+  }
  });
  await test('missões de todos chegam aos dois adultos, coletivas em Todas e individuais em Minhas; Kids separados',async()=>{
   const base={familia_id:fam,criado_por:uid,status:'pendente',prioridade:1,icone:'⭐',xp_recompensa:10,recorrencia_tipo:'unica',concluidos_por_array:[],falhados_por_array:[],subitens:[]};

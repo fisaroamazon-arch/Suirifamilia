@@ -1,10 +1,10 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7170';
+const CACHE='suiri-family-v7171';
 const SHELL=[
   "./",
   "./index.html",
   "./src/ui/download-android.js?v=485855857188",
-  "./styles/tema-principal.css?v=4dfa07057580",
+  "./styles/tema-principal.css?v=2748698233be",
   "./src/ui/tema-principal.js?v=9ab0f9a5813c",
   "./styles/espaco-kids.css?v=44eeb2ac679f",
   "./manifest.json",
@@ -69,9 +69,9 @@ const SHELL=[
   "./src/features/finances/extrato.js?v=61ccc03231fb",
   "./src/features/shopping/mercado.js?v=32724e3ba74c",
   "./src/features/agenda/recorrencia.js?v=bbe9de936651",
-  "./src/features/missions/state-and-ui.js?v=4649b051709a",
+  "./src/features/missions/state-and-ui.js?v=4570e0e54391",
   "./src/features/missions/kids.js?v=5ca8889fbbd4",
-  "./src/core/swipe.js?v=882c9d3b2682",
+  "./src/core/swipe.js?v=824196ccb91d",
   "./src/features/missions/missoes.js?v=44c347a263f3",
   "./src/ui/emoji-selector.js?v=51099e79ed38",
   "./src/features/finances/voice-and-entry.js?v=8ec00abd51b2",
@@ -101,6 +101,7 @@ const SHELL=[
   "./src/ui/player-v74.js?v=d72735c68d59",
   "./src/ui/visual-v75.js?v=7a49cd28095e",
   "./src/ui/photo-crop-v75.js?v=11120596c908",
+  "./src/ui/ajustes-v76.js?v=9011e6bc2866",
   "./src/ui/ajustes-v76.js?v=0967caac09ef",
   "./mulher.html",
   "./styles/pages/mulher.css?v=b4f83b48cddf",

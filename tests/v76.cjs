@@ -73,6 +73,23 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
   w.Suiri.openModal(modal.id);point('pointerdown',10,20);point('pointermove',120,100);point('pointerup',120,100);assert(!modal.classList.contains('oculto'));
   point('pointerdown',10,20);point('pointermove',15,110);point('pointercancel',15,110);assert(!modal.classList.contains('oculto'));assert.equal(panel.style.getPropertyValue('--sheet-drag'),'');w.Suiri.closeModal(modal.id);
  });
+ await test('deslizar pela reflexão fecha o painel apenas a partir do topo da rolagem',()=>{
+  const modal=d.getElementById('modal-pilula-dia'),panel=modal.firstElementChild,conteudo=d.getElementById('pilula-frase-filosofica');
+  const toque=(nome,x,y)=>{
+   const evt=new w.Event(nome,{bubbles:true,cancelable:true}),touch={identifier:1,clientX:x,clientY:y};
+   Object.defineProperty(evt,'touches',{value:nome==='touchend'?[]:[touch]});
+   Object.defineProperty(evt,'changedTouches',{value:[touch]});
+   conteudo.dispatchEvent(evt);
+  };
+  w.Suiri.openModal(modal.id);
+  panel.scrollTop=40;
+  toque('touchstart',12,60);toque('touchmove',14,150);toque('touchend',14,150);
+  assert(!modal.classList.contains('oculto'));
+  panel.scrollTop=0;
+  toque('touchstart',12,60);toque('touchmove',14,150);
+  assert.equal(panel.style.getPropertyValue('--sheet-drag'),'90px');
+  toque('touchend',14,150);assert(modal.classList.contains('oculto'));
+ });
  await test('confirmação fechada pelo fundo resolve como cancelamento',async()=>{
   const decision=w.confirmarAcaoSuiri('Teste sem gravação');await new Promise(r=>setTimeout(r,20));const modal=d.getElementById('modal-confirmacao-nativo-suiri');assert(modal.querySelector('.sheet-drag-handle'));modal.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));assert.equal(await decision,false);
  });
