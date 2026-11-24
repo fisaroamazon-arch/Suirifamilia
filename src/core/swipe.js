@@ -31,7 +31,7 @@ window.inicializarNavegacaoSwipe = function() {
             return;
         }
 
-        const algumModalAberto = document.querySelector('.modal-overlay:not(.oculto), dialog[open]');
+        const algumModalAberto = document.querySelector('.modal-overlay:not(.oculto), dialog[open], #modal-tour-instrucoes:not(.oculto)');
         if (algumModalAberto) return;
 
         if (window.modoKidsAtivo) return;

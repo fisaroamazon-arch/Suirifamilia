@@ -72,7 +72,10 @@
         const box=document.getElementById('pilula-frase-filosofica');box.replaceChildren();
         const quote=document.createElement('blockquote');quote.textContent=item.texto;
         const author=document.createElement('cite');author.textContent='— '+item.autor;quote.append(author);box.append(quote);
-        const hint=document.getElementById('pilula-dica-financeira');hint.textContent='Uma reflexão para '+new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long'})+'. Leve uma pequena ideia para o seu dia.';
+        const hint = document.getElementById('pilula-dica-financeira');
+        const dica = S.planejamentoFinanceiro?.dicaDoDia();
+        hint.hidden = !dica;
+        if (dica) hint.textContent = 'Dica para economizar · ' + dica;
         S.openModal(modal.id);localStorage.setItem(dayKey(S.memberId()),S.today());
         clearTimeout(timer);pending=null;return true;
     }

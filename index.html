@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
 <link rel="stylesheet" href="styles/espaco-kids.css?v=44eeb2ac679f">
+    <link rel="stylesheet" href="styles/financas.css?v=07e53eca63c0">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
     <link rel="stylesheet" href="styles/tema-principal.css?v=2748698233be">
 </head>
@@ -368,109 +369,126 @@
                     <input type="file" id="input-camera-cupom-ia" accept="image/*" capture="environment" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
                     <input type="file" id="input-galeria-cupom-ia" accept="image/*" style="display: none;" onchange="window.processarCupomFiscalIA(event)">
 
-                    <div class="cartao-geral">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h3 style="font-size: 15px; font-weight: 800; margin: 0;">Extrato Nominal</h3>
-                            <button type="button" class="btn-secundario" style="padding: 5px 10px; font-size: 11px;" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
-                        </div>
-                        <div class="filtros-data-extrato">
-                            <input type="date" id="extrato-filtro-inicio" aria-label="Data inicial do extrato">
-                            <input type="date" id="extrato-filtro-fim" aria-label="Data final do extrato">
-                        </div>
-                        <button type="button" class="btn-secundario" style="width: 100%; margin-bottom: 10px;" onclick="window.carregarExtratoPeriodo()">Filtrar Extrato</button>
-                        <div id="lista-extrato-carteira"></div>
-                    </div>
+                    <p id="financeiro-alerta" class="fin-alerta" role="status" hidden></p>
 
-                    <div id="bloco-card-balanco-familiar" class="cartao-geral">
-                        <h3 id="lbl-titulo-balanco-familiar" style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">Balanço Consolidado</h3>
-                        <div class="filtros-data-extrato">
-                            <input type="date" id="data-inicio" aria-label="Data inicial do balanço">
-                            <input type="date" id="data-fim" aria-label="Data final do balanço">
-                        </div>
-                        <select id="filtro-membro-relatorio" style="margin-bottom: 8px;">
-                            <option value="todos">Todos os Membros (Casa)</option>
-                        </select>
-                        <button type="button" class="btn-principal" onclick="window.gerarRelatorio()">Gerar Balanço</button>
-                    </div>
-
-                    <div class="cartao-geral" style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <label>Gráfico
-                            <select id="relatorio-formato-grafico" onchange="window.renderizarGraficoCategorias()">
-                                <option value="colunas">Colunas</option>
-                                <option value="barras">Barras</option>
-                                <option value="pizza">Pizza</option>
-                            </select>
-                        </label>
-                        <label>Movimentação
-                            <select id="relatorio-tipo-grafico" onchange="window.renderizarGraficoCategorias()">
-                                <option value="saida">Despesas</option>
-                                <option value="entrada">Receitas</option>
-                            </select>
-                        </label>
-                        <label>Agrupar por
-                            <select id="relatorio-grupo-grafico" onchange="window.renderizarGraficoCategorias()">
-                                <option value="categoria">Categoria</option>
-                                <option value="subcategoria">Subcategoria</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <div id="relatorio-pdf-container" class="oculto">
-                        <div id="area-resultados-relatorio"></div>
-                        <div class="cartao-geral" style="margin-top: 10px;">
-                            <h4 style="font-size: 13.5px; margin-bottom: 8px; text-align: center; color: #0f172a;" id="titulo-grafico-categorias">Distribuição por Categoria</h4>
-                            <div style="position: relative; height: 220px; width: 100%;">
-                                <canvas id="grafico-barras-renda-gastos"></canvas>
+                    <details id="bloco-card-balanco-familiar" class="cartao-geral fin-painel">
+                        <summary class="fin-resumo"><span id="lbl-titulo-balanco-familiar">Balanço Consolidado</span></summary>
+                        <div class="fin-painel-corpo">
+                            <div class="filtros-data-extrato">
+                                <input type="date" id="data-inicio" aria-label="Data inicial do balanço">
+                                <input type="date" id="data-fim" aria-label="Data final do balanço">
                             </div>
+                            <label class="fin-opcao">Quem entra no balanço
+                                <select id="filtro-membro-relatorio">
+                                    <option value="todos">Todos os membros da casa</option>
+                                </select>
+                            </label>
+                            <button type="button" class="btn-principal" onclick="window.gerarRelatorio(true)">Gerar Balanço</button>
                         </div>
+                    </details>
+
+                    <p id="relatorio-status" class="fin-mensagem" role="status" hidden></p>
+                    <div id="relatorio-pdf-container" class="oculto">
+                        <div class="cartao-geral fin-visualizacao" id="bloco-grafico-categorias">
+                            <h3 id="titulo-grafico-categorias" tabindex="-1">Distribuição por categoria</h3>
+                            <p id="periodo-grafico-balanco" class="fin-mensagem"></p>
+                            <div class="fin-opcoes-grafico" data-fin-controles>
+                                <label>Gráfico
+                                    <select id="relatorio-formato-grafico" onchange="window.renderizarGraficoCategorias()">
+                                        <option value="colunas">Colunas</option>
+                                        <option value="barras">Barras</option>
+                                        <option value="pizza">Pizza</option>
+                                    </select>
+                                </label>
+                                <label>Movimentação
+                                    <select id="relatorio-tipo-grafico" onchange="window.renderizarGraficoCategorias()">
+                                        <option value="saida">Despesas</option>
+                                        <option value="entrada">Receitas</option>
+                                    </select>
+                                </label>
+                                <label>Agrupar por
+                                    <select id="relatorio-grupo-grafico" onchange="window.renderizarGraficoCategorias()">
+                                        <option value="categoria">Categoria</option>
+                                        <option value="subcategoria">Subcategoria</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="fin-canvas"><canvas id="grafico-barras-renda-gastos" aria-hidden="true"></canvas></div>
+                            <ul id="legenda-grafico-categorias" class="fin-legenda" aria-label="Valores e percentuais por grupo"></ul>
+                        </div>
+                        <div id="area-resultados-relatorio"></div>
                     </div>
 
-                    <div id="acoes-botoes-relatorio" class="oculto" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; margin-bottom: 14px;">
+                    <div id="acoes-botoes-relatorio" class="fin-botoes oculto">
                         <button type="button" id="btn-imprimir-pdf" class="btn-secundario" onclick="window.imprimirPDF()">Exportar PDF</button>
                         <button type="button" id="btn-whatsapp-fechamento" class="btn-sucesso" onclick="window.enviarResumoFechamentoWhatsApp()">WhatsApp</button>
                     </div>
 
-                    <div class="cartao-geral">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-size: 12.5px; font-weight: 700; color: #0f172a;">Gastos do Mês Anterior por Setor</span>
-                            <span id="lbl-nome-mes-anterior" style="font-size: 11.5px; color: #64748b; font-weight: 600;">--/----</span>
+                    <details class="cartao-geral fin-painel">
+                        <summary class="fin-resumo"><span>Extrato Nominal</span></summary>
+                        <div class="fin-painel-corpo">
+                            <button type="button" class="btn-secundario" onclick="window.abrirModalCorrecaoCarteira()">Ajuste Bancário</button>
+                            <div class="filtros-data-extrato">
+                                <input type="date" id="extrato-filtro-inicio" aria-label="Data inicial do extrato">
+                                <input type="date" id="extrato-filtro-fim" aria-label="Data final do extrato">
+                            </div>
+                            <button type="button" class="btn-secundario" onclick="window.carregarExtratoPeriodo()">Filtrar Extrato</button>
+                            <div id="lista-extrato-carteira"></div>
                         </div>
-                        <div style="position: relative; height: 180px; width: 100%;">
-                            <canvas id="grafico-barras-mes-anterior"></canvas>
-                        </div>
-                    </div>
+                    </details>
 
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;">
-                        <div class="cartao-geral" style="margin: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #f97316;">Meta Pessoal do Mês</span>
-                                    <h4 style="margin: 2px 0 0 0; font-size: 15px; color: #0f172a;">Economia Mensal</h4>
-                                </div>
-                                <button type="button" class="btn-secundario" style="padding: 4px 9px; font-size: 11px;" onclick="window.abrirModalDefinirMetaEconomia()">Ajustar</button>
-                            </div>
-                            <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; position: relative; margin: 8px 0;">
-                                <div id="barra-progresso-economia-fill" class="barra-progresso-preenchimento" style="background: #f97316; height: 100%; width: 0%; transition: width 0.4s ease;"></div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #64748b;">
-                                <span id="lbl-status-acumulado-economia">R$ 0,00 guardados</span>
-                                <span>Meta: <strong id="lbl-valor-meta-mensal">R$ 0,00</strong> (<strong id="lbl-porcentagem-meta-economia">0%</strong>)</span>
-                            </div>
+                    <details class="cartao-geral fin-painel">
+                        <summary class="fin-resumo"><span>Previsão e economia</span></summary>
+                        <div class="fin-painel-corpo" id="financeiro-previsao" aria-live="polite">
+                            <p>Carregando os gastos da casa…</p>
                         </div>
+                    </details>
 
-                        <div id="bloco-card-cofres-compartilhados" class="cartao-geral" style="margin: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div>
-                                    <span id="lbl-subtitulo-cofres" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #10b981;">Reserva da Família</span>
-                                    <h4 id="lbl-titulo-cofres" style="margin: 2px 0 0 0; font-size: 15px; color: #0f172a;">Cofres do Lar</h4>
+                    <details class="cartao-geral fin-painel" id="painel-gastos-mes-anterior">
+                        <summary class="fin-resumo"><span>Gastos do mês anterior <small id="lbl-nome-mes-anterior"></small></span></summary>
+                        <div class="fin-painel-corpo">
+                            <div class="fin-canvas"><canvas id="grafico-barras-mes-anterior" aria-hidden="true"></canvas></div>
+                            <ul id="legenda-grafico-mes-anterior" class="fin-legenda" aria-label="Valores e percentuais do mês anterior"></ul>
+                        </div>
+                    </details>
+
+                    <div class="fin-paineis-adicionais">
+                        <details class="cartao-geral fin-painel">
+                            <summary class="fin-resumo"><span>Economia mensal</span></summary>
+                            <div class="fin-painel-corpo">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #f97316;">Meta Pessoal do Mês</span>
+                                        <h4 style="margin: 2px 0 0 0; font-size: 15px; color: #0f172a;">Economia Mensal</h4>
+                                    </div>
+                                    <button type="button" class="btn-secundario" style="padding: 4px 9px; font-size: 11px;" onclick="window.abrirModalDefinirMetaEconomia()">Ajustar</button>
                                 </div>
-                                <div style="display: flex; gap: 6px;">
-                                    <button type="button" class="btn-secundario" style="padding: 5px 9px; font-size: 11px;" onclick="window.abrirModalDefinirMeta()">+ Novo Cofre</button>
-                                    <button type="button" class="btn-principal" style="padding: 5px 10px; font-size: 11px;" onclick="window.abrirModalAporteMeta()">+ Guardar</button>
+                                <div class="barra-progresso-fundo" style="background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; position: relative; margin: 8px 0;">
+                                    <div id="barra-progresso-economia-fill" class="barra-progresso-preenchimento" style="background: #f97316; height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #64748b;">
+                                    <span id="lbl-status-acumulado-economia">R$ 0,00 guardados</span>
+                                    <span>Meta: <strong id="lbl-valor-meta-mensal">R$ 0,00</strong> (<strong id="lbl-porcentagem-meta-economia">0%</strong>)</span>
                                 </div>
                             </div>
-                            <div id="lista-cofres-compartilhados" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                        </div>
+                        </details>
+
+                        <details id="bloco-card-cofres-compartilhados" class="cartao-geral fin-painel">
+                            <summary class="fin-resumo"><span>Cofres do lar</span></summary>
+                            <div class="fin-painel-corpo">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div>
+                                        <span id="lbl-subtitulo-cofres" style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #10b981;">Reserva da Família</span>
+                                        <h4 id="lbl-titulo-cofres" style="margin: 2px 0 0 0; font-size: 15px; color: #0f172a;">Cofres do Lar</h4>
+                                    </div>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button type="button" class="btn-secundario" style="padding: 5px 9px; font-size: 11px;" onclick="window.abrirModalDefinirMeta()">+ Novo Cofre</button>
+                                        <button type="button" class="btn-principal" style="padding: 5px 10px; font-size: 11px;" onclick="window.abrirModalAporteMeta()">+ Guardar</button>
+                                    </div>
+                                </div>
+                                <div id="lista-cofres-compartilhados" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
+                        </details>
                     </div>
                 </section>
 
@@ -778,26 +796,21 @@
                 </button>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
-                <input type="number" step="0.01" id="input-fin-valor" placeholder="R$ 0,00">
-                <select id="select-fin-categoria" aria-label="Categoria" onchange="window.atualizarSubcategoriasFinanceiras()">
-                    <option value="Geral">Geral</option>
-                </select>
-            </div>
-
-            <label for="select-fin-subcategoria">Subcategoria</label>
-            <select id="select-fin-subcategoria" style="margin-bottom:12px;">
-                <option value="">Sem subcategoria</option>
-            </select>
-            <details style="margin-bottom:12px;">
-                <summary>Criar categoria ou subcategoria</summary>
-                <label for="input-fin-nova-categoria">Nome</label>
-                <input id="input-fin-nova-categoria" maxlength="60" autocomplete="off">
-                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                    <button type="button" class="btn-secundario" onclick="window.criarCategoriaFinanceira(false)">Criar categoria</button>
-                    <button type="button" class="btn-secundario" onclick="window.criarCategoriaFinanceira(true)">Criar na categoria selecionada</button>
+            <div class="fin-campos-categoria">
+                <label for="input-fin-valor">Valor</label>
+                <input type="number" inputmode="decimal" step="0.01" id="input-fin-valor" placeholder="R$ 0,00">
+                <div class="fin-campo-sugestoes">
+                    <label for="select-fin-categoria">Categoria</label>
+                    <input id="select-fin-categoria" maxlength="60" autocomplete="off" placeholder="Ex. Mercado" aria-describedby="fin-categoria-ajuda" onfocus="window.preencherCategoriasFinanceiras()" oninput="window.preencherCategoriasFinanceiras(undefined, '')">
+                    <div id="fin-sugestoes-categoria" class="fin-sugestoes" role="group" aria-label="Sugestões de categoria"></div>
                 </div>
-            </details>
+                <div class="fin-campo-sugestoes">
+                    <label for="select-fin-subcategoria">Subcategoria (opcional)</label>
+                    <input id="select-fin-subcategoria" maxlength="60" autocomplete="off" placeholder="Ex. Guloseimas" onfocus="window.atualizarSubcategoriasFinanceiras()" oninput="window.atualizarSubcategoriasFinanceiras()">
+                    <div id="fin-sugestoes-subcategoria" class="fin-sugestoes" role="group" aria-label="Sugestões de subcategoria"></div>
+                </div>
+                <small id="fin-categoria-ajuda">Digite um nome novo ou escolha uma sugestão. O nome será lembrado ao salvar.</small>
+            </div>
 
             <select id="select-fin-escopo" style="width:100%; margin-bottom:16px;">
                 <option value="casa">Gasto da Família (Compartilhado)</option>
@@ -1432,6 +1445,10 @@
                         <option value="casa">Família (Compartilhado)</option>
                     </select>
                 </div>
+                <label for="edit-transacao-categoria">Categoria</label>
+                <input id="edit-transacao-categoria" maxlength="60" placeholder="Ex. Mercado">
+                <label for="edit-transacao-subcategoria">Subcategoria (opcional)</label>
+                <input id="edit-transacao-subcategoria" maxlength="60" placeholder="Ex. Guloseimas">
                 <input type="date" id="edit-transacao-data">
                 <button type="button" class="btn-sucesso" style="width:100%; padding:14px; font-size:15px; border-radius:14px; margin-top:10px;" onclick="window.salvarEdicaoTransacao()">Confirmar</button>
             </div>
@@ -1478,9 +1495,8 @@
                 <span style="font-size: 12.5px; color: #64748b; font-weight:700; text-transform:uppercase;">Total Gasto</span>
                 <h2 id="resumo-total-gasto-mercado" style="margin: 4px 0; color: #10b981; font-size: 32px; font-weight:900; font-variant-numeric:tabular-nums;">R$ 0,00</h2>
             </div>
-            <div style="position: relative; height: 220px; width: 100%; margin-bottom: 16px;">
-                <canvas id="grafico-pizza-segmentos"></canvas>
-            </div>
+            <div class="fin-canvas"><canvas id="grafico-pizza-segmentos" aria-hidden="true"></canvas></div>
+            <ul id="legenda-grafico-mercado" class="fin-legenda" aria-label="Valores e percentuais por categoria"></ul>
             <button type="button" class="btn-principal" style="width:100%; padding:14px; border-radius:14px; font-size:15px;" onclick="window.fecharModalGraficosMercado()">Finalizar</button>
         </div>
     </div>
@@ -1672,28 +1688,30 @@
     <script src="src/services/transactions.js?v=ddea1b071483"></script>
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
-<script src="src/features/finances/extrato.js?v=61ccc03231fb"></script>
-<script src="src/features/shopping/mercado.js?v=32724e3ba74c"></script>
+<script src="src/features/finances/extrato.js?v=539e354c31f7"></script>
+<script src="src/features/shopping/mercado.js?v=a3c4483fe5f0"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4570e0e54391"></script>
 <script src="src/features/missions/kids.js?v=5ca8889fbbd4"></script>
-<script src="src/core/swipe.js?v=824196ccb91d"></script>
+<script src="src/core/swipe.js?v=14267843cb50"></script>
 <script src="src/features/missions/missoes.js?v=44c347a263f3"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
-<script src="src/features/finances/voice-and-entry.js?v=8ec00abd51b2"></script>
-<script src="src/features/finances/wallet.js?v=2666571ad62c"></script>
+<script src="src/features/finances/voice-and-entry.js?v=f7eb17953903"></script>
+<script src="src/features/finances/graficos.js?v=954c9ad9ad28"></script>
+<script src="src/features/finances/planejamento.js?v=b2ebd625fb1a"></script>
+<script src="src/features/finances/wallet.js?v=aec77e9028d2"></script>
 <script src="src/features/savings/cofres.js?v=476f0fdddf3a"></script>
 <script src="src/features/notices/recados.js?v=7da866d472eb"></script>
 <script src="src/features/goals/metas-anuais.js?v=f93c6ad566c2"></script>
-<script src="src/core/lifecycle.js?v=15c07ed47acc"></script>
+<script src="src/core/lifecycle.js?v=12926c4649b5"></script>
     <script src="src/features/family/membros.js?v=66a1a83137fe"></script>
 <script src="src/features/agenda/calendario.js?v=5d3a86357091"></script>
 <script src="src/features/notifications/painel.js?v=430ec365766e"></script>
 <script src="src/core/realtime.js?v=f81ce057c2e0"></script>
-    <script src="src/features/reports/relatorios.js?v=e9b395d2cbab"></script>
+    <script src="src/features/reports/relatorios.js?v=9bc8299560f8"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
     <script src="src/features/kids/mascote.js?v=643ef4fc2ed0"></script>
-    <script src="src/features/personal/meu-espaco.js?v=6e7d7c340acf"></script>
+    <script src="src/features/personal/meu-espaco.js?v=d240342f6339"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
 <script src="src/services/operations.js?v=d81ab58c7d00"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
@@ -1703,12 +1721,12 @@
 
 <script src="src/data/reflexoes-365.js?v=ed637e39d800"></script>
 <script src="src/ui/atualizacao-v72.js?v=06b73c13aab0"></script>
-<script src="src/ui/visual-v73.js?v=b96def4964f2"></script>
+<script src="src/ui/visual-v73.js?v=66da58d67c66"></script>
 <script src="src/ui/modern-icons.js?v=468066753641"></script>
 <script src="src/ui/visual-v74.js?v=72b00d70092d"></script>
 <script src="src/ui/player-v74.js?v=d72735c68d59"></script>
 <script src="src/ui/visual-v75.js?v=7a49cd28095e"></script>
 <script src="src/ui/photo-crop-v75.js?v=11120596c908"></script>
-<script src="src/ui/ajustes-v76.js?v=9011e6bc2866"></script>
+<script src="src/ui/ajustes-v76.js?v=01decc13dcec"></script>
 </body>
 </html>

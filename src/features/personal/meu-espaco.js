@@ -537,7 +537,9 @@ window.salvarGastoPeloMeuEspaco = function() {
     if (inOrigDesc) inOrigDesc.value = desc;
     if (inOrigVal) inOrigVal.value = val;
     if (selOrigCat) selOrigCat.value = cat;
-    if (selTipo) selOrigTipo.value = tipo;
+    if (selOrigTipo) selOrigTipo.value = tipo;
+    const subcategoria = document.getElementById('select-fin-subcategoria');
+    if (subcategoria) subcategoria.value = '';
     if (selOrigEscopo) selOrigEscopo.value = escopo;
 
     if (typeof window.salvarTransacaoManual === 'function') {

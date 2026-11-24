@@ -15,6 +15,7 @@
  }
  const render=window.renderizarConteudoModalOrientacoes;if(render)window.renderizarConteudoModalOrientacoes=function(...args){const value=render.apply(this,args);seasonUI();return value;};
  const dismiss = modal => {
+  if (modal.id === 'modal-tour-instrucoes') return window.encerrarTourInstrucoes?.();
   if (modal.id === 'modal-modo-acolhimento') return window.fecharModoAcolhimento?.();
   if (modal.id === 'modal-crop-imagem') return window.fecharModalCrop?.();
   if (modal.id === 'modal-confirmar-exclusao-agenda') return window.fecharModalConfirmarExclusaoAgenda?.();
@@ -24,12 +25,13 @@
   }
   if (modal.id === 'modal-casinha-chuiri') return window.TamagotchiKids?.fecharCasinha();
   if (modal.matches('dialog')) return modal.close();
-  S.closeModal(modal.id);
+  if (modal.id) S.closeModal(modal.id);
+  else modal.classList.add('oculto');
  };
 
  const initialized = new WeakSet();
  const backdrops = new WeakSet();
- const overlaySelector = S.isHome ? '.modal-overlay, dialog' : '.modal-overlay';
+ const overlaySelector = S.isHome ? '.modal-overlay, dialog, #modal-tour-instrucoes' : '.modal-overlay';
 
  function setup(modal) {
   const native = modal.matches('dialog');
@@ -37,7 +39,8 @@
   const panel = native ? modal : modal.firstElementChild;
   if (!panel || initialized.has(panel)) return;
   initialized.add(panel);
-  panel.classList.add(native ? 'suiri-swipe-dialog' : 'suiri-sheet');
+  const flutuante = modal.id === 'modal-tour-instrucoes';
+  panel.classList.add(native ? 'suiri-swipe-dialog' : flutuante ? 'suiri-swipe-flutuante' : 'suiri-sheet');
 
   const handle = document.createElement('button');
   handle.type = 'button';
@@ -69,12 +72,12 @@
    if (!isOpen() || gesture) return false;
    const grip = target === handle || handle.contains(target);
    const header = target.closest('.modal-header, .chuiri-casa-topo');
-   const interactive = target.closest('button, input, select, textarea, a, label, [role="button"], [contenteditable], canvas, video');
+   const interactive = target.closest('button, input, select, textarea, a, label, summary, [role="button"], [contenteditable], canvas, video');
    if (interactive && !grip) return false;
    if (!grip && !header) {
     if (source !== 'touch' || !S.isHome) return false;
     for (let element = target; element && panel.contains(element); element = element.parentElement) {
-     if (element.scrollTop > 0) return false;
+     if (element.scrollTop > 1) return false;
     }
    }
    if (grip) ignoreHandleClickUntil = 0;
