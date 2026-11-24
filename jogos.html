@@ -9,8 +9,8 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=84f690e56e16">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=a38943970a25">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=36b2105c882e">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=e58a9f7024c9">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -129,6 +129,7 @@
                     <svg class="icone-svg" style="width:15px;height:15px;color:#f59e0b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
                     Moedas: <strong id="placar-moedas-ganhas-flappy" style="color:#d97706;">0</strong>
                 </div>
+                <span id="hud-cenario-flappy" class="placar-cenario-voo">Serra ao amanhecer</span>
                 <div class="placar-item" id="hud-status-2p-flappy" style="display:none; font-size:11px;">
                     <span id="badge-p1-flappy-vivo" style="color:#0284c7;">💙 P1</span>
                     <span id="badge-p2-flappy-vivo" style="color:#ec4899; margin-left:4px;">💖 P2</span>
@@ -140,12 +141,20 @@
             <img id="gato-voador-gif-el" class="personagem-flappy-el" data-arcade-imagem="gato" decoding="async" alt="Gato Voando" />
 
             <div id="over-flappy" class="overlay-jogo">
-                <div class="painel-dialogo-arcade">
+                <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Chuíri Voador</h2>
-                    <p>Toque para subir e passe pelos troncos. Na dupla, cada pessoa usa um lado da tela.</p>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(1)">👤 1 Jogador (Solo)</button>
-                        <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(2)">👥 2 jogadores · Cooperativo</button>
+                    <p>Toque para subir e passe pelos troncos.</p>
+                    <label class="arcade-escolha-cenario">Cenário
+                        <select id="flappy-cenario" onchange="MotorFlappy.preverCenario(this.value)">
+                            <option value="viagem">Viagem · cenários alternados</option>
+                            <option value="serra">Serra ao amanhecer</option>
+                            <option value="litoral">Litoral dourado</option>
+                            <option value="estrelas">Céu estrelado</option>
+                        </select>
+                    </label>
+                    <div class="arcade-escolhas-partida">
+                        <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(1)"><strong>Voo solo</strong><small>Você pilota o Chuíri</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(2)"><strong>Voo em dupla</strong><small>Um jogador em cada lado da tela</small></button>
                     </div>
                     <p class="arcade-teclado">Teclado: Espaço ou ↑ para Chuíri, W para Gato.</p>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao menu</button>
@@ -175,12 +184,12 @@
             <img id="chuiri-skate-gif-el" data-arcade-imagem="feliz" decoding="async" alt="Chuíri no skate" />
 
             <div id="over-quebrablocos" class="overlay-jogo">
-                <div class="painel-dialogo-arcade">
+                <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Quebra-Blocos & Pong</h2>
-                    <p>Arraste o skate para rebater a bola. No modo solo, você tem três vidas. No Pong, cada pessoa joga em uma metade da tela.</p>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)">👤 1 Jogador (Quebra-Blocos)</button>
-                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)">👥 2 jogadores · Skate Pong</button>
+                    <p>Arraste o skate para rebater a bola.</p>
+                    <div class="arcade-escolhas-partida">
+                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)"><strong>Quebra-Blocos</strong><small>Solo · três vidas para avançar</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)"><strong>Skate Pong</strong><small>Duelo · cada jogador em uma metade</small></button>
                     </div>
                     <p class="arcade-teclado">Teclado: ← → na base e A / D no topo.</p>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao menu</button>
@@ -304,7 +313,7 @@
 
                 <div class="bloco-dueto-j1" data-pista-piano="melodia">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
-                        <span style="font-size:10px; font-weight:900; color:#0284c7; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Melodia · Mão direita</span>
+                        <span class="piano-legenda-maos"><span data-piano-direita>Melodia · mão direita</span><span data-piano-ambas>Esquerda tracejada · direita contínua</span></span>
                         <span id="badge-melodia-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#e0f2fe; border:1px solid #38bdf8; padding:2px 8px; border-radius:10px;">Nota: DÓ</span>
                     </div>
 
@@ -362,6 +371,13 @@
                             <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
                             <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
                             <button type="button" class="piano-midi" onclick="MotorMusica.baixarBanda()" aria-label="Baixar acompanhamento MIDI">↓ MIDI</button>
+                        </div>
+                        <div class="piano-ritmo">
+                            <button type="button" id="piano-metronomo" aria-pressed="false" onclick="MotorMusica.alternarMetronomo()">Metrônomo</button>
+                            <details class="piano-figuras">
+                                <summary>Cores das durações</summary>
+                                <ul id="piano-figuras"></ul>
+                            </details>
                         </div>
                     </section>
                     <section data-config-piano="aprendizado">
@@ -479,13 +495,13 @@
             </div>
 
             <div id="over-bolhas" class="overlay-jogo">
-                <div class="painel-dialogo-arcade">
+                <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Estourar Bolhas</h2>
-                    <p id="txt-desc-bolhas-inicio">Toque nas bolhas antes que escapem. No duelo, cada pessoa joga com uma cor.</p>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')">👤 1 Jogador (Sobrevivência)</button>
-                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-bottom-color:#9d174d;" onclick="MotorBolhas.iniciarModo('duelo')">👥 2 Jogadores (Duelo com Vidas)</button>
-                        <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-bottom-color:#b45309;" onclick="MotorBolhas.iniciarModo('rush')">⚡ Modo Rush (Todos os Cantos - 3 Min)</button>
+                    <p id="txt-desc-bolhas-inicio">Toque nas bolhas antes que escapem.</p>
+                    <div class="arcade-escolhas-partida">
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')"><strong>Sobrevivência</strong><small>Solo · cinco vidas</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('duelo')"><strong>Duelo</strong><small>Um jogador por cor</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('rush')"><strong>Corrida de bolhas</strong><small>Três minutos · bolhas em todos os cantos</small></button>
                     </div>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao menu</button>
                 </div>
@@ -498,6 +514,7 @@
 
         <!-- JOGO 5: JOGO DA VELHA TRADICIONAL & MULTIJOGADOR -->
         <div id="tela-velha" class="area-jogo" style="padding:16px; text-align:center;">
+            <h2 class="arcade-titulo-partida">Jogo da Velha</h2>
             <div class="alternador-modos-som" style="margin-bottom:8px;">
                 <button type="button" class="btn-modo-som-tab ativo" id="tab-velha-ia" onclick="MotorVelha.trocarModo('ia')">🤖 1 Jogador (Vs Chuíri)</button>
                 <button type="button" class="btn-modo-som-tab" id="tab-velha-2p" onclick="MotorVelha.trocarModo('2p')">👥 2 Jogadores (Mão a Mão)</button>
@@ -529,6 +546,7 @@
 
         <!-- JOGO 6: JOGO DA MEMÓRIA 3D -->
         <div id="tela-memoria" class="area-jogo" style="padding:10px 14px; flex-direction:column; align-items:center; justify-content:flex-start;">
+            <h2 class="arcade-titulo-partida">Memória 3D</h2>
             <div class="alternador-modos-som" style="margin-bottom:6px;">
                 <button type="button" class="btn-modo-som-tab ativo" id="tab-memoria-solo" onclick="MotorMemoria.trocarModo('solo')">👤 1 Jogador</button>
                 <button type="button" class="btn-modo-som-tab" id="tab-memoria-2p" onclick="MotorMemoria.trocarModo('2p')">👥 2 Jogadores</button>
@@ -583,8 +601,8 @@
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
     <script src="src/features/kids/piano-dueto-rede.js?v=8f4def6b9e3f"></script>
-    <script src="src/features/kids/piano.js?v=81b924368e2b"></script>
+    <script src="src/features/kids/piano.js?v=4cc140df81ee"></script>
 
-    <script src="src/pages/arcade.js?v=e55cfc8ae9a2"></script>
+    <script src="src/pages/arcade.js?v=66f6910d7fea"></script>
 </body>
 </html>

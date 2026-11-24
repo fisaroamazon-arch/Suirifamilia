@@ -585,3 +585,18 @@ html[data-theme="dark"] #tela-kids-exclusiva {
 @media (max-width: 375px) {
     .kids-perfil-acoes { flex-direction: column; align-items: flex-end; gap: .35rem; }
 }
+
+/* A paisagem da Vila segue a hora do dia e precisa de tinta própria. */
+html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-cena:not(.chuiri-noite) :is(#chuiri-vila-titulo, #chuiri-recado-kids) {
+    color: #163d37 !important;
+}
+html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-cena.chuiri-noite :is(#chuiri-vila-titulo, #chuiri-recado-kids) {
+    color: #fff2dc !important;
+}
+html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button {
+    color: #f1f7ff !important;
+    background: #2e435c !important;
+    border-color: #6484a1 !important;
+}
+html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button > span { color: inherit !important; }
+html[data-theme="dark"] #tela-kids-exclusiva .chuiri-vila-atalhos > button[aria-pressed="true"] { background: #3b5368 !important; }

@@ -124,29 +124,55 @@
         ctx.fill();
     }
 
-    function pintarCerdas(ctx, inicio, fim, largura) {
+    function pintarCerdas(ctx, inicio, fim, controle, largura) {
         const dx = fim.x - inicio.x;
         const dy = fim.y - inicio.y;
         const distancia = Math.hypot(dx, dy);
-        const lateralX = distancia ? -dy / distancia : .6;
-        const lateralY = distancia ? dx / distancia : .8;
-        const cerdas = Math.max(4, Math.ceil(largura / 2));
+        const lateralX = distancia ? -dy / distancia : -.72;
+        const lateralY = distancia ? dx / distancia : .69;
+        const pressao = .37 + .91 * (inicio.pressao + fim.pressao) / 2;
+        const larguraAtiva = largura * pressao;
+        const cerdas = Math.max(7, Math.ceil(larguraAtiva * .75));
         ctx.lineCap = 'round';
         for (let i = 0; i < cerdas; i++) {
-            const afastamento = (i / (cerdas - 1) - .5) * largura * .93;
+            const lado = 2 * i / (cerdas - 1) - 1;
+            const afastamento = (lado * .48 + Math.sin(i * 12.1) * .028) * larguraAtiva;
             const x = afastamento * lateralX;
             const y = afastamento * lateralY;
-            const centro = 1 - Math.abs(2 * i / (cerdas - 1) - 1);
-            ctx.lineWidth = Math.max(.75, largura / cerdas * .9);
-            ctx.globalAlpha = (.22 + .55 * centro) * (i % 3 === 0 ? .62 : 1);
-            ctx.beginPath();
+            const centro = 1 - Math.abs(lado);
+            ctx.lineWidth = Math.max(.62, larguraAtiva / cerdas * (.65 + .57 * centro));
+            ctx.globalAlpha = (.22 + .73 * centro) * (i % 4 === 0 ? .52 : 1);
             if (distancia) {
+                const falha = i % 5 === 0 ? 6 : 2 + (i % 3);
+                ctx.setLineDash([Math.max(1.1, larguraAtiva * (.21 + .59 * centro)), falha + larguraAtiva * (.85 - centro * .64)]);
+                ctx.lineDashOffset = i * 6.7 - traco.comprimento;
+                ctx.beginPath();
                 ctx.moveTo(inicio.x + x, inicio.y + y);
-                ctx.lineTo(fim.x + x, fim.y + y);
+                ctx.quadraticCurveTo(controle.x + x, controle.y + y, fim.x + x, fim.y + y);
                 ctx.stroke();
             } else {
-                ctx.arc(fim.x + x, fim.y + y, ctx.lineWidth, 0, Math.PI * 2);
+                ctx.beginPath();
+                ctx.ellipse(fim.x + x, fim.y + y, ctx.lineWidth * 1.1, ctx.lineWidth * .7, -.8, 0, 2 * Math.PI);
                 ctx.fill();
+            }
+        }
+    }
+
+    function pintarGiz(ctx, inicio, fim, largura) {
+        const distancia = Math.hypot(fim.x - inicio.x, fim.y - inicio.y);
+        const etapas = Math.max(1, Math.ceil(distancia / 2.2));
+        const raio = Math.max(1.2, largura * .38);
+        const graos = Math.min(85, 8 + Math.ceil(raio * 4));
+        for (let passo = 0; passo <= etapas; passo++) {
+            const t = passo / etapas;
+            const x = inicio.x + (fim.x - inicio.x) * t;
+            const y = inicio.y + (fim.y - inicio.y) * t;
+            for (let i = 0; i < graos; i++) {
+                const angulo = Math.random() * 2 * Math.PI;
+                const distanciaGrao = raio * Math.sqrt(Math.random());
+                const lado = Math.random() * 1.5 + .65;
+                ctx.globalAlpha = .18 + .46 * Math.random();
+                ctx.fillRect(x + Math.cos(angulo) * distanciaGrao, y + Math.sin(angulo) * distanciaGrao, lado, lado);
             }
         }
     }
@@ -160,7 +186,9 @@
         if (tipo === 'pincel') {
             pintarPincel(camadaAlvo, inicio, fim, controle, largura);
         } else if (tipo === 'cerdas') {
-            pintarCerdas(camadaAlvo, inicio, fim, largura);
+            pintarCerdas(camadaAlvo, inicio, fim, controle, largura);
+        } else if (tipo === 'giz') {
+            pintarGiz(camadaAlvo, inicio, fim, largura);
         } else if (tipo === 'spray') {
             const distancia = Math.hypot(fim.x - inicio.x, fim.y - inicio.y);
             const etapas = Math.max(1, Math.ceil(distancia / Math.max(3, largura / 6)));
@@ -178,7 +206,7 @@
                 }
             }
         } else {
-            const larguraReal = tipo === 'lapis' ? largura * .38 : largura;
+            const larguraReal = largura;
             camadaAlvo.lineCap = camadaAlvo.lineJoin = 'round';
             camadaAlvo.lineWidth = larguraReal;
             camadaAlvo.beginPath();
@@ -192,6 +220,7 @@
             }
         }
         camadaAlvo.restore();
+        traco.comprimento += Math.hypot(fim.x - inicio.x, fim.y - inicio.y);
         if (!quadro) quadro = requestAnimationFrame(desenhar);
     }
 
@@ -224,7 +253,7 @@
         papel.setPointerCapture(evento.pointerId);
         const local = ponto(evento, papel.getBoundingClientRect());
         traco = {
-            id: evento.pointerId, anterior: local, extremo: local, pincel, cor,
+            id: evento.pointerId, anterior: local, extremo: local, pincel, cor, comprimento: 0,
             largura: Number(espessura.value),
             antes: estadoAtual()
         };
@@ -260,7 +289,7 @@
 
     function atualizarPrevia() {
         const largura = Number(espessura.value);
-        previa.style.setProperty('--previa-tamanho', `${Math.max(2, largura * (pincel === 'lapis' ? .17 : .36))}px`);
+        previa.style.setProperty('--previa-tamanho', `${Math.max(2, largura * (pincel === 'giz' ? .3 : .36))}px`);
         previa.style.setProperty('--previa-cor', pincel === 'borracha' ? '#fff' : cor);
         previa.dataset.ferramenta = pincel;
         espessura.setAttribute('aria-valuetext', `${largura} pixels`);

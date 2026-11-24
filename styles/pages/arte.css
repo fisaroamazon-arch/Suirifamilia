@@ -149,3 +149,13 @@ button:disabled { opacity: .46; cursor: default; }
     .paleta [data-cor], .personalizada { border-color: #32223e7a; }
     .paleta [aria-pressed="true"] { outline-color: #694598; }
 }
+
+.previa-pincel[data-ferramenta="cerdas"] i {
+    border-radius: 65% 25% 58% 36%;
+    transform: rotate(-24deg);
+    background: repeating-linear-gradient(0deg, var(--previa-cor) 0 1.5px, transparent 1.5px 2.5px);
+}
+.previa-pincel[data-ferramenta="giz"] i {
+    border-radius: 34%;
+    background: radial-gradient(circle, var(--previa-cor) 47%, transparent 65%) 0 0 / 3px 3px;
+}
