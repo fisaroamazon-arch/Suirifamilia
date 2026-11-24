@@ -52,8 +52,8 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
 (async()=>{
  const main=await load('index.html'),w=main.w,d=w.document;
  w.localStorage.setItem('suiri:v72:apoio:'+w.perfilAtual.id,String(Date.now()));w.localStorage.setItem('suiri:pense:v73:'+w.perfilAtual.id,w.Suiri.today());d.querySelectorAll('.modal-overlay').forEach(x=>x.classList.add('oculto'));
- await test('tema geral é claro, sem seletor escuro, e foto abre troca sem logout',()=>{
-  w.Suiri.theme.set('escuro');assert.equal(d.documentElement.dataset.theme,'light');assert(!d.getElementById('suiri-config-tema'));assert(!d.getElementById('menu-tema-avatar'));assert(d.querySelector('.avatar-trocar-label').textContent.includes('Trocar'));
+ await test('tema escuro é opcional e foto abre troca sem logout',()=>{
+  assert.equal(d.documentElement.dataset.theme,'light');w.Suiri.theme.set('escuro');assert.equal(d.documentElement.dataset.theme,'dark');assert(d.getElementById('suiri-config-tema'));assert(!d.getElementById('menu-tema-avatar'));assert(d.querySelector('.avatar-trocar-label').textContent.includes('Trocar'));
   const id=w.perfilAtual.id;d.querySelector('.perfil-hero-info').click();assert(!d.getElementById('modal-janela-quiosque').classList.contains('oculto'));assert.equal(w.perfilAtual.id,id);w.fecharJanelaPrincipalQuiosque();
  });
  await test('recorte permite zoom e rotação sem expor área vazia; cancelar não grava',async()=>{
