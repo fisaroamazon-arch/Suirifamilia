@@ -32,12 +32,38 @@
     let traco = null;
     let revisaoModelo = 0;
     let quadro = 0;
+    let antesDeRedimensionar = null;
 
-    function centralizar(ctx, imagem) {
-        const fator = Math.min(ctx.canvas.width / imagem.width, ctx.canvas.height / imagem.height);
+    function fatorDeEncaixe(origem, destino) {
+        return Math.min(destino.width / origem.width, destino.height / origem.height);
+    }
+
+    function centralizar(ctx, imagem, escala = 1) {
+        const fator = fatorDeEncaixe(imagem, ctx.canvas) * escala;
         const largura = imagem.width * fator;
         const altura = imagem.height * fator;
         ctx.drawImage(imagem, (ctx.canvas.width - largura) / 2, (ctx.canvas.height - altura) / 2, largura, altura);
+    }
+
+    function restaurarEstado(estado) {
+        const origem = estado.tinta;
+        const ajuste = fatorDeEncaixe(origem, papel);
+        tinta.clearRect(0, 0, papel.width, papel.height);
+        if (origem.width === papel.width && origem.height === papel.height) {
+            tinta.putImageData(origem, 0, 0);
+            modelo = estado.modelo;
+            return;
+        }
+        const original = camada(origem.width, origem.height);
+        original.putImageData(origem, 0, 0);
+        centralizar(tinta, original.canvas);
+        // A tinta e o modelo usam a mesma transformação, inclusive ao restaurar o histórico.
+        modelo = estado.modelo;
+        if (modelo) {
+            const antes = fatorDeEncaixe(modelo.imagem, origem);
+            const depois = fatorDeEncaixe(modelo.imagem, papel);
+            modelo = {...modelo, escala: (modelo.escala ?? 1) * antes * ajuste / depois};
+        }
     }
 
     function ajustarPapel() {
@@ -48,11 +74,10 @@
         const altura = Math.round(area.height * escala);
         if (papel.width === largura && papel.height === altura) return;
         finalizarTraco();
-        const anterior = camada(papel.width, papel.height);
-        anterior.drawImage(tinta.canvas, 0, 0);
+        antesDeRedimensionar ||= estadoAtual();
         papel.width = tinta.canvas.width = rascunho.canvas.width = largura;
         papel.height = tinta.canvas.height = rascunho.canvas.height = altura;
-        centralizar(tinta, anterior.canvas);
+        restaurarEstado(antesDeRedimensionar);
         desenhar();
     }
 
@@ -61,7 +86,7 @@
         quadro = 0;
         exibicao.fillStyle = '#ffffff';
         exibicao.fillRect(0, 0, papel.width, papel.height);
-        if (modelo && !modelo.contorno) centralizar(exibicao, modelo.imagem);
+        if (modelo && !modelo.contorno) centralizar(exibicao, modelo.imagem, modelo.escala);
         exibicao.drawImage(tinta.canvas, 0, 0);
         if (traco && traco.pincel !== 'borracha') {
             exibicao.globalAlpha = traco.pincel === 'marca' ? .38 : 1;
@@ -70,7 +95,7 @@
         }
         if (modelo?.contorno) {
             exibicao.globalCompositeOperation = 'multiply';
-            centralizar(exibicao, modelo.imagem);
+            centralizar(exibicao, modelo.imagem, modelo.escala);
             exibicao.globalCompositeOperation = 'source-over';
         }
     }
@@ -88,6 +113,7 @@
     }
 
     function registrar(estado) {
+        antesDeRedimensionar = null;
         anteriores.push(estado);
         if (anteriores.length > limiteHistorico) anteriores.shift();
         posteriores.length = 0;
@@ -99,16 +125,8 @@
         if (!origem.length) return;
         revisaoModelo++;
         destino.push(estadoAtual());
-        const estado = origem.pop();
-        modelo = estado.modelo;
-        tinta.clearRect(0, 0, papel.width, papel.height);
-        if (estado.tinta.width === papel.width && estado.tinta.height === papel.height) {
-            tinta.putImageData(estado.tinta, 0, 0);
-        } else {
-            const original = camada(estado.tinta.width, estado.tinta.height);
-            original.putImageData(estado.tinta, 0, 0);
-            centralizar(tinta, original.canvas);
-        }
+        antesDeRedimensionar = null;
+        restaurarEstado(origem.pop());
         aviso.textContent = '';
         desenhar();
         atualizarHistorico();

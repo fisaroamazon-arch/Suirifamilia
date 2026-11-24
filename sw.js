@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7181';
+const CACHE='suiri-family-v7182';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -42,7 +42,7 @@ const SHELL=[
   "./assets/audio/piano/xilofone.mp3",
   "./arte.html",
   "./src/data/desenhos-arte.js?v=3ce33393256b",
-  "./src/pages/arte.js?v=50ebadee5365",
+  "./src/pages/arte.js?v=326d9a4694c8",
   "./styles/pages/arte.css?v=97e3adb261a5",
   "./assets/images/arte/abelha.svg",
   "./assets/images/arte/arco-iris.svg",
