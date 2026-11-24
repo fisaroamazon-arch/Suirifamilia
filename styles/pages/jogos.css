@@ -709,7 +709,7 @@
             -webkit-user-select: none;
         }
 
-        .container-triplo-teclados-livre {
+        .container-teclados-livre {
             display: none;
             flex-direction: column;
             gap: 10px;

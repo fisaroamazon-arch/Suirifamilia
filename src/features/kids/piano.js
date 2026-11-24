@@ -515,12 +515,10 @@ window.MotorMusica = {
         const dialogo = document.getElementById('piano-configuracoes');
         if (!dialogo || this.painelPianoConfigurado) return;
         this.painelPianoConfigurado = true;
-        this.consultasAlcance = [720, 1040].map(largura => matchMedia(`(orientation: landscape) and (min-width: ${largura}px)`));
+        this.orientacaoAmpla = matchMedia('(orientation: landscape)');
         const atualizar = () => this.atualizarAlcance();
-        for (const consulta of this.consultasAlcance) {
-            if (consulta.addEventListener) consulta.addEventListener('change', atualizar);
-            else consulta.addListener?.(atualizar);
-        }
+        if (this.orientacaoAmpla.addEventListener) this.orientacaoAmpla.addEventListener('change', atualizar);
+        else this.orientacaoAmpla.addListener?.(atualizar);
         this.atualizarAlcance();
         dialogo.addEventListener('close', () => {
             const retomar = this.retomarAposConfiguracao;
@@ -568,24 +566,22 @@ window.MotorMusica = {
         const seletor = document.getElementById('piano-alcance');
         const teclado = document.getElementById('teclado-piano-completo');
         if (!seletor || !teclado) return;
-        const maximo = this.consultasAlcance?.[1].matches ? 3 : this.consultasAlcance?.[0].matches ? 2 : 1;
-        seletor.closest('label').hidden = maximo === 1;
-        for (const opcao of seletor.options) opcao.disabled = opcao.hidden = Number(opcao.value) > maximo;
-        const alcance = Math.min(maximo, this.alcancePreferido || 1);
+        const horizontal = Boolean(this.orientacaoAmpla?.matches);
+        const alcance = horizontal ? this.alcancePreferido || 3 : 1;
+        seletor.closest('label').hidden = !horizontal;
         seletor.value = String(alcance);
         if (alcance === (this.alcanceSolo || 1)) return;
         if (!this.teclasSoloOriginais) this.teclasSoloOriginais = [...teclado.children];
         if (this.modo === 'aprendizado') this.pararTodasNotas();
         this.alcanceSolo = alcance;
         teclado.dataset.alcance = String(alcance);
-        this.layoutSolo = alcance === 1 ? null : this.montarTecladoAmpliado(teclado, alcance);
+        this.layoutSolo = alcance === 1 ? null : this.montarTecladoAmpliado(teclado, alcance, alcance === 3 ? 3 : 4);
         if (alcance === 1) teclado.replaceChildren(...this.teclasSoloOriginais);
         if (this.partituraAtual) this.atualizarDisplays();
         this.renderizarTodasEsteiras();
     },
 
-    montarTecladoAmpliado: function(teclado, alcance) {
-        const base = alcance === 3 ? 3 : 4;
+    montarTecladoAmpliado: function(teclado, alcance, base) {
         const brancas = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
         const pretas = [['C#', 1], ['D#', 2], ['F#', 4], ['G#', 5], ['A#', 6]];
         const larguraBranca = 1 / (alcance * brancas.length + 1);
@@ -1354,10 +1350,12 @@ window.MotorMusica = {
         associarTeclasDeContainer(document.getElementById('teclado-dueto-melodia'), 1.0, 'dueto-j1');
         associarTeclasDeContainer(document.getElementById('teclado-dueto-harmonia'), 0.85, 'dueto-j2');
 
-        associarTeclasDeContainer(document.getElementById('teclado-livre-subgrave'), 1.0, 'livre-2');
-        associarTeclasDeContainer(document.getElementById('teclado-livre-grave'), 1.0, 'livre-3');
-        associarTeclasDeContainer(document.getElementById('teclado-livre-medio'), 1.0, 'livre-4');
-        associarTeclasDeContainer(document.getElementById('teclado-livre-agudo'), 1.0, 'livre-5');
+        for (const [registro, base] of [['agudo', 4], ['grave', 2]]) {
+            const teclado = document.getElementById(`teclado-livre-${registro}`);
+            if (!teclado) continue;
+            this.montarTecladoAmpliado(teclado, 2, base);
+            associarTeclasDeContainer(teclado, 1, `livre-${registro}`);
+        }
 
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) return;
@@ -1367,14 +1365,14 @@ window.MotorMusica = {
         });
     },
 
-    obterInstrumentoPorOrigem: function(seletorOrigem) {
+    obterInstrumentoPorOrigem: function(seletorOrigem, codigoNota) {
         if (seletorOrigem === 'solo') return this.timbreSolo;
         if (seletorOrigem === 'dueto-j1') return this.timbreDuetoJ1;
         if (seletorOrigem === 'dueto-j2') return this.timbreDuetoJ2;
-        if (seletorOrigem === 'livre-2') return this.timbresLivres[2] || 'piano';
-        if (seletorOrigem === 'livre-3') return this.timbresLivres[3] || 'piano';
-        if (seletorOrigem === 'livre-4') return this.timbresLivres[4] || 'piano';
-        if (seletorOrigem === 'livre-5') return this.timbresLivres[5] || 'piano';
+        if (seletorOrigem.startsWith('livre-')) {
+            const oitava = Math.min(5, this.infoNota(codigoNota).oitava);
+            return this.timbresLivres[oitava] || 'piano';
+        }
         return 'piano';
     },
 
@@ -1382,7 +1380,7 @@ window.MotorMusica = {
         if (!this.infoNota(codigoNota)) return;
         if (this.tocandoMusica && this.modo !== 'livre' && this.fatorVelocidade !== 'toque') this.conferirAtrasos();
         const notas = this.notasDoToque(codigoNota, seletorOrigem);
-        const instrumento = this.obterInstrumentoPorOrigem(seletorOrigem);
+        const instrumento = this.obterInstrumentoPorOrigem(seletorOrigem, codigoNota);
         const chaves = notas.map(nota => {
             const chave = `${nota}_${pointerId}`;
             window.AudioMotor?.iniciarVozPiano?.(chave, this.infoNota(nota).freq, fatorVol / Math.sqrt(notas.length), instrumento);
@@ -1635,7 +1633,7 @@ window.MotorMusica = {
         this.limparBrilhosTeclas();
 
         if (this.modo === 'livre' && this.desafioLivre && !this.encerrada) {
-            document.getElementById('teclado-livre-medio')
+            document.getElementById('teclado-livre-agudo')
                 ?.querySelector(`[data-nota="${this.proximaNotaLivre}"]`)?.classList.add('alvo-brilhando');
         }
 

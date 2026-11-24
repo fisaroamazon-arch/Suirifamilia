@@ -15,6 +15,10 @@ for(const name of ['index.html','mulher.html','homem.html','jogos.html']){
  dom.window.close();
 }
 for(const item of JSON.parse(fs.readFileSync('tests/media-hashes.json'))){assert.equal(crypto.createHash('sha256').update(fs.readFileSync(item.path)).digest('hex'),item.sha256,item.path+' foi alterado');}
+const android=JSON.parse(fs.readFileSync('downloads/android.json','utf8'));
+const manifesto=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');
+assert.equal(android.versao,manifesto.match(/android:versionName="([^"]+)"/)?.[1]);
+assert.equal(android.sha256,crypto.createHash('sha256').update(fs.readFileSync('downloads/suiri-familia.apk')).digest('hex'));
 const {stripTypeScriptTypes}=require('node:module');
 const typed=fs.readFileSync('supabase/functions/suiri-ia/index.ts','utf8');
 const plain=stripTypeScriptTypes(typed,{mode:'strip'});

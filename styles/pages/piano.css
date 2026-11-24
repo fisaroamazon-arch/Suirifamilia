@@ -15,7 +15,7 @@
 }
 .piano-estudio h2 { font-size: 1.12rem; line-height: 1.18; letter-spacing: -.02em; }
 .piano-estudio p { font-size: .73rem; margin-top: 2px; color: #eedffc; }
-#tela-simon[data-modo-piano="dueto"] .piano-estudio { display: none; }
+#tela-simon:not([data-modo-piano="aprendizado"]) .piano-estudio { display: none; }
 .piano-musica-atual {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -217,6 +217,28 @@
 #teclado-piano-completo[data-alcance="2"], #teclado-piano-completo[data-alcance="3"] { padding: 0; }
 #teclado-piano-completo[data-alcance] .tecla-branca-piano { min-width: 0; }
 #teclado-piano-completo[data-alcance] .rotulo-nota-preta { font-size: 8px; }
+#tela-simon #container-teclados-livre {
+    max-width: 785px;
+    gap: 8px;
+}
+#container-teclados-livre .faixa-teclado-unidade {
+    padding: 5px;
+    border-color: #a79bc1;
+    background: linear-gradient(140deg, #4a4266, #353c59);
+}
+#container-teclados-livre .badge-faixa-oitava {
+    background: #26223d;
+    color: #fff0dd;
+    font-size: .75rem;
+    box-shadow: none;
+}
+#container-teclados-livre .badge-faixa-oitava span { color: #d3c3ed; font-weight: 600; }
+#container-teclados-livre .teclado-compacto-livre {
+    height: clamp(94px, 19dvh, 146px);
+    padding: 0;
+}
+#container-teclados-livre :is(.tecla-branca-piano, .tecla-preta-piano) { min-width: 0; }
+#container-teclados-livre .rotulo-nota-preta { font-size: clamp(7px, 1.35vw, 9px); }
 #tela-simon #painel-aprendizado-box .piano-placar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -275,7 +297,7 @@
 @media (orientation: landscape) {
     .piano-girar { display: none; }
 }
-@media (orientation: landscape) and (min-width: 500px) {
+@media (orientation: landscape) {
     .arcade-page[data-arcade-tela="simon"] #app-container { max-width: 1180px; }
     .arcade-page[data-arcade-tela="simon"] .barra-topo { min-height: 44px; }
     .arcade-page[data-arcade-tela="simon"] .barra-topo .btn-voltar { min-height: 34px; }
@@ -326,13 +348,52 @@
     }
     #tela-simon #pista-esteira-box { grid-area: pista; margin-block-end: -5px; }
     #tela-simon #teclado-piano-completo { grid-area: teclas; }
-    #tela-simon #container-teclados-livre { max-width: 700px; }
-    #tela-simon #container-teclados-livre[style*="flex"] { display: grid !important; grid-template-columns: 1fr 1fr; }
+    #container-teclados-livre .teclado-compacto-livre { height: clamp(45px, 19dvh, 124px); }
 }
-@media (orientation: landscape) and (min-width: 500px) and (max-width: 555px) {
+@media (orientation: landscape) and (max-width: 1039px) {
     .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"] {
-        grid-template-columns: 180px minmax(0, 1fr);
-        column-gap: 7px;
+        grid-template-columns: minmax(156px, 23%) minmax(0, 1fr);
+        grid-template-rows: auto minmax(38px, 1fr) clamp(54px, 23dvh, 100px);
+        grid-template-areas: "modos painel" "pista pista" "teclas teclas";
+        gap: 4px 7px;
+        padding: 4px 7px 5px;
     }
-    #tela-simon #painel-aprendizado-box .piano-placar { grid-template-columns: 1fr; }
+    #tela-simon #tabs-piano-seletor-modos { align-self: center; gap: 3px; }
+    #tela-simon #tabs-piano-seletor-modos .btn-modo-som-tab { min-height: 38px; }
+    #tela-simon[data-modo-piano="aprendizado"] #painel-aprendizado-box {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 2px 7px;
+        padding: 4px 6px;
+    }
+    #tela-simon #painel-aprendizado-box .piano-musica-atual {
+        grid-column: 1 / -1;
+        font-size: .72rem;
+        text-align: left;
+    }
+    #tela-simon #painel-aprendizado-box .piano-oitavas-guia { display: none; }
+    #tela-simon #painel-aprendizado-box .piano-controles { margin: 0; }
+    #tela-simon #painel-aprendizado-box .piano-acoes {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 4px;
+    }
+    #tela-simon #painel-aprendizado-box .piano-acoes > button { min-height: 33px; white-space: nowrap; }
+    #tela-simon #painel-aprendizado-box .btn-voltar-dueto { padding-inline: 7px; }
+    #tela-simon #painel-aprendizado-box .btn-voltar-dueto span { display: none; }
+    #tela-simon #painel-aprendizado-box .piano-placar { min-width: 0; }
+    #tela-simon #painel-aprendizado-box .piano-placar > progress { display: none; }
+    #tela-simon #txt-nota-alvo-aprendizado { flex-basis: 5.75em; padding-inline: 2px; font-size: .72rem; }
+}
+@media (orientation: landscape) and (max-width: 590px) {
+    #tela-simon #painel-aprendizado-box .piano-coracoes { display: none; }
+    #tela-simon #painel-aprendizado-box .piano-acoes > button { padding-inline: 5px; font-size: .64rem; }
+}
+@media (orientation: landscape) and (max-width: 480px) {
+    .arcade-page[data-arcade-tela="simon"] #tela-simon[data-modo-piano="aprendizado"] {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto minmax(28px, 1fr) clamp(48px, 22dvh, 76px);
+        grid-template-areas: "modos" "painel" "pista" "teclas";
+    }
 }

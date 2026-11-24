@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
-    <link rel="stylesheet" href="styles/pages/jogos.css?v=4c75e581dcc9">
+    <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
     <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=84f690e56e16">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=076acc0c1d17">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=e08c25c51ea6">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -202,7 +202,7 @@
 
             <header class="piano-estudio">
                 <h2>Piano do Chuíri</h2>
-                <p>Toque a tecla iluminada. <span class="piano-girar">Vire o celular para jogar na horizontal.</span></p>
+                <p>Toque a tecla iluminada. <span class="piano-girar">Vire o celular para tocar três oitavas.</span></p>
             </header>
 
             <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
@@ -216,7 +216,7 @@
                         <button type="button" class="btn-play-pause-musica" id="btn-play-musica-solo" onclick="MotorMusica.togglePlay()">
                             <span id="icone-play-solo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-solo">Jogar</span>
                         </button>
-                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()" title="Reiniciar do começo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
+                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()" aria-label="Reiniciar do começo" title="Reiniciar do começo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> <span>Reiniciar</span></button>
                     </div>
                 </div>
 
@@ -260,101 +260,20 @@
                 <div data-vidas-piano id="erros-livre-piano" hidden><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
             </div>
 
-            <!-- COLUNA DAS 4 OITAVAS INDEPENDENTES (MODO LIVRE: C2 A C6) -->
-            <div class="container-triplo-teclados-livre" id="container-teclados-livre">
-                <!-- 1. OITAVA 5: AGUDO -->
-                <div class="faixa-teclado-unidade">
-                    <div class="topo-faixa-oitava">
-                        <span class="badge-faixa-oitava" style="color:#8b5cf6;">Oitava 5 (Aguda)</span>
-                    </div>
-                    <div class="teclado-compacto-livre" id="teclado-livre-agudo">
-                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D5"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E5"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F5"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G5"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A5"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B5"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C6"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#5"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#5"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#5"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#5"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#5"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
-                </div>
-
-                <!-- 2. OITAVA 4: MÉDIO -->
-                <div class="faixa-teclado-unidade">
-                    <div class="topo-faixa-oitava">
-                        <span class="badge-faixa-oitava" style="color:#0284c7;">Oitava 4 (Média)</span>
-                    </div>
-                    <div class="teclado-compacto-livre" id="teclado-livre-medio">
-                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F4"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G4"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A4"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
-                </div>
-
-                <!-- 3. OITAVA 3: GRAVE -->
-                <div class="faixa-teclado-unidade">
-                    <div class="topo-faixa-oitava">
-                        <span class="badge-faixa-oitava" style="color:#d97706;">Oitava 3 (Grave)</span>
-                    </div>
-                    <div class="teclado-compacto-livre" id="teclado-livre-grave">
-                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D3"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E3"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F3"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G3"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A3"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B3"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#3"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#3"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#3"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#3"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#3"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
-                </div>
-
-                <!-- 4. OITAVA 2: SUB-GRAVE / BAIXO -->
-                <div class="faixa-teclado-unidade">
-                    <div class="topo-faixa-oitava">
-                        <span class="badge-faixa-oitava" style="color:#b91c1c;">Oitava 2 (Sub-Grave)</span>
-                    </div>
-                    <div class="teclado-compacto-livre" id="teclado-livre-subgrave">
-                        <div class="tecla-branca-piano" data-nota="C2"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D2"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E2"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F2"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G2"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A2"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B2"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#2"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#2"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#2"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#2"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#2"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
-                </div>
+            <div class="container-teclados-livre" id="container-teclados-livre">
+                <section class="faixa-teclado-unidade" aria-labelledby="piano-livre-agudo-titulo">
+                    <header class="topo-faixa-oitava">
+                        <h3 class="badge-faixa-oitava" id="piano-livre-agudo-titulo">Agudo <span>Dó4 a Dó6</span></h3>
+                    </header>
+                    <div class="teclado-compacto-livre" id="teclado-livre-agudo"></div>
+                </section>
+                <section class="faixa-teclado-unidade" aria-labelledby="piano-livre-grave-titulo">
+                    <header class="topo-faixa-oitava">
+                        <h3 class="badge-faixa-oitava" id="piano-livre-grave-titulo">Grave <span>Dó2 a Dó4</span></h3>
+                    </header>
+                    <div class="teclado-compacto-livre" id="teclado-livre-grave"></div>
+                </section>
             </div>
-
 
             <!-- MODO DUETO 2 JOGADORES COM ESTEIRAS AMPLAS E TIMBRES INDEPENDENTES -->
             <div id="container-dueto-piano-2p">
@@ -666,7 +585,7 @@
 
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
-    <script src="src/features/kids/piano.js?v=0962e4b18ef5"></script>
+    <script src="src/features/kids/piano.js?v=0fb19cb4444d"></script>
 
     <script src="src/pages/arcade.js?v=e55cfc8ae9a2"></script>
 </body>
