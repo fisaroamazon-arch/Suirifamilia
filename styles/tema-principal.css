@@ -49,3 +49,197 @@ html[data-theme="dark"] :is([style*="color: #065f46"], [style*="color: #9f1239"]
     color: var(--texto-suave, #526477);
     font-size: 12px;
 }
+
+/* A marca e o perfil usam a mesma paleta das superfícies claras do painel. */
+html[data-theme="light"] body #cabecalho-topo-usuario {
+    background: linear-gradient(150deg, #fff 15%, #f2f9f5 100%) !important;
+    border: 1px solid #dbe8e1 !important;
+    box-shadow: 0 8px 28px #254a3810 !important;
+}
+
+#cabecalho-topo-usuario .suiri-logo-texto-claro {
+    display: none;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario .header-logo-container .logo-suiri-marca img.suiri-logo-texto-claro {
+    display: block;
+    clip-path: inset(0 0 0 43%);
+    filter: brightness(0) opacity(.88) !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario :is(#nome-membro-topo, .header-logo-container > span) {
+    color: #203c34 !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario :is(#nome-familia-topo, .avatar-trocar-label) {
+    color: #4e685d !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario #img-avatar-topo {
+    border-color: #dce9e1 !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario .usuario-card-atalhos {
+    border-color: #dfebe4 !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario .usuario-card-atalhos button {
+    background: #edf6f1 !important;
+    border-color: #deece4 !important;
+    color: #234538 !important;
+}
+
+html[data-theme="light"] body #cabecalho-topo-usuario .usuario-card-atalhos button img {
+    filter: none !important;
+}
+
+/* O contêiner fixo desenha sozinho a barra também no escuro. */
+#barra-navegacao-principal .bottom-nav-item {
+    flex: 1 1 0 !important;
+    min-width: 0;
+}
+
+html[data-theme="dark"] body #barra-navegacao-principal {
+    background: #22394e !important;
+    border: 1px solid #39536a !important;
+    border-radius: 30px !important;
+    box-shadow: 0 12px 32px #09172466 !important;
+}
+
+html[data-theme="dark"] body #barra-navegacao-principal .bottom-nav-list {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="dark"] body #barra-navegacao-principal .bottom-nav-item.ativo {
+    background: #354e64 !important;
+}
+
+html[data-theme="dark"] body #barra-navegacao-principal .bottom-nav-item img {
+    filter: brightness(0) invert(.9) !important;
+}
+
+/* Separação por espaço e contraste de superfícies nas duas vistas do Mercado. */
+#secao-mercado :is(.tabela-mercado-container, #container-itens-lista-mes) {
+    border: 0 !important;
+    border-radius: 20px;
+    background: var(--v73-surface);
+    box-shadow: 0 5px 18px #183d2e0a;
+}
+
+#secao-mercado .planilha-mercado :is(th, td) {
+    border: 0 !important;
+}
+
+#secao-mercado .planilha-mercado td {
+    padding-block: 11px;
+    background: transparent !important;
+}
+
+#secao-mercado .planilha-mercado tr[data-no-carrinho] {
+    background: var(--v73-surface2);
+}
+
+#secao-mercado .item-planejamento-mercado {
+    margin: 0;
+    padding: 12px 14px;
+    gap: 10px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+#secao-mercado .item-planejamento-mercado strong {
+    overflow-wrap: anywhere;
+}
+
+#secao-mercado .mercado-remover {
+    background: #fbecec !important;
+    color: #a52535 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="dark"] body #secao-mercado .mercado-remover {
+    background: #633744 !important;
+}
+
+html[data-theme="dark"] body #secao-mercado .mercado-remover img {
+    filter: brightness(0) invert(1) !important;
+}
+
+html[data-theme="dark"] body #secao-mercado .total-mercado-fixo {
+    background: var(--v73-surface) !important;
+    border-color: var(--v73-line) !important;
+    box-shadow: none !important;
+}
+
+#secao-mercado .mercado-item-nome {
+    display: block;
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
+#secao-mercado .mercado-item-categoria {
+    color: var(--v73-muted);
+    font-size: 10.5px;
+}
+
+#secao-mercado [data-no-carrinho] .mercado-item-nome {
+    text-decoration: line-through;
+}
+
+#painel-totais-segmentos-mercado:not([hidden]) {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--v73-surface);
+}
+
+#painel-totais-segmentos-mercado summary {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#subtotais-segmentos-mercado {
+    margin: 10px 0 0;
+}
+
+#subtotais-segmentos-mercado > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+#subtotais-segmentos-mercado dd {
+    margin: 0;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.modal-header > button[aria-label^="Fechar"] {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: var(--v73-surface2);
+    color: var(--v73-ink);
+    font-size: 19px;
+    cursor: pointer;
+}
+
+@media (max-width: 420px) {
+    #barra-navegacao-principal .bottom-nav-item span {
+        white-space: normal !important;
+        text-align: center;
+        line-height: 1.1;
+        font-size: clamp(9px, 2.65vw, 10.5px) !important;
+    }
+}

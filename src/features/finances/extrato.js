@@ -65,7 +65,7 @@ window.garantirBarraBuscaExtrato = function() {
     barra.id = 'barra-busca-rapida-extrato';
     barra.style.cssText = 'display:flex; gap:8px; margin-bottom:12px; align-items:center;';
     barra.innerHTML = `
-        <input type="text" id="input-busca-texto-extrato" placeholder="Buscar no extrato (ex: mercado, luz, nome...)" 
+        <input type="text" id="input-busca-texto-extrato" placeholder="Buscar no extrato" aria-label="Buscar no extrato por descrição, categoria ou nome"
                style="flex:1; padding:9px 12px; font-size:12.5px; border-radius:12px; border:1px solid #cbd5e1; background:#ffffff;" 
                oninput="window.filtrarListaExtratoMemoria()">
         <select id="select-busca-categoria-extrato" style="width:135px; padding:9px 28px 9px 10px; font-size:12px; border-radius:12px; border:1px solid #cbd5e1; background-color:#ffffff;" onchange="window.filtrarListaExtratoMemoria()">

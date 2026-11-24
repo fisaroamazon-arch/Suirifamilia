@@ -294,6 +294,9 @@ window.alternarVisualizacaoMercado = function(modo) {
     const btnLista = document.getElementById('btn-aba-lista-mes');
     const btnPlanilha = document.getElementById('btn-aba-modo-mercado');
 
+    btnLista?.setAttribute('aria-pressed', String(modo === 'lista'));
+    btnPlanilha?.setAttribute('aria-pressed', String(modo !== 'lista'));
+
     if (modo === 'lista') {
         blocoLista?.classList.remove('oculto');
         blocoPlanilha?.classList.add('oculto');
@@ -491,17 +494,17 @@ window.renderizarListaMercado = function() {
             : '';
 
         return `
-            <div class="cartao-geral" style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px; margin-bottom:8px; border-radius:14px; border:1px solid rgba(226, 232, 240, 0.85); box-shadow:0 1px 3px rgba(15,23,42,0.02);">
+            <div class="item-planejamento-mercado">
                 <div>
                     <strong style="font-size:14px; color:var(--texto-principal, #0f172a);">${esc(i.nome_item)}</strong>
-                    <div style="font-size:11.5px; color:var(--texto-suave, #64748b); margin-top:2px;">${i.segmento_categoria}</div>
+                    <div style="font-size:11.5px; color:var(--texto-suave, #64748b); margin-top:2px;">${esc(i.segmento_categoria || 'Mercearia')}</div>
                     ${badgePreco}
                 </div>
                 <div style="display:flex; gap:6px;">
                     <button class="btn-secundario" style="padding:6px 9px; font-size:11px; border-radius:9px; display:inline-flex; align-items:center;" onclick="window.abrirModalEditarMercado('${i.id}')" title="Editar">
                         <img src="assets/icons-modern/icone-editar.svg" alt="Editar" style="width:13px; height:13px; object-fit:contain;">
                     </button>
-                    <button class="btn-erro" style="padding:6px 9px; font-size:11px; border-radius:9px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')" title="Excluir">
+                    <button type="button" class="btn-erro mercado-remover" style="padding:6px 9px; font-size:11px; border-radius:9px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')" title="Excluir">
                         <img src="assets/icons-modern/icone-lixo.svg" alt="Excluir" style="width:13px; height:13px; object-fit:contain;">
                     </button>
                 </div>
@@ -516,7 +519,7 @@ window.renderizarPlanilhaMercado = function() {
     if (!tbody || !lblTotal) return;
     
     let totalCarrinho = 0;
-    const totaisPorSegmento = {};
+    const totaisPorSegmento = Object.create(null);
 
     if (window.itensMercadoAtual.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--texto-suave);">Nenhum item na lista ou no carrinho</td></tr>';
@@ -555,26 +558,26 @@ window.renderizarPlanilhaMercado = function() {
         }
         
         return `
-            <tr style="${estMarcado ? 'background:rgba(16, 185, 129, 0.04);' : ''}">
+            <tr ${estMarcado ? "data-no-carrinho" : ""}>
                 <td style="text-align:center;">
-                    <input type="checkbox" style="accent-color:var(--cor-primaria, #f97316); width:18px; height:18px;" ${estMarcado ? 'checked' : ''} onchange="window.atualizarItemMercado('${i.id}', 'no_carrinho', this.checked)">
+                    <input type="checkbox" aria-label="No carrinho: ${esc(i.nome_item)}" style="accent-color:var(--cor-primaria, #f97316); width:18px; height:18px;" ${estMarcado ? 'checked' : ''} onchange="window.atualizarItemMercado('${i.id}', 'no_carrinho', this.checked)">
                 </td>
-                <td style="font-size:12.5px; font-weight:700; ${estMarcado ? 'color:var(--cor-sucesso, #10b981); text-decoration:line-through; opacity:0.8;' : 'color:#0f172a;'}">
-                    ${esc(i.nome_item)}
-                    <div style="font-size:10.5px; color:var(--texto-suave); font-weight:normal;">${i.segmento_categoria}</div>
+                <td>
+                    <strong class="mercado-item-nome">${esc(i.nome_item)}</strong>
+                    <div class="mercado-item-categoria">${esc(i.segmento_categoria || 'Mercearia')}</div>
                     ${tagHistorico}
                 </td>
                 <td>
-                    <input type="number" step="0.1" value="${i.quantidade || 1}" style="width:100%; padding:5px 4px; font-variant-numeric:tabular-nums; border-radius:8px; border:1px solid #cbd5e1; text-align:center;" onchange="window.atualizarQtdOuValorMercado('${i.id}', 'quantidade', this.value)">
+                    <input type="number" aria-label="Quantidade de ${esc(i.nome_item)}" step="0.1" value="${i.quantidade ?? 1}" style="width:100%; padding:5px 4px; font-variant-numeric:tabular-nums; border-radius:8px; border:1px solid #cbd5e1; text-align:center;" onchange="window.atualizarQtdOuValorMercado('${i.id}', 'quantidade', this.value)">
                 </td>
                 <td>
-                    <input type="number" step="0.01" value="${i.valor_unitario || 0}" style="${estiloBordaPreco}" ${tooltipPreco} onchange="window.atualizarQtdOuValorMercado('${i.id}', 'valor_unitario', this.value)">
+                    <input type="number" aria-label="Preço unitário de ${esc(i.nome_item)}" step="0.01" value="${i.valor_unitario || 0}" style="${estiloBordaPreco}" ${tooltipPreco} onchange="window.atualizarQtdOuValorMercado('${i.id}', 'valor_unitario', this.value)">
                 </td>
                 <td style="text-align:right; font-weight:800; font-size:12.5px; white-space:nowrap; font-variant-numeric:tabular-nums; color:#0f172a;">
-                    R$ ${subtotal.toFixed(2)}
+                    ${Suiri.money(subtotal)}
                 </td>
                 <td style="text-align:center;">
-                    <button class="btn-erro" style="padding:5px 7px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')">
+                    <button type="button" class="btn-erro mercado-remover" aria-label="Excluir ${esc(i.nome_item)}" style="padding:5px 7px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center;" onclick="window.removerItemMercado('${i.id}')">
                         <img src="assets/icons-modern/icone-lixo.svg" alt="Excluir" style="width:12px; height:12px; object-fit:contain;">
                     </button>
                 </td>
@@ -582,49 +585,20 @@ window.renderizarPlanilhaMercado = function() {
         `;
     }).join('');
     
-    lblTotal.textContent = `R$ ${totalCarrinho.toFixed(2)}`;
+    lblTotal.textContent = Suiri.money(totalCarrinho);
     window.renderizarPainelSegmentosMercado(totaisPorSegmento);
 };
 
 window.renderizarPainelSegmentosMercado = function(totaisSegmentos) {
-    let container = document.getElementById('painel-totais-segmentos-mercado');
-    if (!container) {
-        const blocoPlanilha = document.getElementById('bloco-planilha-modo-mercado');
-        if (!blocoPlanilha) return;
-        
-        container = document.createElement('div');
-        container.id = 'painel-totais-segmentos-mercado';
-        container.style.cssText = 'margin:12px 0; padding:14px; background:var(--pastel-card, #ffffff); border:1px solid rgba(226, 232, 240, 0.9); border-radius:16px; box-shadow:0 1px 3px rgba(15,23,42,0.02);';
-        
-        const tabelaContainer = blocoPlanilha.querySelector('.tabela-mercado-container');
-        if (tabelaContainer) {
-            tabelaContainer.parentNode.insertBefore(container, tabelaContainer.nextSibling);
-        } else {
-            blocoPlanilha.appendChild(container);
-        }
-    }
+    const painel = document.getElementById('painel-totais-segmentos-mercado');
+    const lista = document.getElementById('subtotais-segmentos-mercado');
+    if (!painel || !lista) return;
 
-    const segmentos = Object.keys(totaisSegmentos);
-    if (segmentos.length === 0) {
-        container.innerHTML = '<span style="font-size:12px; color:var(--texto-suave);">Marque os itens no carrinho para ver o total por segmento.</span>';
-        return;
-    }
-
-    let html = '<div style="font-size:11px; font-weight:800; color:var(--cor-primaria, #f97316); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Subtotais por Segmento:</div>';
-    html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:7px;">';
-    
-    segmentos.forEach(seg => {
-        const valor = totaisSegmentos[seg];
-        html += `
-            <div style="background:var(--suiri-surface-secondary-light, #fffbeb); padding:8px 12px; border-radius:10px; border:1px solid rgba(249, 115, 22, 0.2); display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:11.5px; font-weight:700; color:var(--texto-principal, #0f172a);">${seg}:</span>
-                <strong style="font-size:12px; color:var(--cor-sucesso, #10b981); font-variant-numeric:tabular-nums;">R$ ${valor.toFixed(2)}</strong>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
+    const segmentos = Object.entries(totaisSegmentos);
+    painel.hidden = segmentos.length === 0;
+    lista.innerHTML = segmentos.map(([nome, valor]) =>
+        `<div><dt>${esc(nome)}</dt><dd>${Suiri.money(valor)}</dd></div>`
+    ).join('');
 };
 
 window.atualizarQtdOuValorMercado = async function(id,campo,valor) {
