@@ -173,6 +173,79 @@
         // =========================================================================
         const GerenciadorArcade = {
             telaAtiva: 'menu',
+            partidaPausada: null,
+
+            chaveTrilha: function() {
+                let id = 'local';
+                try { id = JSON.parse(localStorage.getItem('suiri_perfil_ativo') || '{}').id || id; } catch {}
+                return `suiri:arcade:trilha:${id}`;
+            },
+
+            trilhaLigada: function() {
+                try { return localStorage.getItem(this.chaveTrilha()) !== 'off'; } catch { return true; }
+            },
+
+            atualizarControleTrilha: function() {
+                const botao = document.getElementById('arcade-som');
+                const ligada = this.trilhaLigada();
+                botao?.setAttribute('aria-pressed', String(ligada));
+                if (botao) botao.querySelector('span').textContent = ligada ? 'Trilha ligada' : 'Trilha desligada';
+            },
+
+            alternarTrilha: function() {
+                try { localStorage.setItem(this.chaveTrilha(), this.trilhaLigada() ? 'off' : 'on'); } catch { return; }
+                this.atualizarControleTrilha();
+                if (!this.trilhaLigada()) TrilhaSonoraArcade.parar();
+                else if (!this.partidaPausada && this.telaAtiva !== 'menu' && this.telaAtiva !== 'simon') TrilhaSonoraArcade.iniciar();
+            },
+
+            motorAtivo: function() {
+                return { flappy: MotorFlappy, quebrablocos: MotorQuebraBlocos, bolhas: MotorBolhas }[this.telaAtiva];
+            },
+
+            atualizarControlePausa: function(ativo, motor) {
+                const botao = motor?.canvas?.parentElement.querySelector('[data-arcade-pausar]');
+                if (botao) botao.hidden = !ativo;
+            },
+
+            pausar: function() {
+                const motor = this.motorAtivo();
+                if (!motor?.rodando || this.partidaPausada) return;
+                const dialogo = document.getElementById('arcade-pausa');
+                if (!dialogo?.showModal) return;
+                const agora = performance.now();
+                this.partidaPausada = { motor, agora };
+                motor.rodando = false;
+                cancelAnimationFrame(motor.anim);
+                motor.anim = null;
+                motor.teclas?.clear();
+                motor.canvas.parentElement.dataset.pausa = 'sim';
+                TrilhaSonoraArcade.audio?.pause();
+                dialogo.showModal();
+            },
+
+            continuar: function() {
+                const pausa = this.partidaPausada;
+                if (!pausa || document.hidden) return;
+                this.partidaPausada = null;
+                const { motor, agora } = pausa;
+                const instante = performance.now();
+                delete motor.canvas.parentElement.dataset.pausa;
+                document.getElementById('arcade-pausa')?.close();
+                motor.rodando = true;
+                motor.ultimoFrame = instante;
+                if (motor === MotorBolhas) {
+                    motor.ultimoSpawn += instante - agora;
+                    if (motor.prazoRush) motor.prazoRush += instante - agora;
+                }
+                motor.canvas.focus({ preventScroll: true });
+                motor.loop(instante);
+                if (this.trilhaLigada()) {
+                    if (TrilhaSonoraArcade.tocando) TrilhaSonoraArcade.audio?.play()?.catch(() => {});
+                    else TrilhaSonoraArcade.iniciar();
+                }
+            },
+
 
             obterNomeUsuario: function() {
                 try {
@@ -230,7 +303,14 @@
             atualizarSaldoVisual: function() {
                 const est = this.obterEstado();
                 const el = document.getElementById('txt-moedas-arcade');
-                if (el) el.textContent = est.moedas || 0;
+                if (el) {
+                    const moedas = String(est.moedas || 0);
+                    const mudou = el.textContent !== moedas;
+                    el.textContent = moedas;
+                    if (mudou && this.telaAtiva !== 'menu' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        el.parentElement.animate?.([{ transform: 'scale(1)' }, { transform: 'scale(1.11)' }, { transform: 'scale(1)' }], 300);
+                    }
+                }
             },
 
             controlarBarraSuperior: function(exibir) {
@@ -242,15 +322,22 @@
 
             voltarAcao: function() {
                 this.controlarBarraSuperior(true);
+                if (this.telaAtiva === 'simon' && window.MotorMusica?.modo === 'dueto') {
+                    window.MotorMusica.trocarModo('aprendizado');
+                    document.getElementById('tab-piano-aprendizado')?.focus();
+                    return;
+                }
+                if (this.partidaPausada) {
+                    delete this.partidaPausada.motor.canvas.parentElement.dataset.pausa;
+                    this.partidaPausada = null;
+                    document.getElementById('arcade-pausa')?.close();
+                }
                 TrilhaSonoraArcade.parar(); // Para a música ao voltar para o menu ou sair
                 if (this.telaAtiva === 'menu') {
                     window.location.href = 'index.html';
                 } else {
                     MotorFlappy.parar();
                     MotorQuebraBlocos.parar();
-                    if (this.telaAtiva === 'simon' && window.MotorMusica?.modo === 'dueto') {
-                        window.MotorMusica.trocarModo('aprendizado');
-                    }
                     if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
                         window.MotorMusica.pararMusicaEContadores();
                     }
@@ -261,10 +348,13 @@
                     document.getElementById('menu-arcade').style.display = 'flex';
                     document.querySelector(`[data-arcade-jogo="${this.telaAtiva}"]`)?.focus({ preventScroll: true });
                     this.telaAtiva = 'menu';
+                    document.body.dataset.arcadeTela = 'menu';
+                    document.getElementById('rotulo-voltar-arcade').textContent = 'Vila';
                 }
             },
 
             abrirJogo: function(idJogo) {
+                if (this.telaAtiva !== 'menu' || !document.getElementById(`tela-${idJogo}`)) return;
                 this.atualizarNomesJogadores();
                 if (window.MotorMusica && typeof window.MotorMusica.pararMusicaEContadores === 'function') {
                     window.MotorMusica.pararMusicaEContadores();
@@ -272,10 +362,14 @@
                 document.getElementById('menu-arcade').style.display = 'none';
                 document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                 this.telaAtiva = idJogo;
+                document.body.dataset.arcadeTela = idJogo;
+                document.getElementById('rotulo-voltar-arcade').textContent = 'Arcade';
+                document.querySelectorAll(`#tela-${idJogo} [data-arcade-imagem]`).forEach(img => {
+                    const parado = matchMedia('(prefers-reduced-motion: reduce)').matches ? '-parado' : '';
+                    img.src = `assets/images/kids/${img.dataset.arcadeImagem}${parado}.webp`;
+                });
 
-
-                // Todas as fases tocam música aleatória da pasta song, menos o Piano (simon)
-                if (idJogo === 'simon') {
+                if (idJogo === 'simon' || !this.trilhaLigada()) {
                     TrilhaSonoraArcade.parar();
                 } else {
                     TrilhaSonoraArcade.iniciar();
@@ -303,6 +397,8 @@
                     document.getElementById('tela-memoria').style.display = 'flex';
                     MotorMemoria.trocarModo(MotorMemoria.modo);
                 }
+                document.querySelector(`#tela-${idJogo} .overlay-jogo button, #tela-${idJogo} .btn-modo-som-tab`)
+                    ?.focus({ preventScroll: true });
             }
         };
 
@@ -359,16 +455,17 @@
                     }
                 };
 
-                this.canvas.onpointerdown = (e) => {
+                this.canvas.onpointerdown = e => {
+                    if (e.button !== 0) return;
                     e.preventDefault();
                     capturarPulo(e.clientX);
                 };
-
-                this.canvas.ontouchstart = (e) => {
+                this.canvas.onkeydown = e => {
+                    if (!this.rodando || e.repeat || e.altKey || e.ctrlKey || e.metaKey) return;
+                    const jogador = ['Space', 'ArrowUp'].includes(e.code) ? 1 : e.code === 'KeyW' && this.modo === 2 ? 2 : 0;
+                    if (!jogador) return;
                     e.preventDefault();
-                    for (let i = 0; i < e.changedTouches.length; i++) {
-                        capturarPulo(e.changedTouches[i].clientX);
-                    }
+                    this.pular(jogador);
                 };
 
                 document.getElementById('over-flappy').style.display = 'flex';
@@ -429,6 +526,8 @@
                 }
 
                 this.rodando = true;
+                GerenciadorArcade.atualizarControlePausa(true, this);
+                this.canvas.focus({ preventScroll: true });
                 this.pular(1);
                 if (this.modo === 2) this.pular(2);
 
@@ -471,6 +570,7 @@
 
             parar: function() {
                 this.rodando = false;
+                GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 this.anim = null;
                 if (this.p1.el) this.p1.el.style.display = 'none';
@@ -927,36 +1027,44 @@
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
                 this.skateTopo.x = this.canvas.width / 2 - this.skateTopo.w / 2;
 
-                const moverSkatesToques = (e) => {
-                    if (!this.rodando) return;
+                const ponteiros = new Map();
+                const mover = e => {
+                    if (!this.rodando || !ponteiros.has(e.pointerId)) return;
                     const rect = this.canvas.getBoundingClientRect();
-                    const scaleX = this.canvas.width / rect.width;
-                    const touches = e.touches || [e];
-
-                    for (let i = 0; i < touches.length; i++) {
-                        const t = touches[i];
-                        const touchX = (t.clientX - rect.left) * scaleX;
-                        const touchY = t.clientY - rect.top;
-
-                        if (this.modo === 2 && touchY < rect.height / 2) {
-                            this.skateTopo.x = Math.max(0, Math.min(this.canvas.width - this.skateTopo.w, touchX - this.skateTopo.w / 2));
-                        } else {
-                            this.skate.x = Math.max(0, Math.min(this.canvas.width - this.skate.w, touchX - this.skate.w / 2));
-                            if (this.chuiriGifEl && this.modo === 1) {
-                                this.chuiriGifEl.style.left = `${this.skate.x + (this.skate.w - 68) / 2}px`;
-                                this.chuiriGifEl.style.top = `${this.skate.y - 60}px`;
-                            }
-                        }
-                    }
+                    this.moverSkate(ponteiros.get(e.pointerId), (e.clientX - rect.left) * this.canvas.width / rect.width);
                 };
+                this.canvas.onpointerdown = e => {
+                    if (!this.rodando || e.button !== 0) return;
+                    const rect = this.canvas.getBoundingClientRect();
+                    ponteiros.set(e.pointerId, this.modo === 2 && e.clientY - rect.top < rect.height / 2);
+                    this.canvas.setPointerCapture?.(e.pointerId);
+                    mover(e);
+                };
+                this.canvas.onpointermove = mover;
+                this.canvas.onlostpointercapture = this.canvas.onpointercancel =
+                    this.canvas.onpointerup = e => ponteiros.delete(e.pointerId);
 
-                this.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moverSkatesToques(e); }, { passive: false });
-                this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); moverSkatesToques(e); }, { passive: false });
-                this.canvas.onpointermove = (e) => { if (e.buttons > 0) moverSkatesToques(e); };
+                this.teclas = new Set();
+                this.canvas.onkeydown = e => {
+                    if (!this.rodando || e.altKey || e.ctrlKey || e.metaKey || !['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(e.code)) return;
+                    e.preventDefault();
+                    this.teclas.add(e.code);
+                };
+                this.canvas.onkeyup = e => this.teclas.delete(e.code);
+                this.canvas.onblur = () => { this.teclas.clear(); ponteiros.clear(); };
 
                 document.getElementById('over-quebrablocos').style.display = 'flex';
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
                 this.rodando = false;
+            },
+
+            moverSkate: function(topo, centro) {
+                const skate = topo ? this.skateTopo : this.skate;
+                skate.x = Math.max(0, Math.min(this.canvas.width - skate.w, centro - skate.w / 2));
+                if (!topo && this.chuiriGifEl && this.modo === 1) {
+                    this.chuiriGifEl.style.left = `${skate.x + (skate.w - 68) / 2}px`;
+                    this.chuiriGifEl.style.top = `${skate.y - 60}px`;
+                }
             },
 
             iniciar: function(modoEscolhido = 1) {
@@ -998,9 +1106,14 @@
 
                 document.getElementById('over-quebrablocos').style.display = 'none';
 
+                const arena = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = Math.round(arena.width);
+                this.canvas.height = Math.round(arena.height);
+                this.teclas.clear();
                 this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
                 this.skateTopo.x = this.canvas.width / 2 - this.skateTopo.w / 2;
+                this.moverSkate(false, this.canvas.width / 2);
 
                 this.bola.x = this.canvas.width / 2;
                 this.bola.y = this.canvas.height / 2;
@@ -1011,6 +1124,8 @@
                 else this.blocos = [];
 
                 this.rodando = true;
+                GerenciadorArcade.atualizarControlePausa(true, this);
+                this.canvas.focus({ preventScroll: true });
                 this.ultimoFrame = performance.now();
                 this.loop(this.ultimoFrame);
             },
@@ -1056,6 +1171,8 @@
 
             parar: function() {
                 this.rodando = false;
+                this.teclas?.clear();
+                GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 if (this.chuiriGifEl) this.chuiriGifEl.style.display = 'none';
             },
@@ -1088,6 +1205,11 @@
             },
 
             atualizar: function() {
+                const direcao = (direita, esquerda) => Number(this.teclas.has(direita)) - Number(this.teclas.has(esquerda));
+                const base = direcao('ArrowRight', 'ArrowLeft');
+                const topo = direcao('KeyD', 'KeyA');
+                if (base) this.moverSkate(false, this.skate.x + this.skate.w / 2 + base * 7);
+                if (topo && this.modo === 2) this.moverSkate(true, this.skateTopo.x + this.skateTopo.w / 2 + topo * 7);
                 this.bola.x += this.bola.vx;
                 this.bola.y += this.bola.vy;
 
@@ -1334,7 +1456,7 @@
             vidasJ1: 5,
             vidasJ2: 5,
             segundosRestantesRush: 180,
-            timerRushInterval: null,
+            prazoRush: 0,
             bolhas: [],
             gotas: [],
             ultimoSpawn: 0,
@@ -1347,31 +1469,12 @@
                 this.ctx = this.canvas.getContext('2d');
                 this.ajustarCanvasDimensoes();
 
-                const processarToqueMultitouch = (e) => {
-                    if (!this.rodando) return;
+                this.canvas.onpointerdown = e => {
+                    if (!this.rodando || e.button !== 0) return;
                     e.preventDefault();
                     const rect = this.canvas.getBoundingClientRect();
-                    const scaleX = this.canvas.width / rect.width;
-                    const scaleY = this.canvas.height / rect.height;
-                    const touches = e.changedTouches ? e.changedTouches : [e];
-
-                    for (let t = 0; t < touches.length; t++) {
-                        const touch = touches[t];
-                        const x = (touch.clientX - rect.left) * scaleX;
-                        const y = (touch.clientY - rect.top) * scaleY;
-                        this.estourarNaPosicao(x, y);
-                    }
-                };
-
-                this.canvas.ontouchstart = processarToqueMultitouch;
-                this.canvas.onpointerdown = (e) => {
-                    if (!this.rodando) return;
-                    if (e.pointerType === 'mouse') {
-                        const rect = this.canvas.getBoundingClientRect();
-                        const scaleX = this.canvas.width / rect.width;
-                        const scaleY = this.canvas.height / rect.height;
-                        this.estourarNaPosicao((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
-                    }
+                    this.estourarNaPosicao((e.clientX - rect.left) * this.canvas.width / rect.width,
+                        (e.clientY - rect.top) * this.canvas.height / rect.height);
                 };
 
                 const overEl = document.getElementById('over-bolhas');
@@ -1397,6 +1500,7 @@
                 this.bolhas = [];
                 this.gotas = [];
                 this.ultimoSpawn = performance.now();
+                this.prazoRush = 0;
                 tentarVibrar(35);
 
                 const hudTempo = document.getElementById('hud-bolhas-tempo-rush');
@@ -1446,15 +1550,7 @@
                     }
                     this.atualizarDisplayTimerRush();
 
-                    this.timerRushInterval = setInterval(() => {
-                        this.segundosRestantesRush--;
-                        this.atualizarDisplayTimerRush();
-                        if (this.segundosRestantesRush <= 0) {
-                            clearInterval(this.timerRushInterval);
-                            this.timerRushInterval = null;
-                            this.fim();
-                        }
-                    }, 1000);
+                    this.prazoRush = performance.now() + this.segundosRestantesRush * 1000;
                 } else {
                     GerenciadorArcade.controlarBarraSuperior(true);
                     if (lblJ1) lblJ1.textContent = "Estouradas:";
@@ -1463,9 +1559,11 @@
                     if (hudTempo) hudTempo.style.display = 'none';
                 }
 
-                setTimeout(() => this.ajustarCanvasDimensoes(), 50);
+                this.ajustarCanvasDimensoes();
 
                 this.rodando = true;
+                GerenciadorArcade.atualizarControlePausa(true, this);
+                this.canvas.focus({ preventScroll: true });
                 const qtdInicial = this.modo === 'rush' ? 12 : (this.modo === 'duelo' ? 8 : 4);
                 for (let i = 0; i < qtdInicial; i++) this.criarBolha();
                 this.ultimoFrame = performance.now();
@@ -1481,12 +1579,9 @@
 
             parar: function() {
                 this.rodando = false;
+                GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 this.anim = null;
-                if (this.timerRushInterval) {
-                    clearInterval(this.timerRushInterval);
-                    this.timerRushInterval = null;
-                }
             },
 
             criarBolha: function() {
@@ -1603,6 +1698,14 @@
 
             atualizar: function() {
                 const agora = performance.now();
+                if (this.modo === 'rush') {
+                    const segundos = Math.max(0, Math.ceil((this.prazoRush - agora) / 1000));
+                    if (segundos !== this.segundosRestantesRush) {
+                        this.segundosRestantesRush = segundos;
+                        this.atualizarDisplayTimerRush();
+                    }
+                    if (!segundos) return this.fim();
+                }
                 const intervalo = this.modo === 'rush' ? 240 : (this.modo === 'duelo' ? 820 : 1100);
 
                 if (agora - this.ultimoSpawn > intervalo) {
@@ -1861,7 +1964,7 @@
                 }
                 
                 const linhaVitoria = document.getElementById('linha-vitoria-caneta');
-                if (linhaVitoria) linhaVitoria.style.display = 'none';
+                linhaVitoria?.classList.remove('tracado');
 
                 const g = document.getElementById('grade-velha-invisivel');
                 g.innerHTML = '';
@@ -1965,33 +2068,17 @@
                 if (!linha) return;
 
                 AudioMotor.tocarSomCaneta(0.35);
-                linha.style.display = 'block';
-
-                if (vInfo.tipo === 'h') {
-                    const tops = [48, 145, 242];
-                    linha.style.width = '275px';
-                    linha.style.top = `${tops[vInfo.idx]}px`;
-                    linha.style.left = '8px';
-                    linha.style.transform = 'rotate(0deg)';
-                } else if (vInfo.tipo === 'v') {
-                    const lefts = [48, 145, 242];
-                    linha.style.width = '275px';
-                    linha.style.top = '8px';
-                    linha.style.left = `${lefts[vInfo.idx]}px`;
-                    linha.style.transform = 'rotate(90deg)';
-                } else if (vInfo.tipo === 'd') {
-                    if (vInfo.idx === 1) {
-                        linha.style.width = '360px';
-                        linha.style.top = '18px';
-                        linha.style.left = '18px';
-                        linha.style.transform = 'rotate(45deg)';
-                    } else {
-                        linha.style.width = '360px';
-                        linha.style.top = '272px';
-                        linha.style.left = '18px';
-                        linha.style.transform = 'rotate(-45deg)';
-                    }
-                }
+                const [inicio, , final] = vInfo.linha;
+                const dx = final % 3 - inicio % 3;
+                const dy = Math.floor(final / 3) - Math.floor(inicio / 3);
+                const coluna = inicio % 3;
+                const fila = Math.floor(inicio / 3);
+                linha.style.left = `${(coluna + .5) * 100 / 3}%`;
+                linha.style.top = `calc(${(fila + .5) * 100 / 3}% - 2px)`;
+                linha.style.width = `${Math.hypot(dx, dy) * 100 / 3}%`;
+                linha.style.setProperty('--linha-angulo', `${Math.atan2(dy, dx)}rad`);
+                linha.classList.add('tracado');
+                vInfo.linha.forEach(indice => document.getElementById(`velha-casa-${indice}`)?.classList.add('trinca'));
             },
 
             vitoria: function(p, vInfo) {
@@ -2001,7 +2088,7 @@
 
                 if (this.modo === '2p') {
                     const vencedor = p === 'X' ? `${nomeJ1} (Azul)` : 'Shuiri (Vermelho)';
-                    document.getElementById('status-velha').innerHTML = `<strong style="color:${p === 'X' ? '#10b981' : '#ef4444'};">🎉 ${vencedor} fechou a trinca!</strong>`;
+                    document.getElementById('status-velha').innerHTML = `<strong style="color:${p === 'X' ? '#10b981' : '#ef4444'};">🎉 ${esc(vencedor)} fechou a trinca!</strong>`;
                     GerenciadorArcade.adicionarMoedas(1);
                     AudioMotor.tocarTom(880, 0.25);
                 } else {
@@ -2262,4 +2349,43 @@
         window.addEventListener('DOMContentLoaded', () => {
             GerenciadorArcade.atualizarSaldoVisual();
             GerenciadorArcade.atualizarNomesJogadores();
+            GerenciadorArcade.atualizarControleTrilha();
+            const dialogo = document.getElementById('arcade-pausa');
+            dialogo?.addEventListener('cancel', evento => {
+                evento.preventDefault();
+                GerenciadorArcade.continuar();
+            });
+            const alca = dialogo?.querySelector('.arcade-pausa-alca');
+            let toque = null;
+            let ignorarCliqueAte = 0;
+            alca?.addEventListener('click', () => {
+                if (performance.now() > ignorarCliqueAte) GerenciadorArcade.continuar();
+            });
+            alca?.addEventListener('pointerdown', e => {
+                if (e.button !== 0) return;
+                ignorarCliqueAte = 0;
+                toque = { id: e.pointerId, x: e.clientX, y: e.clientY };
+                alca.setPointerCapture?.(e.pointerId);
+            });
+            alca?.addEventListener('pointercancel', () => { toque = null; });
+            alca?.addEventListener('pointerup', e => {
+                if (toque?.id !== e.pointerId) return;
+                const dy = e.clientY - toque.y;
+                const dx = Math.abs(e.clientX - toque.x);
+                if (Math.max(Math.abs(dy), dx) > 8) ignorarCliqueAte = performance.now() + 400;
+                if (dy > 48 && dy > dx) GerenciadorArcade.continuar();
+                toque = null;
+            });
+            document.addEventListener('keydown', evento => {
+                if (evento.defaultPrevented || evento.key !== 'Escape' || GerenciadorArcade.partidaPausada) return;
+                GerenciadorArcade.pausar();
+            });
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    GerenciadorArcade.pausar();
+                    TrilhaSonoraArcade.audio?.pause();
+                } else if (!GerenciadorArcade.partidaPausada && TrilhaSonoraArcade.tocando && GerenciadorArcade.trilhaLigada()) {
+                    TrilhaSonoraArcade.audio?.play()?.catch(() => {});
+                }
+            });
         });

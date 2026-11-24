@@ -277,7 +277,7 @@ window.fecharModalEditarTransacao = function() {
 window.salvarEdicaoTransacao = async function() {
     const id = document.getElementById('edit-transacao-id')?.value;
     const descricao = document.getElementById('edit-transacao-descricao')?.value.trim();
-    const valor = parseFloat(document.getElementById('edit-transacao-valor')?.value);
+    const valor = parseValorFinanceiro(document.getElementById('edit-transacao-valor')?.value);
     const tipo = document.getElementById('edit-transacao-tipo')?.value || 'saida';
     const escopo = document.getElementById('edit-transacao-escopo')?.value || 'pessoal';
     const categoria = normalizarNomeFinanceiro(document.getElementById('edit-transacao-categoria')?.value) || 'Geral';
@@ -324,7 +324,7 @@ window.salvarEdicaoTransacao = async function() {
     }
 
     if (familia !== window.familiaAtualId || usuarioConectadoId !== obterUsuarioId()) return;
-    lembrarCategoriaFinanceira({ tipo, categoria, subcategoria });
+    lembrarCategoriaFinanceira({ ...payload, id, membro_id: usuarioConectadoId });
     window.fecharModalEditarTransacao();
     window.mostrarToast("Lançamento confirmado e atualizado!");
     if (typeof window.carregarCarteiraIndividual === 'function') await window.carregarCarteiraIndividual();

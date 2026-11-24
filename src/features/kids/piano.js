@@ -1272,7 +1272,7 @@ window.MotorMusica = {
         });
 
         const rotuloVoltar = document.getElementById('rotulo-voltar-arcade');
-        if (rotuloVoltar) rotuloVoltar.textContent = novoModo === 'dueto' ? 'Sair do Dueto' : 'Voltar';
+        if (rotuloVoltar) rotuloVoltar.textContent = novoModo === 'dueto' ? 'Sair do Dueto' : 'Arcade';
 
         const telaSimon = document.getElementById('tela-simon');
         if (telaSimon) {

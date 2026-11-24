@@ -497,3 +497,91 @@
     .chuiri-vida-da-vila i { animation: none; transition: none; }
     .chuiri-joaninha.voando svg { transform: none; }
 }
+
+/* Vila · caminhos de entrada maiores e legíveis em telas estreitas. */
+.kids-perfil, .kids-perfil-acoes { display: flex; gap: .48rem; align-items: center; min-width: 0; }
+.kids-perfil > div { min-width: 0; }
+.kids-perfil .titulo-kids-nome {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: clamp(.98rem, 4.3vw, 1.27rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+.kids-perfil .chuiri-avatar, .kids-perfil-acoes { flex: 0 0 auto; }
+
+#tela-kids-exclusiva {
+    --vila-jogo-fundo: linear-gradient(112deg, #f5e4fd, #e6edff 58%, #d6f4e9);
+    --vila-jogo-tinta: #3a245b;
+    --vila-jogo-borda: #dac8ed;
+    --vila-jogo-icone: #fff9;
+}
+html[data-theme="dark"] #tela-kids-exclusiva {
+    --vila-jogo-fundo: linear-gradient(115deg, #3c2b5b, #353e65 54%, #235357);
+    --vila-jogo-tinta: #fbf2ff;
+    --vila-jogo-borda: #776792;
+    --vila-jogo-icone: #251e47a3;
+}
+.chuiri-casinha-arte picture { display: contents; }
+.chuiri-vila-atalhos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; }
+.chuiri-vila-atalhos > * { min-width: 0; overflow-wrap: anywhere; }
+
+.chuiri-atalho-arcade {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 45px minmax(0, 1fr) 22px;
+    align-items: center;
+    gap: .75rem;
+    min-height: 68px;
+    margin-block: .75rem;
+    padding: .65rem .82rem;
+    border: 1px solid var(--vila-jogo-borda);
+    border-radius: 19px;
+    background: var(--vila-jogo-fundo);
+    color: var(--vila-jogo-tinta);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    box-shadow: 0 3px 0 var(--vila-jogo-borda);
+}
+.chuiri-atalho-arcade::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -27px -35px auto auto;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle, #ffffff3d 0 6px, transparent 7px 16px);
+}
+.chuiri-atalho-icone {
+    display: grid;
+    place-items: center;
+    height: 43px;
+    border-radius: 12px;
+    background: var(--vila-jogo-icone);
+}
+.chuiri-atalho-icone svg { width: 24px; height: 24px; }
+.chuiri-atalho-arcade strong, .chuiri-atalho-arcade small { display: block; color: inherit; }
+.chuiri-atalho-arcade strong { font-size: 1.03rem; }
+.chuiri-atalho-arcade small { font-size: .76rem; font-weight: 550; }
+.chuiri-atalho-seta { font-size: 1.48rem; justify-self: end; font-weight: 750; }
+.chuiri-atalho-arcade:focus-visible { outline: 3px solid #8962cb; outline-offset: 3px; }
+
+.kids-missoes-vazio {
+    padding: 20px 14px;
+    border: 1px dashed var(--vila-jogo-borda);
+    border-radius: 18px;
+    background: var(--vila-jogo-fundo);
+    color: var(--vila-jogo-tinta);
+    text-align: center;
+}
+.kids-missoes-vazio p { margin: .28rem 0 0; font-size: .85rem; color: inherit; }
+@media (hover: hover) { .chuiri-atalho-arcade:hover .chuiri-atalho-seta { transform: translateX(3px); } }
+
+@media (max-width: 375px) {
+    .kids-perfil-acoes { flex-direction: column; align-items: flex-end; gap: .35rem; }
+}

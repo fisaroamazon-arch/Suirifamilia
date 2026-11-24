@@ -34,8 +34,8 @@
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
-<link rel="stylesheet" href="styles/espaco-kids.css?v=44eeb2ac679f">
-    <link rel="stylesheet" href="styles/financas.css?v=07e53eca63c0">
+<link rel="stylesheet" href="styles/espaco-kids.css?v=213911b07577">
+    <link rel="stylesheet" href="styles/financas.css?v=be509af84d6d">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
     <link rel="stylesheet" href="styles/tema-principal.css?v=2748698233be">
 </head>
@@ -588,7 +588,7 @@
             <!-- MODO KIDS EXCLUSIVO -->
             <section id="tela-kids-exclusiva" class="oculto">
                 <div class="cabecalho-kids-container">
-                    <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="kids-perfil">
                         <button type="button" class="chuiri-avatar" onclick="window.abrirSeletorFotoPerfil()" aria-label="Mudar foto"><img id="img-avatar-kids" class="avatar-kids-circulo" src="assets/icons-modern/icone-casa-escopo.svg" alt=""></button>
                         <div>
                             <button type="button" class="subtitulo-kids-tag chuiri-conquistas" onclick="window.abrirModalEmblemas()">Minhas conquistas</button>
@@ -596,7 +596,7 @@
                         </div>
                     </div>
 
-                    <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="kids-perfil-acoes">
                         <div class="badge-xp-kids-topo">
                             <img src="assets/icons-modern/icone-carteira.svg" alt="XP" style="width: 18px; height: 18px; object-fit: contain;">
                             <span id="contador-xp-kids">0 XP</span>
@@ -626,7 +626,10 @@
                             </button>
                             <button id="btn-casinha-tamagotchi" type="button" aria-haspopup="dialog" onclick="TamagotchiKids.abrirCasinhaPelaVila(this)">
                                 <span class="chuiri-casinha-arte">
-                                    <img src="assets/images/animated/casa.gif" alt="" decoding="async" loading="lazy">
+                                    <picture>
+                                        <source media="(prefers-reduced-motion: reduce)" srcset="assets/images/kids/casa-parado.webp">
+                                        <img src="assets/images/kids/casa.webp" alt="" decoding="async" loading="lazy" width="252" height="252">
+                                    </picture>
                                     <svg class="chuiri-casinha-luzes" viewBox="0 0 544 544" aria-hidden="true">
                                         <g class="chuiri-janelas"><ellipse cx="148" cy="295" rx="19" ry="19"/><ellipse cx="119" cy="380" rx="13" ry="20"/><ellipse cx="169" cy="380" rx="17" ry="20"/></g>
                                         <path class="chuiri-soleira" d="M234 446v-52a21 21 0 0 1 42 0v52Z"/>
@@ -638,11 +641,18 @@
                         </div>
                     </div>
                     <div class="chuiri-vila-atalhos">
-                        <a href="jogos.html"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#game"></use></svg> Jogar</a>
                         <button type="button" onclick="window.abrirModalRankingEquipe()"><img src="assets/icons-modern/icone-loja.svg" alt=""> Lojinha</button>
                         <button type="button" data-chuiri-som aria-pressed="false" onclick="TamagotchiKids.alternarSom()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#voice"></use></svg> <span>Voz ligada</span></button>
                     </div>
                 </section>
+
+                <a class="chuiri-atalho-arcade" href="jogos.html">
+                    <span class="chuiri-atalho-icone" aria-hidden="true">
+                        <svg class="kids-icon"><use href="assets/icons-modern/kids.svg#game"></use></svg>
+                    </span>
+                    <span><strong>Jogar no Arcade</strong><small>Voo, bolhas, música e mais</small></span>
+                    <span class="chuiri-atalho-seta" aria-hidden="true">›</span>
+                </a>
 
                 <div class="chuiri-missoes-titulo">
                     <h3>Missões de hoje</h3>
@@ -790,7 +800,7 @@
             </div>
 
             <div style="position: relative; margin-bottom: 12px;">
-                <input type="text" id="input-fin-descricao" placeholder="Descrição ou use a voz..." style="width: 100%;">
+                <input type="text" id="input-fin-descricao" placeholder="Descrição ou use a voz..." oninput="window.atualizarSugestaoFinanceira()" style="width: 100%;">
                 <button type="button" id="btn-mic-gastos" aria-label="Ditado de lançamento" style="position: absolute; right: 10px; top: 12px; background: transparent; border: none; cursor: pointer;" onclick="window.ouvirComandoVoz()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                 </button>
@@ -798,7 +808,12 @@
 
             <div class="fin-campos-categoria">
                 <label for="input-fin-valor">Valor</label>
-                <input type="number" inputmode="decimal" step="0.01" id="input-fin-valor" placeholder="R$ 0,00">
+                <input type="text" inputmode="decimal" autocomplete="off" id="input-fin-valor" placeholder="0,00" oninput="this.removeAttribute('aria-invalid')" aria-describedby="fin-valor-ajuda">
+                <small id="fin-valor-ajuda">Em reais, por exemplo 25,50</small>
+                <div id="fin-sugestao-contexto" class="fin-sugestao-contexto" hidden>
+                    <span>Sugestão pelo histórico</span>
+                    <button type="button" class="btn-secundario" id="fin-aplicar-sugestao"></button>
+                </div>
                 <div class="fin-campo-sugestoes">
                     <label for="select-fin-categoria">Categoria</label>
                     <input id="select-fin-categoria" maxlength="60" autocomplete="off" placeholder="Ex. Mercado" aria-describedby="fin-categoria-ajuda" onfocus="window.preencherCategoriasFinanceiras()" oninput="window.preencherCategoriasFinanceiras(undefined, '')">
@@ -812,12 +827,13 @@
                 <small id="fin-categoria-ajuda">Digite um nome novo ou escolha uma sugestão. O nome será lembrado ao salvar.</small>
             </div>
 
+            <label for="select-fin-escopo" class="fin-opcao">Visibilidade</label>
             <select id="select-fin-escopo" style="width:100%; margin-bottom:16px;">
-                <option value="casa">Gasto da Família (Compartilhado)</option>
-                <option value="pessoal">Meu Gasto (Pessoal)</option>
+                <option value="casa">Compartilhada com a família</option>
+                <option value="pessoal">Pessoal</option>
             </select>
 
-            <button type="button" class="btn-principal" style="width: 100%; padding: 14px; border-radius: 14px;" onclick="window.confirmarRegistroRapido(this)">Confirmar Lançamento</button>
+            <button type="button" id="fin-confirmar-registro" class="btn-principal" style="width: 100%; padding: 14px; border-radius: 14px;" onclick="window.confirmarRegistroRapido(this)">Registrar despesa</button>
         </div>
     </div>
 
@@ -1434,7 +1450,7 @@
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <input type="hidden" id="edit-transacao-id">
                 <input type="text" id="edit-transacao-descricao" placeholder="Descrição">
-                <input type="number" step="0.01" id="edit-transacao-valor" placeholder="R$ Valor">
+                <input type="text" inputmode="decimal" id="edit-transacao-valor" placeholder="Valor em reais">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <select id="edit-transacao-tipo">
                         <option value="saida">Saída</option>
@@ -1688,15 +1704,15 @@
     <script src="src/services/transactions.js?v=ddea1b071483"></script>
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
-<script src="src/features/finances/extrato.js?v=539e354c31f7"></script>
+<script src="src/features/finances/extrato.js?v=72954ee31d19"></script>
 <script src="src/features/shopping/mercado.js?v=a3c4483fe5f0"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4570e0e54391"></script>
-<script src="src/features/missions/kids.js?v=5ca8889fbbd4"></script>
+<script src="src/features/missions/kids.js?v=41047c4b3821"></script>
 <script src="src/core/swipe.js?v=14267843cb50"></script>
 <script src="src/features/missions/missoes.js?v=44c347a263f3"></script>
 <script src="src/ui/emoji-selector.js?v=51099e79ed38"></script>
-<script src="src/features/finances/voice-and-entry.js?v=f7eb17953903"></script>
+<script src="src/features/finances/voice-and-entry.js?v=af7d7bbbb1d8"></script>
 <script src="src/features/finances/graficos.js?v=954c9ad9ad28"></script>
 <script src="src/features/finances/planejamento.js?v=b2ebd625fb1a"></script>
 <script src="src/features/finances/wallet.js?v=aec77e9028d2"></script>
@@ -1708,10 +1724,10 @@
 <script src="src/features/agenda/calendario.js?v=5d3a86357091"></script>
 <script src="src/features/notifications/painel.js?v=430ec365766e"></script>
 <script src="src/core/realtime.js?v=f81ce057c2e0"></script>
-    <script src="src/features/reports/relatorios.js?v=9bc8299560f8"></script>
+    <script src="src/features/reports/relatorios.js?v=969de5e1ecb5"></script>
     <script src="src/features/help/tour.js?v=919c0eea73a4"></script>
-    <script src="src/features/kids/mascote.js?v=643ef4fc2ed0"></script>
-    <script src="src/features/personal/meu-espaco.js?v=d240342f6339"></script>
+    <script src="src/features/kids/mascote.js?v=eca949f7df4d"></script>
+    <script src="src/features/personal/meu-espaco.js?v=737570a89a4b"></script>
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
 <script src="src/services/operations.js?v=d81ab58c7d00"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>

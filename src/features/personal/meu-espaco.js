@@ -162,6 +162,10 @@ window.removerAlfineteUnico = function(idPin) {
 
 // 4. MICROFONE INTELIGENTE NO MEU ESPAÇO
 window.ouvirComandoVozMeuEspaco = function() {
+    if (window.SuiriAndroid) {
+        window.abrirRegistroRapido();
+        return window.ouvirComandoVoz();
+    }
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
         return window.mostrarToast("Reconhecimento de voz não suportado neste navegador.", "erro");
@@ -197,80 +201,16 @@ window.ouvirComandoVozMeuEspaco = function() {
 };
 
 window.processarTextoTranscritoMeuEspaco = function(frase) {
-    if (!frase) return;
-    const textoOriginal = frase.trim();
-    const texto = textoOriginal.toLowerCase();
-
-    let valorDetectado = 0;
-    const matchNumero = texto.match(/(\d+[\d.,]*)/);
-    if (matchNumero) {
-        let numStr = matchNumero[0].replace(/\.(?=\d{3})/g, '').replace(',', '.');
-        valorDetectado = parseFloat(numStr) || 0;
-    }
-
-    const padroesEntrada = /recebi|recebido|recebimento|ganhei|sal[aá]rio|caiu|entrou|pix\s+de|renda|dep[oó]sito|vendi|venda|reembolso|lucro|comiss[aã]o|bonifica[cç][aã]o/i;
-    const ehReceita = padroesEntrada.test(texto);
-    const tipoTransacao = ehReceita ? 'entrada' : 'saida';
-
-    let escopo = 'pessoal';
-    if (/casa|fam[ií]lia|lar|mercado|supermercado|condom[ií]nio|energia|luz|água|agua|internet|feira|aluguel|coletivo/i.test(texto)) {
-        escopo = 'casa';
-    }
-
-    let categoria = 'Geral';
-    if (/supermercado|mercado|a[cç]ougue|padaria|hortifr[uú]ti|feira|despensa|arroz|feij[aã]o|leite|caf[eé]|carne/i.test(texto)) {
-        categoria = 'Supermercado';
-    } else if (/almo[cç]o|jantar|lanche|pizza|restaurante|comida|ifood|hamb[uú]rguer|a[cç]a[ií]/i.test(texto)) {
-        categoria = 'Alimentação';
-    } else if (/uber|combust[ií]vel|gasolina|etanol|abasteci|posto|passagem|t[aá]xi|estacionamento|ped[aá]gio|mecanico|pneu/i.test(texto)) {
-        categoria = 'Transporte';
-    } else if (/aluguel|condom[ií]nio|energia|luz|água|agua|internet|iptu|manuten[cç][aã]o|g[aá]s/i.test(texto)) {
-        categoria = 'Moradia';
-    } else if (/rem[eé]dio|farm[aá]cia|drogaria|consulta|m[eé]dico|dentista|exame|hospital|vacina/i.test(texto)) {
-        categoria = 'Saúde';
-    } else if (/cinema|passeio|viagem|festa|jogo|praia|futebol|show|bar|churrasco/i.test(texto)) {
-        categoria = 'Lazer';
-    } else if (/escola|livro|curso|faculdade|mensalidade|material|uniforme/i.test(texto)) {
-        categoria = 'Educação';
-    } else if (ehReceita) {
-        categoria = 'Salário';
-    }
-
-    let itemLimpo = textoOriginal;
-    itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
-    itemLimpo = itemLimpo
-        .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/gi, '')
-        .replace(/\b(por|de|custou|foi)\s+(r\$\s*)?\d+[\d.,]*(\s*(reais|real|conto|mangos|centavos))?/gi, '')
-        .replace(/(r\$\s*)?\d+[\d.,]*\s*(reais|real|conto|mangos|centavos)?/gi, '')
-        .replace(/\b(reais|real|r\$)\b/gi, '')
-        .trim();
-
-    itemLimpo = itemLimpo
-        .replace(/^(um|uma|uns|umas|de|do|da|no|na|o|a|os|as|por)\s+/i, '')
-        .replace(/\s+(por|de|no|na|em|com)$/i, '')
-        .replace(/^[,.\s-]+|[,.\s-]+$/g, '')
-        .trim();
-
-    if (!itemLimpo || itemLimpo.length < 2) {
-        itemLimpo = ehReceita ? 'Salário' : (categoria !== 'Geral' ? categoria : 'Compra avulsa');
-    }
-
-    itemLimpo = itemLimpo.charAt(0).toUpperCase() + itemLimpo.slice(1);
-
-    const inDesc = document.getElementById('meuespaco-fin-desc');
-    const inVal = document.getElementById('meuespaco-fin-val');
-    const selCat = document.getElementById('meuespaco-fin-cat');
-    const selTipo = document.getElementById('meuespaco-fin-tipo');
-    const selEscopo = document.getElementById('meuespaco-fin-escopo');
-
-    if (inDesc) inDesc.value = itemLimpo;
-    if (inVal && valorDetectado > 0) inVal.value = valorDetectado.toFixed(2);
-    if (selCat) selCat.value = categoria;
-    if (selTipo) selTipo.value = tipoTransacao;
-    if (selEscopo) selEscopo.value = escopo;
-
-    const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
-    window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${itemLimpo})`);
+    const dados = interpretarLancamentoPorVoz(frase);
+    if (!dados) return;
+    document.getElementById('meuespaco-fin-desc').value = dados.descricao;
+    document.getElementById('meuespaco-fin-desc').dataset.viaVoz = 'true';
+    document.getElementById('meuespaco-fin-val').value = dados.valor > 0 ? dados.valor.toFixed(2) : '';
+    document.getElementById('meuespaco-fin-cat').value = dados.categoria;
+    document.getElementById('meuespaco-fin-sub').value = '';
+    document.getElementById('meuespaco-fin-tipo').value = dados.tipo;
+    document.getElementById('meuespaco-fin-escopo').value = dados.escopo;
+    window.mostrarToast(dados.valor > 0 ? 'Confira o valor e confirme o lançamento.' : 'Informe o valor do lançamento.', 'info');
 };
 
 // 5. RENDERIZAÇÃO DOS WIDGETS COMPLETOS E ATIVOS (DESIGN SYSTEM WARM TECH)
@@ -349,18 +289,10 @@ window.renderizarMeuEspaco = function() {
                             </button>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                            <input type="number" step="0.01" id="meuespaco-fin-val" placeholder="R$ 0,00" style="font-size: 13px; padding: 10px;">
-                            <select id="meuespaco-fin-cat" style="font-size: 12.5px; padding: 10px 30px 10px 10px;">
-                                <option value="Geral">Geral</option>
-                                <option value="Alimentação">Alimentação</option>
-                                <option value="Supermercado">Supermercado</option>
-                                <option value="Moradia">Moradia</option>
-                                <option value="Transporte">Transporte</option>
-                                <option value="Saúde">Saúde</option>
-                                <option value="Lazer">Lazer</option>
-                                <option value="Salário">Salário</option>
-                            </select>
+                            <input type="text" inputmode="decimal" id="meuespaco-fin-val" placeholder="R$ 0,00" style="font-size: 13px; padding: 10px;">
+                            <input id="meuespaco-fin-cat" maxlength="60" aria-label="Categoria" placeholder="Categoria">
                         </div>
+                        <input id="meuespaco-fin-sub" maxlength="60" aria-label="Subcategoria" placeholder="Subcategoria (opcional)">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                             <select id="meuespaco-fin-tipo" style="font-size: 12.5px; padding: 10px 30px 10px 10px;">
                                 <option value="saida">Saída (Gasto)</option>
@@ -521,32 +453,22 @@ window.renderizarMeuEspaco = function() {
 };
 
 // 6. PONTE OPERACIONAL (EXECUTAR DIRETAMENTE PELO MEU ESPAÇO)
-window.salvarGastoPeloMeuEspaco = function() {
-    const desc = document.getElementById('meuespaco-fin-desc')?.value.trim();
-    const val = document.getElementById('meuespaco-fin-val')?.value;
-    const cat = document.getElementById('meuespaco-fin-cat')?.value;
-    const tipo = document.getElementById('meuespaco-fin-tipo')?.value;
-    const escopo = document.getElementById('meuespaco-fin-escopo')?.value;
-
-    const inOrigDesc = document.getElementById('input-fin-descricao');
-    const inOrigVal = document.getElementById('input-fin-valor');
-    const selOrigCat = document.getElementById('select-fin-categoria');
-    const selOrigTipo = document.getElementById('select-fin-tipo');
-    const selOrigEscopo = document.getElementById('select-fin-escopo');
-
-    if (inOrigDesc) inOrigDesc.value = desc;
-    if (inOrigVal) inOrigVal.value = val;
-    if (selOrigCat) selOrigCat.value = cat;
-    if (selOrigTipo) selOrigTipo.value = tipo;
-    const subcategoria = document.getElementById('select-fin-subcategoria');
-    if (subcategoria) subcategoria.value = '';
-    if (selOrigEscopo) selOrigEscopo.value = escopo;
-
-    if (typeof window.salvarTransacaoManual === 'function') {
-        window.salvarTransacaoManual();
-        setTimeout(window.renderizarMeuEspaco, 500);
+window.salvarGastoPeloMeuEspaco = () => Suiri.once('registro-meu-espaco', async () => {
+    const campo = nome => document.getElementById('meuespaco-fin-' + nome);
+    const descricao = document.getElementById('input-fin-descricao');
+    if (!campo('desc') || !descricao) return;
+    window.selecionarTipoRegistroRapido(campo('tipo').value);
+    descricao.value = campo('desc').value;
+    descricao.dataset.viaVoz = campo('desc').dataset.viaVoz || 'false';
+    document.getElementById('input-fin-valor').value = campo('val').value;
+    document.getElementById('select-fin-escopo').value = campo('escopo').value;
+    window.preencherCategoriasFinanceiras(campo('cat').value, campo('sub').value);
+    try {
+        if (await window.salvarTransacaoManual()) window.renderizarMeuEspaco();
+    } catch (error) {
+        Suiri.notifyError(error);
     }
-};
+});
 
 window.publicarRecadoPeloMeuEspaco = function() {
     const inputRecado = document.getElementById('meuespaco-input-recado');

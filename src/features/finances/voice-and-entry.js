@@ -37,19 +37,17 @@ window.ouvirComandoVoz = function() {
     try { reconhecimentoVoz.start(); } catch { window.mostrarToast("Aguarde o ditado atual e tente novamente.", "info"); }
 };
 
-window.processarTextoTranscrito = function(frase) {
+function interpretarLancamentoPorVoz(frase) {
     if (!frase?.trim()) return;
     const textoOriginal = frase.trim();
     const texto = textoOriginal.toLowerCase();
 
     let valorDetectado = 0;
     const matchNumero = texto.match(/r\$\s*(\d+(?:[.,]\d+)*)|(\d+(?:[.,]\d+)*)\s*(?:reais?|contos?)\b/i)
-        || texto.match(/\b(?:recebi|ganhei|gastei|paguei|por|custou)\s+(\d+(?:[.,]\d+)*)\b/i);
-    
+        || texto.match(/\b(?:recebi|ganhei|vendi|gastei|paguei|por|custou|de)\s+(\d+(?:[.,]\d+)*)\b/i);
+
     if (matchNumero) {
-        let numStr = matchNumero[1] || matchNumero[2];
-        numStr = numStr.replace(/\.(?=\d{3})/g, '').replace(',', '.');
-        valorDetectado = parseFloat(numStr) || 0;
+        valorDetectado = parseValorFinanceiro(matchNumero[1] || matchNumero[2]) || 0;
         const centavos = texto.slice(matchNumero.index + matchNumero[0].length).match(/^\s+e\s+(\d{1,2})\s+centavos?\b/);
         if (centavos && Number.isInteger(valorDetectado)) valorDetectado += Number(centavos[1]) / 100;
     }
@@ -79,13 +77,18 @@ window.processarTextoTranscrito = function(frase) {
         categoria = 'Lazer';
     } else if (/escola|livro|curso|faculdade|mensalidade|material|uniforme/i.test(texto)) {
         categoria = 'Educação';
-    } else if (ehReceita) {
-        categoria = 'Salário';
+    }
+    if (ehReceita) {
+        if (/sal[aá]rio|folha de pagamento|holerite/i.test(texto)) categoria = 'Salário';
+        else if (/reembolso|estorno/i.test(texto)) categoria = 'Reembolsos';
+        else if (/vendi|venda/i.test(texto)) categoria = 'Vendas';
+        else if (/freela|servi[cç]o|cliente/i.test(texto)) categoria = 'Serviços';
+        else categoria = '';
     }
 
     let itemLimpo = textoOriginal.replace(/\s+e\s+\d{1,2}\s+centavos?\b/i, "");
 
-    itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
+    itemLimpo = itemLimpo.replace(/^(eu\s+)?(gastei|comprei|paguei|recebi|ganhei|vendi|entrou|caiu|depositei|lancei|coloquei)\s+/i, '');
 
     itemLimpo = itemLimpo
         .replace(/(no|na|de|do|da|com|em)\s+valor\s+de\s+/gi, '')
@@ -101,11 +104,18 @@ window.processarTextoTranscrito = function(frase) {
         .trim();
 
     if (!itemLimpo || itemLimpo.length < 2) {
-        itemLimpo = ehReceita ? 'Salário' : (categoria !== 'Geral' ? categoria : 'Compra avulsa');
+        itemLimpo = ehReceita ? categoria || 'Receita' : (categoria !== 'Geral' ? categoria : 'Compra avulsa');
     }
 
     itemLimpo = itemLimpo.charAt(0).toUpperCase() + itemLimpo.slice(1);
 
+    return { descricao: itemLimpo, valor: valorDetectado, tipo: tipoTransacao, categoria, escopo };
+}
+
+window.processarTextoTranscrito = function(frase) {
+    const dados = interpretarLancamentoPorVoz(frase);
+    if (!dados) return;
+    const { descricao: itemLimpo, valor: valorDetectado, tipo: tipoTransacao, categoria, escopo } = dados;
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
     const selEscopo = document.getElementById('select-fin-escopo');
@@ -114,10 +124,10 @@ window.processarTextoTranscrito = function(frase) {
     if (inVal) inVal.value = valorDetectado > 0 ? valorDetectado.toFixed(2) : "";
     if (inDesc) inDesc.dataset.viaVoz = "true";
     window.selecionarTipoRegistroRapido(tipoTransacao);
-    window.preencherCategoriasFinanceiras(ehReceita ? 'Salário' : categoria, '');
+    window.preencherCategoriasFinanceiras(categoria, '');
     if (selEscopo) selEscopo.value = escopo;
 
-    const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
+    const rotuloTipo = tipoTransacao === 'entrada' ? 'Entrada' : 'Saída';
     if (!(valorDetectado > 0)) return window.mostrarToast("Confira a descrição e informe o valor.", "info");
     window.mostrarToast(`Voz identificada: ${rotuloTipo} • R$ ${valorDetectado.toFixed(2)} (${itemLimpo})`);
 };
@@ -140,19 +150,33 @@ window.salvarTransacaoManual = async function() {
     const selCat = document.getElementById('select-fin-categoria');
 
     const desc = inDesc?.value.trim();
-    const valor = parseFloat(inVal?.value);
+    const valor = parseValorFinanceiro(inVal?.value);
     const tipo = selTipo?.value || 'saida';
     const escopo = selEscopo?.value || 'pessoal';
+    if (!['entrada', 'saida'].includes(tipo) || !['casa', 'pessoal'].includes(escopo)) {
+        return window.mostrarToast('Confira o tipo e a visibilidade do lançamento.', 'erro');
+    }
     const familia = window.familiaAtualId;
     const subInput = document.getElementById('select-fin-subcategoria');
     const opcoes = opcoesCategoriasFinanceiras(tipo);
     const categoriaDigitada = normalizarNomeFinanceiro(selCat?.value) || 'Geral';
+    if (['transferencia', 'privativo'].includes(chaveFinanceira(categoriaDigitada))) {
+        selCat?.focus();
+        return window.mostrarToast('Escolha uma categoria específica, como Pix recebido ou Pagamento bancário.', 'erro');
+    }
     const categoria = nomeFinanceiroExistente(opcoes.keys(), categoriaDigitada);
     const subcategoria = nomeFinanceiroExistente(opcoes.get(categoria) || [], normalizarNomeFinanceiro(subInput?.value));
 
-    if (!desc || isNaN(valor) || valor <= 0) {
-        return window.mostrarToast("Informe a descrição e o valor da transação.", "erro");
+    if (!desc) {
+        inDesc?.focus();
+        return window.mostrarToast('Informe uma descrição para o lançamento.', 'erro');
     }
+    if (!Number.isFinite(valor) || valor <= 0) {
+        inVal?.setAttribute('aria-invalid', 'true');
+        inVal?.focus();
+        return window.mostrarToast('Informe um valor maior que zero. Exemplo: 25,50.', 'erro');
+    }
+    inVal?.removeAttribute('aria-invalid');
 
     if (categoria.length > 60 || subcategoria.length > 60) {
         return window.mostrarToast('Use até 60 caracteres na categoria e na subcategoria.', 'erro');
@@ -174,18 +198,17 @@ window.salvarTransacaoManual = async function() {
         via_voz: inDesc?.dataset.viaVoz === "true"
     };
 
-    let { error } = await supabase.from('transacoes').insert([payload]);
-
-    if (error && error.message && error.message.includes('relation "public.transacoes" does not exist')) {
-        const res = await supabase.from('transacoes_financeiras').insert([payload]);
-        error = res.error;
+    let resultado = await supabase.from('transacoes').insert(payload).select('id').single();
+    if (resultado.error?.code === '42P01' || resultado.error?.code === 'PGRST205') {
+        resultado = await supabase.from('transacoes_financeiras').insert(payload).select('id').single();
     }
 
-    if (error) {
-        window.mostrarToast("Erro ao gravar movimentação: " + error.message, "erro");
+    if (resultado.error || !resultado.data?.id) {
+        const mensagem = resultado.error?.message || 'O servidor não confirmou o registro.';
+        window.mostrarToast(`Não foi possível registrar o lançamento. ${mensagem}`, 'erro');
     } else {
         if (familia !== window.familiaAtualId || usuarioId !== obterUsuarioId()) return true;
-        lembrarCategoriaFinanceira({ tipo, categoria, subcategoria });
+        lembrarCategoriaFinanceira({ ...payload, id: resultado.data.id });
         if (selCat) selCat.value = '';
         if (subInput) subInput.value = '';
         window.mostrarToast(tipo === 'entrada' ? "Receita confirmada na carteira!" : "Gasto confirmado com sucesso!");
@@ -194,6 +217,7 @@ window.salvarTransacaoManual = async function() {
             delete inDesc.dataset.viaVoz;
         }
         if (inVal) inVal.value = '';
+        window.atualizarSugestaoFinanceira();
         const atualizar = [
             window.carregarCarteiraIndividual,
             window.carregarExtratoPeriodo,
@@ -209,6 +233,8 @@ window.selecionarTipoRegistroRapido = function(tipo) {
     const seletor = document.getElementById('select-fin-tipo');
     const mudou = seletor.value !== tipo;
     seletor.value = tipo;
+    const confirmar = document.getElementById('fin-confirmar-registro');
+    if (confirmar) confirmar.textContent = tipo === 'entrada' ? 'Registrar receita' : 'Registrar despesa';
     window.preencherCategoriasFinanceiras(mudou ? '' : undefined, mudou ? '' : undefined);
     for (const [id, ativo, cor] of [
         ['btn-toggle-tipo-despesa', tipo === 'saida', '#f43f5e'],
@@ -236,65 +262,105 @@ window.confirmarRegistroRapido = async function(botao) {
 
 const categoriasPadraoSuiri = {
     saida: ['Geral', 'Supermercado', 'Moradia', 'Lazer', 'Alimentação', 'Transporte', 'Saúde', 'Educação'],
-    entrada: ['Geral', 'Salário']
+    entrada: ['Salário', 'Vendas', 'Serviços', 'Reembolsos', 'Outras receitas', 'Geral']
 };
 let versaoCategoriasFinanceiras = 0;
-let categoriasFinanceirasSuiri = { familia: null, usuario: null, dados: [] };
+let categoriasFinanceirasSuiri = { familia: null, usuario: null, catalogo: [], historico: [], opcoes: null };
+
+function parseValorFinanceiro(entrada) {
+    const texto = String(entrada ?? '').trim().replace(/^R\$\s*/i, '');
+    let decimal;
+    if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(texto)) {
+        decimal = texto.replace(/\./g, '').replace(',', '.');
+    } else if (/^\d+([.,]\d{1,2})?$|^[.,]\d{1,2}$/.test(texto)) {
+        decimal = texto.replace(',', '.');
+    } else {
+        return NaN;
+    }
+    const valor = Number(decimal);
+    return Number.isSafeInteger(Math.round(valor * 100)) ? valor : NaN;
+}
 
 function normalizarNomeFinanceiro(nome = '') {
     return nome.trim().replace(/\s+/g, ' ').normalize('NFC');
 }
 
+function chaveFinanceira(nome = '') {
+    return normalizarNomeFinanceiro(nome).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
+}
+
 function nomeFinanceiroExistente(nomes, nome) {
-    return Array.from(nomes).find(item => item.localeCompare(nome, 'pt-BR', { sensitivity: 'accent' }) === 0) || nome;
+    const chave = chaveFinanceira(nome);
+    return Array.from(nomes).find(item => chaveFinanceira(item) === chave) || nome;
+}
+
+function cacheFinanceiroAtual() {
+    const cache = categoriasFinanceirasSuiri;
+    return cache.familia === window.familiaAtualId && cache.usuario === window.obterUsuarioId?.() ? cache : null;
+}
+
+function transacaoAprendivel(t) {
+    const categoria = chaveFinanceira(t.categoria || '');
+    return categoriasPadraoSuiri[t.tipo] && categoria && categoria !== 'privativo' && categoria !== 'transferencia'
+        && !t.transferencia_interna
+        && (!(t.eh_privado || t.escopo === 'pessoal') || t.membro_id === window.obterUsuarioId?.());
+}
+
+function compilarOpcoesFinanceiras(tipo, catalogo, historico) {
+    const grupos = new Map();
+    function grupo(nome) {
+        const chave = chaveFinanceira(nome);
+        if (!grupos.has(chave)) grupos.set(chave, { nome: normalizarNomeFinanceiro(nome), usos: 0, subs: new Map() });
+        return grupos.get(chave);
+    }
+    function subcategoria(grupo, nome, uso) {
+        const chave = chaveFinanceira(nome || '');
+        if (!chave) return;
+        if (!grupo.subs.has(chave)) grupo.subs.set(chave, { nome: normalizarNomeFinanceiro(nome), usos: 0 });
+        grupo.subs.get(chave).usos += uso;
+    }
+    for (const nome of categoriasPadraoSuiri[tipo]) grupo(nome);
+    for (const linha of catalogo) {
+        if (linha.tipo !== tipo || !chaveFinanceira(linha.nome || '')) continue;
+        const item = grupo(linha.nome);
+        for (const sub of linha.subcategorias || []) subcategoria(item, sub, 0);
+    }
+    for (const linha of historico) {
+        if (linha.tipo !== tipo) continue;
+        const item = grupo(linha.categoria);
+        item.usos++;
+        subcategoria(item, linha.subcategoria, 1);
+    }
+    const ordenar = (a, b) => b.usos - a.usos;
+    return new Map([...grupos.values()].sort(ordenar).map(item => [
+        item.nome, [...item.subs.values()].sort(ordenar).map(sub => sub.nome)
+    ]));
+}
+
+function gravarCacheFinanceiro(familia, usuario, catalogo, historico) {
+    categoriasFinanceirasSuiri = {
+        familia, usuario, catalogo, historico,
+        opcoes: {
+            entrada: compilarOpcoesFinanceiras('entrada', catalogo, historico),
+            saida: compilarOpcoesFinanceiras('saida', catalogo, historico)
+        }
+    };
 }
 
 function opcoesCategoriasFinanceiras(tipo) {
-    const mapa = new Map((categoriasPadraoSuiri[tipo] || []).map(nome => [nome, []]));
-    const { familia, usuario, dados } = categoriasFinanceirasSuiri;
-    if (familia === window.familiaAtualId && usuario === obterUsuarioId()) {
-        for (const linha of dados) {
-            if (linha.tipo !== tipo || !linha.categoria || linha.categoria === 'Privativo' || linha.transferencia_interna || linha.categoria === 'Transferência') continue;
-            const nome = nomeFinanceiroExistente(mapa.keys(), normalizarNomeFinanceiro(linha.categoria));
-            const subcategorias = mapa.get(nome) || [];
-            for (const sub of linha.subcategorias || [linha.subcategoria]) {
-                if (sub && !subcategorias.includes(nomeFinanceiroExistente(subcategorias, sub))) subcategorias.push(sub);
-            }
-            mapa.set(nome, subcategorias);
-        }
-    }
-    return mapa;
-}
-
-function unirSugestoesFinanceiras(linhas) {
-    const unicas = new Map();
-    for (const linha of linhas) {
-        const { tipo, categoria, transferencia_interna } = linha;
-        if (!categoria || categoria === 'Privativo' || transferencia_interna || categoria === 'Transferência') continue;
-        const nome = normalizarNomeFinanceiro(categoria);
-        if (!nome) continue;
-        const chave = JSON.stringify([tipo, nome.toLocaleLowerCase('pt-BR')]);
-        if (!unicas.has(chave)) unicas.set(chave, { tipo, categoria: nome, subcategorias: [] });
-        const grupo = unicas.get(chave);
-        for (const valor of linha.subcategorias || [linha.subcategoria]) {
-            const sub = normalizarNomeFinanceiro(valor || '');
-            if (sub && !grupo.subcategorias.includes(nomeFinanceiroExistente(grupo.subcategorias, sub))) grupo.subcategorias.push(sub);
-        }
-    }
-    return [...unicas.values()];
+    return cacheFinanceiroAtual()?.opcoes[tipo] || new Map((categoriasPadraoSuiri[tipo] || []).map(nome => [nome, []]));
 }
 
 function lembrarCategoriaFinanceira(linha) {
-    const familia = window.familiaAtualId;
-    const usuario = obterUsuarioId();
-    const cache = categoriasFinanceirasSuiri;
-    const dados = cache.familia === familia && cache.usuario === usuario ? cache.dados : [];
-    categoriasFinanceirasSuiri = { familia, usuario, dados: unirSugestoesFinanceiras([...dados, linha]) };
+    if (!transacaoAprendivel(linha)) return;
+    const cache = cacheFinanceiroAtual();
+    const historico = (cache?.historico || []).filter(t => t.id !== linha.id);
+    gravarCacheFinanceiro(window.familiaAtualId, obterUsuarioId(), cache?.catalogo || [], [linha, ...historico]);
 }
 
 function mostrarSugestoesFinanceiras(campo, lista, nomes, escolher) {
-    const texto = campo.value.trim().toLocaleLowerCase('pt-BR');
-    const opcoes = nomes.filter(nome => nome !== campo.value && nome.toLocaleLowerCase('pt-BR').includes(texto)).slice(0, 8);
+    const texto = chaveFinanceira(campo.value);
+    const opcoes = nomes.filter(nome => nome !== campo.value && chaveFinanceira(nome).includes(texto)).slice(0, 8);
     lista.replaceChildren(...opcoes.map(nome => {
         const botao = document.createElement('button');
         botao.type = 'button';
@@ -309,6 +375,55 @@ function mostrarSugestoesFinanceiras(campo, lista, nomes, escolher) {
     lista.hidden = !opcoes.length;
 }
 
+const palavrasComunsFinanceiras = new Set([
+    'comprei', 'paguei', 'recebi', 'ganhei', 'despesa', 'compra', 'receita', 'gasto', 'gastei', 'valor', 'reais', 'para', 'pelo', 'pela', 'com', 'sem', 'uma', 'conta', 'pix', 'projeto', 'trabalho', 'servico', 'projetos', 'trabalhos', 'servicos'
+]);
+
+function termosFinanceiros(desc) {
+    return new Set(chaveFinanceira(desc).split(/[^a-z]+/g)
+        .filter(palavra => palavra.length >= 4 && !palavrasComunsFinanceiras.has(palavra)));
+}
+
+function sugerirPeloHistorico(tipo, descricao) {
+    const termos = termosFinanceiros(descricao);
+    if (!termos.size) return null;
+    const opcoes = opcoesCategoriasFinanceiras(tipo);
+    let melhor = null;
+    let pontosMelhor = 0;
+    let lidas = 0;
+    for (const t of cacheFinanceiroAtual()?.historico || []) {
+        if (t.tipo !== tipo || !t.descricao || (chaveFinanceira(t.categoria) === 'geral' && !t.subcategoria)) continue;
+        if (++lidas > 240) break;
+        const anteriores = termosFinanceiros(t.descricao);
+        const emComum = [...termos].filter(termo => anteriores.has(termo)).length;
+        if (!emComum) continue;
+        const pontos = 2 * emComum / (termos.size + anteriores.size);
+        if (pontos < .6 || pontos <= pontosMelhor) continue;
+        const categoria = nomeFinanceiroExistente(opcoes.keys(), t.categoria);
+        const subcategoria = nomeFinanceiroExistente(opcoes.get(categoria) || [], t.subcategoria || '');
+        melhor = { categoria, subcategoria };
+        pontosMelhor = pontos;
+    }
+    return melhor;
+}
+
+window.atualizarSugestaoFinanceira = function() {
+    const painel = document.getElementById('fin-sugestao-contexto');
+    if (!painel) return;
+    const categoria = document.getElementById('select-fin-categoria').value.trim();
+    const botao = document.getElementById('fin-aplicar-sugestao');
+    const tipo = document.getElementById('select-fin-tipo').value;
+    const descricao = document.getElementById('input-fin-descricao').value;
+    const sugestao = !categoria && sugerirPeloHistorico(tipo, descricao);
+    painel.hidden = !sugestao;
+    if (!sugestao) return;
+    botao.textContent = [sugestao.categoria, sugestao.subcategoria].filter(Boolean).join(' › ');
+    botao.onclick = () => {
+        window.preencherCategoriasFinanceiras(sugestao.categoria, sugestao.subcategoria);
+        document.getElementById('select-fin-categoria').focus({ preventScroll: true });
+    };
+};
+
 window.preencherCategoriasFinanceiras = function(selecionada, subcategoria) {
     const tipo = document.getElementById('select-fin-tipo').value;
     const campo = document.getElementById('select-fin-categoria');
@@ -316,6 +431,7 @@ window.preencherCategoriasFinanceiras = function(selecionada, subcategoria) {
     mostrarSugestoesFinanceiras(campo, document.getElementById('fin-sugestoes-categoria'),
         [...opcoesCategoriasFinanceiras(tipo).keys()], () => window.preencherCategoriasFinanceiras(campo.value, ''));
     window.atualizarSubcategoriasFinanceiras(subcategoria);
+    window.atualizarSugestaoFinanceira();
 };
 
 window.atualizarSubcategoriasFinanceiras = function(selecionada) {
@@ -337,22 +453,22 @@ window.abrirRegistroRapido = async function() {
     Suiri.openModal('modal-registro-rapido-financas');
     if (!familia || !usuario || !cliente) return;
 
-    // O extrato já mascara os lançamentos pessoais de outros perfis no servidor.
+    // Mantém apenas categorias do catálogo e movimentações que este perfil pode conhecer.
     const [catalogo, historico] = await Promise.allSettled([
         cliente.from('suiri_categorias_financeiras').select('tipo,nome,subcategorias').eq('familia_id', familia).order('nome'),
-        Suiri.transactionQuery().select('tipo,categoria,subcategoria,transferencia_interna').eq('familia_id', familia)
+        Suiri.transactionQuery().select('id,tipo,descricao,categoria,subcategoria,transferencia_interna,membro_id,escopo,eh_privado')
+            .eq('familia_id', familia).order('data_transacao', { ascending: false }).order('criado_em', { ascending: false })
     ]);
     if (versao !== versaoCategoriasFinanceiras || familia !== window.familiaAtualId || usuario !== obterUsuarioId()) return;
-    const cache = categoriasFinanceirasSuiri;
-    const dados = cache.familia === familia && cache.usuario === usuario ? cache.dados : [];
-    const valor = resposta => resposta.status === 'fulfilled' && !resposta.value.error ? resposta.value.data || [] : [];
-    const catalogoAnterior = valor(catalogo).map(linha => ({ ...linha, categoria: linha.nome }));
-    categoriasFinanceirasSuiri = { familia, usuario, dados: unirSugestoesFinanceiras([...catalogoAnterior, ...valor(historico), ...dados]) };
+    const cache = cacheFinanceiroAtual();
+    const valor = (resposta, anterior) => resposta.status === 'fulfilled' && !resposta.value.error ? resposta.value.data || [] : anterior;
+    const linhas = valor(historico, cache?.historico || []).filter(transacaoAprendivel);
+    gravarCacheFinanceiro(familia, usuario, valor(catalogo, cache?.catalogo || []), linhas);
     window.preencherCategoriasFinanceiras();
 };
 
 document.addEventListener('suiri:session-ready', () => {
-    if (categoriasFinanceirasSuiri.familia === window.familiaAtualId && categoriasFinanceirasSuiri.usuario === obterUsuarioId()) return;
+    if (cacheFinanceiroAtual()) return;
     const categoria = document.getElementById('select-fin-categoria');
     if (categoria) window.preencherCategoriasFinanceiras('', '');
 });
