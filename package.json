@@ -4,7 +4,7 @@
   "private": true,
   "description": "Suiri Família: site estático e verificações sem credenciais reais",
   "scripts": {
-    "test": "node tests/static.cjs && node tests/dom.cjs && node tests/database.cjs && node tests/transfers-client.cjs && node tests/transfers-database.cjs && node tests/v72.cjs && node tests/v73.cjs && node tests/v74.cjs && node tests/v75.cjs && node tests/v76.cjs && node tests/mobile-flows.cjs"
+    "test": "node tests/static.cjs && node tests/dom.cjs && node tests/database.cjs && node tests/transfers-client.cjs && node tests/transfers-database.cjs && node tests/v72.cjs && node tests/v73.cjs && node tests/v74.cjs && node tests/v75.cjs && node tests/v76.cjs && node tests/mobile-flows.cjs && node tests/piano.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.16",

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/pages/jogos.css?v=4c75e581dcc9">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
     <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=cf60b4498f12">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=2826b72c7475">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -194,6 +195,11 @@
                 <button type="button" class="btn-modo-som-tab" id="tab-piano-dueto" onclick="MotorMusica.trocarModo('dueto')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#duet"></use></svg> Dueto</button>
             </div>
 
+            <header class="piano-estudio">
+                <h2>Piano do Chuíri</h2>
+                <p>Toque a tecla iluminada e siga a música.</p>
+            </header>
+
             <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
             <div class="painel-aprendizado-musica" id="painel-aprendizado-box">
                 <div class="piano-repertorio">
@@ -208,6 +214,12 @@
                         <select id="seletor-musica-alvo" onchange="MotorMusica.selecionarMusica(this.value)"></select>
                     </label>
                 </div>
+
+                <p class="piano-oitavas-guia"><b>↑</b> Mais aguda <span aria-hidden="true">·</span> <b>↓</b> Mais grave</p>
+                <label class="piano-parte" hidden>Trecho para praticar
+                    <select data-parte-piano onchange="MotorMusica.selecionarParte(this.value)"></select>
+                </label>
+                <p class="piano-fonte" data-fonte-piano hidden><a target="_blank" rel="noopener">Fonte da partitura</a><span></span></p>
 
                 <details class="piano-ajustes">
                     <summary>Som e velocidade</summary>
@@ -232,6 +244,7 @@
 
                 <div class="piano-controles">
                     <div class="piano-acoes">
+                        <button type="button" class="piano-sem-relogio" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(MotorMusica.fatorVelocidade === 'toque' ? 1 : 'toque')">Sem relógio</button>
                         <button type="button" class="btn-play-pause-musica" id="btn-play-musica-solo" onclick="MotorMusica.togglePlay()">
                             <span id="icone-play-solo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-solo">Jogar</span>
                         </button>
@@ -251,9 +264,9 @@
             </div>
 
             <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
-            <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira. Mire na linha laranja. A faixa tracejada mostra a margem de acerto.">
+            <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira de notas. A linha dourada indica o momento de tocar.">
                 <canvas id="cv-esteira-piano"></canvas>
-                <span class="piano-legenda-faixa" aria-hidden="true">Mire no laranja</span>
+                <span class="piano-legenda-faixa" aria-hidden="true">Toque na linha dourada</span>
             </div>
 
             <!-- TECLADO SOLO (OITAVA 4) -->
@@ -471,6 +484,11 @@
                                 <select id="seletor-musica-dueto" onchange="MotorMusica.selecionarMusica(this.value)"></select>
                             </label>
                         </div>
+                        <label class="piano-parte" hidden>Trecho para praticar
+                            <select data-parte-piano onchange="MotorMusica.selecionarParte(this.value)"></select>
+                        </label>
+                        <p class="piano-fonte" data-fonte-piano hidden><a target="_blank" rel="noopener">Fonte da partitura</a><span></span></p>
+                        <p class="piano-oitavas-guia"><b>↑</b> Mais aguda <span aria-hidden="true">·</span> <b>↓</b> Mais grave</p>
                         <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
                         <div class="piano-banda" role="group" aria-label="Acompanhamento">
                             <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
@@ -637,11 +655,12 @@
     <script src="src/data/musicas.js?v=ac86a220bd3b"></script>
     <script src="src/data/partituras.js?v=6f903d6da520"></script>
 
-    <script src="src/data/partituras-extras.js?v=b3d6d41ab058"></script>
+    <script src="src/data/partituras-classicas.js?v=00e485e3c4a2"></script>
+    <script src="src/data/partituras-extras.js?v=cf58d3b9dbee"></script>
 
     <!-- MOTOR DO PIANO E ESTEIRAS -->
-    <script src="src/features/kids/piano-banda.js?v=0f1afd3d00d2"></script>
-    <script src="src/features/kids/piano.js?v=e81af2b3e074"></script>
+    <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
+    <script src="src/features/kids/piano.js?v=716bee7e7b84"></script>
 
     <script src="src/pages/arcade.js?v=ad07cae2e6d6"></script>
 </body>
