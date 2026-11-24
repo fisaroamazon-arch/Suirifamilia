@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7176';
+const CACHE='suiri-family-v7177';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -13,7 +13,7 @@ const SHELL=[
   "./styles/espaco-kids.css?v=213911b07577",
   "./manifest.json",
   "./jogos.html",
-  "./styles/pages/arcade-vila.css?v=cf60b4498f12",
+  "./styles/pages/arcade-vila.css?v=84f690e56e16",
   "./assets/images/kids/banho-parado.webp",
   "./assets/images/kids/banho.webp",
   "./assets/images/kids/casa-parado.webp",
@@ -38,10 +38,11 @@ const SHELL=[
   "./assets/images/clareira-chuiri.svg",
   "./assets/audio/piano/piano.mp3",
   "./assets/audio/piano/cordas.mp3",
+  "./assets/audio/piano/violino-solo.mp3",
   "./assets/audio/piano/xilofone.mp3",
   "./arte.html",
-  "./src/pages/arte.js?v=3dc03c495f89",
-  "./styles/pages/arte.css?v=82679152bf8e",
+  "./src/pages/arte.js?v=aa2f8adfdf78",
+  "./styles/pages/arte.css?v=cd92c6559962",
   "./assets/images/arte/abelha.svg",
   "./assets/images/arte/arco-iris.svg",
   "./assets/images/arte/arvore.svg",
@@ -64,7 +65,7 @@ const SHELL=[
   "./assets/images/arte/ursinho.svg",
   "./src/core/config.js?v=50eb0e2f989b",
   "./src/core/foundation.js?v=134013abdc96",
-  "./styles/pages/piano.css?v=2826b72c7475",
+  "./styles/pages/piano.css?v=076acc0c1d17",
   "./styles/pages/jogos.css?v=4c75e581dcc9",
   "./styles/themes.css?v=3911cf04fce3",
   "./src/data/musicas.js?v=ac86a220bd3b",
@@ -72,8 +73,8 @@ const SHELL=[
   "./src/data/partituras-classicas.js?v=00e485e3c4a2",
   "./src/data/partituras-extras.js?v=cf58d3b9dbee",
   "./src/features/kids/piano-banda.js?v=103a53e7e8b6",
-  "./src/features/kids/piano.js?v=716bee7e7b84",
-  "./src/pages/arcade.js?v=ad07cae2e6d6",
+  "./src/features/kids/piano.js?v=0962e4b18ef5",
+  "./src/pages/arcade.js?v=e55cfc8ae9a2",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=a9d2847a1b55",
@@ -239,7 +240,7 @@ self.addEventListener('fetch',event=>{
  if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs|downloads)\//.test(url.pathname))return;
  const navigation=req.mode==='navigate';
  const smallAsset=/\.(js|css|png|jpg|webp|svg|json)$/.test(url.pathname);
- const pianoSample=/\/assets\/audio\/piano\/(piano|cordas|xilofone)\.mp3$/.test(url.pathname)&&!req.headers.has('range');
+ const pianoSample=/\/assets\/audio\/piano\/(piano|cordas|violino-solo|xilofone)\.mp3$/.test(url.pathname)&&!req.headers.has('range');
  if(!navigation&&!smallAsset&&!pianoSample)return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);

@@ -1,13 +1,21 @@
 :root {
     color-scheme: dark;
     font-family: system-ui, sans-serif;
-    background: #21182e;
-    color: #fff3e8;
+    --arte-fundo: #21182e;
+    --arte-luz: #593564;
+    --arte-tinta: #fff3e8;
+    --arte-painel: #2e203d;
+    --arte-botao: #3b2a48;
+    --arte-borda: #886a98;
+    --arte-realce: #f5ce91;
+    --arte-no-realce: #2b1938;
+    background: var(--arte-fundo);
+    color: var(--arte-tinta);
 }
 * { box-sizing: border-box; }
 body {
     margin: 0;
-    background: radial-gradient(ellipse at 80% 0, #593564, transparent 38rem), #21182e;
+    background: radial-gradient(ellipse at 80% 0, var(--arte-luz), transparent 38rem), var(--arte-fundo);
     min-height: 100dvh;
 }
 .atelier { width: min(100%, 570px); margin: auto; padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom)); }
@@ -19,10 +27,10 @@ h2 { font-size: 18px; }
 button, .importar, .voltar {
     min-height: 38px;
     border-radius: 10px;
-    border: 1px solid #8a6799;
+    border: 1px solid var(--arte-borda);
     padding: 5px 8px;
-    color: #fff3e8;
-    background: #372745;
+    color: var(--arte-tinta);
+    background: var(--arte-botao);
     font: 700 12px system-ui, sans-serif;
     cursor: pointer;
     touch-action: manipulation;
@@ -30,13 +38,43 @@ button, .importar, .voltar {
 .voltar, .importar { display: inline-grid; place-items: center; text-decoration: none; white-space: nowrap; }
 :focus-visible { outline: 3px solid #f9ca7f; outline-offset: 2px; }
 button:disabled { opacity: .46; cursor: default; }
-.ferramentas { padding: 8px; border: 1px solid #dfacfb59; border-radius: 15px; background: #291c38e6; }
+.ferramentas, .caderno {
+    padding: 10px;
+    border: 1px solid var(--arte-borda);
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--arte-painel) 92%, transparent);
+}
 .linha { display: grid; gap: 6px; }
-.pinceis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
-.pinceis button { padding-inline: 2px; font-size: clamp(10px, 3vw, 12px); }
-.pinceis [aria-pressed="true"], #baixar-arte { color: #2b1938; background: #f5ce91; border-color: #ffd991; }
-.espessura { display: flex; gap: 9px; align-items: center; font-size: 12px; padding-inline: 4px; }
-.espessura input { width: 100%; height: 26px; accent-color: #f5ce91; }
+.pinceis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+@media (min-width: 465px) and (orientation: portrait) {
+    .pinceis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+.pinceis button { padding-inline: 2px; font-size: clamp(11px, 3vw, 13px); }
+.pinceis [aria-pressed="true"], #baixar-arte {
+    color: var(--arte-no-realce);
+    background: linear-gradient(125deg, #fce6c3, var(--arte-realce));
+    border-color: var(--arte-realce);
+}
+.espessura { display: flex; gap: 9px; align-items: center; font-size: 12px; padding-inline: 2px; }
+.espessura input { width: 100%; min-width: 0; height: 30px; accent-color: var(--arte-realce); }
+.previa-pincel {
+    display: grid;
+    flex: 0 0 32px;
+    height: 32px;
+    place-items: center;
+    background: #fffbf7;
+    border: 1px solid #d7ccd9;
+    border-radius: 9px;
+}
+.previa-pincel i {
+    width: var(--previa-tamanho, 5px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--previa-cor, #7847c9);
+}
+.previa-pincel[data-ferramenta="marca"] i { opacity: .45; }
+.previa-pincel[data-ferramenta="spray"] i { filter: blur(1px); }
+.previa-pincel[data-ferramenta="borracha"] { background: #b29bc6; }
 .paleta { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; margin-top: 4px; }
 .paleta [data-cor], .personalizada {
     width: 100%;
@@ -55,17 +93,17 @@ button:disabled { opacity: .46; cursor: default; }
 .folha {
     margin-block: 10px;
     padding: 5px;
-    background: #f1d8b2;
-    border-radius: 13px;
-    box-shadow: 0 5px 0 #110c1b;
+    background: linear-gradient(145deg, #f9ddba, #c9abe8);
+    border-radius: 15px;
+    box-shadow: 0 5px 0 #120c2736, 0 12px 28px #130b2938;
 }
 #papel { width: 100%; height: auto; display: block; border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; }
 .acoes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
 .acoes button { font-size: clamp(10px, 3vw, 12px); }
-.caderno { margin-top: 18px; padding: 10px; border: 1px solid #dfacfb59; background: #291c38; border-radius: 16px; }
+.caderno { margin-top: 18px; }
 .caderno header { justify-content: space-between; }
-.importar { background: #634475; }
-#arte-aviso { font-size: 12px; color: #f8cf9d; margin: 5px 0; }
+.importar { background: var(--arte-botao); }
+#arte-aviso { font-size: 12px; color: var(--arte-tinta); margin: 5px 0; }
 #arte-aviso:empty { display: none; }
 .paginas { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; margin-top: 8px; }
 .pagina { display: grid; gap: 3px; min-width: 0; align-content: start; padding: 3px; }
@@ -80,3 +118,34 @@ button:disabled { opacity: .46; cursor: default; }
 .importar-arte .importar { position: relative; }
 .caderno header:focus-within .importar { outline: none; }
 .caderno header .importar:focus-within { outline: 3px solid #f9ca7f; outline-offset: 2px; }
+
+@media (orientation: landscape) and (min-width: 560px) {
+    .atelier { width: min(100%, 980px); padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right)); }
+    .mesa-arte {
+        display: grid;
+        grid-template-columns: minmax(195px, 300px) minmax(0, 1fr);
+        grid-template-areas: "tools paper" "actions paper";
+        align-items: start;
+        align-content: start;
+        gap: 9px 16px;
+    }
+    .ferramentas { grid-area: tools; }
+    .folha { grid-area: paper; margin: 0; width: min(100%, max(170px, calc(100dvh - 86px))); justify-self: center; }
+    .acoes { grid-area: actions; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .paleta { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .paginas { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: light;
+        --arte-fundo: #f6f0fb;
+        --arte-luz: #ead6f8;
+        --arte-tinta: #38284b;
+        --arte-painel: #fffafe;
+        --arte-botao: #efe4f6;
+        --arte-borda: #b49cc4;
+        --arte-realce: #f1c074;
+    }
+    .paleta [data-cor], .personalizada { border-color: #32223e7a; }
+    .paleta [aria-pressed="true"] { outline-color: #694598; }
+}

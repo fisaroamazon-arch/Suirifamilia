@@ -50,6 +50,24 @@ try {
     assert.equal(motor.parteAtual.titulo, 'II. Andante con moto');
     assert(motor.partituraAtual.duracao < quinta.duracao);
     assert(motor.notasNaEsteira.at(-1).tInicio < motor.partituraAtual.duracao);
+    window.document.body.insertAdjacentHTML('beforeend', `
+        <label><select id="piano-alcance"><option value="1">1</option>
+        <option value="2">2</option><option value="3">3</option></select></label>
+        <div id="teclado-piano-completo"><div data-nota="C4"></div></div>`);
+    const teclado = window.document.getElementById('teclado-piano-completo');
+    motor.consultasAlcance = [{matches:true}, {matches:true}];
+    motor.alterarAlcance(2);
+    assert.equal(teclado.children.length, 25);
+    assert.equal(motor.mapearNota('E5').tecla, 'E5');
+    assert.equal(motor.mapearNota('E6').simbolo, '↑1');
+    motor.alterarAlcance(3);
+    assert.equal(teclado.children.length, 37);
+    assert.equal(motor.mapearNota('G#3').tecla, 'G#3');
+    assert.equal(motor.mapearNota('G#2').simbolo, '↓1');
+    motor.consultasAlcance = [{matches:false}, {matches:false}];
+    motor.atualizarAlcance();
+    assert.equal(motor.mapearNota('E5').tecla, 'E4');
+    assert.equal(teclado.children[0].dataset.nota, 'C4');
     console.log('Piano: catálogo, movimentos, mapeamento, som e iluminação de oitavas verificados.');
 } finally {
     dom.window.close();

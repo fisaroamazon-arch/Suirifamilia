@@ -1,4 +1,13 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: ../violino-solo.mp3
+Source: https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Violin/Arco%20Vib
+License: CC0-1.0
+ https://creativecommons.org/publicdomain/zero/1.0/
+Comment: VSCO 2 Community Edition (Versilian Studios). Onze gravações
+ Solo Violin Arco Vib de G3 a C7, editadas em mono com repetição suave
+ da parte sustentada e empacotadas em MP3 para o piano do Suíri.
+
 Upstream-Name: timgm6mb
 Source: https://github.com/musescore/musescore-old/commit/90c33ef9d87b3f5ff92efd3b07d89eb455fb1fef
 

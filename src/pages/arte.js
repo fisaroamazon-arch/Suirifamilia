@@ -22,6 +22,8 @@
     const aviso = obter('arte-aviso');
     const desfazer = obter('desfazer');
     const refazer = obter('refazer');
+    const espessura = obter('espessura');
+    const previa = document.querySelector('.previa-pincel');
     const anteriores = [];
     const posteriores = [];
     const limiteHistorico = 10;
@@ -92,12 +94,34 @@
         desenhar();
     }
 
-    function ponto(evento) {
-        const caixa = papel.getBoundingClientRect();
+    function ponto(evento, caixa) {
         return {
             x: (evento.clientX - caixa.left) * tamanho / caixa.width,
-            y: (evento.clientY - caixa.top) * tamanho / caixa.height
+            y: (evento.clientY - caixa.top) * tamanho / caixa.height,
+            pressao: evento.pointerType === 'pen' ? evento.pressure : .59
         };
+    }
+
+    function meio(a, b) {
+        return {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, pressao: (a.pressao + b.pressao) / 2};
+    }
+
+    function pintarPincel(ctx, inicio, fim, controle, largura) {
+        const medida = ponto => largura * (.44 + .95 * ponto.pressao);
+        const caminho = Math.hypot(controle.x - inicio.x, controle.y - inicio.y)
+            + Math.hypot(fim.x - controle.x, fim.y - controle.y);
+        const passos = Math.max(1, Math.ceil(caminho / Math.max(.6, Math.min(medida(inicio), medida(fim)) * .18)));
+        ctx.beginPath();
+        for (let i = 0; i <= passos; i++) {
+            const t = i / passos;
+            const oposto = 1 - t;
+            const x = oposto ** 2 * inicio.x + 2 * t * oposto * controle.x + t ** 2 * fim.x;
+            const y = oposto ** 2 * inicio.y + 2 * t * oposto * controle.y + t ** 2 * fim.y;
+            const raio = (medida(inicio) * oposto + medida(fim) * t) / 2;
+            ctx.moveTo(x + raio, y);
+            ctx.arc(x, y, raio, 0, Math.PI * 2);
+        }
+        ctx.fill();
     }
 
     function pintarCerdas(ctx, inicio, fim, largura) {
@@ -127,13 +151,15 @@
         }
     }
 
-    function pintarSegmento(inicio, fim) {
+    function pintarSegmento(inicio, fim, controle = meio(inicio, fim)) {
         const {pincel: tipo, cor: pigmento, largura} = traco;
         const camadaAlvo = tipo === 'borracha' ? tinta : rascunho;
         camadaAlvo.save();
         camadaAlvo.globalCompositeOperation = tipo === 'borracha' ? 'destination-out' : 'source-over';
         camadaAlvo.fillStyle = camadaAlvo.strokeStyle = pigmento;
         if (tipo === 'pincel') {
+            pintarPincel(camadaAlvo, inicio, fim, controle, largura);
+        } else if (tipo === 'cerdas') {
             pintarCerdas(camadaAlvo, inicio, fim, largura);
         } else if (tipo === 'spray') {
             const distancia = Math.hypot(fim.x - inicio.x, fim.y - inicio.y);
@@ -161,7 +187,7 @@
                 camadaAlvo.fill();
             } else {
                 camadaAlvo.moveTo(inicio.x, inicio.y);
-                camadaAlvo.lineTo(fim.x, fim.y);
+                camadaAlvo.quadraticCurveTo(controle.x, controle.y, fim.x, fim.y);
                 camadaAlvo.stroke();
             }
         }
@@ -169,9 +195,19 @@
         if (!quadro) quadro = requestAnimationFrame(desenhar);
     }
 
+    function consumirPonto(local) {
+        const anterior = traco.anterior;
+        if (local.x === anterior.x && local.y === anterior.y) return;
+        const suavizado = meio(anterior, local);
+        pintarSegmento(traco.extremo, suavizado, anterior);
+        traco.extremo = suavizado;
+        traco.anterior = local;
+    }
+
     function finalizarTraco() {
         if (!traco) return;
         const feito = traco;
+        if (feito.extremo !== feito.anterior) pintarSegmento(feito.extremo, feito.anterior, feito.anterior);
         if (feito.pincel !== 'borracha') {
             tinta.globalAlpha = feito.pincel === 'marca' ? .38 : 1;
             tinta.drawImage(rascunho.canvas, 0, 0);
@@ -186,10 +222,10 @@
     papel.addEventListener('pointerdown', evento => {
         if (traco || evento.button !== 0) return;
         papel.setPointerCapture(evento.pointerId);
-        const local = ponto(evento);
+        const local = ponto(evento, papel.getBoundingClientRect());
         traco = {
-            id: evento.pointerId, anterior: local, pincel, cor,
-            largura: Number(obter('espessura').value),
+            id: evento.pointerId, anterior: local, extremo: local, pincel, cor,
+            largura: Number(espessura.value),
             antes: estadoAtual()
         };
         pintarSegmento(local, local);
@@ -197,16 +233,15 @@
     papel.addEventListener('pointermove', evento => {
         if (evento.pointerId !== traco?.id) return;
         const eventos = evento.getCoalescedEvents?.() || [];
+        const caixa = papel.getBoundingClientRect();
         for (const amostra of eventos.length ? eventos : [evento]) {
-            const local = ponto(amostra);
-            pintarSegmento(traco.anterior, local);
-            traco.anterior = local;
+            consumirPonto(ponto(amostra, caixa));
         }
     });
     papel.addEventListener('pointerup', evento => {
         if (evento.pointerId !== traco?.id) return;
-        const local = ponto(evento);
-        if (local.x !== traco.anterior.x || local.y !== traco.anterior.y) pintarSegmento(traco.anterior, local);
+        const local = ponto(evento, papel.getBoundingClientRect());
+        consumirPonto({...local, pressao: traco.anterior.pressao});
         finalizarTraco();
     });
     for (const nome of ['pointercancel', 'lostpointercapture']) {
@@ -220,6 +255,15 @@
         document.querySelectorAll('[data-pincel]').forEach(botao => {
             botao.setAttribute('aria-pressed', String(botao.dataset.pincel === novo));
         });
+        atualizarPrevia();
+    }
+
+    function atualizarPrevia() {
+        const largura = Number(espessura.value);
+        previa.style.setProperty('--previa-tamanho', `${Math.max(2, largura * (pincel === 'lapis' ? .17 : .36))}px`);
+        previa.style.setProperty('--previa-cor', pincel === 'borracha' ? '#fff' : cor);
+        previa.dataset.ferramenta = pincel;
+        espessura.setAttribute('aria-valuetext', `${largura} pixels`);
     }
 
     document.querySelectorAll('[data-pincel]').forEach(botao => {
@@ -233,11 +277,13 @@
         });
         document.querySelector('.personalizada').style.backgroundColor = nova;
         if (pincel === 'borracha') selecionarPincel('pincel');
+        atualizarPrevia();
     }
     document.querySelectorAll('[data-cor]').forEach(botao => {
         botao.addEventListener('click', () => selecionarCor(botao.dataset.cor));
     });
     obter('cor-livre').addEventListener('input', evento => selecionarCor(evento.target.value));
+    espessura.addEventListener('input', atualizarPrevia);
 
     desfazer.addEventListener('click', () => andarHistorico(anteriores, posteriores));
     refazer.addEventListener('click', () => andarHistorico(posteriores, anteriores));
@@ -374,5 +420,6 @@
         }, 'image/png');
     });
 
+    atualizarPrevia();
     desenhar();
 })();
