@@ -108,14 +108,13 @@ window.processarTextoTranscrito = function(frase) {
 
     const inDesc = document.getElementById('input-fin-descricao');
     const inVal = document.getElementById('input-fin-valor');
-    const selCat = document.getElementById('select-fin-categoria');
     const selEscopo = document.getElementById('select-fin-escopo');
 
     if (inDesc) inDesc.value = itemLimpo;
     if (inVal) inVal.value = valorDetectado > 0 ? valorDetectado.toFixed(2) : "";
     if (inDesc) inDesc.dataset.viaVoz = "true";
-    if (selCat) selCat.value = categoria;
     window.selecionarTipoRegistroRapido(tipoTransacao);
+    window.preencherCategoriasFinanceiras(ehReceita ? 'Salário' : categoria);
     if (selEscopo) selEscopo.value = escopo;
 
     const rotuloTipo = ehReceita ? 'Entrada' : 'Saída';
@@ -145,6 +144,7 @@ window.salvarTransacaoManual = async function() {
     const tipo = selTipo?.value || 'saida';
     const escopo = selEscopo?.value || 'pessoal';
     const categoria = selCat?.value || 'Geral';
+    const subcategoria = document.getElementById('select-fin-subcategoria')?.value;
 
     if (!desc || isNaN(valor) || valor <= 0) {
         return window.mostrarToast("Informe a descrição e o valor da transação.", "erro");
@@ -160,6 +160,7 @@ window.salvarTransacaoManual = async function() {
         eh_privado: (escopo === 'pessoal'),
         descricao: desc,
         categoria: categoria,
+        ...(subcategoria ? { subcategoria } : {}),
         valor: valor,
         data_transacao: hojeStr,
         via_voz: inDesc?.dataset.viaVoz === "true"
@@ -194,7 +195,10 @@ window.salvarTransacaoManual = async function() {
 
 
 window.selecionarTipoRegistroRapido = function(tipo) {
-    document.getElementById('select-fin-tipo').value = tipo;
+    const seletor = document.getElementById('select-fin-tipo');
+    const mudou = seletor.value !== tipo;
+    seletor.value = tipo;
+    window.preencherCategoriasFinanceiras(mudou ? 'Geral' : undefined);
     for (const [id, ativo, cor] of [
         ['btn-toggle-tipo-despesa', tipo === 'saida', '#f43f5e'],
         ['btn-toggle-tipo-receita', tipo === 'entrada', '#10b981']
@@ -218,3 +222,96 @@ window.confirmarRegistroRapido = async function(botao) {
         botao.disabled = false;
     }
 };
+
+const categoriasPadraoSuiri = {
+    saida: ['Geral', 'Supermercado', 'Moradia', 'Lazer', 'Alimentação', 'Transporte', 'Saúde', 'Educação'],
+    entrada: ['Geral', 'Salário']
+};
+let versaoCategoriasFinanceiras = 0;
+let categoriasFinanceirasSuiri = { familia: null, usuario: null, dados: [] };
+
+function opcoesCategoriasFinanceiras(tipo) {
+    const padrao = new Map(categoriasPadraoSuiri[tipo].map(nome => [nome, []]));
+    const { familia, usuario, dados } = categoriasFinanceirasSuiri;
+    if (familia === window.familiaAtualId && usuario === obterUsuarioId()) {
+        for (const linha of dados) {
+            if (linha.tipo === tipo) padrao.set(linha.nome, linha.subcategorias || []);
+        }
+    }
+    return padrao;
+}
+
+window.preencherCategoriasFinanceiras = function(selecionada, subcategoria) {
+    const tipo = document.getElementById('select-fin-tipo').value;
+    const seletor = document.getElementById('select-fin-categoria');
+    const categoria = selecionada ?? seletor.value;
+    const opcoes = opcoesCategoriasFinanceiras(tipo);
+    seletor.replaceChildren(...Array.from(opcoes.keys(), nome => new Option(nome, nome)));
+    seletor.value = opcoes.has(categoria) ? categoria : 'Geral';
+    window.atualizarSubcategoriasFinanceiras(subcategoria);
+};
+
+window.atualizarSubcategoriasFinanceiras = function(selecionada = '') {
+    const tipo = document.getElementById('select-fin-tipo').value;
+    const categoria = document.getElementById('select-fin-categoria').value;
+    const seletor = document.getElementById('select-fin-subcategoria');
+    const opcoes = opcoesCategoriasFinanceiras(tipo).get(categoria) || [];
+    seletor.replaceChildren(new Option('Sem subcategoria', ''), ...opcoes.map(nome => new Option(nome, nome)));
+    seletor.value = opcoes.includes(selecionada) ? selecionada : '';
+};
+
+window.abrirRegistroRapido = async function() {
+    const familia = window.familiaAtualId;
+    const usuario = obterUsuarioId();
+    const cliente = obterClienteSupabase();
+    const versao = ++versaoCategoriasFinanceiras;
+    const subcategoria = document.getElementById('select-fin-subcategoria').value;
+    window.preencherCategoriasFinanceiras(undefined, subcategoria);
+    Suiri.openModal('modal-registro-rapido-financas');
+    if (!familia || !usuario || !cliente) return;
+    try {
+        const dados = Suiri.check(await cliente.from('suiri_categorias_financeiras')
+            .select('tipo,nome,subcategorias').eq('familia_id', familia).order('nome')) || [];
+        if (versao !== versaoCategoriasFinanceiras || familia !== window.familiaAtualId || usuario !== obterUsuarioId()) return;
+        categoriasFinanceirasSuiri = { familia, usuario, dados };
+        window.preencherCategoriasFinanceiras(undefined, document.getElementById('select-fin-subcategoria').value);
+    } catch (error) {
+        Suiri.notifyError(error);
+    }
+};
+
+window.criarCategoriaFinanceira = subcategoria => Suiri.once('categoria-financeira', async () => {
+    const tipo = document.getElementById('select-fin-tipo').value;
+    const categoria = document.getElementById('select-fin-categoria').value;
+    const entrada = document.getElementById('input-fin-nova-categoria');
+    const nome = entrada.value.trim().normalize('NFC');
+    if (!nome) return window.mostrarToast('Informe um nome.', 'erro');
+    const familia = window.familiaAtualId;
+    const usuario = obterUsuarioId();
+    try {
+        const nomeExistente = Array.from(opcoesCategoriasFinanceiras(tipo).keys())
+            .find(item => item.localeCompare(nome, 'pt-BR', { sensitivity: 'accent' }) === 0);
+        const registro = Suiri.check(await obterClienteSupabase().rpc('suiri_criar_categoria_financeira', {
+            p_tipo: tipo,
+            p_nome: subcategoria ? categoria : nomeExistente || nome,
+            p_subcategoria: subcategoria ? nome : null
+        }));
+        if (familia !== window.familiaAtualId || usuario !== obterUsuarioId()) return;
+        ++versaoCategoriasFinanceiras;
+        const cache = categoriasFinanceirasSuiri;
+        const dados = cache.familia === familia && cache.usuario === usuario ? cache.dados : [];
+        categoriasFinanceirasSuiri = {
+            familia, usuario, dados: [...dados.filter(linha => linha.tipo !== tipo || linha.nome !== registro.nome), registro]
+        };
+        if (document.getElementById('select-fin-tipo').value === tipo) {
+            const sub = subcategoria
+                ? registro.subcategorias.find(item => item.localeCompare(nome, 'pt-BR', { sensitivity: 'accent' }) === 0)
+                : '';
+            window.preencherCategoriasFinanceiras(registro.nome, sub);
+        }
+        entrada.value = '';
+        window.mostrarToast(subcategoria ? 'Subcategoria disponível.' : 'Categoria disponível.');
+    } catch (error) {
+        Suiri.notifyError(error);
+    }
+});

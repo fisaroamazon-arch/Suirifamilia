@@ -37,14 +37,22 @@
             window.fecharModalAporteMeta();await refresh();window.mostrarToast('Aporte confirmado.');
         }catch(error){S.notifyError(error);}
     });
-    window.converterXPParaMesada=()=>S.once('allowance',async()=>{
-        try{
-            const rate=Suiri.parseJSON(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`),{qtd:100,valor:5});
-            if(!await window.confirmarAcaoSuiri(`Converter pontos em mesada na taxa de ${rate.qtd} XP por ${S.money(rate.valor)}?`))return;
-            const r=await S.operation('allowance',{rate});await refresh();
-            window.mostrarToast(`${r.count} conversão(ões) confirmada(s).`);
+    window.converterXPParaMesada = () => S.once('allowance', async () => {
+        try {
+            const seletor = document.getElementById('select-kid-conversao-xp');
+            const kid = seletor?.value;
+            const nome = seletor?.selectedOptions[0]?.textContent;
+            const { quantidade, valor } = seletor?.dataset || {};
+            if (!kid || !quantidade) throw new Error('Selecione a criança e aguarde o carregamento da taxa.');
+            if (!await window.confirmarAcaoSuiri(`Converter o saldo elegível de ${nome} na taxa de ${quantidade} XP por ${S.money(valor)}?`)) return;
+            if (seletor.value !== kid) return;
+            const resultado = await S.operation('allowance', { kid, rate: { qtd: Number(quantidade), valor: Number(valor) } }, kid);
+            window.mostrarToast(`${resultado.xp} XP convertidos em ${S.money(resultado.amount)} para ${nome}.`);
+            await refresh();
             window.renderizarHistoricoMissoesKidsADM?.();
-        }catch(error){S.notifyError(error);}
+        } catch (error) {
+            S.notifyError(error);
+        }
     });
     window.resgatarBeneficioLoja=(id,cost,title)=>S.once(`reward:${id}`,async()=>{
         try{

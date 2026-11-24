@@ -459,21 +459,15 @@ window.renderizarHistoricoMissoesKidsADM = function() {
 
     container.classList.remove('oculto');
     
-    let totalXPKids = 0;
-    if (window.listaMembrosFamilia) {
-        window.listaMembrosFamilia.forEach(m => {
-            if (m.eh_kids || m.papel === 'dependente') {
-                totalXPKids += Number(m.xp_total || 0);
-            }
-        });
+    const seletor = document.getElementById('select-kid-conversao-xp');
+    if (seletor) {
+        const anterior = seletor.value;
+        const kids = (window.listaMembrosFamilia || []).filter(m => m.eh_kids || m.papel === 'dependente');
+        seletor.replaceChildren(new Option('Selecione a criança', ''), ...kids.map(m => new Option(m.nome, m.id)));
+        if (kids.some(m => m.id === anterior)) seletor.value = anterior;
+        window.atualizarConversaoXP();
     }
-    const lblXPDisp = document.getElementById('lbl-xp-disponivel-conversao');
-    if (lblXPDisp) lblXPDisp.textContent = `${totalXPKids} XP`;
 
-    const taxa = JSON.parse(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`) || '{"qtd": 100, "valor": 5.00}');
-    const lblTaxa = document.getElementById('lbl-taxa-conversao-xp');
-    if (lblTaxa) lblTaxa.textContent = `${taxa.qtd} XP = R$ ${Number(taxa.valor).toFixed(2)}`;
-    
     const corpoLista = document.getElementById('lista-historico-kids-adm');
     if (!corpoLista) return;
 
@@ -486,7 +480,7 @@ window.renderizarHistoricoMissoesKidsADM = function() {
             const membro = window.listaMembrosFamilia.find(x => x.id === m.atribuido_a);
             if (membro && (membro.eh_kids || membro.papel === 'dependente')) membroRespKids = true;
         }
-        return ehDestinoKids || membroRespKids;
+        return ehDestinoKids || membroRespKids || window.audienciaMissaoSuiri(m) === 'kids';
     });
 
     if (missoesKidsGeral.length === 0) {
@@ -530,10 +524,10 @@ window.renderizarHistoricoMissoesKidsADM = function() {
             <div style="flex:1; min-width:0;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
                     <span style="font-size:10px; font-weight:800; background:#fff7ed; color:#ea580c; padding:2px 7px; border-radius:6px; border:1px solid rgba(249,115,22,0.18);">
-                        ${nomeAlvo}
+                        ${window.esc(nomeAlvo)}
                     </span>
                     <span style="font-size:11px; font-weight:800; color:${concluida ? '#15803d' : (falhou ? '#e11d48' : '#ea580c')};">
-                        ${parcial ? 'Feita em partes' : concluida ? 'Concluída' : falhou ? 'Fracassada' : 'Pendente'} ${feitoPor}
+                        ${parcial ? 'Feita em partes' : concluida ? 'Concluída' : falhou ? 'Fracassada' : 'Pendente'} ${window.esc(feitoPor)}
                     </span>
                 </div>
                 <strong style="font-size:13.5px; color:var(--texto-principal, #0f172a);">${window.esc ? window.esc(m.titulo) : m.titulo}</strong>
@@ -553,32 +547,64 @@ window.renderizarHistoricoMissoesKidsADM = function() {
     });
 };
 
-window.abrirModalConfigurarTaxaXP = function() {
-    const taxa = JSON.parse(localStorage.getItem(`suiri_taxa_xp_${window.familiaAtualId}`) || '{"qtd": 100, "valor": 5.00}');
-    const inQtd = document.getElementById('input-taxa-xp-quantidade');
-    const inVal = document.getElementById('input-taxa-xp-valor');
-    if(inQtd) inQtd.value = taxa.qtd;
-    if(inVal) inVal.value = Number(taxa.valor).toFixed(2);
-    document.getElementById('modal-configurar-taxa-xp')?.classList.remove('oculto');
-};
+window.atualizarConversaoXP = async function() {
+    const seletor = document.getElementById('select-kid-conversao-xp');
+    if (!seletor) return;
+    const familia = window.familiaAtualId;
+    const membro = (window.listaMembrosFamilia || []).find(m => m.id === seletor.value);
+    const converter = document.getElementById('btn-converter-xp');
+    const configurar = document.getElementById('btn-configurar-taxa-xp');
+    const taxa = document.getElementById('lbl-taxa-conversao-xp');
+    converter.disabled = true;
+    configurar.disabled = true;
+    document.getElementById('lbl-xp-disponivel-conversao').textContent = membro ? `${membro.xp_total || 0} XP` : '—';
+    taxa.textContent = '—';
+    delete seletor.dataset.quantidade;
+    delete seletor.dataset.valor;
+    if (!membro || !ehAdministrador() || !obterClienteSupabase()) return;
 
-window.fecharModalConfigurarTaxaXP = function() {
-    document.getElementById('modal-configurar-taxa-xp')?.classList.add('oculto');
-};
-
-window.salvarTaxaConversaoXP = function() {
-    const qtd = parseInt(document.getElementById('input-taxa-xp-quantidade')?.value, 10);
-    const val = parseFloat(document.getElementById('input-taxa-xp-valor')?.value);
-    
-    if(isNaN(qtd) || isNaN(val) || qtd <= 0 || val <= 0) {
-        return window.mostrarToast("Valores inválidos para a taxa.", "erro");
+    try {
+        const [config] = Suiri.check(await obterClienteSupabase().from('suiri_taxas_xp_kids')
+            .select('quantidade,valor').eq('membro_id', membro.id)) || [];
+        if (familia !== window.familiaAtualId || membro.id !== seletor.value) return;
+        const { quantidade, valor } = config || { quantidade: 100, valor: 5 };
+        seletor.dataset.quantidade = quantidade;
+        seletor.dataset.valor = valor;
+        taxa.textContent = `${quantidade} XP = ${Suiri.money(valor)}`;
+        converter.disabled = Number(membro.xp_total || 0) < quantidade;
+        configurar.disabled = false;
+    } catch (error) {
+        if (familia === window.familiaAtualId && membro.id === seletor.value) Suiri.notifyError(error);
     }
-    
-    localStorage.setItem(`suiri_taxa_xp_${window.familiaAtualId}`, JSON.stringify({qtd, valor: val}));
-    window.fecharModalConfigurarTaxaXP();
-    window.renderizarHistoricoMissoesKidsADM();
-    window.mostrarToast("Taxa de câmbio salva com sucesso!");
 };
+
+window.abrirModalConfigurarTaxaXP = function() {
+    const seletor = document.getElementById('select-kid-conversao-xp');
+    if (!seletor?.value || !seletor.dataset.quantidade) return;
+    document.getElementById('modal-configurar-taxa-xp').dataset.kid = seletor.value;
+    document.getElementById('input-taxa-xp-quantidade').value = seletor.dataset.quantidade;
+    document.getElementById('input-taxa-xp-valor').value = seletor.dataset.valor;
+    Suiri.openModal('modal-configurar-taxa-xp');
+};
+
+window.fecharModalConfigurarTaxaXP = () => Suiri.closeModal('modal-configurar-taxa-xp');
+
+window.salvarTaxaConversaoXP = () => Suiri.once('taxa-xp-kids', async () => {
+    try {
+        const kid = document.getElementById('modal-configurar-taxa-xp').dataset.kid;
+        const qtd = Number(document.getElementById('input-taxa-xp-quantidade').value);
+        const valor = Suiri.number(document.getElementById('input-taxa-xp-valor').value);
+        if (!kid || !Number.isInteger(qtd) || qtd <= 0 || valor < 0.01 || valor > 10000 || !Number.isFinite(valor)) {
+            throw new Error('Informe uma quantidade inteira de XP e um valor válido.');
+        }
+        await Suiri.operation('allowance_rate', { kid, rate: { qtd, valor } });
+        window.fecharModalConfigurarTaxaXP();
+        await window.atualizarConversaoXP();
+        window.mostrarToast('Taxa individual salva.');
+    } catch (error) {
+        Suiri.notifyError(error);
+    }
+});
 
 // converterXPParaMesada está em src/services/operations.js.
 

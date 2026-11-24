@@ -9,6 +9,40 @@
 // =========================================================================
 
 let instanciaGraficoRendaGastos = null;
+let versaoRelatorio = 0;
+
+function agrupamentoCategoriasRelatorio(transacoes, membroId) {
+    const movimento = { entrada: new Map(), saida: new Map() };
+    for (const t of transacoes) {
+        if (t.transferencia_interna || t.categoria === 'Transferência' || !movimento[t.tipo]) continue;
+        const privado = (t.escopo === 'pessoal' || t.eh_privado) && t.membro_id !== membroId;
+        const nome = privado ? 'Privativo' : t.categoria || 'Geral';
+        const sub = privado ? '' : t.subcategoria || '';
+        const valor = Math.round(Number(t.valor || 0) * 100);
+        if (!Number.isFinite(valor) || valor <= 0) continue;
+        const grupos = movimento[t.tipo];
+        if (!grupos.has(nome)) grupos.set(nome, { total: 0, subcategorias: new Map() });
+        const grupo = grupos.get(nome);
+        grupo.total += valor;
+        grupo.subcategorias.set(sub, (grupo.subcategorias.get(sub) || 0) + valor);
+    }
+    return movimento;
+}
+
+function tabelaCategoriasRelatorio(agrupamento) {
+    return Object.entries(agrupamento).map(([tipo, categorias]) => {
+        const titulo = tipo === 'entrada' ? 'Receitas por categoria' : 'Despesas por categoria';
+        const linhas = [...categorias].sort((a, b) => b[1].total - a[1].total).map(([nome, grupo]) => {
+            const subcategorias = [...grupo.subcategorias].map(([sub, valor]) =>
+                `<li>${esc(sub || 'Sem subcategoria')} · ${Suiri.money(valor / 100)}</li>`).join('');
+            return `<tr><th scope="row" style="text-align:left; vertical-align:top;">${esc(nome)}</th>
+                <td>${Suiri.money(grupo.total / 100)}</td><td><ul>${subcategorias}</ul></td></tr>`;
+        }).join('');
+        return `<h3>${titulo}</h3>
+            ${linhas ? `<table style="width:100%; text-align:left;"><thead><tr><th>Categoria</th><th>Total</th><th>Subcategorias</th></tr></thead>
+               <tbody>${linhas}</tbody></table>` : '<p>Sem movimentações neste período.</p>'}`;
+    }).join('');
+}
 
 
 function obterNomeMembroPorId(membroId) {
@@ -26,6 +60,9 @@ window.gerarRelatorio = async function() {
         return window.mostrarToast("Sessão da família não identificada.", "erro");
     }
 
+    const familia = window.familiaAtualId;
+    const meuId = obterUsuarioId();
+    const versao = ++versaoRelatorio;
     const containerPdf = document.getElementById('relatorio-pdf-container');
     const areaResultados = document.getElementById('area-resultados-relatorio');
     const blocoBotoes = document.getElementById('acoes-botoes-relatorio');
@@ -49,91 +86,44 @@ window.gerarRelatorio = async function() {
         if (document.getElementById('data-fim')) document.getElementById('data-fim').value = dtFim;
     }
 
+    if (dtInicio > dtFim) return window.mostrarToast('A data inicial deve ser anterior ou igual à final.', 'erro');
     if (areaResultados) {
         areaResultados.innerHTML = '<p class="status-texto" style="text-align:center; padding:18px 0; color:#ea580c; font-size:12.5px; font-weight:800;">A compilar métricas e extrato detalhado...</p>';
     }
     if (containerPdf) containerPdf.classList.remove('oculto');
 
-    // 1. Busca do Saldo Anterior (Tudo antes da data de início para o cálculo de rolagem)
-    let queryAnt = Suiri.transactionQuery().select('tipo, valor')
-        .eq('familia_id', window.familiaAtualId)
-        .lt('data_transacao', dtInicio);
-    
-    if (filtroMembro !== 'todos') queryAnt = queryAnt.eq('membro_id', filtroMembro);
-    
-    let { data: transacoesAnt, error: errAnt } = await queryAnt;
-
-    if (errAnt && errAnt.message && errAnt.message.includes('relation "public.transacoes" does not exist')) {
-        let fallbackQueryAnt = supabase.from('transacoes_financeiras')
-            .select('tipo, valor')
-            .eq('familia_id', window.familiaAtualId)
-            .lt('data_transacao', dtInicio);
-        if (filtroMembro !== 'todos') fallbackQueryAnt = fallbackQueryAnt.eq('membro_id', filtroMembro);
-        const resAnt = await fallbackQueryAnt;
-        transacoesAnt = resAnt.data;
-    }
-
-    if(errAnt)return Suiri.notifyError(errAnt);
-    let saldoAcumulado = 0;
-    (transacoesAnt || []).forEach(t => {
-        if (t.tipo === 'entrada') saldoAcumulado += Number(t.valor || 0);
-        else saldoAcumulado -= Number(t.valor || 0);
-    });
-
-    // 2. Busca de Transações no Período (Ordem Crescente para acumular o saldo corretamente)
-    let query = Suiri.transactionQuery().select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .gte('data_transacao', dtInicio)
-        .lte('data_transacao', dtFim)
-        .order('data_transacao', { ascending: true })
-        .order('criado_em', { ascending: true });
-
+    let queryAnt = Suiri.transactionQuery().select('tipo, valor').eq('familia_id', familia).lt('data_transacao', dtInicio);
+    let query = Suiri.transactionQuery().select('*').eq('familia_id', familia)
+        .gte('data_transacao', dtInicio).lte('data_transacao', dtFim)
+        .order('data_transacao', { ascending: true }).order('criado_em', { ascending: true });
     if (filtroMembro !== 'todos') {
+        queryAnt = queryAnt.eq('membro_id', filtroMembro);
         query = query.eq('membro_id', filtroMembro);
     }
-
-    let { data: transacoes, error } = await query;
-
-    if (error && error.message && error.message.includes('relation "public.transacoes" does not exist')) {
-        let fallbackQuery = supabase.from('transacoes_financeiras')
-            .select('*')
-            .eq('familia_id', window.familiaAtualId)
-            .gte('data_transacao', dtInicio)
-            .lte('data_transacao', dtFim)
-            .order('data_transacao', { ascending: true })
-            .order('criado_em', { ascending: true });
-
-        if (filtroMembro !== 'todos') {
-            fallbackQuery = fallbackQuery.eq('membro_id', filtroMembro);
-        }
-
-        const resFallback = await fallbackQuery;
-        transacoes = resFallback.data;
-        error = resFallback.error;
+    blocoBotoes?.classList.add('oculto');
+    window.ultimoResumoRelatorio = null;
+    const [anterior, periodo] = await Promise.all([queryAnt, query]);
+    if (versao !== versaoRelatorio || familia !== window.familiaAtualId || meuId !== obterUsuarioId()) return;
+    if (anterior.error || periodo.error) {
+        if (areaResultados) areaResultados.textContent = 'Não foi possível carregar este relatório.';
+        return Suiri.notifyError(anterior.error || periodo.error);
     }
 
-    if (error) {
-        return window.mostrarToast("Erro ao carregar dados do balanço: " + error.message, "erro");
-    }
-
-    // 3. Consulta itens de supermercado concluídos
-    const { data: itensMercado } = await supabase.from('itens_mercado')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .eq('comprado', true);
-
-    const meuId = obterUsuarioId();
+    let saldoAcumulado = (anterior.data || []).reduce((saldo, t) =>
+        saldo + (t.tipo === 'entrada' ? 1 : -1) * Number(t.valor || 0), 0);
+    const transacoes = periodo.data || [];
+    const categorias = agrupamentoCategoriasRelatorio(transacoes, meuId);
 
     // 4. Processamento das 4 Linhas Contábeis Globais
     let totalEntradas = 0;
     let totalGastosCasa = 0;
     let totalGastosPessoais = 0;
     let totalTransferenciasInternas = 0;
+    let totalSupermercado = 0;
 
     (transacoes || []).forEach(t => {
         const val = Number(t.valor || 0);
-        const ehTransferencia = (t.categoria === 'Transferência') || 
-                                (typeof t.descricao === 'string' && t.descricao.toLowerCase().includes('transferência'));
+        const ehTransferencia = t.transferencia_interna || t.categoria === 'Transferência';
 
         if (ehTransferencia) {
             if (t.tipo === 'saida') {
@@ -145,17 +135,13 @@ window.gerarRelatorio = async function() {
         if (t.tipo === 'entrada') {
             totalEntradas += val;
         } else {
+            if (t.compra_mercado || t.categoria === 'Supermercado') totalSupermercado += val;
             if (t.escopo === 'casa') totalGastosCasa += val;
             else totalGastosPessoais += val;
         }
     });
 
-    let totalSupermercado = 0;
-    (itensMercado || []).forEach(item => {
-        totalSupermercado += (parseFloat(item.quantidade) || 0) * (parseFloat(item.valor_unitario) || 0);
-    });
-
-    const totalSaidasGeral = totalGastosCasa + totalGastosPessoais + totalSupermercado;
+    const totalSaidasGeral = totalGastosCasa + totalGastosPessoais;
     const saldoLiquidoPeriodo = totalEntradas - totalSaidasGeral;
 
     window.ultimoResumoRelatorio = {
@@ -168,7 +154,7 @@ window.gerarRelatorio = async function() {
         totalTransferenciasInternas,
         totalSaidasGeral,
         saldoLiquidoPeriodo,
-        transacoes: transacoes || []
+        categorias
     };
 
     const dataInicioFmt = dtInicio.split('-').reverse().join('/');
@@ -226,10 +212,12 @@ window.gerarRelatorio = async function() {
             
             let descricaoExibida = t.descricao || 'Despesa';
             let categoriaExibida = t.categoria || 'Geral';
+            let subcategoriaExibida = t.subcategoria || '';
 
             if (ehPrivado && !ehMeu) {
                 descricaoExibida = 'Gasto Privado';
                 categoriaExibida = 'Privativo';
+                subcategoriaExibida = '';
             }
 
             const val = Number(t.valor || 0);
@@ -243,7 +231,7 @@ window.gerarRelatorio = async function() {
                     <td style="padding: 7px 6px; color: #64748b; white-space: nowrap; font-variant-numeric: tabular-nums;">${dataApenasDiaMes}</td>
                     <td style="padding: 7px 6px; font-weight: 800; color: #0f172a;">${esc(nomeMembro)}</td>
                     <td style="padding: 7px 6px; color: #334155; font-weight: 600;">${window.esc ? window.esc(descricaoExibida) : descricaoExibida}</td>
-                    <td style="padding: 7px 6px; color: #64748b;">${categoriaExibida}</td>
+                    <td style="padding: 7px 6px; color: #64748b;">${esc(categoriaExibida)}${subcategoriaExibida ? ' › ' + esc(subcategoriaExibida) : ''}</td>
                     <td style="padding: 7px 6px; text-align: right; font-weight: 800; color: ${corValor}; white-space: nowrap; font-variant-numeric: tabular-nums;">
                         ${sinal} R$ ${val.toFixed(2)}
                     </td>
@@ -279,7 +267,7 @@ window.gerarRelatorio = async function() {
                 
                 <!-- Cabeçalho Oficial do Relatório -->
                 <div style="text-align: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
-                    <h2 style="margin: 0; font-size: 19px; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900;">${nomeFamilia}</h2>
+                    <h2 style="margin: 0; font-size: 19px; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900;">${esc(nomeFamilia)}</h2>
                     <span style="font-size: 12px; font-weight: 700; color: #64748b; display: block; margin-top: 4px;">
                         Balanço & Extrato Consolidado • ${dataInicioFmt} até ${dataFimFmt}
                     </span>
@@ -304,7 +292,7 @@ window.gerarRelatorio = async function() {
                         <strong style="color: #0f172a; font-variant-numeric: tabular-nums;">R$ ${totalGastosCasa.toFixed(2)}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #475569;">Supermercado (Carrinho):</span>
+                        <span style="color: #475569;">Dos gastos acima, supermercado:</span>
                         <strong style="color: #0f172a; font-variant-numeric: tabular-nums;">R$ ${totalSupermercado.toFixed(2)}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
@@ -320,6 +308,8 @@ window.gerarRelatorio = async function() {
                         <strong style="color: ${corSaldoHex}; font-size: 16px; font-variant-numeric: tabular-nums;">R$ ${saldoLiquidoPeriodo.toFixed(2)}</strong>
                     </div>
                 </div>
+
+                ${tabelaCategoriasRelatorio(categorias)}
 
                 <!-- Tabela com Extrato Completo e Detalhado dos Gastos -->
                 <div style="margin-top: 16px;">
@@ -347,137 +337,62 @@ window.gerarRelatorio = async function() {
     }
 
     if (blocoBotoes) blocoBotoes.classList.remove('oculto');
-    await window.renderizarGraficoQuatroBarrasMembros(transacoes || []);
+    window.renderizarGraficoCategorias();
 };
 
 // =========================================================================
 // 2. RENDERIZAÇÃO DO GRÁFICO (Chart.js)
 // =========================================================================
-window.renderizarGraficoQuatroBarrasMembros = async function(transacoes) {
+window.renderizarGraficoCategorias = function() {
     const canvas = document.getElementById('grafico-barras-renda-gastos');
-    if (!canvas || typeof Chart === 'undefined') return;
-
-    const membrosElegiveis = (window.listaMembrosFamilia || []).filter(m => {
-        const ehKids = m.eh_kids === true || m.papel === 'dependente';
-        const temCartao = m.possui_cartao !== false;
-        return !ehKids && temCartao;
-    });
-
-    if (membrosElegiveis.length === 0) return;
-
-    const rotulosMembros = [];
-    const dadosRenda = [];
-    const dadosDespesasCasa = [];
-    const dadosGastosIndividuais = [];
-    const dadosTransferenciasEnviadas = [];
-
-    membrosElegiveis.forEach(m => {
-        rotulosMembros.push(m.nome.split(' ')[0]);
-
-        let rendaMembro = 0;
-        let casaMembro = 0;
-        let pessoalMembro = 0;
-        let transferidoMembro = 0;
-
-        transacoes.forEach(t => {
-            if (t.membro_id === m.id) {
-                const valor = Number(t.valor || 0);
-                const ehTransferencia = (t.categoria === 'Transferência') || 
-                                        (typeof t.descricao === 'string' && t.descricao.toLowerCase().includes('transferência'));
-
-                if (t.tipo === 'entrada') {
-                    rendaMembro += valor;
-                } else if (t.tipo === 'saida') {
-                    if (ehTransferencia) {
-                        transferidoMembro += valor;
-                    } else if (t.escopo === 'casa') {
-                        casaMembro += valor;
-                    } else if (t.escopo === 'pessoal') {
-                        pessoalMembro += valor;
-                    }
-                }
+    const resumo = window.ultimoResumoRelatorio;
+    if (!canvas || !resumo || typeof Chart === 'undefined') return;
+    const escuro = document.documentElement.dataset.theme === 'dark';
+    const rotulo = escuro ? '#eef4f8' : '#0f172a';
+    const formato = document.getElementById('relatorio-formato-grafico').value;
+    const tipo = document.getElementById('relatorio-tipo-grafico').value;
+    const detalhes = document.getElementById('relatorio-grupo-grafico').value === 'subcategoria';
+    const titulo = `${tipo === 'entrada' ? 'Receitas' : 'Despesas'} por ${detalhes ? 'subcategoria' : 'categoria'}`;
+    document.getElementById('titulo-grafico-categorias').textContent = titulo;
+    const series = [];
+    for (const [nome, grupo] of resumo.categorias[tipo]) {
+        if (detalhes) {
+            for (const [sub, valor] of grupo.subcategorias) {
+                series.push([`${nome} › ${sub || 'Sem subcategoria'}`, valor]);
             }
-        });
-
-        dadosRenda.push(rendaMembro);
-        dadosDespesasCasa.push(casaMembro);
-        dadosGastosIndividuais.push(pessoalMembro);
-        dadosTransferenciasEnviadas.push(transferidoMembro);
-    });
-
-    if (instanciaGraficoRendaGastos) {
-        instanciaGraficoRendaGastos.destroy();
+        } else {
+            series.push([nome, grupo.total]);
+        }
     }
-
-    const ctx = canvas.getContext('2d');
-    instanciaGraficoRendaGastos = new Chart(ctx, {
-        type: 'bar',
+    series.sort((a, b) => b[1] - a[1]);
+    instanciaGraficoRendaGastos?.destroy();
+    instanciaGraficoRendaGastos = null;
+    const desenhar = series.length > 0;
+    canvas.parentElement.hidden = !desenhar;
+    document.getElementById('titulo-grafico-categorias').textContent = desenhar ? titulo : titulo + ' · Sem dados';
+    if (!desenhar) return;
+    canvas.parentElement.style.height = formato === 'barras' ? `${Math.max(250, series.length * 28)}px` : '270px';
+    instanciaGraficoRendaGastos = new Chart(canvas.getContext('2d'), {
+        type: formato === 'pizza' ? 'pie' : 'bar',
         data: {
-            labels: rotulosMembros,
-            datasets: [
-                {
-                    label: 'Renda (R$)',
-                    data: dadosRenda,
-                    backgroundColor: '#10b981',
-                    borderRadius: 6,
-                    barPercentage: 0.85,
-                    categoryPercentage: 0.7
-                },
-                {
-                    label: 'Casa (R$)',
-                    data: dadosDespesasCasa,
-                    backgroundColor: '#0284c7',
-                    borderRadius: 6,
-                    barPercentage: 0.85,
-                    categoryPercentage: 0.7
-                },
-                {
-                    label: 'Pessoal (R$)',
-                    data: dadosGastosIndividuais,
-                    backgroundColor: '#f43f5e',
-                    borderRadius: 6,
-                    barPercentage: 0.85,
-                    categoryPercentage: 0.7
-                },
-                {
-                    label: 'Transferido (R$)',
-                    data: dadosTransferenciasEnviadas,
-                    backgroundColor: '#8b5cf6',
-                    borderRadius: 6,
-                    barPercentage: 0.85,
-                    categoryPercentage: 0.7
-                }
-            ]
+            labels: series.map(([nome]) => nome),
+            datasets: [{
+                label: titulo,
+                data: series.map(([, valor]) => valor / 100),
+                backgroundColor: series.map((_, i) => `hsl(${i * 137.508 % 360} 63% 45%)`)
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        boxWidth: 9,
-                        font: { size: 10, weight: '700' },
-                        color: '#0f172a'
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        font: { size: 10 },
-                        color: '#64748b',
-                        callback: function(v) { return 'R$ ' + v; }
-                    },
-                    grid: { color: 'rgba(226, 232, 240, 0.6)' }
-                },
-                x: {
-                    ticks: { font: { size: 11, weight: '700' }, color: '#0f172a' },
-                    grid: { display: false }
-                }
-            }
+            indexAxis: formato === 'barras' ? 'y' : 'x',
+            plugins: { legend: { display: formato === 'pizza', position: 'bottom', labels: { color: rotulo } } },
+            ...(formato === 'pizza' ? {} : {
+                scales: Object.fromEntries(['x', 'y'].map(eixo => [eixo, {
+                    ticks: { color: rotulo }, grid: { color: escuro ? '#3b4a59' : '#e2e8f0' }
+                }]))
+            })
         }
     });
 };
@@ -485,7 +400,42 @@ window.renderizarGraficoQuatroBarrasMembros = async function(transacoes) {
 // =========================================================================
 // 3. EXPORTAÇÃO EM PDF (ROBUSTA, TOTALMENTE COMPATÍVEL COM CELULAR)
 // =========================================================================
-window.imprimirPDF = async function() {
+function prepararCoresDoPDF(documento) {
+    const visualizacao = documento.defaultView;
+    const relatorio = documento.querySelector('.html2pdf__container');
+    const pixel = documento.createElement('canvas');
+    pixel.width = pixel.height = 1;
+    const contexto = pixel.getContext('2d', { willReadFrequently: true });
+    if (!relatorio || !contexto) return;
+
+    const modernas = /(?:color|oklch|oklab|lch|lab|hwb)\([^()]+\)/gi;
+    const propriedades = [
+        'color', 'background-color', 'background-image', 'border-top-color', 'border-right-color',
+        'border-bottom-color', 'border-left-color', 'box-shadow', 'text-shadow',
+        'text-decoration-color', 'outline-color'
+    ];
+    const convertidas = new Map();
+    const rgba = cor => {
+        if (!convertidas.has(cor)) {
+            contexto.clearRect(0, 0, 1, 1);
+            contexto.fillStyle = cor;
+            contexto.fillRect(0, 0, 1, 1);
+            const [r, g, b, a] = contexto.getImageData(0, 0, 1, 1).data;
+            convertidas.set(cor, `rgba(${r}, ${g}, ${b}, ${a / 255})`);
+        }
+        return convertidas.get(cor);
+    };
+    for (const elemento of [documento.documentElement, documento.body, relatorio, ...relatorio.querySelectorAll('*')]) {
+        const estilo = visualizacao.getComputedStyle(elemento);
+        for (const propriedade of propriedades) {
+            const original = estilo.getPropertyValue(propriedade);
+            const segura = original.replace(modernas, rgba);
+            if (segura !== original) elemento.style.setProperty(propriedade, segura, 'important');
+        }
+    }
+}
+
+window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
     const elemento = document.getElementById('relatorio-pdf-container');
     if (!elemento || typeof html2pdf === 'undefined') {
         return window.mostrarToast("Biblioteca de PDF indisponível ou em carregamento.", "info");
@@ -495,6 +445,7 @@ window.imprimirPDF = async function() {
 
     const canvas = document.getElementById('grafico-barras-renda-gastos');
     let imgSubstituta = null;
+    const exibicaoCanvas = canvas?.style.display;
 
     if (canvas && instanciaGraficoRendaGastos) {
         try {
@@ -521,26 +472,40 @@ window.imprimirPDF = async function() {
             useCORS: true, 
             letterRendering: true,
             scrollX: 0,
-            scrollY: 0
+            scrollY: 0,
+            onclone: prepararCoresDoPDF
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-        await html2pdf().set(opt).from(elemento).save();
-        window.mostrarToast("PDF gerado e descarregado com sucesso!");
+        const pdf = html2pdf().set(opt).from(elemento);
+        if (window.SuiriAndroid) {
+            if (!navigator.userAgent.includes('SuiriFamiliaPDF/1')) {
+                throw new Error('Atualize o APK para salvar PDF pelo Android.');
+            }
+            const data = await pdf.outputPdf('datauristring');
+            const base64 = data.slice(data.indexOf(',') + 1);
+            if (base64.length > 16_000_000) throw new Error('Relatório grande demais. Selecione um período menor.');
+            window.SuiriPdfAndroid = base64;
+            window.SuiriAndroid('save-pdf');
+        } else {
+            await pdf.save();
+            window.mostrarToast('Download do PDF iniciado.');
+        }
     } catch (err) {
         console.error("Falha ao gerar PDF:", err);
-        window.mostrarToast("Não foi possível gerar o PDF. Verifique as permissões de download.", "erro");
+        window.mostrarToast(err?.name === 'Error' && /^(Atualize o APK|Relatório grande)/.test(err.message)
+            ? err.message : 'Não foi possível gerar o PDF.', 'erro');
     } finally {
         if (imgSubstituta) {
             imgSubstituta.remove();
         }
         if (canvas) {
-            canvas.style.display = 'block';
+            canvas.style.display = exibicaoCanvas;
         }
     }
-};
+});
 
 // =========================================================================
 // 4. PARTILHA FORMATADA NO WHATSAPP
@@ -557,7 +522,7 @@ Período: ${res.dtInicio.split('-').reverse().join('/')} até ${res.dtFim.split(
 [+] Total Receitas: R$ ${res.totalEntradas.toFixed(2)}
 [-] Total Despesas: R$ ${res.totalSaidasGeral.toFixed(2)}
   • Contas da Casa: R$ ${res.totalGastosCasa.toFixed(2)}
-  • Supermercado: R$ ${res.totalSupermercado.toFixed(2)}
+  • Dos gastos acima, supermercado: R$ ${res.totalSupermercado.toFixed(2)}
   • Gastos Próprios: R$ ${res.totalGastosPessoais.toFixed(2)}
   • Transferências Internas: R$ ${res.totalTransferenciasInternas.toFixed(2)}
 

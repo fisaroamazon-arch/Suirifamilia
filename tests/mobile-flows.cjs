@@ -52,6 +52,63 @@ async function main() {
     assert.equal(input('descricao').dataset.viaVoz, undefined);
     assert.equal(field('select-fin-escopo').value, 'pessoal');
 
+    const filhos = [{ id: 'kid-test', nome: 'Criança', eh_kids: true }];
+    window.listaMembrosFamilia = filhos;
+    window.perfilAtual = window.usuarioAtual = { id: 'user-test', papel: 'adm' };
+    window.esc = value => String(value ?? '').replaceAll('<', '&lt;');
+    window.obterPrimeiroNomeSeguro = nome => nome;
+    window.Suiri.check = ({ data, error }, count) => {
+        if (error || (count && data?.length !== count)) throw new Error('Atualização não confirmada');
+        return data;
+    };
+    window.Suiri.closeModal = id => field(id).classList.add('oculto');
+    window.eval(fs.readFileSync('src/features/missions/state-and-ui.js', 'utf8'));
+    window.eval(fs.readFileSync('src/features/missions/missoes.js', 'utf8'));
+    window.eval(`cacheMissoes = [{ id: 'task-test', titulo: 'Tarefa Kids', atribuido_a: 'kid-test', escopo: 'casa', recorrencia_tipo: 'unica' }];`);
+    let alteracao;
+    client.from = () => ({
+        update: dados => {
+            alteracao = dados;
+            return { eq() { return this; }, select: async () => ({ data: [{ id: 'task-test' }] }) };
+        }
+    });
+    window.carregarMissoesDoDia = async () => {};
+    window.iniciarEdicaoMissao('task-test');
+    assert(!field('modal-editar-missao').classList.contains('oculto'));
+    assert.equal(field('edit-missao-responsavel').value, 'kid-test');
+    field('edit-missao-titulo').value = 'Tarefa corrigida';
+    await window.salvarEdicaoMissao();
+    assert.equal(alteracao.titulo, 'Tarefa corrigida');
+    assert.equal(alteracao.atribuido_a, 'kid-test');
+    assert(field('modal-editar-missao').classList.contains('oculto'));
+
+    window.eval(fs.readFileSync('src/features/reports/relatorios.js', 'utf8'));
+    const relatorio = window.eval(`agrupamentoCategoriasRelatorio([
+        { tipo: 'saida', valor: 10.1, categoria: 'Mercado', subcategoria: 'Feira' },
+        { tipo: 'saida', valor: 2.2, categoria: 'Mercado', subcategoria: 'Feira' },
+        { tipo: 'saida', valor: 5, categoria: 'Oculta', subcategoria: 'Sigilo', eh_privado: true, membro_id: 'outro' },
+        { tipo: 'entrada', valor: 15, categoria: 'Transferência', transferencia_interna: true },
+        { tipo: 'entrada', valor: 20, categoria: 'Recorrente', subcategoria: 'Projeto' }
+    ], 'user-test')`);
+    assert.equal(relatorio.saida.get('Mercado').subcategorias.get('Feira'), 1230);
+    assert.equal(relatorio.saida.get('Privativo').subcategorias.has('Sigilo'), false);
+    assert.equal(relatorio.entrada.has('Transferência'), false);
+    window.ultimoResumoRelatorio = { categorias: relatorio };
+    window.HTMLCanvasElement.prototype.getContext = () => ({});
+    let grafico;
+    window.Chart = class {
+        constructor(_contexto, config) { grafico = config; }
+        destroy() {}
+    };
+    field('relatorio-grupo-grafico').value = 'subcategoria';
+    for (const [formato, tipo, eixo] of [['colunas', 'bar', 'x'], ['barras', 'bar', 'y'], ['pizza', 'pie', 'x']]) {
+        field('relatorio-formato-grafico').value = formato;
+        window.renderizarGraficoCategorias();
+        assert.equal(grafico.type, tipo);
+        assert.equal(grafico.options.indexAxis, eixo);
+        assert.equal(grafico.data.labels[0], 'Mercado › Feira');
+    }
+
     let reminders = 0;
     window.familiaAtualId = 'family-test';
     window.Notification = { permission: 'denied' };
@@ -77,7 +134,7 @@ async function main() {
     assert.equal(reminders, 2);
 
     dom.window.close();
-    console.log('Ditado, consentimento do cupom e lembrete diário verificados.');
+    console.log('Ditado, cupom, edição Kids, relatórios e notificações verificados.');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

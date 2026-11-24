@@ -1,0 +1,22 @@
+html[data-theme="dark"] :is(.status-texto, summary, label) {
+    color: var(--texto-principal);
+}
+
+html[data-theme="dark"] :is(#bloco-conversao-xp-mesada, #camera-cupom-android) {
+    background: var(--suiri-surface) !important;
+    color: var(--texto-principal);
+    border-color: var(--suiri-outline) !important;
+}
+
+html[data-theme="dark"] :is(#titulo-grafico-categorias, #bloco-conversao-xp-mesada h4) {
+    color: var(--texto-principal) !important;
+}
+
+html[data-theme="dark"] :is([style*="background: #ecfdf5"], [style*="background: #f0f9ff"], [style*="background: #fff1f2"], [style*="background: #f1f5f9"]) {
+    background: var(--suiri-surface-secondary-light) !important;
+    border-color: var(--suiri-outline) !important;
+}
+
+html[data-theme="dark"] :is([style*="color: #065f46"], [style*="color: #9f1239"], [style*="color: #475569"]) {
+    color: var(--texto-principal) !important;
+}

@@ -22,7 +22,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.view.WindowInsets;
+import android.util.Base64;
 import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.OutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +34,13 @@ import java.util.Arrays;
 public final class MainActivity extends Activity {
     private static final String SITE = "https://fisaroamazon-arch.github.io/Suirifamilia/";
     private static final String CHANNEL = "agenda";
-    private static final int VOICE = 1, GALLERY = 2, MICROPHONE = 3, CAMERA = 4, NOTIFICATIONS = 5;
+    private static final int VOICE = 1, GALLERY = 2, MICROPHONE = 3, CAMERA = 4, NOTIFICATIONS = 5, SAVE_PDF = 6;
+    private static final int PDF_CHUNK = 65536, MAX_PDF_BASE64 = 16000000;
     private WebView web;
     private ValueCallback<Uri[]> gallery;
     private PermissionRequest camera;
+    private StringBuilder pdfInProgress;
+    private byte[] pdfToSave;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -41,7 +48,7 @@ public final class MainActivity extends Activity {
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString() + " SuiriFamiliaAndroid/1 SuiriFamiliaPDF/1");
         web.setOnApplyWindowInsetsListener((view, insets) -> {
             if (Build.VERSION.SDK_INT >= 30) {
                 android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
@@ -62,6 +69,7 @@ public final class MainActivity extends Activity {
                             break;
                         case "notifications": enableNotifications(); break;
                         case "reminder": remind(); break;
+                        case "save-pdf": startPdfExport(view.getUrl()); break;
                     }
                 } else if (request.hasGesture() && "https".equals(url.getScheme())) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW, url)); }
@@ -183,8 +191,76 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void startPdfExport(String page) {
+        if (pdfInProgress != null || pdfToSave != null) return;
+        pdfInProgress = new StringBuilder();
+        readPdfChunk(page);
+    }
+
+    private void readPdfChunk(String page) {
+        int offset = pdfInProgress.length();
+        if (!page.equals(web.getUrl()) || offset > MAX_PDF_BASE64) {
+            finishPdfRead("Não foi possível receber o PDF.");
+            return;
+        }
+        web.evaluateJavascript("(window.SuiriPdfAndroid || '').slice(" + offset + ","
+                + (offset + PDF_CHUNK) + ")", result -> {
+            if (!page.equals(web.getUrl())) {
+                finishPdfRead("A página foi alterada durante a exportação.");
+                return;
+            }
+            try {
+                Object value = new JSONTokener(result).nextValue();
+                if (!(value instanceof String)) throw new IllegalArgumentException("PDF inválido");
+                String chunk = (String) value;
+                pdfInProgress.append(chunk);
+                if (pdfInProgress.length() > MAX_PDF_BASE64) throw new IllegalArgumentException("PDF grande");
+                if (chunk.length() == PDF_CHUNK) {
+                    readPdfChunk(page);
+                    return;
+                }
+                byte[] pdf = Base64.decode(pdfInProgress.toString(), Base64.DEFAULT);
+                if (pdf.length < 5 || pdf[0] != '%' || pdf[1] != 'P' || pdf[2] != 'D' || pdf[3] != 'F' || pdf[4] != '-') {
+                    throw new IllegalArgumentException("PDF inválido");
+                }
+                finishPdfRead(null);
+                pdfToSave = pdf;
+                startActivityForResult(new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE).setType("application/pdf")
+                    .putExtra(Intent.EXTRA_TITLE, "Suiri_Familia_" + LocalDate.now() + ".pdf"), SAVE_PDF);
+            } catch (Exception error) {
+                pdfToSave = null;
+                finishPdfRead("Não foi possível abrir o seletor de arquivos para o PDF.");
+            }
+        });
+    }
+
+    private void finishPdfRead(String error) {
+        pdfInProgress = null;
+        String url = web.getUrl();
+        if (url != null && isSite(Uri.parse(url))) web.evaluateJavascript("delete window.SuiriPdfAndroid", null);
+        if (error != null) message(error);
+    }
+
+    private void savePdf(int result, Intent data) {
+        byte[] pdf = pdfToSave;
+        pdfToSave = null;
+        Uri uri = data == null ? null : data.getData();
+        if (result != RESULT_OK || uri == null || !"content".equals(uri.getScheme()) || pdf == null) return;
+        new Thread(() -> {
+            try (OutputStream output = getContentResolver().openOutputStream(uri, "wt")) {
+                if (output == null) throw new IOException("Destino indisponível");
+                output.write(pdf);
+                runOnUiThread(() -> message("PDF salvo."));
+            } catch (IOException | SecurityException error) {
+                runOnUiThread(() -> message("Não foi possível salvar o PDF."));
+            }
+        }).start();
+    }
+
     @Override protected void onActivityResult(int code, int result, Intent data) {
         super.onActivityResult(code, result, data);
+        if (code == SAVE_PDF) savePdf(result, data);
         if (code == GALLERY && gallery != null) {
             ValueCallback<Uri[]> callback = gallery;
             gallery = null;
