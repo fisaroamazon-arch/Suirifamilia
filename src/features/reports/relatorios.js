@@ -400,6 +400,41 @@ window.renderizarGraficoCategorias = function() {
 // =========================================================================
 // 3. EXPORTAÇÃO EM PDF (ROBUSTA, TOTALMENTE COMPATÍVEL COM CELULAR)
 // =========================================================================
+function prepararCoresDoPDF(documento) {
+    const visualizacao = documento.defaultView;
+    const relatorio = documento.querySelector('.html2pdf__container');
+    const pixel = documento.createElement('canvas');
+    pixel.width = pixel.height = 1;
+    const contexto = pixel.getContext('2d', { willReadFrequently: true });
+    if (!relatorio || !contexto) return;
+
+    const modernas = /(?:color|oklch|oklab|lch|lab|hwb)\([^()]+\)/gi;
+    const propriedades = [
+        'color', 'background-color', 'background-image', 'border-top-color', 'border-right-color',
+        'border-bottom-color', 'border-left-color', 'box-shadow', 'text-shadow',
+        'text-decoration-color', 'outline-color'
+    ];
+    const convertidas = new Map();
+    const rgba = cor => {
+        if (!convertidas.has(cor)) {
+            contexto.clearRect(0, 0, 1, 1);
+            contexto.fillStyle = cor;
+            contexto.fillRect(0, 0, 1, 1);
+            const [r, g, b, a] = contexto.getImageData(0, 0, 1, 1).data;
+            convertidas.set(cor, `rgba(${r}, ${g}, ${b}, ${a / 255})`);
+        }
+        return convertidas.get(cor);
+    };
+    for (const elemento of [documento.documentElement, documento.body, relatorio, ...relatorio.querySelectorAll('*')]) {
+        const estilo = visualizacao.getComputedStyle(elemento);
+        for (const propriedade of propriedades) {
+            const original = estilo.getPropertyValue(propriedade);
+            const segura = original.replace(modernas, rgba);
+            if (segura !== original) elemento.style.setProperty(propriedade, segura, 'important');
+        }
+    }
+}
+
 window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
     const elemento = document.getElementById('relatorio-pdf-container');
     if (!elemento || typeof html2pdf === 'undefined') {
@@ -410,6 +445,7 @@ window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
 
     const canvas = document.getElementById('grafico-barras-renda-gastos');
     let imgSubstituta = null;
+    const exibicaoCanvas = canvas?.style.display;
 
     if (canvas && instanciaGraficoRendaGastos) {
         try {
@@ -436,7 +472,8 @@ window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
             useCORS: true, 
             letterRendering: true,
             scrollX: 0,
-            scrollY: 0
+            scrollY: 0,
+            onclone: prepararCoresDoPDF
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
@@ -458,13 +495,14 @@ window.imprimirPDF = () => Suiri.once('exportar-pdf', async () => {
         }
     } catch (err) {
         console.error("Falha ao gerar PDF:", err);
-        window.mostrarToast(err?.message || 'Não foi possível gerar o PDF.', 'erro');
+        window.mostrarToast(err?.name === 'Error' && /^(Atualize o APK|Relatório grande)/.test(err.message)
+            ? err.message : 'Não foi possível gerar o PDF.', 'erro');
     } finally {
         if (imgSubstituta) {
             imgSubstituta.remove();
         }
         if (canvas) {
-            canvas.style.display = 'block';
+            canvas.style.display = exibicaoCanvas;
         }
     }
 });
