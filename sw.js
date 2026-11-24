@@ -1,9 +1,10 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7168';
+const CACHE='suiri-family-v7169';
 const SHELL=[
   "./",
   "./index.html",
-  "./styles/tema-principal.css?v=38485c1bfc0a",
+  "./src/ui/download-android.js?v=485855857188",
+  "./styles/tema-principal.css?v=5f620e71700d",
   "./src/ui/tema-principal.js?v=6063bc1f0c77",
   "./styles/espaco-kids.css?v=44eeb2ac679f",
   "./manifest.json",

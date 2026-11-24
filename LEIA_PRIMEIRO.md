@@ -120,7 +120,7 @@ Para distribuir o APK oficial, mantenha a mesma chave de assinatura nas atualiza
 Configure os secrets `SUIRI_ANDROID_KEYSTORE_BASE64`, `SUIRI_ANDROID_KEY_ALIAS`,
 `SUIRI_ANDROID_STORE_PASSWORD` e `SUIRI_ANDROID_KEY_PASSWORD` no repositório e execute
 o workflow **Gerar APK do Suiri Família**. Publique o artefato
-`suiri-familia.apk` na release estável mais recente para que o link apareça no login.
+`suiri-familia.apk` em uma release estável. O download aparece na tela de entrada e em Configurações, com a versão estável mais recente que tiver o APK.
 
 Antes de ler um cupom, o site pede autorização para enviar a imagem ao Google Gemini.
 A função usa `https://fisaroamazon-arch.github.io` como origem padrão. Configure

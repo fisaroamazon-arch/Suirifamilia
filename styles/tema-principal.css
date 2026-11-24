@@ -20,3 +20,32 @@ html[data-theme="dark"] :is([style*="background: #ecfdf5"], [style*="background:
 html[data-theme="dark"] :is([style*="color: #065f46"], [style*="color: #9f1239"], [style*="color: #475569"]) {
     color: var(--texto-principal) !important;
 }
+
+.suiri-download-android:not([hidden]) {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 18px;
+    text-align: center;
+}
+
+.suiri-download-android-link:not([hidden]) {
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #155e52;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.suiri-download-android-link:not([hidden]):hover {
+    background: #10493f;
+}
+
+.suiri-download-android [data-apk-status]:not(:empty) {
+    color: var(--texto-suave, #526477);
+    font-size: 12px;
+}
