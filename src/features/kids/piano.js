@@ -354,7 +354,7 @@ window.MotorMusica = {
     passoNota: 0,
     passoAcorde: 0,
     tocandoMusica: false,
-    fatorVelocidade: 1.0,
+    fatorVelocidade: .5,
     estiloMusica: 'infantil',
     comBanda: false,
     eventosBanda: [],
@@ -1998,6 +1998,7 @@ window.MotorMusica = {
         const titulo = document.getElementById('titulo-resultado-piano');
         const mensagem = document.getElementById('txt-msg-conclusao-musica');
         const proxima = document.getElementById('btn-proxima-piano');
+        const acelerar = document.getElementById('btn-acelerar-piano');
         const repetir = document.getElementById('btn-repetir-piano');
         const overlay = document.getElementById('over-simon');
         const musica = this.partituraAtual;
@@ -2007,6 +2008,11 @@ window.MotorMusica = {
             : (this.modo === 'livre' ? 'As vidas acabaram. Tente outra sequência.' :
                 'As vidas acabaram. Tente de novo ou reduza a velocidade.');
         if (proxima) proxima.hidden = !ganhou;
+        if (acelerar) {
+            const velocidade = this.proximaVelocidade();
+            acelerar.hidden = !ganhou || this.modo !== 'aprendizado' || velocidade === undefined;
+            if (!acelerar.hidden) acelerar.textContent = `Tocar a ${velocidade * 100}%`;
+        }
         if (repetir) repetir.textContent = ganhou ? 'Tocar novamente' : 'Tentar de novo';
         if (overlay) overlay.style.display = 'flex';
     },
@@ -2023,6 +2029,18 @@ window.MotorMusica = {
         this.fecharModalConclusao();
         this.reiniciarMusica();
         if (this.modo === 'aprendizado') this.togglePlay();
+    },
+
+    proximaVelocidade: function() {
+        const atual = this.fatorVelocidade === 'toque' ? 0 : this.fatorVelocidade;
+        return [.5, .75, 1].find(fator => fator > atual);
+    },
+
+    tocarMaisRapido: function() {
+        const velocidade = this.proximaVelocidade();
+        if (this.modo !== 'aprendizado' || velocidade === undefined) return;
+        this.mudarFatorVelocidade(velocidade);
+        this.repetirPartida();
     },
 
     fecharModalConclusao: function() {

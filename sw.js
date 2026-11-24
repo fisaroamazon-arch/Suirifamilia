@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7184';
+const CACHE='suiri-family-v7185';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -13,7 +13,7 @@ const SHELL=[
   "./styles/espaco-kids.css?v=09f2b2a80a07",
   "./manifest.json",
   "./jogos.html",
-  "./styles/pages/arcade-vila.css?v=87ab4d0fb3a8",
+  "./styles/pages/arcade-vila.css?v=9a473e61fdd1",
   "./assets/images/kids/banho-parado.webp",
   "./assets/images/kids/banho.webp",
   "./assets/images/kids/casa-parado.webp",
@@ -75,9 +75,9 @@ const SHELL=[
   "./src/data/partituras-extras.js?v=cf58d3b9dbee",
   "./src/features/kids/piano-banda.js?v=103a53e7e8b6",
   "./src/features/kids/piano-dueto-rede.js?v=ef756f2088a2",
-  "./src/features/kids/piano.js?v=d6a58545562c",
-  "./src/pages/arcade-recordes.js?v=fba76cceb1b0",
-  "./src/pages/arcade.js?v=9f483e3936e1",
+  "./src/features/kids/piano.js?v=7e54acbdb1f2",
+  "./src/pages/arcade-recordes.js?v=a35855a9bec2",
+  "./src/pages/arcade.js?v=07e6058ca97c",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=65463f7da52f",
