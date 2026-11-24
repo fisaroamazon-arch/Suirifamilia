@@ -10,21 +10,15 @@ window.iniciarEscutaRealtimeFamilia = function() {
         window._suiriCanalFamilia=canal;
 
         canal
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'membros', filter: `familia_id=eq.${window.familiaAtualId}` }, () => {
-                window.carregarListaMembrosPainel();
-            })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'recados_lar', filter: `familia_id=eq.${window.familiaAtualId}` }, () => {
-                if (typeof window.carregarRecadosLar === 'function') {
-                    window.carregarRecadosLar();
-                }
-            })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'agenda_financeira', filter: `familia_id=eq.${window.familiaAtualId}` }, () => {
                 window.carregarDadosCalendarioMes();
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'compromissos_familia', filter: `familia_id=eq.${window.familiaAtualId}` }, () => {
                 window.carregarDadosCalendarioMes();
             })
-            .subscribe();
+            .subscribe(status => {
+                if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') console.warn('Agenda em tempo real indisponível:', status);
+            });
     } catch (e) {
         console.warn("Modo realtime operando em segundo plano:", e);
     }

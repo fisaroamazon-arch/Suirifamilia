@@ -52,5 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === 'visible') {
         window.verificarGatilhoPenseSeteManha();
+        if (window.familiaAtualId) window.atualizarNotificacoesGeraisPainel();
     }
 });

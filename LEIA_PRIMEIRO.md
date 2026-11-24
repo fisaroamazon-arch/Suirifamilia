@@ -105,3 +105,23 @@ src/core contém sessão, configuração, armazenamento e navegação; src/servi
 Os scripts continuam clássicos nesta primeira separação, para preservar a API das telas e permitir hospedagem estática sem compilação. A retirada final de handlers inline e a migração para módulos ES são uma próxima etapa. Não mova manualmente arquivos entre pastas sem atualizar referências e testes.
 
 Há testes reproduzíveis e workflow GitHub Actions. Pelo repositório, a aba Actions executa as verificações automaticamente. Quem tiver ambiente Node pode usar npm ci e npm test; isso não é exigido do usuário do site.
+
+### Android e notificações
+
+O APK usa o site Suiri Família do GitHub Pages. O Android solicita a câmera ao fotografar
+um cupom, o microfone ao usar o ditado e as notificações ao tocar em **Ativar Alertas**.
+Em aparelhos sem serviço de reconhecimento de voz, é possível usar o ditado do teclado.
+
+O lembrete de agenda aparece no dispositivo durante o uso do app, quando há pendências
+do dia e a pessoa concedeu a permissão. A entrega com o app fechado requer um serviço
+de push e o cadastro dos dispositivos.
+
+Para distribuir o APK oficial, mantenha a mesma chave de assinatura nas atualizações.
+Configure os secrets `SUIRI_ANDROID_KEYSTORE_BASE64`, `SUIRI_ANDROID_KEY_ALIAS`,
+`SUIRI_ANDROID_STORE_PASSWORD` e `SUIRI_ANDROID_KEY_PASSWORD` no repositório e execute
+o workflow **Gerar APK do Suiri Família**. Publique o artefato
+`suiri-familia.apk` na release estável mais recente para que o link apareça no login.
+
+Antes de ler um cupom, o site pede autorização para enviar a imagem ao Google Gemini.
+A função usa `https://fisaroamazon-arch.github.io` como origem padrão. Configure
+`SUIRI_ALLOWED_ORIGINS` se o site for publicado em outra origem.

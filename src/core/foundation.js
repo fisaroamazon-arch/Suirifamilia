@@ -183,7 +183,7 @@
     window.fecharModalAgendarContaSalario=()=>S.closeModal('modal-agendar-conta-salario');
     window.abrirModalOpcoesCupomIA=()=>S.openModal('modal-escolha-origem-cupom');
     window.fecharModalOpcoesCupomIA=()=>S.closeModal('modal-escolha-origem-cupom');
-    window.acionarOrigemCupom=origem=>{S.closeModal('modal-escolha-origem-cupom');document.getElementById(origem==='camera'?'input-camera-cupom-ia':'input-galeria-cupom-ia')?.click();};
+    window.acionarOrigemCupom=origem=>{S.closeModal('modal-escolha-origem-cupom');if(origem==='camera'&&window.SuiriAndroid)return window.fotografarCupomAndroid();document.getElementById(origem==='camera'?'input-camera-cupom-ia':'input-galeria-cupom-ia')?.click();};
     window.abrirAvisoPrivacidade = () => S.openModal('modal-aviso-privacidade');
     window.abrirModalApoioPix = () => {
         const input = document.getElementById('apoio-chave-pix');

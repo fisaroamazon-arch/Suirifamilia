@@ -1,6 +1,8 @@
 /* Suiri Família 7.0 · domínio extraído de app-painel.js. */
 window.abrirModalNotificacoesGerais = async function() {
-    await window.atualizarNotificacoesGeraisPainel();
+    if (await window.atualizarNotificacoesGeraisPainel() === false) {
+        window.mostrarToast("Não foi possível atualizar o quadro de notificações.", "erro");
+    }
     document.getElementById('modal-notificacoes-gerais')?.classList.remove('oculto');
 };
 
@@ -17,27 +19,24 @@ window.atualizarNotificacoesGeraisPainel = async function() {
 
     const limite7Dias = new Date(hoje);
     limite7Dias.setDate(limite7Dias.getDate() + 7);
-    const limite7DiasStr = limite7Dias.toISOString().split('T')[0];
+    const limite7DiasStr = Suiri.today(limite7Dias);
+    const familia = window.familiaAtualId;
 
-    const { data: contas } = await cli.from('agenda_financeira')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .gte('data_vencimento', hojeStr)
-        .lte('data_vencimento', limite7DiasStr)
-        .order('data_vencimento', { ascending: true });
-
-    const { data: eventos } = await cli.from('compromissos_familia')
-        .select('*')
-        .eq('familia_id', window.familiaAtualId)
-        .gte('data_evento', hojeStr)
-        .lte('data_evento', limite7DiasStr)
-        .order('data_evento', { ascending: true });
+    const [{ data: contas, error: erroContas }, { data: eventos, error: erroEventos }] = await Promise.all([
+        cli.from('agenda_financeira').select('*').eq('familia_id', familia)
+            .gte('data_vencimento', hojeStr).lte('data_vencimento', limite7DiasStr)
+            .order('data_vencimento', { ascending: true }),
+        cli.from('compromissos_familia').select('*').eq('familia_id', familia)
+            .gte('data_evento', hojeStr).lte('data_evento', limite7DiasStr)
+            .order('data_evento', { ascending: true })
+    ]);
+    if (familia !== window.familiaAtualId || erroContas || erroEventos) return false;
 
     const listaContas = contas || [];
     const listaEventos = eventos || [];
 
     listaContas.forEach(c => {
-        const itemLocal = window.contasCalendarioAtual.find(x => x.id === c.id);
+        const itemLocal = window.contasCalendarioAtual?.find(x => x.id === c.id);
         if (itemLocal && (itemLocal.status === 'liquidado' || itemLocal.pago === true)) {
             c.status = 'liquidado';
             c.pago = true;
@@ -52,6 +51,7 @@ window.atualizarNotificacoesGeraisPainel = async function() {
 
     const pendenciasHoje = contasHoje.filter(c => c.status !== 'liquidado' && c.pago !== true);
     const totalBadge = pendenciasHoje.length + eventosHoje.length;
+    if (totalBadge > 0) await window.exibirLembreteAgenda(familia, hojeStr);
 
     const btnSinoFlutuante = document.getElementById('btn-sino-notificacoes-topo');
     if (btnSinoFlutuante) {
@@ -78,7 +78,7 @@ window.atualizarNotificacoesGeraisPainel = async function() {
         } else {
             eventosHoje.forEach(ev => {
                 containerHoje.innerHTML += `
-                    <div style="background:#ffffff; border:1px solid rgba(226,232,240,0.9); border-left:4px solid ${ev.cor_etiqueta || '#0ea5e9'}; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(15,23,42,0.02);">
+                    <div style="background:#ffffff; border:1px solid rgba(226,232,240,0.9); border-left:4px solid ${/^#[0-9a-f]{6}$/i.test(ev.cor_etiqueta) ? ev.cor_etiqueta : '#0ea5e9'}; border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(15,23,42,0.02);">
                         <div>
                             <strong style="font-size:13px; font-weight:800; color:#0f172a; display:block;">${window.esc ? window.esc(ev.titulo) : ev.titulo}</strong>
                             <span style="font-size:11px; color:#64748b;">${ev.horario_inicio ? 'Horário: ' + ev.horario_inicio.slice(0, 5) : 'Dia todo'}</span>
@@ -255,3 +255,31 @@ window.excluirEventoCalendario = async function(id) {
 // 4. ESCUTA EM TEMPO REAL (REALTIME SUPABASE)
 // =========================================================================
 
+
+window.exibirLembreteAgenda = async function(familia, dia) {
+    if (window.SuiriAndroid) {
+        window.SuiriAndroid('reminder');
+        return;
+    }
+    if (window.Notification?.permission !== 'granted' || !navigator.serviceWorker) return;
+    try {
+        const registro = await navigator.serviceWorker.getRegistration();
+        if (!registro?.active || familia !== window.familiaAtualId) return;
+        const chave = `suiri-agenda:${familia}:${obterUsuarioId()}`;
+        if (localStorage.getItem(chave) === dia) return;
+        localStorage.setItem(chave, dia);
+        try {
+            await registro.showNotification('Suiri Família', {
+                body: 'Confira os lembretes de hoje no aplicativo.',
+                icon: './assets/images/icone.jpg',
+                tag: 'suiri-agenda',
+                data: { url: './index.html' }
+            });
+        } catch (error) {
+            localStorage.removeItem(chave);
+            throw error;
+        }
+    } catch (error) {
+        console.warn('Lembrete do dispositivo indisponível.', error);
+    }
+};

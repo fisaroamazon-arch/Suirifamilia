@@ -225,6 +225,7 @@ window.alternarAbaLoginCadastro = function(aba) {
 };
 
 window.solicitarPermissaoPush = async function() {
+    if (window.SuiriAndroid) return window.SuiriAndroid("notifications");
     if (!("Notification" in window)) {
         return window.mostrarToast("Este navegador não suporta notificações Push.", "erro");
     }
@@ -232,7 +233,8 @@ window.solicitarPermissaoPush = async function() {
     try {
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
-            window.mostrarToast("Permissão concedida. Alertas com o app fechado dependem da configuração do serviço de envio.");
+            window.mostrarToast("Lembretes do dia ativados durante o uso do aplicativo.");
+            await window.atualizarNotificacoesGeraisPainel();
         } else {
             window.mostrarToast("Permissão de Push negada ou ignorada.", "alerta");
         }
@@ -784,6 +786,7 @@ window.verificarSessao = async function() {
     try{
         if(!cliente)throw new Error('Não foi possível carregar a conexão. Verifique sua internet.');
         const {data,error}=await cliente.auth.getSession();
+        if (!window.document) return false;
         if(error)throw error;
         if(!data?.session?.user){
             window.usuarioAtual=null;window.perfilAtual=null;window.familiaAtualId=null;
@@ -796,6 +799,7 @@ window.verificarSessao = async function() {
         window.usuarioAtual=data.session.user;
         return await window.iniciarAppFamilia();
     }catch(error){
+        if (!window.document) return false;
         document.getElementById('tela-app')?.classList.add('oculto');
         document.getElementById('tela-login')?.classList.remove('oculto');
         Suiri.notifyError(error);return false;
