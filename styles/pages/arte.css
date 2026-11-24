@@ -175,9 +175,10 @@ button:disabled { opacity: .46; cursor: default; }
 }
 
 .previa-pincel[data-ferramenta="cerdas"] i {
-    border-radius: 65% 25% 58% 36%;
-    transform: rotate(-24deg);
-    background: repeating-linear-gradient(0deg, var(--previa-cor) 0 1.5px, transparent 1.5px 2.5px);
+    border-radius: 54% 43% 51% 37%;
+    transform: rotate(-24deg) scale(1.2);
+    background: radial-gradient(ellipse, var(--previa-cor) 15%, transparent 74%);
+    opacity: .7;
 }
 .previa-pincel[data-ferramenta="giz"] i {
     border-radius: 34%;

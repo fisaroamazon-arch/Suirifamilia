@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
     <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=f0482e02486a">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=e58a9f7024c9">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=13257a9e7452">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -22,10 +22,6 @@
                 <span id="rotulo-voltar-arcade">Vila</span>
             </button>
             <div class="arcade-topo-acoes">
-                <button type="button" class="piano-abrir-config" id="piano-abrir-config" aria-haspopup="dialog" aria-controls="piano-configuracoes" onclick="MotorMusica.abrirConfiguracoes()">
-                    <svg class="icone-svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="17" r="2"/></svg>
-                    <span>Ajustes</span>
-                </button>
                 <button type="button" class="arcade-som" id="arcade-som" aria-pressed="true" onclick="GerenciadorArcade.alternarTrilha()" aria-label="Trilha musical">
                     <svg class="icone-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                     <span>Trilha ligada</span>
@@ -77,7 +73,7 @@
                 </button>
 
                 <!-- JOGO 3: TECLADO MÁGICO / APRENDA A TOCAR -->
-                <button type="button" class="card-jogo-grade card-simon" data-arcade-jogo="simon" onclick="GerenciadorArcade.abrirJogo('simon')">
+                <button type="button" class="card-jogo-grade card-simon" data-arcade-jogo="simon" onclick="GerenciadorArcade.abrirJogo('simon', true)">
                     <span class="icone-jogo-grade" style="color:#f59e0b;" aria-hidden="true">
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                     </span>
@@ -203,47 +199,18 @@
 
         <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (ESTEIRAS SYNTHESIA SOLO & DUETO 2P) -->
         <div id="tela-simon" class="area-jogo" data-modo-piano="aprendizado">
-            <div class="alternador-modos-som" id="tabs-piano-seletor-modos">
-                <button type="button" class="btn-modo-som-tab ativo" id="tab-piano-aprendizado" onclick="MotorMusica.trocarModo('aprendizado')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Aprender</button>
-                <button type="button" class="btn-modo-som-tab" id="tab-piano-livre" onclick="MotorMusica.trocarModo('livre')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Livre</button>
-                <button type="button" class="btn-modo-som-tab" id="tab-piano-dueto" onclick="MotorMusica.trocarModo('dueto')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#duet"></use></svg> Dueto</button>
-            </div>
-
-            <header class="piano-estudio">
-                <h2>Piano do Chuíri</h2>
-                <p>Toque a tecla iluminada. <span class="piano-girar">Vire o celular para tocar três oitavas.</span></p>
-            </header>
-
-            <!-- MODO 1: APRENDIZADO SOLO COM ESTEIRA -->
-            <div class="painel-aprendizado-musica" id="painel-aprendizado-box">
-                <p class="piano-musica-atual" data-musica-piano></p>
-                <p class="piano-oitavas-guia"><b>↑</b> Mais aguda <span aria-hidden="true">·</span> <b>↓</b> Mais grave</p>
-
-                <div class="piano-controles">
-                    <div class="piano-acoes">
-                        <button type="button" class="piano-sem-relogio" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(MotorMusica.fatorVelocidade === 'toque' ? 1 : 'toque')">Sem relógio</button>
-                        <button type="button" class="btn-play-pause-musica" id="btn-play-musica-solo" onclick="MotorMusica.togglePlay()">
-                            <span id="icone-play-solo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-solo">Jogar</span>
-                        </button>
-                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()" aria-label="Reiniciar do começo" title="Reiniciar do começo"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> <span>Reiniciar</span></button>
-                    </div>
-                </div>
-
-                <div class="piano-placar">
-                    <div class="estrelinha-alvo-box">
-                        <span class="estrelinha-icone"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> </span>
-                        <span class="piano-rotulo-proxima">Próxima</span>
-                        <span class="nota-alvo-texto" id="txt-nota-alvo-aprendizado">DÓ</span>
-                    </div>
-                    <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
-                    <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
-                </div>
+            <button type="button" class="piano-abrir-config" id="piano-abrir-config" aria-label="Menu do piano" aria-haspopup="dialog" aria-controls="piano-configuracoes" onclick="MotorMusica.abrirConfiguracoes()">
+                <svg class="icone-svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+                <span>Menu</span>
+            </button>
+            <div class="piano-estado-partida" id="piano-estado-partida">
+                <span id="piano-nota-atual"></span>
+                <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
             </div>
 
             <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
             <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira de notas. A linha dourada indica o momento de tocar.">
                 <canvas id="cv-esteira-piano"></canvas>
-                <span class="piano-legenda-faixa" aria-hidden="true">Toque na linha dourada</span>
             </div>
 
             <!-- TECLADO SOLO (OITAVA 4) -->
@@ -264,11 +231,6 @@
                 <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
             </div>
 
-            <div class="piano-desafio-livre" id="piano-desafio-livre-status" hidden>
-                <span id="alvo-desafio-livre" aria-live="polite" hidden></span>
-                <div data-vidas-piano id="erros-livre-piano" hidden><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
-            </div>
-
             <div class="container-teclados-livre" id="container-teclados-livre">
                 <section class="faixa-teclado-unidade" aria-labelledby="piano-livre-agudo-titulo">
                     <header class="topo-faixa-oitava">
@@ -287,41 +249,19 @@
             <!-- MODO DUETO 2 JOGADORES COM ESTEIRAS AMPLAS E TIMBRES INDEPENDENTES -->
             <div id="container-dueto-piano-2p">
                 <div class="bloco-dueto-j2" data-pista-piano="base">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
-                        <span style="font-size:10px; font-weight:900; color:#d97706; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Base harmônica · Mão esquerda</span>
-                        <span id="badge-acorde-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#fef3c7; border:1px solid #f59e0b; padding:2px 8px; border-radius:10px;">Acorde: DÓ</span>
-                    </div>
-
                     <div class="pista-dueto-box" id="pista-dueto-harmonia-box">
                         <canvas id="cv-esteira-dueto-harmonia"></canvas>
                     </div>
 
-                    <div class="teclado-compacto-livre" id="teclado-dueto-harmonia" style="border-radius:0 0 12px 12px; border-top:2px solid #ea580c; flex-shrink:0;"></div>
-                </div>
-
-                <div class="piano-painel-dueto">
-                    <p id="piano-rede-estado" class="piano-rede-estado" role="status" hidden></p>
-                    <p class="piano-musica-atual" data-musica-piano></p>
-                    <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
-                    <div class="piano-acoes">
-                        <button type="button" class="btn-voltar-dueto" id="piano-reiniciar-dueto" onclick="MotorMusica.reiniciarMusica()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
-                        <button type="button" class="btn-play-pause-musica" id="btn-play-musica-dueto" onclick="MotorMusica.togglePlay()" style="padding:5px 12px; font-size:12px;">
-                            <span id="icone-play-dueto"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-dueto">Jogar</span>
-                        </button>
-                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-dueto-harmonia"></div>
                 </div>
 
                 <div class="bloco-dueto-j1" data-pista-piano="melodia">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
-                        <span class="piano-legenda-maos"><span data-piano-direita>Melodia · mão direita</span><span data-piano-ambas>Esquerda tracejada · direita contínua</span></span>
-                        <span id="badge-melodia-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#e0f2fe; border:1px solid #38bdf8; padding:2px 8px; border-radius:10px;">Nota: DÓ</span>
-                    </div>
-
                     <div class="pista-dueto-box" id="pista-dueto-melodia-box">
                         <canvas id="cv-esteira-dueto-melodia"></canvas>
                     </div>
 
-                    <div class="teclado-compacto-livre" id="teclado-dueto-melodia" style="border-radius:0 0 12px 12px; border-top:2px solid #38bdf8; flex-shrink:0;"></div>
+                    <div class="teclado-compacto-livre" id="teclado-dueto-melodia"></div>
                 </div>
             </div>
 
@@ -338,9 +278,26 @@
             <dialog id="piano-configuracoes" aria-labelledby="piano-configuracoes-titulo">
                 <header class="piano-config-cabecalho">
                     <button type="button" class="piano-config-alca" aria-label="Fechar configurações" onclick="document.getElementById('piano-configuracoes').close()"><span></span></button>
-                    <h2 id="piano-configuracoes-titulo">Configurações do piano</h2>
+                    <h2 id="piano-configuracoes-titulo">Menu do piano</h2>
                 </header>
                 <div class="piano-config-corpo">
+                    <div class="alternador-modos-som" id="tabs-piano-seletor-modos" role="group" aria-label="Modo de jogo">
+                        <button type="button" class="btn-modo-som-tab ativo" id="tab-piano-aprendizado" aria-pressed="true" onclick="MotorMusica.trocarModo('aprendizado')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Aprender</button>
+                        <button type="button" class="btn-modo-som-tab" id="tab-piano-livre" aria-pressed="false" onclick="MotorMusica.trocarModo('livre')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Livre</button>
+                        <button type="button" class="btn-modo-som-tab" id="tab-piano-dueto" aria-pressed="false" onclick="MotorMusica.trocarModo('dueto')"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#duet"></use></svg> Dueto</button>
+                    </div>
+                    <section data-config-piano="aprendizado dueto" class="piano-resumo-menu">
+                        <p class="piano-musica-atual" data-musica-piano></p>
+                        <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
+                        <p class="piano-guia">Toque quando a nota alcançar a linha dourada. <span class="piano-girar">Vire o celular para tocar com mais espaço.</span></p>
+                        <p class="piano-guia piano-guia-maos">Traço pontilhado para a mão esquerda e contínuo para a direita.</p>
+                    </section>
+                    <div class="piano-acoes-menu">
+                        <button type="button" class="btn-voltar-dueto" id="piano-reiniciar" onclick="MotorMusica.reiniciarPeloMenu()">
+                            <svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar
+                        </button>
+                        <button type="button" class="btn-voltar-dueto" id="piano-tela-inteira" onclick="MotorMusica.alternarTelaInteira()" hidden>Tela inteira</button>
+                    </div>
                     <section data-config-piano="aprendizado dueto">
                         <div class="piano-repertorio">
                             <label>Estilo
@@ -361,7 +318,7 @@
                         <div class="piano-velocidade">
                             <span>Velocidade</span>
                             <div class="painel-velocidade-bichinhos" id="botoes-velocidade-solo" role="group" aria-label="Velocidade">
-                                <button type="button" class="btn-velocidade-bichinho" data-fator="toque" onclick="MotorMusica.mudarFatorVelocidade('toque')" title="Toque para a próxima nota"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Toque</button>
+                                <button type="button" class="btn-velocidade-bichinho" data-fator="toque" onclick="MotorMusica.mudarFatorVelocidade('toque')" title="Toque para a próxima nota"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Sem relógio</button>
                                 <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5)">50%</button>
                                 <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75)">75%</button>
                                 <button type="button" class="btn-velocidade-bichinho ativo" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1)">100%</button>
@@ -474,7 +431,10 @@
                     </section>
                     <label class="piano-opcao"><input type="checkbox" data-deslize-piano checked onchange="MotorMusica.alterarDeslize(this.checked)"> Deslizar entre teclas</label>
                 </div>
-                <button type="button" class="btn-play-pause-musica piano-config-fechar" onclick="document.getElementById('piano-configuracoes').close()">Voltar ao piano</button>
+                <footer class="piano-menu-rodape">
+                    <button type="button" class="btn-voltar-dueto" onclick="GerenciadorArcade.voltarAcao()">Sair para o Arcade</button>
+                    <button type="button" class="btn-play-pause-musica piano-config-fechar" id="piano-jogar" onclick="MotorMusica.jogarPeloMenu()">Jogar</button>
+                </footer>
             </dialog>
         </div>
 
@@ -602,10 +562,10 @@
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
-    <script src="src/features/kids/piano-dueto-rede.js?v=8f4def6b9e3f"></script>
-    <script src="src/features/kids/piano.js?v=4cc140df81ee"></script>
+    <script src="src/features/kids/piano-dueto-rede.js?v=0e0836ccbc7f"></script>
+    <script src="src/features/kids/piano.js?v=9623d69a22e2"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
-    <script src="src/pages/arcade.js?v=fab76121f08d"></script>
+    <script src="src/pages/arcade.js?v=a09984302a01"></script>
 </body>
 </html>
