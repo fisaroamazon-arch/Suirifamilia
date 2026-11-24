@@ -3,7 +3,7 @@
 <head>
 <script src="src/core/config.js?v=50eb0e2f989b"></script>
 <script src="src/core/foundation.js?v=134013abdc96"></script>
-<script src="src/ui/tema-principal.js?v=6063bc1f0c77"></script>
+<script src="src/ui/tema-principal.js?v=9ab0f9a5813c"></script>
     <meta charset="UTF-8">
     <script src="src/ui/download-android.js?v=485855857188" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -30,13 +30,13 @@
 
     <link rel="stylesheet" href="styles/pages/index.css?v=84ae3fac1f25">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-<link rel="stylesheet" href="styles/tema-principal.css?v=5f620e71700d">
 <link rel="stylesheet" href="styles/atualizacao-v72.css?v=77a831311121">
 <link rel="stylesheet" href="styles/visual-v73.css?v=a991b6979eed">
 <link rel="stylesheet" href="styles/visual-v74.css?v=b3d44e521ae0">
 <link rel="stylesheet" href="styles/visual-v75.css?v=43775077c5a9">
 <link rel="stylesheet" href="styles/espaco-kids.css?v=44eeb2ac679f">
     <link rel="stylesheet" href="styles/ajustes-v76.css?v=d488e32f795c">
+    <link rel="stylesheet" href="styles/tema-principal.css?v=bf4efeffa569">
 </head>
 <body>
 
@@ -99,10 +99,10 @@
 
             <div id="painel-adulto-container">
                 
-                <!-- CABEÇALHO HERO COM O MESMO FUNDO ESCURO DO CARTÃO DO BANCO -->
+                <!-- Cabeçalho do perfil -->
                 <header class="top-bar-moderna" id="cabecalho-topo-usuario">
                     <div class="usuario-card-linha">
-                        <div class="header-logo-container"><div class="logo-suiri-marca"><img src="assets/icons/logo_suiri.png" alt="Suiri"></div><span>FAMÍLIA</span></div>
+                        <div class="header-logo-container"><div class="logo-suiri-marca"><img src="assets/icons/logo_suiri.png" alt="Suiri"><img class="suiri-logo-texto-claro" src="assets/icons/logo_suiri.png" alt="" aria-hidden="true"></div><span>FAMÍLIA</span></div>
                         <div class="perfil-textos-topo"><h3 id="nome-membro-topo">Meu perfil</h3><span id="nome-familia-topo">Meu Lar</span></div>
                         <div class="usuario-card-foto">
                             <button type="button" class="perfil-hero-info" aria-label="Trocar usuário" onclick="window.abrirTrocaUsuarioTopo(event)"><span id="container-avatar-perfil-topo"><img id="img-avatar-topo" class="avatar-topo-usuario" src="assets/icons-modern/icone-pessoa-escopo.svg" alt="Foto do usuário"><span class="avatar-trocar-label">Trocar usuário</span></span></button>
@@ -254,8 +254,8 @@
                 <!-- MÓDULO 2: SUPERMERCADO EXPANDIDO POR PADRÃO -->
                 <section id="secao-mercado" class="secao-conteudo-app oculto">
                     <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <button type="button" id="btn-aba-modo-mercado" class="btn-principal" style="flex:1; border-radius:14px;" onclick="window.alternarVisualizacaoMercado('planilha')">No Mercado</button>
-                        <button type="button" id="btn-aba-lista-mes" class="btn-secundario" style="flex:1; border-radius:14px;" onclick="window.alternarVisualizacaoMercado('lista')">Lista do Mês</button>
+                        <button type="button" id="btn-aba-modo-mercado" class="btn-principal" aria-pressed="true" style="flex:1; border-radius:14px;" onclick="window.alternarVisualizacaoMercado('planilha')">No Mercado</button>
+                        <button type="button" id="btn-aba-lista-mes" class="btn-secundario" aria-pressed="false" style="flex:1; border-radius:14px;" onclick="window.alternarVisualizacaoMercado('lista')">Lista do Mês</button>
                     </div>
 
                     <!-- FORMULÁRIO DE ADICIONAR PRODUTO SEMPRE VISÍVEL -->
@@ -295,12 +295,12 @@
                             <table class="planilha-mercado">
                                 <thead>
                                     <tr>
-                                        <th style="width: 32px; text-align: center;">✓</th>
+                                        <th scope="col" style="width: 32px; text-align: center;" aria-label="No carrinho">✓</th>
                                         <th>Produto</th>
                                         <th style="width: 58px;">Qtd</th>
                                         <th style="width: 72px;">Unit.</th>
                                         <th style="text-align: right;">Total</th>
-                                        <th style="width: 28px;"></th>
+                                        <th scope="col" style="width: 28px;" aria-label="Ações"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="corpo-tabela-planilha-mercado"></tbody>
@@ -311,6 +311,10 @@
                             <strong id="valor-total-carrinho-mercado" style="color: #10b981; font-size: 16px;">R$ 0,00</strong>
                         </div>
                         <button type="button" class="btn-sucesso" style="width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px;" onclick="window.finalizarCompraMercado()">Confirmar Compra</button>
+                        <details id="painel-totais-segmentos-mercado" hidden>
+                            <summary>Subtotais por categoria</summary>
+                            <dl id="subtotais-segmentos-mercado"></dl>
+                        </details>
                     </div>
                 </section>
 
@@ -513,12 +517,6 @@
 
                 <!-- MÓDULO 5: FAMÍLIA E EDIÇÃO DE PERFIL -->
                 <section id="secao-familia" class="secao-conteudo-app oculto">
-                    <div id="apoio-topo-familia" class="cartao-geral">
-                        <button type="button" id="btn-doacao-familia" class="btn-principal" onclick="window.abrirModalApoioPix()">
-                            <img src="assets/icons-modern/icone-financas.svg" alt="">
-                            Fazer doação espontânea
-                        </button>
-                    </div>
                     <div class="cartao-geral">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3 id="lbl-titulo-lista-membros" style="margin: 0; font-size: 15.5px; font-weight: 800;">Membros da Família</h3>
@@ -529,19 +527,25 @@
                     </div>
 
                     <div class="cartao-geral" style="text-align: center;">
-                        <span style="font-size: 12px; font-weight: 800; color: #f97316; display: block; margin-bottom: 4px;">Edição do Seu Perfil</span>
-                        <p style="font-size: 12px; color: #94a3b8; margin: 0 0 12px 0;">Altere a sua fotografia de utilizador a qualquer momento.</p>
+                        <span style="font-size: 12px; font-weight: 800; color: #f97316; display: block; margin-bottom: 4px;">Seu perfil</span>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 0 0 12px 0;">Foto, aparência e configurações.</p>
                         <button type="button" class="btn-secundario" style="width: 100%; padding: 12px;" onclick="window.abrirSeletorFotoPerfil()">Alterar Minha Foto</button><button type="button" class="btn-secundario" style="width:100%;margin-top:8px" onclick="window.abrirConfiguracoesSuiri()">Configurações</button>
                     </div>
 
                     <div class="cartao-geral" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #8b5cf6;">
                         <div>
-                            <span style="font-size: 13.5px; font-weight: 800; color: #0f172a; display: block;">Notificações Push</span>
-                            <span style="font-size: 11.5px; color: #64748b;">Receber alertas da família na tela de bloqueio</span>
+                            <span style="font-size: 13.5px; font-weight: 800; color: #0f172a; display: block;">Lembretes</span>
+                            <span style="font-size: 11.5px; color: #64748b;">Receba os lembretes da agenda durante o uso</span>
                         </div>
                         <button type="button" id="btn-ativar-push" class="btn-secundario" style="font-size: 11.5px; padding: 7px 13px; border-radius: 10px;" onclick="window.solicitarPermissaoPush()">Ativar Alertas</button>
                     </div>
 
+                    <div id="apoio-topo-familia" class="cartao-geral">
+                        <button type="button" id="btn-doacao-familia" class="btn-principal" onclick="window.abrirModalApoioPix()">
+                            <img src="assets/icons-modern/icone-financas.svg" alt="">
+                            Fazer doação espontânea
+                        </button>
+                    </div>
                     <div class="cartao-geral" style="text-align: center; border: 1.5px dashed #f43f5e; background: #fff1f2;">
                         <span style="font-size: 11.5px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">Zona de Segurança da Conta</span>
                         <p style="font-size: 12px; color: #64748b; margin: 0 0 10px 0;">Ao remover a sua conta, todos os seus dados e registos serão eliminados de forma definitiva e irreversível.</p>
@@ -695,6 +699,7 @@
  <p class="suiri-hint">Dados pessoais antigos sem identificação foram preservados neste aparelho. Eles não são associados automaticamente a outra pessoa.</p>
  <label for="suiri-config-tema">Aparência</label>
  <select id="suiri-config-tema" onchange="Suiri.theme.set(this.value)">
+    <option value="automatico">Automático (sistema)</option>
     <option value="claro">Modo claro</option>
     <option value="escuro">Modo escuro</option>
  </select>
@@ -707,33 +712,33 @@
 </main>
 
     <!-- BARRA DE NAVEGAÇÃO FLUTUANTE INFERIOR (C/ EMOJIS ORGÂNICOS) -->
-    <nav class="bottom-nav-fixa-inferior" id="barra-navegacao-principal">
-        <ul class="bottom-nav-list">
-            <li class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
-                <img id="img-avatar-nav" src="assets/icons-modern/icone-escudo.svg" alt="Meu Espaço">
+    <nav class="bottom-nav-fixa-inferior" id="barra-navegacao-principal" aria-label="Navegação principal">
+        <div class="bottom-nav-list">
+            <button type="button" class="bottom-nav-item" data-tela="meuespaco" onclick="window.navegarParaTela('meuespaco')">
+                <img id="img-avatar-nav" src="assets/icons-modern/icone-escudo.svg" alt="">
                 <span>Início</span>
-            </li>
-            <li class="bottom-nav-item ativo" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
-                <img src="assets/icons-modern/icones-missao.svg" alt="Missões">
+            </button>
+            <button type="button" class="bottom-nav-item ativo" aria-current="page" data-tela="inicio" onclick="window.navegarParaTela('inicio')">
+                <img src="assets/icons-modern/icones-missao.svg" alt="">
                 <span id="nav-item-lbl-missoes">Missões</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="mercado" onclick="window.navegarParaTela('mercado')">
-                <img src="assets/icons-modern/icone-mercado.svg" alt="Mercado">
+            </button>
+            <button type="button" class="bottom-nav-item" data-tela="mercado" onclick="window.navegarParaTela('mercado')">
+                <img src="assets/icons-modern/icone-mercado.svg" alt="">
                 <span>Mercado</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="financeiro" onclick="window.navegarParaTela('financeiro')">
-                <img src="assets/icons-modern/icone-financas.svg" alt="Finanças">
+            </button>
+            <button type="button" class="bottom-nav-item" data-tela="financeiro" onclick="window.navegarParaTela('financeiro')">
+                <img src="assets/icons-modern/icone-financas.svg" alt="">
                 <span>Finanças</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="calendario" onclick="window.navegarParaTela('calendario')">
-                <img src="assets/icons-modern/icone-calendario.svg" alt="Agenda">
+            </button>
+            <button type="button" class="bottom-nav-item" data-tela="calendario" onclick="window.navegarParaTela('calendario')">
+                <img src="assets/icons-modern/icone-calendario.svg" alt="">
                 <span>Agenda</span>
-            </li>
-            <li class="bottom-nav-item" data-tela="familia" onclick="window.navegarParaTela('familia')">
-                <img src="assets/icons-modern/icone-familia.svg" alt="Família">
+            </button>
+            <button type="button" class="bottom-nav-item" data-tela="familia" onclick="window.navegarParaTela('familia')">
+                <img src="assets/icons-modern/icone-familia.svg" alt="">
                 <span id="nav-item-lbl-familia">Família</span>
-            </li>
-        </ul>
+            </button>
+        </div>
     </nav>
 
     <dialog id="camera-cupom-android" aria-label="Fotografar cupom">
@@ -1658,7 +1663,7 @@
     <script src="src/core/feature-state.js?v=02738c6f45eb"></script>
     <script src="src/services/transfers.js?v=9c22817f6ea7"></script>
 <script src="src/features/finances/extrato.js?v=69d5fc3aa505"></script>
-<script src="src/features/shopping/mercado.js?v=976d0601c872"></script>
+<script src="src/features/shopping/mercado.js?v=32724e3ba74c"></script>
 <script src="src/features/agenda/recorrencia.js?v=bbe9de936651"></script>
     <script src="src/features/missions/state-and-ui.js?v=4649b051709a"></script>
 <script src="src/features/missions/kids.js?v=5ca8889fbbd4"></script>
@@ -1682,7 +1687,7 @@
     <script src="src/features/missions/sugestoes.js?v=633f2cd129e1"></script>
 <script src="src/services/operations.js?v=d81ab58c7d00"></script>
 <script src="src/core/personal-state.js?v=b042ebb3c4b6"></script>
-<script src="src/core/navigation.js?v=a90194488572"></script>
+<script src="src/core/navigation.js?v=dc579a7876bc"></script>
 
     <script src="src/pages/profile-menu.js?v=be4aee6ffedf"></script>
 

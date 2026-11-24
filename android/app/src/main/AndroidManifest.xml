@@ -10,7 +10,7 @@
     <queries>
         <intent><action android:name="android.speech.action.RECOGNIZE_SPEECH" /></intent>
     </queries>
-    <application android:label="Suiri Família" android:theme="@android:style/Theme.Material.Light.NoActionBar"
+    <application android:label="Suiri Família" android:theme="@style/TemaSuiri"
         android:icon="@drawable/suiri_icon" android:usesCleartextTraffic="false" android:allowBackup="false">
         <activity android:name=".MainActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
