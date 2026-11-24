@@ -10,7 +10,7 @@ const SHELL=[
   "./src/ui/download-android.js?v=1048b2414956",
   "./styles/tema-principal.css?v=2748698233be",
   "./src/ui/tema-principal.js?v=9ab0f9a5813c",
-  "./styles/espaco-kids.css?v=a3c758911c27",
+  "./styles/espaco-kids.css?v=213911b07577",
   "./manifest.json",
   "./jogos.html",
   "./styles/pages/arcade-vila.css?v=cf60b4498f12",
