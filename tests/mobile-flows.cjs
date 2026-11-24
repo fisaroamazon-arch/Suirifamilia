@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const { JSDOM } = require('jsdom');
 
 async function main() {
-    const dom = new JSDOM(fs.readFileSync('index.html', 'utf8'), { runScripts: 'outside-only' });
+    const dom = new JSDOM(fs.readFileSync('index.html', 'utf8'), { runScripts: 'outside-only', url: 'https://suiri.test/' });
     const { window } = dom;
     const field = id => window.document.getElementById(id);
     const input = id => field('input-fin-' + id);
@@ -52,8 +52,32 @@ async function main() {
     assert.equal(input('descricao').dataset.viaVoz, undefined);
     assert.equal(field('select-fin-escopo').value, 'pessoal');
 
+    let reminders = 0;
+    window.familiaAtualId = 'family-test';
+    window.Notification = { permission: 'denied' };
+    Object.defineProperty(window.navigator, 'serviceWorker', {
+        value: { getRegistration: async () => ({
+            active: true,
+            showNotification: async (_title, notification) => {
+                assert.equal(notification.tag, 'suiri-agenda');
+                reminders++;
+            }
+        }) }
+    });
+    window.eval(fs.readFileSync('src/features/notifications/painel.js', 'utf8'));
+    await window.exibirLembreteAgenda('family-test', '2026-11-24');
+    assert.equal(reminders, 0);
+    window.Notification.permission = 'granted';
+    await Promise.all([
+        window.exibirLembreteAgenda('family-test', '2026-11-24'),
+        window.exibirLembreteAgenda('family-test', '2026-11-24')
+    ]);
+    assert.equal(reminders, 1);
+    await window.exibirLembreteAgenda('family-test', '2026-11-25');
+    assert.equal(reminders, 2);
+
     dom.window.close();
-    console.log('Ditado, revisão e consentimento do cupom verificados.');
+    console.log('Ditado, consentimento do cupom e lembrete diário verificados.');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

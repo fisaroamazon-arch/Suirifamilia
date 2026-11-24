@@ -52,9 +52,11 @@ async function test(name,fn){await fn();checks.push({name,passed:true});}
  const main=await load('index.html'),w=main.w,d=w.document;w.localStorage.setItem('suiri:v72:apoio:'+w.perfilAtual.id,String(Date.now()));
  await test('Pense abre preenchido e registra a data local somente ao exibir',async()=>{
   d.querySelectorAll('.modal-overlay').forEach(el=>el.classList.add('oculto'));
+  const key='suiri:pense:v73:'+w.perfilAtual.id;
+  w.localStorage.removeItem(key);
   w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));
   const modal=d.getElementById('modal-pilula-dia');assert(!modal.classList.contains('oculto'));assert(d.querySelector('#pilula-frase-filosofica blockquote').textContent.length>30);
-  const key='suiri:pense:v73:'+w.perfilAtual.id;assert.equal(w.localStorage.getItem(key),w.Suiri.today());
+  assert.equal(w.localStorage.getItem(key),w.Suiri.today());
   w.fecharModalPilulaDia();w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));
   assert.equal(w.abrirModalPilulaDia(),true);assert(!modal.classList.contains('oculto'));w.fecharModalPilulaDia();
   w.localStorage.setItem(key,'2000-01-01');d.getElementById('modal-nova-missao').classList.remove('oculto');w.Suiri.Pense.agendar();await new Promise(r=>setTimeout(r,750));assert(modal.classList.contains('oculto'));assert.equal(w.localStorage.getItem(key),'2000-01-01');d.getElementById('modal-nova-missao').classList.add('oculto');
