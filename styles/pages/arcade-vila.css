@@ -1,0 +1,265 @@
+/* A galeria e os controles do Arcade do Chuíri. */
+.arcade-page {
+    --arcade-papel: #f7f3f7;
+    --arcade-tinta: #2b2244;
+    --arcade-suave: #584c6c;
+    --arcade-borda: #d9cee5;
+    --arcade-foco: #6745ac;
+}
+.arcade-page[data-arcade-tela="menu"] { background: #e8e1f3; }
+.arcade-page[data-arcade-tela="menu"] #app-container {
+    max-width: 940px;
+    color: var(--arcade-tinta);
+    background:
+        radial-gradient(ellipse at 0 0, #f4ddec66, transparent 52%),
+        radial-gradient(ellipse at 96% 72%, #b9e9df55, transparent 52%),
+        var(--arcade-papel);
+}
+.arcade-page [hidden] { display: none !important; }
+.arcade-page button:focus-visible,
+.arcade-page a:focus-visible {
+    outline: 3px solid var(--arcade-foco);
+    outline-offset: 3px;
+}
+.arcade-page #menu-arcade { width: 100%; min-height: 0; margin: auto; padding: 13px 16px 28px; }
+.arcade-page[data-arcade-tela="menu"] .barra-topo { border-bottom-color: var(--arcade-borda); }
+.arcade-page[data-arcade-tela="menu"] .barra-topo button {
+    background: #fff9;
+    color: var(--arcade-tinta);
+    border: 1px solid var(--arcade-borda);
+}
+.arcade-topo-acoes { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.arcade-som {
+    display: inline-flex;
+    gap: .36rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 4px 9px;
+    border: 1px solid #747095;
+    border-radius: 100px;
+    background: #262744;
+    color: #f6efff;
+    font-size: .76rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+.arcade-som[aria-pressed="false"] svg { opacity: .56; }
+.arcade-page .moedas-badge { gap: 5px; padding: 6px 9px; }
+
+.arcade-page .titulo-arcade {
+    min-height: 166px;
+    flex-shrink: 0;
+    padding: clamp(14px, 5vw, 34px);
+    border-color: #fff8;
+    border-radius: 26px;
+    background:
+        radial-gradient(ellipse at 73% 12%, #ffe3a877, transparent 48%),
+        linear-gradient(127deg, #f8d7e6, #e7d8fc 56%, #d4f2eb 100%);
+    box-shadow: 0 12px 30px #674b8d29;
+}
+.arcade-page .titulo-arcade::before {
+    background: radial-gradient(circle at 76% 46%, #fff5c9 0 11%, #fff9 11.5% 12%, transparent 12.5%),
+        radial-gradient(circle at 58% 21%, #fff9 0 2px, transparent 3px),
+        radial-gradient(circle at 94% 30%, #fff9 0 3px, transparent 4px),
+        radial-gradient(circle at 89% 68%, #fff9 0 3px, transparent 4px),
+        repeating-radial-gradient(circle at 76% 46%, transparent 0 27px, #ffffff7a 28px 29px, transparent 30px 49px);
+}
+.arcade-page .titulo-arcade > div { min-width: 0; }
+.arcade-page .titulo-arcade h1 { max-width: 12ch; color: #33224d; font-size: clamp(1.68rem, 7vw, 3.3rem); }
+.arcade-page .titulo-arcade p { color: #49365e; font-size: clamp(.79rem, 2vw, 1rem); }
+.arcade-page .titulo-arcade picture { flex: 0 0 auto; }
+.arcade-page .titulo-arcade img {
+    display: block;
+    width: clamp(88px, 26vw, 177px);
+    height: clamp(120px, 32vw, 199px);
+    filter: drop-shadow(0 10px 7px #4f427e53);
+    animation: arcade-flutuar 5s ease-in-out infinite;
+}
+
+.arcade-page .grade-menu-arcade { gap: 11px; }
+.arcade-page .card-jogo-grade {
+    --cartao-fundo: #dcf2f5;
+    --cartao-realce: #286385;
+    --cartao-luz: #a4dded;
+    isolation: isolate;
+    min-width: 0;
+    min-height: 158px;
+    padding: 12px;
+    gap: 6px;
+    border: 1px solid var(--arcade-borda);
+    background: linear-gradient(150deg, var(--cartao-fundo), var(--arcade-papel));
+    box-shadow: 0 3px 0 var(--arcade-borda), 0 10px 20px #5137731a;
+    color: var(--arcade-tinta);
+    overflow-wrap: anywhere;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.arcade-page .card-quebrablocos { --cartao-fundo: #f9ddd9; --cartao-realce: #913c54; --cartao-luz: #f4bcb5; }
+.arcade-page .card-simon { --cartao-fundo: #faebc8; --cartao-realce: #805221; --cartao-luz: #f0d28e; }
+.arcade-page .card-bolhas { --cartao-fundo: #deefff; --cartao-realce: #3c599d; --cartao-luz: #b4c8f6; }
+.arcade-page .card-velha { --cartao-fundo: #daf0de; --cartao-realce: #37614f; --cartao-luz: #a4d7bb; }
+.arcade-page .card-memoria { --cartao-fundo: #ede0fa; --cartao-realce: #66428e; --cartao-luz: #d6bef3; }
+.arcade-page .card-jogo-grade::before {
+    z-index: -1;
+    inset: -27px -28px auto auto;
+    background: repeating-radial-gradient(circle, var(--cartao-luz) 0 9px, transparent 10px 20px);
+    opacity: .6;
+}
+.arcade-page .card-jogo-grade::after { border-color: var(--cartao-realce); }
+.arcade-page .icone-jogo-grade {
+    width: 45px;
+    height: 43px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--arcade-papel), var(--cartao-luz));
+    border: 1px solid var(--arcade-borda);
+    box-shadow: 0 3px 0 #412b5a22;
+    color: var(--cartao-realce) !important;
+}
+.arcade-page .icone-jogo-grade svg { width: 24px !important; height: 24px !important; }
+.arcade-page .arcade-card-titulo { color: var(--arcade-tinta); font-size: .93rem; }
+.arcade-page .arcade-card-descricao { color: var(--arcade-suave); font-size: .75rem; line-height: 1.3; }
+.arcade-page .tag-premio-card {
+    padding: 3px 6px;
+    background: var(--arcade-papel);
+    border: 1px solid var(--arcade-borda);
+    color: var(--cartao-realce);
+    font-size: .66rem;
+    white-space: normal;
+}
+.arcade-page .entrada-arte {
+    min-height: 62px;
+    border: 1px solid var(--arcade-borda);
+    background: linear-gradient(110deg, #e7c7f2, #f8d6e1);
+    color: #40264e;
+    box-shadow: 0 3px 0 var(--arcade-borda);
+}
+.arcade-page .entrada-arte svg { color: #72449a; }
+.arcade-page .entrada-arte small { color: inherit; }
+
+.arcade-page .area-jogo { min-height: 0; }
+.arcade-page .area-jogo > canvas { touch-action: none; }
+.arcade-page .area-jogo > canvas:focus-visible { outline: 2px solid #ffe3a7; outline-offset: -3px; }
+.arcade-page .overlay-jogo { padding: 12px; }
+.arcade-page .painel-dialogo-arcade { animation: arcade-entrar .24s cubic-bezier(.2,.75,.3,1) both; }
+.arcade-page .painel-dialogo-arcade .arcade-teclado { margin: 8px 0 0; font-size: .73rem; }
+.arcade-page .placar-item { min-width: 0; overflow-wrap: anywhere; }
+.arcade-page .painel-placar-flappy { flex-wrap: wrap; gap: 6px; justify-content: center; }
+.arcade-pausar {
+    position: absolute;
+    z-index: 47;
+    inset: auto 9px 9px auto;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #e5dbfa81;
+    border-radius: 14px;
+    background: #211b3be8;
+    color: #fff4d7;
+    font-size: 20px;
+    font-weight: 850;
+    cursor: pointer;
+}
+#arcade-pausa {
+    width: min(88%, 326px);
+    max-height: 90dvh;
+    margin: auto;
+    border: none;
+    background: transparent;
+    overflow: visible;
+}
+#arcade-pausa::backdrop { background: #15152ac4; backdrop-filter: blur(4px); }
+#arcade-pausa .painel-dialogo-arcade { width: 100%; }
+#arcade-pausa .btn-acao-jogo { margin-top: 14px; }
+
+.arcade-page .area-velha-caderno {
+    width: min(100%, 320px);
+    height: auto;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: linear-gradient(145deg, #ffefcf, #fff9eb);
+}
+.arcade-page .linha-caneta { opacity: .38; background: #986c70; }
+.arcade-page .casa-velha-livre.trinca { background: #b7efd275; }
+.arcade-page #linha-vitoria-caneta { background: #7a479a; height: 4px; display: none; pointer-events: none; }
+.arcade-page #linha-vitoria-caneta.tracado { display: block; animation: arcade-trinca .35s ease-out both; }
+.arcade-page #tela-memoria { overflow-y: auto; }
+.arcade-page .grade-memoria-full { flex: 0 0 auto; }
+.arcade-page .carta-arcade.pareada { animation: arcade-par .29s ease-out both; }
+.arcade-page .carta-arcade:focus-visible { z-index: 2; }
+.arcade-page .tecla-branca-piano,
+.arcade-page .tecla-preta-piano {
+    transition: box-shadow 80ms ease;
+}
+.arcade-page #tela-flappy::before,
+.arcade-page #tela-bolhas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .45;
+    background: radial-gradient(ellipse 46px 10px at 19% 18%, #fff9 96%, transparent),
+        radial-gradient(ellipse 60px 15px at 72% 28%, #fff8 96%, transparent),
+        radial-gradient(ellipse 27px 6px at 49% 44%, #fff7 96%, transparent);
+    animation: arcade-nuvens 16s ease-in-out infinite alternate;
+}
+.arcade-page #tela-bolhas::before {
+    background: radial-gradient(circle at 18% 21%, #bff2fa72 0 2px, transparent 3px),
+        radial-gradient(circle at 83% 37%, #bff2fa72 0 3px, transparent 4px),
+        radial-gradient(circle at 61% 66%, #bff2fa72 0 2px, transparent 3px);
+    background-size: 125px 111px;
+}
+.arcade-page .area-jogo[data-pausa="sim"]::before { animation-play-state: paused; }
+
+@keyframes arcade-entrar { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+@keyframes arcade-flutuar { 50% { transform: translateY(-6px) rotate(-2deg); } }
+@keyframes arcade-nuvens { to { transform: translateX(22px); opacity: .7; } }
+@keyframes arcade-par { 45% { transform: scale(1.08); } }
+@keyframes arcade-trinca { from { transform: rotate(var(--linha-angulo)) scaleX(0); } to { transform: rotate(var(--linha-angulo)) scaleX(1); } }
+
+@media (min-width: 680px) {
+    .arcade-page #menu-arcade { padding-inline: 24px; }
+    .arcade-page .grade-menu-arcade { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 355px) {
+    .arcade-page #menu-arcade { padding-inline: 9px; }
+    .arcade-page .barra-topo { margin-inline: 10px; }
+    .arcade-page .card-jogo-grade { padding-inline: 9px; }
+}
+@media (hover: hover) {
+    .arcade-page .card-jogo-grade:hover { transform: translateY(-3px); box-shadow: 0 5px 0 var(--arcade-borda), 0 12px 24px #51377325; }
+}
+@media (prefers-color-scheme: dark) {
+    .arcade-page { --arcade-papel: #242039; --arcade-tinta: #fbf3ff; --arcade-suave: #eadbf3; --arcade-borda: #68567b; --arcade-foco: #e5c1fa; }
+    .arcade-page[data-arcade-tela="menu"] { background: #16142b; }
+    .arcade-page[data-arcade-tela="menu"] .barra-topo button { background: #332846; }
+    .arcade-page[data-arcade-tela="menu"] #app-container {
+        background: radial-gradient(ellipse at 88% 0, #473567, transparent 60%), #1e1b33;
+    }
+    .arcade-page .card-jogo-grade { background: linear-gradient(150deg, var(--arcade-papel) 35%, var(--sombra)); }
+    .arcade-page .card-jogo-grade::before { opacity: .15; }
+    .arcade-page .icone-jogo-grade, .arcade-page .tag-premio-card { background: #25213b; color: var(--luz) !important; }
+    .arcade-page .card-jogo-grade::after { border-color: var(--luz); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .arcade-page .titulo-arcade img,
+    .arcade-page .area-jogo::before,
+    .arcade-page .painel-dialogo-arcade,
+    .arcade-page .carta-arcade.pareada { animation: none !important; }
+    .arcade-page #linha-vitoria-caneta.tracado { animation: none; transform: rotate(var(--linha-angulo)); }
+    .arcade-page .card-jogo-grade { transition: none; }
+}
+
+.arcade-pausa-alca {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 32px;
+    margin: -11px auto 3px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    touch-action: none;
+    cursor: grab;
+}
+.arcade-pausa-alca span { width: 32px; height: 4px; border-radius: 9px; background: #a48eaf; }

@@ -167,10 +167,9 @@ window.carregarMissoesKidsExclusiva = function() {
 
     if (missoesKids.length === 0) {
         container.innerHTML = `
-            <div style="text-align:center; padding:32px 18px; background:rgba(255,255,255,0.92); border-radius:24px; border:2px dashed #fed7aa; box-shadow:0 4px 14px rgba(15,23,42,0.03);">
-                <div style="font-size:40px; margin-bottom:8px;">🌟</div>
-                <strong style="font-size:16.5px; color:#0f172a; display:block;">Tudo pronto por aqui!</strong>
-                <p style="font-size:13px; color:#64748b; margin-top:4px; line-height:1.4;">Nenhuma tarefa pendente para você agora.</p>
+            <div class="kids-missoes-vazio">
+                <strong>Tudo pronto por aqui!</strong>
+                <p>Nenhuma tarefa pendente para você agora.</p>
             </div>
         `;
         return;

@@ -56,16 +56,22 @@ function compararMembrosRelatorio(transacoes) {
 
 function agrupamentoCategoriasRelatorio(transacoes, membroId) {
     const movimento = { entrada: new Map(), saida: new Map() };
+    const nomes = { entrada: new Map(), saida: new Map() };
     for (const t of transacoes) {
-        if (t.transferencia_interna || t.categoria === 'Transferência' || !movimento[t.tipo]) continue;
+        if (t.transferencia_interna || chaveFinanceira(t.categoria || '') === 'transferencia' || !Object.hasOwn(movimento, t.tipo)) continue;
         const privado = (t.escopo === 'pessoal' || t.eh_privado) && t.membro_id !== membroId;
-        const nome = privado ? 'Privativo' : t.categoria || 'Geral';
-        const sub = privado ? '' : t.subcategoria || '';
+        const categoria = privado ? 'Privativo' : normalizarNomeFinanceiro(t.categoria || '') || 'Geral';
+        const subcategoria = privado ? '' : normalizarNomeFinanceiro(t.subcategoria || '');
         const valor = Math.round(Number(t.valor || 0) * 100);
         if (!Number.isFinite(valor) || valor <= 0) continue;
         const grupos = movimento[t.tipo];
+        const chaves = nomes[t.tipo];
+        const chave = chaveFinanceira(categoria);
+        if (!chaves.has(chave)) chaves.set(chave, categoria);
+        const nome = chaves.get(chave);
         if (!grupos.has(nome)) grupos.set(nome, { total: 0, subcategorias: new Map() });
         const grupo = grupos.get(nome);
+        const sub = nomeFinanceiroExistente(grupo.subcategorias.keys(), subcategoria);
         grupo.total += valor;
         grupo.subcategorias.set(sub, (grupo.subcategorias.get(sub) || 0) + valor);
     }

@@ -1,12 +1,10 @@
 window.TamagotchiKids = {
-    GIFS_CHUIRI: {
-        padrao:   'assets/images/animated/padrao.gif',
-        dormir:   'assets/images/animated/dormir.gif',
-        dormindo: 'assets/images/animated/dormindo.gif',
-        banho:    'assets/images/animated/banho.gif',
-        comendo:  'assets/images/animated/comendo.gif',
-        feliz:    'assets/images/animated/feliz.gif',
-        triste:   'assets/images/animated/triste.gif'
+    animacoes: ['padrao', 'dormir', 'dormindo', 'banho', 'comendo', 'feliz', 'triste'],
+
+    imagemDoChuiri: function(estado) {
+        const nome = this.animacoes.includes(estado) ? estado : 'padrao';
+        const parado = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? '-parado' : '';
+        return `assets/images/kids/${nome}${parado}.webp`;
     },
 
     // 2. CARDÁPIO DA GELADEIRA (USANDO AS MOEDAS DO CHUÍRI)
@@ -97,20 +95,22 @@ window.TamagotchiKids = {
         }
 
         if (estadoNome === 'dormir') {
-            imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormir; });
+            const movimentoReduzido = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            imgs.forEach(img => { img.src = this.imagemDoChuiri(movimentoReduzido ? 'dormindo' : 'dormir'); });
+            if (movimentoReduzido) return;
             this._timeoutAnimacao = setTimeout(() => {
-                imgs.forEach(img => { img.src = this.GIFS_CHUIRI.dormindo; });
+                imgs.forEach(img => { img.src = this.imagemDoChuiri('dormindo'); });
             }, 7930); // Duração de uma volta da animação original de deitar.
             return;
         }
 
-        imgs.forEach(img => { img.src = this.GIFS_CHUIRI[estadoNome] || this.GIFS_CHUIRI.padrao; });
+        imgs.forEach(img => { img.src = this.imagemDoChuiri(estadoNome); });
 
         if (duracaoTemporariaMs > 0) {
             this._timeoutAnimacao = setTimeout(() => {
                 const estado = this.obterEstado();
                 const voltaPara = this.animacaoDeRepouso(estado);
-                imgs.forEach(img => { img.src = this.GIFS_CHUIRI[voltaPara]; });
+                imgs.forEach(img => { img.src = this.imagemDoChuiri(voltaPara); });
             }, duracaoTemporariaMs);
         }
     },

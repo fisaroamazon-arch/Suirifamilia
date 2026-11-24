@@ -317,3 +317,27 @@ html[data-theme] body .fin-sugestoes button {
     .suiri-swipe-dialog { max-inline-size: 100%; }
     #modal-editar-transacao .modal-conteudo select { width: 100%; min-width: 0; }
 }
+
+.fin-sugestao-contexto {
+    display: grid;
+    justify-items: start;
+    gap: 5px;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid var(--fin-line);
+    border-radius: 12px;
+    background: var(--fin-heading);
+    color: var(--fin-muted);
+    font-size: .78rem;
+}
+.fin-sugestao-contexto[hidden] { display: none; }
+html[data-theme] body .fin-sugestao-contexto button {
+    min-height: 38px;
+    height: auto;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: start;
+    color: var(--fin-plus);
+    background: var(--fin-plus-bg);
+}
+#input-fin-valor[aria-invalid="true"] { outline-color: var(--fin-debit); }

@@ -124,6 +124,73 @@ async function main() {
     assert.deepEqual(Array.from(previsao.faixa), [19000, 21000]);
     assert.match(previsao.alerta, /podem ultrapassar/);
 
+    // Uma receita com centavos só aparece como concluída depois da confirmação do banco.
+    window.familiaAtualId = 'family-test';
+    window.Suiri.today = () => '2026-11-24';
+    const gravadas = [];
+    let confirmar = true;
+    const respostas = {
+        from: tabela => ({
+            select() { return this; }, eq() { return this; }, order: async () => ({ data: [] }),
+            insert(dados) {
+                assert.equal(tabela, 'transacoes');
+                return {
+                    select() { return this; },
+                    async single() {
+                        if (!confirmar) return { data: null };
+                        gravadas.push({ ...dados, id: 'receita-1' });
+                        return { data: { id: 'receita-1' } };
+                    }
+                };
+            }
+        })
+    };
+    window.obterClienteSupabase = () => respostas;
+    window.Suiri.transactionQuery = () => ({
+        select() { return this; }, eq() { return this; },
+        order() { return this; },
+        then(resolve) {
+            resolve({ data: [...gravadas, {
+                id: 'privada-1', tipo: 'entrada', descricao: 'Segredo privado',
+                categoria: 'Informação restrita', eh_privado: true, membro_id: 'outro'
+            }] });
+        }
+    });
+
+    window.selecionarTipoRegistroRapido('entrada');
+    assert.equal(field('fin-confirmar-registro').textContent, 'Registrar receita');
+    input('descricao').value = 'Projeto de fotografia';
+    input('valor').value = 'R$ 1.234,56';
+    field('select-fin-categoria').value = 'Trabalhos por fora';
+    field('select-fin-subcategoria').value = 'Fotografia';
+    confirmar = false;
+    assert.equal(await window.salvarTransacaoManual(), undefined);
+    assert.equal(input('valor').value, 'R$ 1.234,56');
+    confirmar = true;
+    assert.equal(await window.salvarTransacaoManual(), true);
+    assert.equal(gravadas[0].tipo, 'entrada');
+    assert.equal(gravadas[0].valor, 1234.56);
+    assert.equal(gravadas[0].subcategoria, 'Fotografia');
+
+    await window.abrirRegistroRapido();
+    input('descricao').value = 'Trabalho de fotografia';
+    window.atualizarSugestaoFinanceira();
+    assert.equal(field('fin-aplicar-sugestao').textContent, 'Trabalhos por fora › Fotografia');
+    field('fin-aplicar-sugestao').click();
+    assert.equal(field('select-fin-categoria').value, 'Trabalhos por fora');
+    assert.equal(field('select-fin-subcategoria').value, 'Fotografia');
+    window.selecionarTipoRegistroRapido('saida');
+    assert.equal(field('fin-sugestao-contexto').hidden, true);
+    window.selecionarTipoRegistroRapido('entrada');
+    input('descricao').value = 'Segredo privado';
+    window.atualizarSugestaoFinanceira();
+    assert.equal(field('fin-sugestao-contexto').hidden, true);
+
+    window.processarTextoTranscrito('Vendi 89,90 de bolo');
+    assert.equal(field('select-fin-tipo').value, 'entrada');
+    assert.equal(field('select-fin-categoria').value, 'Vendas');
+    assert.equal(input('valor').value, '89.90');
+
     let reminders = 0;
     window.familiaAtualId = 'family-test';
     window.Notification = { permission: 'denied' };
@@ -149,7 +216,7 @@ async function main() {
     assert.equal(reminders, 2);
 
     dom.window.close();
-    console.log('Ditado, cupom, edição Kids, relatórios e notificações verificados.');
+    console.log('Ditado, cupom, receitas, categorias aprendidas, edição Kids, relatórios e notificações verificados.');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });
