@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
     <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=84f690e56e16">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=e08c25c51ea6">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=a38943970a25">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -277,9 +277,9 @@
 
             <!-- MODO DUETO 2 JOGADORES COM ESTEIRAS AMPLAS E TIMBRES INDEPENDENTES -->
             <div id="container-dueto-piano-2p">
-                <div class="bloco-dueto-j2 teclado-dueto-invertido">
+                <div class="bloco-dueto-j2" data-pista-piano="base">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
-                        <span style="font-size:10px; font-weight:900; color:#d97706; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> <span class="lbl-j2-nome">Shuiri</span> (Base)</span>
+                        <span style="font-size:10px; font-weight:900; color:#d97706; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#violin"></use></svg> Base harmônica · Mão esquerda</span>
                         <span id="badge-acorde-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#fef3c7; border:1px solid #f59e0b; padding:2px 8px; border-radius:10px;">Acorde: DÓ</span>
                     </div>
 
@@ -287,38 +287,24 @@
                         <canvas id="cv-esteira-dueto-harmonia"></canvas>
                     </div>
 
-                    <div class="teclado-compacto-livre" id="teclado-dueto-harmonia" style="border-radius:0 0 12px 12px; border-top:2px solid #ea580c; flex-shrink:0;">
-                        <div class="tecla-branca-piano" data-nota="C3"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D3"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E3"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F3"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G3"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A3"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B3"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#3"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#3"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#3"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#3"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#3"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-dueto-harmonia" style="border-radius:0 0 12px 12px; border-top:2px solid #ea580c; flex-shrink:0;"></div>
                 </div>
 
                 <div class="piano-painel-dueto">
+                    <p id="piano-rede-estado" class="piano-rede-estado" role="status" hidden></p>
                     <p class="piano-musica-atual" data-musica-piano></p>
                     <div data-vidas-piano><span class="piano-coracoes" aria-hidden="true"><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg><svg class="kids-icon cheio" aria-hidden="true"><use href="assets/icons-modern/kids.svg#heart"></use></svg></span><span class="piano-vidas-numero" role="status"><strong class="piano-total-vidas">3</strong> vidas</span><span class="piano-meta-vida" title="10 acertos valem uma vida extra"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> <span class="piano-acertos">0/10</span> <span aria-label="vale uma vida extra">+1</span></span></div>
                     <div class="piano-acoes">
-                        <button type="button" class="btn-voltar-dueto" onclick="MotorMusica.reiniciarMusica()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
+                        <button type="button" class="btn-voltar-dueto" id="piano-reiniciar-dueto" onclick="MotorMusica.reiniciarMusica()"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#reset"></use></svg> Reiniciar</button>
                         <button type="button" class="btn-play-pause-musica" id="btn-play-musica-dueto" onclick="MotorMusica.togglePlay()" style="padding:5px 12px; font-size:12px;">
                             <span id="icone-play-dueto"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#play"></use></svg></span> <span id="txt-play-dueto">Jogar</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="bloco-dueto-j1">
+                <div class="bloco-dueto-j1" data-pista-piano="melodia">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding:0 4px;">
-                        <span style="font-size:10px; font-weight:900; color:#0284c7; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> <span class="lbl-j1-nome">J1</span> (Melodia)</span>
+                        <span style="font-size:10px; font-weight:900; color:#0284c7; background:#fff; padding:2px 8px; border-radius:10px;"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Melodia · Mão direita</span>
                         <span id="badge-melodia-alvo-dueto" style="font-size:10.5px; font-weight:900; color:#1e293b; background:#e0f2fe; border:1px solid #38bdf8; padding:2px 8px; border-radius:10px;">Nota: DÓ</span>
                     </div>
 
@@ -326,22 +312,7 @@
                         <canvas id="cv-esteira-dueto-melodia"></canvas>
                     </div>
 
-                    <div class="teclado-compacto-livre" id="teclado-dueto-melodia" style="border-radius:0 0 12px 12px; border-top:2px solid #38bdf8; flex-shrink:0;">
-                        <div class="tecla-branca-piano" data-nota="C4"><span class="rotulo-nota-branca">DÓ</span></div>
-                        <div class="tecla-branca-piano" data-nota="D4"><span class="rotulo-nota-branca">RÉ</span></div>
-                        <div class="tecla-branca-piano" data-nota="E4"><span class="rotulo-nota-branca">MI</span></div>
-                        <div class="tecla-branca-piano" data-nota="F4"><span class="rotulo-nota-branca">FÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="G4"><span class="rotulo-nota-branca">SOL</span></div>
-                        <div class="tecla-branca-piano" data-nota="A4"><span class="rotulo-nota-branca">LÁ</span></div>
-                        <div class="tecla-branca-piano" data-nota="B4"><span class="rotulo-nota-branca">SI</span></div>
-                        <div class="tecla-branca-piano" data-nota="C5"><span class="rotulo-nota-branca">DÓ+</span></div>
-
-                        <div class="tecla-preta-piano" style="left: 8.5%;" data-nota="C#4"><span class="rotulo-nota-preta">DÓ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 21.0%;" data-nota="D#4"><span class="rotulo-nota-preta">RÉ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 45.8%;" data-nota="F#4"><span class="rotulo-nota-preta">FÁ#</span></div>
-                        <div class="tecla-preta-piano" style="left: 58.2%;" data-nota="G#4"><span class="rotulo-nota-preta">SOL#</span></div>
-                        <div class="tecla-preta-piano" style="left: 70.8%;" data-nota="A#4"><span class="rotulo-nota-preta">LÁ#</span></div>
-                    </div>
+                    <div class="teclado-compacto-livre" id="teclado-dueto-melodia" style="border-radius:0 0 12px 12px; border-top:2px solid #38bdf8; flex-shrink:0;"></div>
                 </div>
             </div>
 
@@ -394,6 +365,12 @@
                         </div>
                     </section>
                     <section data-config-piano="aprendizado">
+                        <label class="piano-alcance">Mãos para tocar
+                            <select id="piano-maos-solo" onchange="MotorMusica.alterarParteGuiada(this.value)">
+                                <option value="melodia">Mão direita · melodia</option>
+                                <option value="ambas">Duas mãos · melodia e base</option>
+                            </select>
+                        </label>
                         <label class="piano-alcance" id="piano-alcance-opcoes" hidden>Alcance do teclado
                             <select id="piano-alcance" onchange="MotorMusica.alterarAlcance(this.value)">
                                 <option value="1">1 oitava · 13 teclas</option>
@@ -408,6 +385,25 @@
                         </div>
                     </section>
                     <section data-config-piano="dueto" class="piano-timbres-livres" hidden>
+                        <label class="piano-alcance">Minha parte
+                            <select id="piano-parte-dueto" onchange="MotorMusica.alterarParteGuiada(this.value)">
+                                <option value="ambas">Melodia e base harmônica</option>
+                                <option value="melodia">Apenas melodia</option>
+                                <option value="base">Apenas base harmônica</option>
+                            </select>
+                        </label>
+                        <div class="piano-rede-acoes">
+                            <button type="button" data-piano-criar onclick="DuetoPiano.criar()">Criar sala em dois celulares</button>
+                            <button type="button" data-piano-convidar hidden onclick="DuetoPiano.convidar()">Copiar convite</button>
+                            <button type="button" data-piano-sair hidden onclick="DuetoPiano.sair()">Sair da sala</button>
+                        </div>
+                        <p id="piano-rede-ajustes" class="piano-rede-estado" role="status" hidden></p>
+                        <input type="text" class="piano-convite-link" data-piano-link aria-label="Link de convite do dueto" readonly hidden>
+                        <div class="piano-rede-acoes" data-piano-entrar>
+                            <input type="url" class="piano-convite-link" id="piano-convite-recebido"
+                                aria-label="Convite recebido" placeholder="Cole o link de convite" autocomplete="off">
+                            <button type="button" onclick="DuetoPiano.entrar()">Entrar na sala</button>
+                        </div>
                         <div class="piano-timbre-oitava"><span>Melodia</span>
                             <div class="seletor-timbre-mini" id="timbre-dueto-j1">
                                 <button type="button" class="btn-mini-timbre ativo" onclick="MotorMusica.trocarTimbreDueto('j1', 'piano', this)"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#piano"></use></svg> Piano</button>
@@ -585,7 +581,9 @@
 
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
-    <script src="src/features/kids/piano.js?v=0fb19cb4444d"></script>
+    <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
+    <script src="src/features/kids/piano-dueto-rede.js?v=8f4def6b9e3f"></script>
+    <script src="src/features/kids/piano.js?v=81b924368e2b"></script>
 
     <script src="src/pages/arcade.js?v=e55cfc8ae9a2"></script>
 </body>

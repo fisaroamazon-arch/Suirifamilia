@@ -318,6 +318,8 @@ window.AudioMotor = window.AudioMotor || {
 // 2. CONTROLADOR DO PIANO E RENDERIZAÇÃO DAS ESTEIRAS
 window.MotorMusica = {
     modo: 'aprendizado',
+    parteSolo: 'melodia',
+    parteDueto: 'ambas',
     musicaIndex: 0,
     passoNota: 0,
     passoAcorde: 0,
@@ -469,8 +471,9 @@ window.MotorMusica = {
     mapearNota: function(codigo, harmonia = false) {
         const nota = this.infoNota(codigo);
         if (!nota) return null;
-        const alcance = !harmonia && this.modo === 'aprendizado' ? this.alcanceSolo || 1 : 1;
-        const base = harmonia || alcance === 3 ? 3 : 4;
+        const duplo = this.usaPainelDuplo();
+        const alcance = duplo ? 3 : this.alcanceSolo || 1;
+        const base = harmonia ? (duplo ? 2 : 3) : alcance === 3 ? 3 : 4;
         const teto = base + alcance - Number(nota.altura !== 'C');
         const oitavaTecla = Math.max(base, Math.min(teto, nota.oitava));
         const diferenca = nota.oitava - oitavaTecla;
@@ -480,6 +483,21 @@ window.MotorMusica = {
             cor: diferenca > 0 ? '#d6abff' : diferenca < 0 ? '#8be7ed' : '',
             etiqueta: `${nota.nome}${nota.oitava}`
         };
+    },
+
+    usaPainelDuplo: function() {
+        return this.modo === 'dueto' || (this.modo === 'aprendizado' && this.parteSolo === 'ambas');
+    },
+
+    pistasAtivas: function() {
+        const parte = this.modo === 'dueto' ? this.parteDueto : this.parteSolo;
+        return { melodia: parte !== 'base', base: parte !== 'melodia' };
+    },
+
+    partidaCompleta: function() {
+        const pistas = this.pistasAtivas();
+        return (!pistas.melodia || this.passoNota >= this.notasNaEsteira.length) &&
+            (!pistas.base || this.passoAcorde >= this.acordesNaEsteira.length);
     },
 
     notasDoToque: function(codigo, origem) {
@@ -546,7 +564,9 @@ window.MotorMusica = {
     abrirConfiguracoes: function() {
         const dialogo = document.getElementById('piano-configuracoes');
         if (!dialogo || dialogo.open) return;
-        this.retomarAposConfiguracao = this.tocandoMusica;
+        window.AudioMotor?.obterCtx();
+        const emRede = this.modo === 'dueto' && window.DuetoPiano?.pausarPartida();
+        this.retomarAposConfiguracao = !emRede && this.tocandoMusica;
         if (this.tocandoMusica) this.pausarMusica();
         this.pararTodasNotas();
         dialogo.querySelectorAll('[data-config-piano]').forEach(secao => {
@@ -780,8 +800,10 @@ window.MotorMusica = {
 
     conferirAtrasos: function() {
         const margem = this.tempoParaAcertar();
-        const trilhas = [[this.notasNaEsteira, 'passoNota']];
-        if (this.modo === 'dueto') trilhas.push([this.acordesNaEsteira, 'passoAcorde']);
+        const pistas = this.pistasAtivas();
+        const trilhas = [];
+        if (pistas.melodia) trilhas.push([this.notasNaEsteira, 'passoNota']);
+        if (pistas.base) trilhas.push([this.acordesNaEsteira, 'passoAcorde']);
         for (const [trilha, campo] of trilhas) {
             while (trilha[this[campo]] && this.tempoMusicaSegundos > trilha[this[campo]].tInicio + margem) {
                 this[campo]++;
@@ -863,9 +885,7 @@ window.MotorMusica = {
         if (modoToque) {
             this.tocarBandaAte(item.tInicio);
             this.posicionarModoToque();
-            const melodiaTerminou = this.passoNota >= this.notasNaEsteira.length;
-            const baseTerminou = this.modo !== 'dueto' || this.passoAcorde >= this.acordesNaEsteira.length;
-            if (melodiaTerminou && baseTerminou) {
+            if (this.partidaCompleta()) {
                 this.concluirMusica();
                 return;
             }
@@ -906,8 +926,9 @@ window.MotorMusica = {
     },
 
     posicionarModoToque: function() {
-        const melodia = this.notasNaEsteira[this.passoNota]?.tInicio ?? Infinity;
-        const base = this.modo === 'dueto' ? this.acordesNaEsteira[this.passoAcorde]?.tInicio ?? Infinity : Infinity;
+        const pistas = this.pistasAtivas();
+        const melodia = pistas.melodia ? this.notasNaEsteira[this.passoNota]?.tInicio ?? Infinity : Infinity;
+        const base = pistas.base ? this.acordesNaEsteira[this.passoAcorde]?.tInicio ?? Infinity : Infinity;
         const inicio = Math.min(melodia, base);
         if (Number.isFinite(inicio)) this.tempoMusicaSegundos = inicio;
     },
@@ -924,8 +945,9 @@ window.MotorMusica = {
         return (bpm / 60) * fatorEscala;
     },
 
-    togglePlay: function() {
+    togglePlay: function(local = false) {
         if (document.getElementById('piano-configuracoes')?.open) return;
+        if (!local && this.modo === 'dueto' && window.DuetoPiano?.controlarPartida()) return;
         window.AudioMotor?.carregarAmostra(this.timbreSolo);
         if (this.modo === 'dueto') {
             window.AudioMotor?.carregarAmostra(this.timbreDuetoJ1);
@@ -958,6 +980,7 @@ window.MotorMusica = {
     pausarMusica: function() {
         window.BandaPiano?.parar();
         this.tocandoMusica = false;
+        this.relogioCompartilhado = null;
         if (this.animEsteiraId) cancelAnimationFrame(this.animEsteiraId);
         this.animEsteiraId = null;
         this.atualizarBotoesPlayVisual(false, "Continuar");
@@ -966,6 +989,7 @@ window.MotorMusica = {
 
     pararMusicaEContadores: function() {
         window.BandaPiano?.parar();
+        this.relogioCompartilhado = null;
         if (this.animVisualId) cancelAnimationFrame(this.animVisualId);
         this.animVisualId = null;
         this.acertosVisuais.clear();
@@ -1078,14 +1102,17 @@ window.MotorMusica = {
                 const bpmEfetivo = this.obterBpmEfetivo();
                 const mus = this.partituraAtual;
                 const multiplicadorTempo = bpmEfetivo / (mus.bpm || 90);
-                this.tempoMusicaSegundos += deltaSegundos * multiplicadorTempo;
+                const relogio = this.relogioCompartilhado;
+                if (relogio) {
+                    this.tempoMusicaSegundos = relogio.posicao + Math.max(0, (agora - relogio.inicio) / 1000) * multiplicadorTempo;
+                } else {
+                    this.tempoMusicaSegundos += deltaSegundos * multiplicadorTempo;
+                }
 
                 this.tocarBandaAte(this.tempoMusicaSegundos);
                 if (!this.conferirAtrasos()) return;
                 const ultimaNota = this.notasNaEsteira.at(-1);
-                const melodiaPronta = this.passoNota >= this.notasNaEsteira.length;
-                const harmoniaPronta = this.modo !== 'dueto' || this.passoAcorde >= this.acordesNaEsteira.length;
-                if (ultimaNota && melodiaPronta && harmoniaPronta && this.tempoMusicaSegundos >= (mus.duracao || ultimaNota.tFim)) {
+                if (ultimaNota && this.partidaCompleta() && this.tempoMusicaSegundos >= (mus.duracao || ultimaNota.tFim)) {
                     this.concluirMusica();
                     return;
                 }
@@ -1151,11 +1178,12 @@ window.MotorMusica = {
         const agora = performance.now();
         this.efeitosEsteira = this.efeitosEsteira.filter(efeito => this.progressoDoEfeito(efeito, agora).opacidade > 0);
         if (this.modo === 'livre') return;
-        const dueto = this.modo === 'dueto';
+        const dueto = this.usaPainelDuplo();
+        const pistas = this.pistasAtivas();
         const tela = dueto ? this.cvDuetoMelodia : this.cvSolo;
         const ctx = dueto ? this.ctxDuetoMelodia : this.ctxSolo;
-        if (tela && ctx) this.desenharPista(ctx, tela, false, agora);
-        if (dueto && this.cvDuetoHarmonia && this.ctxDuetoHarmonia) {
+        if (pistas.melodia && tela && ctx) this.desenharPista(ctx, tela, false, agora);
+        if (dueto && pistas.base && this.cvDuetoHarmonia && this.ctxDuetoHarmonia) {
             this.desenharPista(this.ctxDuetoHarmonia, this.cvDuetoHarmonia, true, agora);
         }
     },
@@ -1163,8 +1191,8 @@ window.MotorMusica = {
     desenharPista: function(ctx, canvas, harmonia, agora) {
         const W = canvas._cssWidth || 390;
         const H = canvas._cssHeight || 160;
-        const layout = harmonia ? this.layoutOitava3 :
-            (this.modo === 'aprendizado' && this.layoutSolo) || this.layoutOitava4;
+        const layout = this.usaPainelDuplo() ?
+            (harmonia ? this.layoutDuetoBase : this.layoutDuetoMelodia) : this.layoutSolo || this.layoutOitava4;
         const notas = harmonia ? this.acordesNaEsteira : this.notasNaEsteira;
         const passo = harmonia ? this.passoAcorde : this.passoNota;
         const pps = this.obterPixelsPorSegundo(H);
@@ -1347,8 +1375,12 @@ window.MotorMusica = {
         };
 
         associarTeclasDeContainer(document.getElementById('teclado-piano-completo'), 1.0, 'solo');
-        associarTeclasDeContainer(document.getElementById('teclado-dueto-melodia'), 1.0, 'dueto-j1');
-        associarTeclasDeContainer(document.getElementById('teclado-dueto-harmonia'), 0.85, 'dueto-j2');
+        const melodia = document.getElementById('teclado-dueto-melodia');
+        const baseDueto = document.getElementById('teclado-dueto-harmonia');
+        if (melodia) this.layoutDuetoMelodia = this.montarTecladoAmpliado(melodia, 3, 3);
+        if (baseDueto) this.layoutDuetoBase = this.montarTecladoAmpliado(baseDueto, 3, 2);
+        associarTeclasDeContainer(melodia, 1.0, 'dueto-j1');
+        associarTeclasDeContainer(baseDueto, 0.85, 'dueto-j2');
 
         for (const [registro, base] of [['agudo', 4], ['grave', 2]]) {
             const teclado = document.getElementById(`teclado-livre-${registro}`);
@@ -1360,13 +1392,14 @@ window.MotorMusica = {
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) return;
             this.retomarAposConfiguracao = false;
+            if (this.modo === 'dueto' && window.DuetoPiano?.pausarPartida()) return;
             if (this.tocandoMusica) this.pausarMusica();
             this.pararTodasNotas();
         });
     },
 
     obterInstrumentoPorOrigem: function(seletorOrigem, codigoNota) {
-        if (seletorOrigem === 'solo') return this.timbreSolo;
+        if (seletorOrigem === 'solo' || (this.modo === 'aprendizado' && seletorOrigem.startsWith('dueto-'))) return this.timbreSolo;
         if (seletorOrigem === 'dueto-j1') return this.timbreDuetoJ1;
         if (seletorOrigem === 'dueto-j2') return this.timbreDuetoJ2;
         if (seletorOrigem.startsWith('livre-')) {
@@ -1387,6 +1420,7 @@ window.MotorMusica = {
             return chave;
         });
         this.teclasAtivasPorPointer[pointerId] = { tecla: elTecla, chaves };
+        if (this.modo === 'dueto') window.DuetoPiano?.enviarNotas(chaves, notas, instrumento);
         if (navigator.vibrate) try { navigator.vibrate(22); } catch {}
 
         if (elTecla) {
@@ -1402,6 +1436,7 @@ window.MotorMusica = {
         this.liberarEfeitoNota(pointerId);
         const ativa = this.teclasAtivasPorPointer[pointerId];
         for (const chave of ativa?.chaves || []) window.AudioMotor?.soltarVozPiano?.(chave);
+        if (this.modo === 'dueto' && ativa) window.DuetoPiano?.soltarNotas(ativa.chaves);
         delete this.teclasAtivasPorPointer[pointerId];
         if (elTecla && !Object.values(this.teclasAtivasPorPointer).some(nota => nota.tecla === elTecla)) {
             elTecla.classList.remove('tocando');
@@ -1410,6 +1445,7 @@ window.MotorMusica = {
     },
 
     pararTodasNotas: function() {
+        if (this.modo === 'dueto') window.DuetoPiano?.soltarNotas(Object.values(this.teclasAtivasPorPointer).flatMap(nota => nota.chaves));
         window.AudioMotor?.soltarTodasVozesPiano?.();
         this.teclasAtivasPorPointer = {};
         document.querySelectorAll('.tecla-branca-piano, .tecla-preta-piano').forEach(el => {
@@ -1461,6 +1497,7 @@ window.MotorMusica = {
     },
 
     trocarModo: function(novoModo) {
+        if (this.modo === 'dueto' && novoModo !== 'dueto') window.DuetoPiano?.sair();
         this.pararMusicaEContadores();
         this.modo = novoModo;
         if (novoModo === 'dueto' && this.fatorVelocidade === 'toque') {
@@ -1489,39 +1526,7 @@ window.MotorMusica = {
         if (tabL) tabL.classList.toggle('ativo', novoModo === 'livre');
         if (tabD) tabD.classList.toggle('ativo', novoModo === 'dueto');
 
-        const tabsSeletor = document.getElementById('tabs-piano-seletor-modos');
-        const boxAprendizado = document.getElementById('painel-aprendizado-box');
-        const pistaSolo = document.getElementById('pista-esteira-box');
-        const tecladoSolo = document.getElementById('teclado-piano-completo');
-        const containerLivre = document.getElementById('container-teclados-livre');
-        const containerDueto = document.getElementById('container-dueto-piano-2p');
-
-        if (novoModo === 'dueto') {
-            if (tabsSeletor) tabsSeletor.style.display = 'none';
-            if (boxAprendizado) boxAprendizado.style.display = 'none';
-            if (pistaSolo) pistaSolo.style.display = 'none';
-            if (tecladoSolo) tecladoSolo.style.display = 'none';
-            if (containerLivre) containerLivre.style.display = 'none';
-            if (containerDueto) {
-                containerDueto.style.display = 'flex';
-                containerDueto.scrollTop = 0;
-            }
-        } else if (novoModo === 'livre') {
-            if (tabsSeletor) tabsSeletor.style.display = 'flex';
-            if (boxAprendizado) boxAprendizado.style.display = 'none';
-            if (pistaSolo) pistaSolo.style.display = 'none';
-            if (tecladoSolo) tecladoSolo.style.display = 'none';
-            if (containerLivre) containerLivre.style.display = 'flex';
-            if (containerDueto) containerDueto.style.display = 'none';
-            this.limparBrilhosTeclas();
-        } else {
-            if (tabsSeletor) tabsSeletor.style.display = 'flex';
-            if (boxAprendizado) boxAprendizado.style.display = 'block';
-            if (pistaSolo) pistaSolo.style.display = 'block';
-            if (tecladoSolo) tecladoSolo.style.display = 'flex';
-            if (containerLivre) containerLivre.style.display = 'none';
-            if (containerDueto) containerDueto.style.display = 'none';
-        }
+        this.organizarPainel();
 
         this.passoNota = 0;
         this.passoAcorde = 0;
@@ -1534,6 +1539,42 @@ window.MotorMusica = {
             this.inicializarCanvasEsteiras();
             this.renderizarTodasEsteiras();
         }, 100);
+    },
+
+    alterarParteGuiada: function(parte) {
+        if (this.modo === 'dueto') {
+            if (!['melodia', 'base', 'ambas'].includes(parte)) return;
+            this.parteDueto = parte;
+        } else {
+            if (!['melodia', 'ambas'].includes(parte)) return;
+            this.parteSolo = parte;
+        }
+        this.retomarAposConfiguracao = false;
+        if (this.modo === 'dueto') window.DuetoPiano?.pausarPartida(true);
+        this.organizarPainel();
+        this.reiniciarMusica();
+        requestAnimationFrame(() => {
+            this.inicializarCanvasEsteiras();
+            this.renderizarTodasEsteiras();
+        });
+    },
+
+    organizarPainel: function() {
+        const painel = document.getElementById('tela-simon');
+        if (!painel) return;
+        const duplo = this.usaPainelDuplo();
+        const solo = this.modo === 'aprendizado' && !duplo;
+        const pistas = this.pistasAtivas();
+        painel.dataset.painelPiano = duplo ? 'duplo' : this.modo;
+        painel.querySelectorAll('[data-pista-piano]').forEach(bloco => {
+            bloco.hidden = !pistas[bloco.dataset.pistaPiano];
+        });
+        document.getElementById('tabs-piano-seletor-modos').style.display = this.modo === 'dueto' ? 'none' : 'flex';
+        document.getElementById('painel-aprendizado-box').style.display = solo ? 'block' : 'none';
+        document.getElementById('pista-esteira-box').style.display = solo ? 'block' : 'none';
+        document.getElementById('teclado-piano-completo').style.display = solo ? 'flex' : 'none';
+        document.getElementById('container-teclados-livre').style.display = this.modo === 'livre' ? 'flex' : 'none';
+        document.getElementById('container-dueto-piano-2p').style.display = duplo ? 'flex' : 'none';
     },
 
     selecionarMusica: function(idx) {
@@ -1576,7 +1617,8 @@ window.MotorMusica = {
             this.partituraAtual = {...musica, titulo: `${musica.titulo} · ${parte.titulo}`, duracao: fim - parte.segundos,
                 melodia: recortar(musica.melodia), harmonia: recortar(musica.harmonia)};
         }
-        document.querySelectorAll('[data-parte-piano]').forEach(select => { select.value = parte ? valor : ''; });
+        this.movimentoAtual = parte ? String(valor) : '';
+        document.querySelectorAll('[data-parte-piano]').forEach(select => { select.value = this.movimentoAtual; });
         document.querySelectorAll('[data-musica-piano]').forEach(rotulo => { rotulo.textContent = this.partituraAtual.titulo; });
         this.eventosBanda = window.BandaPiano?.montar(this.partituraAtual) || [];
         this.construirTrilhasMelodiaEHarmonia();
@@ -1647,11 +1689,13 @@ window.MotorMusica = {
             if (mapa.simbolo && !simbolos.includes(mapa.simbolo)) tecla.dataset.oitavaAlvo = [...simbolos, mapa.simbolo].join(' ');
         };
 
-        if (notaItem) {
+        if (notaItem && this.pistasAtivas().melodia) {
             iluminar('teclado-piano-completo', notaItem.nota);
             iluminar('teclado-dueto-melodia', notaItem.nota);
         }
-        for (const nota of acordeItem?.notas || []) iluminar('teclado-dueto-harmonia', nota, true);
+        if (this.pistasAtivas().base) {
+            for (const nota of acordeItem?.notas || []) iluminar('teclado-dueto-harmonia', nota, true);
+        }
     },
 
     limparBrilhosTeclas: function() {
