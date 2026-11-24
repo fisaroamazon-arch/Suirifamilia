@@ -1,10 +1,10 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7174';
+const CACHE='suiri-family-v7175';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
   "./src/ui/visual-v73.js?v=66da58d67c66",
-  "./styles/financas.css?v=be509af84d6d",
+  "./styles/financas.css?v=b9aae4ac282a",
   "./",
   "./index.html",
   "./src/ui/download-android.js?v=1048b2414956",
@@ -99,7 +99,7 @@ const SHELL=[
   "./src/core/swipe.js?v=14267843cb50",
   "./src/features/missions/missoes.js?v=44c347a263f3",
   "./src/ui/emoji-selector.js?v=51099e79ed38",
-  "./src/features/finances/voice-and-entry.js?v=af7d7bbbb1d8",
+  "./src/features/finances/voice-and-entry.js?v=09167114112c",
   "./src/features/finances/wallet.js?v=aec77e9028d2",
   "./src/features/savings/cofres.js?v=476f0fdddf3a",
   "./src/features/notices/recados.js?v=7da866d472eb",
