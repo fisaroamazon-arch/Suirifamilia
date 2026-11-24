@@ -1,9 +1,9 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7171';
+const CACHE='suiri-family-v7172';
 const SHELL=[
   "./",
   "./index.html",
-  "./src/ui/download-android.js?v=485855857188",
+  "./src/ui/download-android.js?v=1048b2414956",
   "./styles/tema-principal.css?v=2748698233be",
   "./src/ui/tema-principal.js?v=9ab0f9a5813c",
   "./styles/espaco-kids.css?v=44eeb2ac679f",
@@ -209,7 +209,7 @@ self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')sel
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('suiri-family-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);
- if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs)\//.test(url.pathname))return;
+ if(req.method!=='GET'||url.origin!==self.location.origin||/\/(supabase|docs|downloads)\//.test(url.pathname))return;
  const navigation=req.mode==='navigate';
  const smallAsset=/\.(js|css|png|jpg|svg|json)$/.test(url.pathname);
  const pianoSample=/\/assets\/audio\/piano\/(piano|cordas|xilofone)\.mp3$/.test(url.pathname)&&!req.headers.has('range');
