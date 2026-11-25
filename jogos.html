@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
     <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=9a473e61fdd1">
-    <link rel="stylesheet" href="styles/pages/piano.css?v=31a03e4c64dd">
+    <link rel="stylesheet" href="styles/pages/piano.css?v=e1526a2be3d8">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
 
@@ -206,6 +206,15 @@
 
         <!-- JOGO 3: TECLADO MÁGICO DO CHUÍRI (ESTEIRAS SYNTHESIA SOLO & DUETO 2P) -->
         <div id="tela-simon" class="area-jogo" data-modo-piano="aprendizado">
+            <section id="piano-orientacao" aria-labelledby="piano-orientacao-titulo">
+                <svg width="58" height="58" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="15" y="23" width="34" height="21" rx="5"/>
+                    <path d="M43 31v5M7 26C7 15 15 7 27 7m-5-4 5 4-5 5"/>
+                </svg>
+                <h2 id="piano-orientacao-titulo">Piano do Chuíri</h2>
+                <p>Vire o aparelho na horizontal para tocar.</p>
+                <button type="button" id="piano-voltar-vertical" class="btn-voltar-dueto" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Arcade</button>
+            </section>
             <button type="button" class="piano-abrir-config" id="piano-abrir-config" aria-label="Menu do piano" aria-haspopup="dialog" aria-controls="piano-configuracoes" onclick="MotorMusica.abrirConfiguracoes()">
                 <svg class="icone-svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="17" r="2"/></svg>
                 <span>Menu</span>
@@ -221,7 +230,7 @@
             </div>
 
             <!-- PISTA SOLO (ESTEIRA SYNTHESIA) -->
-            <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira de notas. A linha dourada indica o momento de tocar.">
+            <div class="pista-esteira-piano-box" id="pista-esteira-box" aria-label="Esteira de notas. A faixa laranja indica quando tocar.">
                 <canvas id="cv-esteira-piano"></canvas>
             </div>
 
@@ -302,7 +311,7 @@
                     <section data-config-piano="aprendizado dueto" class="piano-resumo-menu">
                         <p class="piano-musica-atual" data-musica-piano></p>
                         <progress id="progresso-piano" value="0" max="1" aria-label="Progresso da música"></progress>
-                        <p class="piano-guia">Toque quando a nota alcançar a linha dourada. <span class="piano-girar">Vire o celular para tocar com mais espaço.</span></p>
+                        <p class="piano-guia">No modo com relógio, toque enquanto a nota estiver na faixa laranja.</p>
                         <p class="piano-guia piano-guia-maos">Traço pontilhado para a mão esquerda e contínuo para a direita.</p>
                     </section>
                     <div class="piano-acoes-menu">
@@ -329,16 +338,31 @@
                             <select data-parte-piano onchange="MotorMusica.selecionarParte(this.value)"></select>
                         </label>
                         <p class="piano-fonte" data-fonte-piano hidden><a target="_blank" rel="noopener">Fonte da partitura</a><span></span></p>
+                        <label class="piano-alcance">Dificuldade
+                            <select id="piano-dificuldade" aria-describedby="piano-dificuldade-guia" onchange="MotorMusica.alterarDificuldade(this.value)">
+                                <option value="amador" selected>Amador</option>
+                                <option value="moderado">Moderado</option>
+                                <option value="avancado">Avançado</option>
+                            </select>
+                        </label>
+                        <p class="piano-guia" id="piano-dificuldade-guia">Amador tem menos notas, Moderado acrescenta outras e Avançado usa a partitura completa.</p>
+                        <label class="piano-alcance">Alcance do teclado
+                            <select id="piano-alcance" onchange="MotorMusica.alterarAlcance(this.value)">
+                                <option value="1">1 oitava · 13 teclas</option>
+                                <option value="2" selected>2 oitavas · 25 teclas</option>
+                                <option value="3">3 oitavas · 37 teclas</option>
+                            </select>
+                        </label>
                         <div class="piano-velocidade">
                             <span>Velocidade</span>
                             <div class="painel-velocidade-bichinhos" id="botoes-velocidade-solo" role="group" aria-label="Velocidade">
-                                <button type="button" class="btn-velocidade-bichinho" data-fator="toque" onclick="MotorMusica.mudarFatorVelocidade('toque')" title="Toque para a próxima nota"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Sem relógio</button>
-                                <button type="button" class="btn-velocidade-bichinho ativo" data-fator="0.5" onclick="MotorMusica.mudarFatorVelocidade(0.5)">50%</button>
-                                <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" onclick="MotorMusica.mudarFatorVelocidade(0.75)">75%</button>
-                                <button type="button" class="btn-velocidade-bichinho" data-fator="1.0" onclick="MotorMusica.mudarFatorVelocidade(1)">100%</button>
+                                <button type="button" class="btn-velocidade-bichinho ativo" data-fator="toque" aria-pressed="true" onclick="MotorMusica.mudarFatorVelocidade('toque')" title="Toque para a próxima nota"><svg class="kids-icon" aria-hidden="true"><use href="assets/icons-modern/kids.svg#note"></use></svg> Sem relógio</button>
+                                <button type="button" class="btn-velocidade-bichinho" data-fator="0.5" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(0.5)">50%</button>
+                                <button type="button" class="btn-velocidade-bichinho" data-fator="0.75" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(0.75)">75%</button>
+                                <button type="button" class="btn-velocidade-bichinho" data-fator="1.0" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(1)">100%</button>
                             </div>
                         </div>
-                        <p class="piano-guia">Comece em Sem relógio ou 50% e aumente quando tocar com segurança.</p>
+                        <p class="piano-guia">Em Sem relógio, a próxima nota espera você tocar.</p>
                         <div class="piano-banda" role="group" aria-label="Acompanhamento">
                             <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
                             <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
@@ -357,13 +381,6 @@
                             <select id="piano-maos-solo" onchange="MotorMusica.alterarParteGuiada(this.value)">
                                 <option value="melodia">Mão direita · melodia</option>
                                 <option value="ambas">Duas mãos · melodia e base</option>
-                            </select>
-                        </label>
-                        <label class="piano-alcance" id="piano-alcance-opcoes" hidden>Alcance do teclado
-                            <select id="piano-alcance" onchange="MotorMusica.alterarAlcance(this.value)">
-                                <option value="1">1 oitava · 13 teclas</option>
-                                <option value="2">2 oitavas · 25 teclas</option>
-                                <option value="3">3 oitavas · 37 teclas</option>
                             </select>
                         </label>
                         <div class="alternador-timbre-som">
@@ -452,7 +469,7 @@
                             </select>
                         </label>
                         <label class="piano-opcao" id="piano-treino-opcao" data-config-piano="aprendizado dueto">
-                            <input id="piano-repetir-erros" type="checkbox" onchange="MotorMusica.alterarTreino(this.checked)">
+                            <input id="piano-repetir-erros" type="checkbox" checked onchange="MotorMusica.alterarTreino(this.checked)">
                             Treino · repetir a nota sem perder vidas
                         </label>
                     </section>
@@ -603,11 +620,11 @@
     <!-- MOTOR DO PIANO E ESTEIRAS -->
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
-    <script src="src/features/kids/piano-dueto-rede.js?v=ef756f2088a2"></script>
-    <script src="src/features/kids/piano.js?v=7e54acbdb1f2"></script>
+    <script src="src/features/kids/piano-dueto-rede.js?v=aceb565da372"></script>
+    <script src="src/features/kids/piano.js?v=a47b364ee24c"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
     <script src="src/pages/arcade-recordes.js?v=a35855a9bec2"></script>
-    <script src="src/pages/arcade.js?v=07e6058ca97c"></script>
+    <script src="src/pages/arcade.js?v=36c559c5ee59"></script>
 </body>
 </html>

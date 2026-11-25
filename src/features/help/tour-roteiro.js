@@ -205,7 +205,7 @@
                     c.exemplo('#recordes-jogo', '<option>Chuíri Voador</option><option>Memória</option>');
                     c.exemplo('#recordes-resultados', '<h3>Solo</h3><ol><li><strong>12 troncos</strong></li><li><strong>9 troncos</strong></li><li><strong>7 troncos</strong></li></ol>');
                 }, resultado: '#recordes-resultados'},
-            abrir('jogos', '[data-arcade-jogo="simon"]', 'Abra o piano', 'Vire o aparelho para ganhar espaço. Use o botão Menu para escolher o modo e a música.', 'piano', '#piano-abrir-config', piano),
+            abrir('jogos', '[data-arcade-jogo="simon"]', 'Abra o piano', 'O piano funciona na horizontal. Depois de girar o aparelho, use o Menu para escolher a música e a dificuldade.', 'piano', '#piano-abrir-config', piano),
             {tela: 'piano', alvo: '#piano-abrir-config', titulo: 'Veja os modos do piano', texto: 'Em Aprender, siga a pista. Em Livre, toque as teclas. Em Dueto, combine as partes com outra pessoa.',
                 antes: piano, depois: c => { c.q('#piano-configuracoes').open = true; }, resultado: '#tabs-piano-seletor-modos'},
             abrir('jogos', '.entrada-arte', 'Abra o Espaço Arte', 'O Espaço Arte tem uma folha em tela cheia. Abra Ferramentas para ver o caderno e os pincéis.', 'arte', '#abrir-ferramentas', arte),

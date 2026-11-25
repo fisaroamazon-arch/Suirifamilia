@@ -16,7 +16,7 @@ window.DuetoPiano = (() => {
         document.querySelector('[data-piano-sair]').hidden = !sala;
         document.querySelector('[data-piano-entrar]').hidden = Boolean(sala);
         const convidado = sala && !sala.anfitriao;
-        document.querySelectorAll('#piano-configuracoes [data-estilo-piano], #seletor-musica-alvo, [data-parte-piano], #botoes-velocidade-solo button')
+        document.querySelectorAll('#piano-configuracoes [data-estilo-piano], #seletor-musica-alvo, [data-parte-piano], #piano-dificuldade, #botoes-velocidade-solo button')
             .forEach(campo => { campo.disabled = Boolean(convidado); });
         window.MotorMusica?.atualizarMenuPiano();
     }
@@ -40,7 +40,9 @@ window.DuetoPiano = (() => {
 
     function tocarRemoto(chave, nota, timbre) {
         if (!/^[A-G]#?-?\d{1,2}$/.test(nota || '') || !/^[\w#-]{1,48}$/.test(chave || '')) return;
-        const dados = window.MotorMusica.infoNota(nota);
+        const piano = window.MotorMusica;
+        if (piano.orientacaoAmpla?.matches === false) return;
+        const dados = piano.infoNota(nota);
         if (!dados || vozesRemotas.size >= 32) return;
         const voz = 'dueto-remoto-' + chave;
         window.AudioMotor?.iniciarVozPiano(voz, dados.freq, .62, timbre);
@@ -50,9 +52,12 @@ window.DuetoPiano = (() => {
 
     function iniciarAgendado(partida, atual) {
         const piano = window.MotorMusica;
+        const nivel = partida.nivel ?? 'avancado';
         if (!Number.isInteger(partida.musica) || !piano.catalogoMusicas[partida.musica] ||
             ![.5, .75, 1].includes(partida.velocidade) || typeof partida.movimento !== 'string' ||
+            !Object.hasOwn(piano.niveis, nivel) ||
             !Number.isFinite(partida.inicio) || !Number.isFinite(partida.posicao)) return;
+        if (piano.orientacaoAmpla?.matches === false) return pausarPartida(true);
         const atraso = partida.inicio - (atual.ajusteRelogio || 0) - Date.now();
         if (atraso > 8000 || atraso < -2000) return;
         clearTimeout(atual.inicio);
@@ -60,12 +65,14 @@ window.DuetoPiano = (() => {
             piano.selecionarMusica(partida.musica);
             if (partida.movimento) piano.selecionarParte(partida.movimento);
         }
+        piano.alterarDificuldade(nivel);
         piano.mudarFatorVelocidade(partida.velocidade);
         const inicio = performance.now() + atraso;
         atual.partida = partida;
         mostrar('Preparando para tocar…');
         atual.inicio = setTimeout(() => {
             if (sala !== atual) return;
+            if (piano.orientacaoAmpla?.matches === false) return pausarPartida(true);
             atual.inicio = null;
             document.getElementById('piano-configuracoes')?.close();
             mostrar('Dueto em dois celulares');
@@ -87,6 +94,7 @@ window.DuetoPiano = (() => {
         if (reiniciar) piano.reiniciarMusica();
         else if (piano.tocandoMusica) piano.pausarMusica();
         piano.pararTodasNotas();
+        for (const chave of vozesRemotas.keys()) pararNota(chave);
         mostrar('Dueto pausado. Quem criou a sala pode continuar.');
     }
 
@@ -133,8 +141,10 @@ window.DuetoPiano = (() => {
 
     async function conectar(codigo, anfitriao) {
         if (sala || !codigoValido.test(codigo)) return;
-        const atual = {codigo, anfitriao, eu: crypto.randomUUID()};
+        const piano = window.MotorMusica;
+        const atual = {codigo, anfitriao, eu: crypto.randomUUID(), velocidadeAnterior: piano.fatorVelocidade};
         sala = atual;
+        if (piano.fatorVelocidade === 'toque') piano.mudarFatorVelocidade(.5);
         mostrar('Conectando à sala…');
         try {
             const config = window.SuiriConfig;
@@ -223,7 +233,9 @@ window.DuetoPiano = (() => {
         if (atual.canal) cliente.removeChannel(atual.canal);
         const campo = document.querySelector('[data-piano-link]');
         if (campo) { campo.hidden = true; campo.value = ''; }
-        if (window.MotorMusica?.tocandoMusica) window.MotorMusica.pausarMusica();
+        const piano = window.MotorMusica;
+        if (piano.tocandoMusica) piano.pausarMusica();
+        piano.mudarFatorVelocidade(atual.velocidadeAnterior);
         mostrar(texto);
     }
 
@@ -247,11 +259,12 @@ window.DuetoPiano = (() => {
         const musica = piano.musicaIndex;
         const movimento = piano.movimentoAtual || '';
         const velocidade = piano.fatorVelocidade;
+        const nivel = piano.dificuldade;
         const recomecar = !sala.partida || piano.encerrada || sala.partida.musica !== musica ||
-            sala.partida.movimento !== movimento || sala.partida.velocidade !== velocidade;
+            sala.partida.movimento !== movimento || sala.partida.velocidade !== velocidade || sala.partida.nivel !== nivel;
         const contagem = piano.contagemPendente;
         const posicao = recomecar ? -piano.tempoParaAcertar() * 3 : contagem?.destino ?? piano.tempoMusicaSegundos;
-        const partida = {musica, movimento, velocidade, recomecar, posicao,
+        const partida = {musica, movimento, velocidade, nivel, recomecar, posicao,
             contar: (recomecar || Boolean(contagem)) && piano.metronomoLigado, inicio: Date.now() + 1800};
         enviar('tocar', partida);
         iniciarAgendado(partida, sala);
