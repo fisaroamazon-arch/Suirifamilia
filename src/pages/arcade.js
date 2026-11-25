@@ -253,6 +253,18 @@
             if (motor.rodando) motor.desenhar();
         }
 
+        const niveisAcao = {
+            amador: { nome: 'Amador', ritmo: .86, abertura: 1.14, skate: 132, grade: -1, raio: 1.13 },
+            moderado: { nome: 'Moderado', ritmo: 1, abertura: 1, skate: 116, grade: 0, raio: 1 },
+            avancado: { nome: 'Avançado', ritmo: 1.18, abertura: .86, skate: 99, grade: 1, raio: .86 }
+        };
+
+        function definirNivelAcao(motor, nivel) {
+            if (!Object.hasOwn(niveisAcao, nivel) || motor.rodando) return;
+            motor.nivel = nivel;
+            if (motor === MotorFlappy) motor.preverCenario(motor.cenarioEscolhido);
+        }
+
         const GerenciadorArcade = {
             telaAtiva: 'menu',
             menusAntesDaPartida: new Map(),
@@ -279,7 +291,7 @@
                 try { localStorage.setItem(this.chaveTrilha(), this.trilhaLigada() ? 'off' : 'on'); } catch { return; }
                 this.atualizarControleTrilha();
                 if (!this.trilhaLigada()) TrilhaSonoraArcade.parar();
-                else if (!this.partidaPausada && this.telaAtiva !== 'menu' && this.telaAtiva !== 'simon') TrilhaSonoraArcade.iniciar();
+                else if (!this.partidaPausada && !['menu', 'simon', 'eco'].includes(this.telaAtiva)) TrilhaSonoraArcade.iniciar();
             },
 
             motorAtivo: function() {
@@ -425,6 +437,8 @@
                     MotorBolhas.parar();
                     MotorVelha.parar();
                     MotorMemoria.parar();
+                    window.MotorEco?.parar();
+                    window.MotorCampo?.parar();
                     document.querySelectorAll('.area-jogo').forEach(el => el.style.display = 'none');
                     document.getElementById('menu-arcade').style.display = 'flex';
                     document.querySelector(`[data-arcade-jogo="${this.telaAtiva}"]`)?.focus({ preventScroll: true });
@@ -432,6 +446,12 @@
                     document.body.dataset.arcadeTela = 'menu';
                     document.getElementById('rotulo-voltar-arcade').textContent = 'Vila';
                 }
+            },
+
+            escolherPartida: function() {
+                const jogo = this.telaAtiva;
+                this.voltarAcao();
+                this.abrirJogo(jogo);
             },
 
             abrirJogo: function(idJogo, telaInteira = false) {
@@ -450,13 +470,15 @@
                 } else if (menu && this.menusAntesDaPartida.has(idJogo)) {
                     menu.innerHTML = this.menusAntesDaPartida.get(idJogo);
                 }
+                const seletorNivel = menu?.querySelector('[data-arcade-nivel]');
+                if (seletorNivel) seletorNivel.value = this.motorAtivo().nivel;
                 document.getElementById('rotulo-voltar-arcade').textContent = 'Arcade';
                 document.querySelectorAll(`#tela-${idJogo} [data-arcade-imagem]`).forEach(img => {
                     const parado = matchMedia('(prefers-reduced-motion: reduce)').matches ? '-parado' : '';
                     img.src = `assets/images/kids/${img.dataset.arcadeImagem}${parado}.webp`;
                 });
 
-                if (idJogo === 'simon' || !this.trilhaLigada()) {
+                if (idJogo === 'simon' || idJogo === 'eco' || !this.trilhaLigada()) {
                     TrilhaSonoraArcade.parar();
                 } else {
                     TrilhaSonoraArcade.iniciar();
@@ -485,6 +507,12 @@
                 } else if (idJogo === 'memoria') {
                     document.getElementById('tela-memoria').style.display = 'flex';
                     MotorMemoria.trocarModo(MotorMemoria.modo);
+                } else if (idJogo === 'eco') {
+                    document.getElementById('tela-eco').style.display = 'block';
+                    window.MotorEco?.montar();
+                } else if (idJogo === 'campo') {
+                    document.getElementById('tela-campo').style.display = 'block';
+                    window.MotorCampo?.montar();
                 }
                 document.querySelector(`#tela-${idJogo} .overlay-jogo button, #tela-${idJogo} .btn-modo-som-tab`)
                     ?.focus({ preventScroll: true });
@@ -580,6 +608,7 @@
         const MotorFlappy = {
             canvas: null, ctx: null, anim: null, rodando: false,
             modo: 1, // 1 = Solo, 2 = Cooperativo
+            nivel: 'moderado',
             cenarioEscolhido: 'viagem',
             cenario: 'serra',
             obstaculosPassados: 0,
@@ -604,10 +633,13 @@
             montar: function() {
                 this.canvas = document.getElementById('cv-flappy');
                 this.ctx = this.canvas.getContext('2d');
-                const r = this.canvas.parentElement.getBoundingClientRect();
-                this.canvas.width = r.width;
-                this.canvas.height = r.height;
-
+                this.camadaPersonagens = document.getElementById('flappy-personagens');
+                this.sombra = document.getElementById('flappy-sombra');
+                this.ajustarCampo();
+                if (!this.observadorCampo && typeof ResizeObserver !== 'undefined') {
+                    this.observadorCampo = new ResizeObserver(() => this.ajustarEscalaPersonagens());
+                    this.observadorCampo.observe(this.canvas.parentElement);
+                }
                 this.p1.el = document.getElementById('chuiri-voador-gif-el');
                 this.p2.el = document.getElementById('gato-voador-gif-el');
 
@@ -652,6 +684,14 @@
             preverCenario: function(valor) {
                 this.cenarioEscolhido = Object.hasOwn(cenariosVoo, valor) ? valor : 'viagem';
                 this.cenario = this.cenarioEscolhido === 'viagem' ? 'serra' : this.cenarioEscolhido;
+                const corrida = document.getElementById('flappy-corrida');
+                if (corrida) {
+                    const melhor = this.lerMelhorVoo();
+                    corrida.disabled = !melhor;
+                    document.getElementById('flappy-corrida-info').textContent = melhor
+                        ? `Melhor voo neste cenário e nível · ${melhor.troncos} ${melhor.troncos === 1 ? 'tronco' : 'troncos'}`
+                        : 'Termine um voo solo neste cenário e nível para liberar a corrida.';
+                }
                 if (this.canvas && !this.rodando) {
                     this.obstaculos = [];
                     this.moedasNoAr = [];
@@ -661,8 +701,95 @@
                 }
             },
 
-            iniciar: function(modoEscolhido = 1) {
+            chaveMelhorVoo: function() {
+                let perfil = 'visitante';
+                try { perfil = JSON.parse(localStorage.getItem('suiri_perfil_ativo') || '{}').id || perfil; } catch {}
+                return `suiri:arcade:voo:v1:${perfil}:${this.cenarioEscolhido}:${this.nivel}`;
+            },
+
+            lerMelhorVoo: function(chave = this.chaveMelhorVoo()) {
+                try {
+                    const voo = JSON.parse(localStorage.getItem(chave) || 'null');
+                    if (voo && Number.isInteger(voo.passos) && voo.passos >= 24 && Number.isInteger(voo.troncos) &&
+                        voo.troncos >= 0 && Number.isInteger(voo.semente) && (voo.semente >>> 0) === voo.semente &&
+                        [voo.largura, voo.altura].every(tamanho => Number.isInteger(tamanho) && tamanho >= 120 && tamanho <= 10000) &&
+                        Array.isArray(voo.saltos) && voo.saltos.length <= 25000 && voo.saltos[0] === 0 &&
+                        voo.saltos.every((salto, i, saltos) => Number.isInteger(salto) && salto < voo.passos &&
+                            (i === 0 || salto > saltos[i - 1]))) return voo;
+                } catch {}
+                return null;
+            },
+
+            superouVoo: function(recorde) {
+                return this.obstaculosPassados > recorde.troncos ||
+                    (this.obstaculosPassados === recorde.troncos && this.passosVoo > recorde.passos);
+            },
+
+            salvarMelhorVoo: function() {
+                if (this.modo !== 1 || this.passosVoo < 24 || !this.saltosVoo?.length ||
+                    this.saltosVoo.length > 25000) return false;
+                const atual = this.lerMelhorVoo(this.chaveVooEmJogo);
+                if (atual && !this.superouVoo(atual)) return false;
+                const voo = {
+                    largura: this.canvas.width, altura: this.canvas.height, passos: this.passosVoo,
+                    semente: this.sementeVoo, troncos: this.obstaculosPassados, saltos: this.saltosVoo
+                };
+                try {
+                    localStorage.setItem(this.chaveVooEmJogo, JSON.stringify(voo));
+                    return true;
+                } catch {
+                    return false;
+                }
+            },
+
+            ajustarCampo: function(voo) {
+                const {width, height} = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = voo?.largura ?? (Math.round(width) || 320);
+                this.canvas.height = voo?.altura ?? (Math.round(height) || 560);
+                this.camadaPersonagens.style.width = `${this.canvas.width}px`;
+                this.camadaPersonagens.style.height = `${this.canvas.height}px`;
+                this.ajustarEscalaPersonagens();
+            },
+
+            ajustarEscalaPersonagens: function() {
+                const {width, height} = this.canvas.getBoundingClientRect();
+                if (width && height) {
+                    this.camadaPersonagens.style.transform = `scale(${width / this.canvas.width}, ${height / this.canvas.height})`;
+                }
+            },
+
+            sortearPercurso: function() {
+                this.estadoSemente = (Math.imul(1664525, this.estadoSemente) + 1013904223) >>> 0;
+                return this.estadoSemente / 2 ** 32;
+            },
+
+            atualizarSombra: function() {
+                if (!this.vooParaSuperar) return;
+                if (this.passosVoo >= this.vooParaSuperar.passos) {
+                    this.sombra.hidden = true;
+                    return;
+                }
+                if (this.vooParaSuperar.saltos[this.proximoSaltoSombra] === this.passosVoo) {
+                    this.velSombra = this.p1.imp;
+                    this.proximoSaltoSombra++;
+                }
+                this.velSombra += this.p1.grav;
+                this.posicaoSombra += this.velSombra;
+                this.sombra.style.top = `${this.posicaoSombra}px`;
+                this.sombra.style.transform = `rotate(${Math.min(6, Math.max(-10, this.velSombra * .9))}deg)`;
+            },
+
+            iniciar: function(modoEscolhido = 1, corrida = false) {
+                const voo = corrida && modoEscolhido === 1 ? this.lerMelhorVoo() : null;
+                if (corrida && !voo) return;
                 this.modo = modoEscolhido;
+                this.vooParaSuperar = voo;
+                this.chaveVooEmJogo = this.chaveMelhorVoo();
+                this.sementeVoo = voo?.semente ?? Math.floor(Math.random() * 2 ** 32);
+                this.estadoSemente = this.sementeVoo;
+                this.passosVoo = 0;
+                this.saltosVoo = [];
+                this.ajustarCampo(voo);
                 this.preverCenario(this.cenarioEscolhido);
                 this.obstaculos = [];
                 this.moedasNoAr = [];
@@ -678,17 +805,29 @@
                 tentarVibrar(35);
 
                 const yInicial = this.canvas.height / 2 - 40;
+                this.posicaoSombra = yInicial;
+                this.velSombra = 0;
+                this.proximoSaltoSombra = 0;
+                this.sombra.style.top = `${yInicial}px`;
+                this.sombra.style.left = '32px';
+                this.sombra.style.transform = '';
+                this.sombra.hidden = !voo;
+                const recorde = document.getElementById('hud-recorde-voo');
+                recorde.hidden = !voo;
+                recorde.textContent = voo ? `Melhor voo · ${voo.troncos} ${voo.troncos === 1 ? 'tronco' : 'troncos'}` : '';
 
                 // Reset P1
                 this.p1.y = yInicial;
                 this.p1.vy = 0;
                 this.p1.vivo = true;
+                this.p1.renascerPendente = false;
                 this.p1.xBase = this.modo === 2 ? 40 : 50;
 
                 // Reset P2
                 this.p2.y = yInicial + 20;
                 this.p2.vy = 0;
                 this.p2.vivo = (this.modo === 2);
+                this.p2.renascerPendente = false;
                 this.p2.xBase = 85;
 
                 document.getElementById('placar-flappy').textContent = '0';
@@ -734,6 +873,8 @@
                 if (!this.rodando) return;
                 const p = (jogador === 1) ? this.p1 : this.p2;
                 if (!p.vivo) return;
+                if (this.modo === 1 && this.saltosVoo.length <= 25000 &&
+                    this.saltosVoo.at(-1) !== this.passosVoo) this.saltosVoo.push(this.passosVoo);
 
                 if (this.aguardandoPrimeiroToque) {
                     this.aguardandoPrimeiroToque = false;
@@ -776,6 +917,8 @@
                 GerenciadorArcade.atualizarControlePausa(false, this);
                 if (this.anim) cancelAnimationFrame(this.anim);
                 this.anim = null;
+                if (this.sombra) this.sombra.hidden = true;
+                document.getElementById('hud-recorde-voo').hidden = true;
                 document.getElementById('flappy-primeiro-toque').hidden = true;
                 if (this.p1.el) this.p1.el.style.display = 'none';
                 if (this.p2.el) this.p2.el.style.display = 'none';
@@ -791,11 +934,14 @@
 
             obterEspacoAtual: function() {
                 const espacoInicial = Math.min(290, this.canvas.height * .62);
-                return espacoInicial * (1 - .31 * this.obterProgresso());
+                return Math.min(this.canvas.height - 36,
+                    espacoInicial * (1 - .31 * this.obterProgresso()) * niveisAcao[this.nivel].abertura);
             },
 
             atualizar: function() {
                 if (this.aguardandoPrimeiroToque) return;
+                this.atualizarSombra();
+                this.passosVoo++;
                 // Ciclo senoidal suave de troca de profundidade e avanço/recuo
                 this.cicloAnimProfundidade += 0.045;
                 const balancoX = Math.sin(this.cicloAnimProfundidade) * 22;
@@ -871,12 +1017,13 @@
                 // Spawn de troncos e itens
                 this.timer++;
                 const progressoVoo = this.obterProgresso();
-                const intervaloSpawn = 137 - progressoVoo * 41;
+                const ritmo = niveisAcao[this.nivel].ritmo;
+                const intervaloSpawn = (137 - progressoVoo * 41) / ritmo;
                 if (this.timer > intervaloSpawn) {
                     this.timer = 0;
                     const espaco = this.obterEspacoAtual();
                     const variacao = this.canvas.height * (.017 + .13 * progressoVoo);
-                    const centro = this.centroPassagem + (Math.random() * 2 - 1) * variacao;
+                    const centro = this.centroPassagem + (this.sortearPercurso() * 2 - 1) * variacao;
                     const topo = Math.max(20, Math.min(this.canvas.height - espaco - 37, centro - espaco / 2));
                     this.centroPassagem = topo + espaco / 2;
 
@@ -896,7 +1043,7 @@
                             coletada: false,
                             r: 16
                         });
-                    } else if (Math.random() < 0.45) {
+                    } else if (this.sortearPercurso() < 0.45) {
                         this.moedasNoAr.push({
                             x: this.canvas.width + this.larguraTronco / 2,
                             y: topo + espaco / 2,
@@ -906,7 +1053,7 @@
                     }
                 }
 
-                const velRolagem = 2.12 + progressoVoo * 1.4;
+                const velRolagem = (2.12 + progressoVoo * 1.4) * ritmo;
 
                 // Movimento e colisão com troncos
                 for (let i = this.obstaculos.length - 1; i >= 0; i--) {
@@ -1005,7 +1152,7 @@
             },
 
             mostrarImpacto: function(x, y, tipo) {
-                const tela = document.getElementById('tela-flappy');
+                const tela = this.camadaPersonagens;
                 if (!tela) return;
                 const efeito = document.createElement('span');
                 efeito.className = 'impacto-voo impacto-' + tipo;
@@ -1176,8 +1323,15 @@
             },
 
             fim: function() {
-                window.RecordesArcade?.registrar('flappy', this.modo === 2 ? 'Dupla' : 'Solo',
+                const modalidade = this.modo === 2 ? 'Dupla' : 'Solo';
+                window.RecordesArcade?.registrar('flappy', `${modalidade} · ${niveisAcao[this.nivel].nome}`,
                     this.obstaculosPassados, `${this.obstaculosPassados} troncos`);
+                const corrida = this.vooParaSuperar;
+                const novoRecorde = this.salvarMelhorVoo();
+                const melhor = this.modo === 1 ? this.lerMelhorVoo(this.chaveVooEmJogo) : null;
+                const recado = corrida ? (this.superouVoo(corrida) ? 'Você superou seu melhor voo!' :
+                    `Seu melhor voo neste cenário passou por ${corrida.troncos} ${corrida.troncos === 1 ? 'tronco' : 'troncos'}.`) :
+                    (novoRecorde ? 'Novo melhor voo neste cenário!' : '');
                 this.parar();
                 tentarVibrar(60);
                 const ov = document.getElementById('over-flappy');
@@ -1187,10 +1341,13 @@
                         <h2 style="color:#ef4444;">${tituloModo}</h2>
                         <p>Troncos superados: <strong>${this.obstaculosPassados}</strong><br>
                         <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${this.moedasGanhasPartida} Moedas conquistadas!</span></p>
+                        ${recado ? `<p class="flappy-resultado-corrida">${recado}</p>` : ''}
                         <div style="display:flex; flex-direction:column; gap:8px;">
-                            <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(${this.modo})">Jogar Novamente</button>
+                            <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(${this.modo}, ${Boolean(corrida)})">${corrida ? 'Correr de novo' : 'Jogar novamente'}</button>
+                            ${melhor && !corrida ? '<button type="button" class="btn-acao-jogo flappy-corrida" onclick="MotorFlappy.iniciar(1, true)">Correr contra meu melhor voo</button>' : ''}
                             <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorFlappy.iniciar(${this.modo === 1 ? 2 : 1})">${this.modo === 1 ? '👥 Modo 2 Jogadores (Dueto)' : '👤 Modo 1 Jogador (Solo)'}</button>
                         </div>
+                        <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                         <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                     </div>
                 `;
@@ -1204,6 +1361,7 @@
         const MotorQuebraBlocos = {
             canvas: null, ctx: null, anim: null, rodando: false,
             modo: 1,
+            nivel: 'moderado',
             faseAtual: 1,
             vidas: 3,
             skate: { x: 140, y: 0, w: 98, h: 22 },
@@ -1328,8 +1486,9 @@
                 const arena = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = Math.round(arena.width);
                 this.canvas.height = Math.round(arena.height);
-                this.skate.w = this.modo === 1 ? Math.min(116, this.canvas.width * .35) : 98;
-                this.skateTopo.w = 98;
+                const nivel = niveisAcao[this.nivel];
+                this.skate.w = Math.min(this.modo === 1 ? nivel.skate : nivel.skate - 18, this.canvas.width * .35);
+                this.skateTopo.w = this.skate.w;
                 this.teclas.clear();
                 this.skate.y = this.canvas.height - 90;
                 this.skate.x = this.canvas.width / 2 - this.skate.w / 2;
@@ -1338,8 +1497,7 @@
 
                 this.bola.x = this.canvas.width / 2;
                 this.bola.y = this.canvas.height / 2;
-                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
-                this.bola.vy = (Math.random() < 0.5 ? -1 : 1) * 3.4;
+                this.resetarBolaPong(Math.random() < .5 ? -1 : 1);
 
                 if (this.modo === 1) {
                     this.gerarGradeBlocos();
@@ -1356,9 +1514,10 @@
             gerarGradeBlocos: function() {
                 this.blocos = [];
                 const alturaBloco = 22;
+                const ajuste = niveisAcao[this.nivel].grade;
                 const distancia = alturaBloco + 7;
                 const limite = Math.max(1, Math.floor((this.skate.y - 83) / distancia));
-                const linhas = Math.min(7, this.faseAtual + 1, limite);
+                const linhas = Math.min(7, Math.max(1, this.faseAtual + 1 + ajuste), limite);
                 const colunas = Math.min(7, this.faseAtual + 4);
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
@@ -1373,7 +1532,7 @@
                             w: larguraBloco - 6,
                             h: alturaBloco,
                             cor: cor,
-                            resistencia: this.faseAtual >= 4 && (l * 2 + c) % 4 === 0 ? 2 : 1,
+                            resistencia: this.faseAtual >= 4 - ajuste && (l * 2 + c) % 4 === 0 ? 2 : 1,
                             vivo: true
                         });
                     }
@@ -1484,7 +1643,7 @@
                     }
 
                     this.obstaculoTimer++;
-                    if (this.pontosJ1 + this.pontosJ2 >= 2 && this.obstaculoTimer > 310) {
+                    if (this.pontosJ1 + this.pontosJ2 >= 2 && this.obstaculoTimer > 310 / niveisAcao[this.nivel].ritmo) {
                         this.obstaculoTimer = 0;
                         if (this.blocos.filter(b => b.vivo).length < 3) {
                             this.adicionarObstaculoCentroPong();
@@ -1587,7 +1746,7 @@
                 this.bolaEmEspera = false;
                 this.posicionarBolaNoSkate();
                 this.bola.vx = this.bola.x <= this.canvas.width / 2 ? 1.35 : -1.35;
-                this.bola.vy = -Math.min(5.65, 2.45 + (this.faseAtual - 1) * .38);
+                this.bola.vy = -Math.min(5.65, 2.45 + (this.faseAtual - 1) * .38) * niveisAcao[this.nivel].ritmo;
                 document.getElementById('blocos-dica-saque').hidden = true;
                 AudioMotor.tocarEfeito('rebote');
             },
@@ -1595,8 +1754,9 @@
             resetarBolaPong: function(direcaoY) {
                 this.bola.x = this.canvas.width / 2;
                 this.bola.y = this.canvas.height / 2;
-                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8;
-                this.bola.vy = direcaoY * 3.4;
+                const ritmo = niveisAcao[this.nivel].ritmo;
+                this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8 * ritmo;
+                this.bola.vy = direcaoY * 3.4 * ritmo;
             },
 
             desenhar: function() {
@@ -1719,10 +1879,10 @@
 
             fim: function() {
                 if (this.modo === 2) {
-                    window.RecordesArcade?.registrar('quebrablocos', 'Skate Pong',
+                    window.RecordesArcade?.registrar('quebrablocos', `Skate Pong · ${niveisAcao[this.nivel].nome}`,
                         this.pontosJ1 - this.pontosJ2, `${this.pontosJ1} × ${this.pontosJ2}`, 'Base × Topo');
                 } else {
-                    window.RecordesArcade?.registrar('quebrablocos', 'Solo',
+                    window.RecordesArcade?.registrar('quebrablocos', `Solo · ${niveisAcao[this.nivel].nome}`,
                         this.totalDestruidos, `${this.totalDestruidos} blocos`, `Fase ${this.faseAtual}`);
                 }
                 this.parar();
@@ -1742,6 +1902,7 @@
                                 <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)">Jogar Outra Partida (2P)</button>
                                 <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorQuebraBlocos.iniciar(1)">Modo Solo (Quebra-Blocos)</button>
                             </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                             <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                         </div>
                     `;
@@ -1756,6 +1917,7 @@
                                 <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)">Jogar Novamente</button>
                                 <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-bottom-color:#075985;" onclick="MotorQuebraBlocos.iniciar(2)">👥 Jogar Duelo (Skate Pong)</button>
                             </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                             <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                         </div>
                     `;
@@ -1770,6 +1932,7 @@
         const MotorBolhas = {
             canvas: null, ctx: null, anim: null, rodando: false,
             modo: 'solo',
+            nivel: 'moderado',
             estouradasJ1: 0,
             estouradasJ2: 0,
             vidasJ1: 5,
@@ -1915,9 +2078,10 @@
                 }
 
                 const progresso = this.obterProgresso();
-                const velBase = this.modo === 'rush' ? 1.18 + 1.45 * progresso : .86 + 1.15 * progresso;
-                const variacao = .3 + .95 * progresso;
-                const raio = 36 - 13 * progresso + Math.random() * 5;
+                const nivel = niveisAcao[this.nivel];
+                const velBase = (this.modo === 'rush' ? 1.18 + 1.45 * progresso : .86 + 1.15 * progresso) * nivel.ritmo;
+                const variacao = (.3 + .95 * progresso) * nivel.ritmo;
+                const raio = (36 - 13 * progresso + Math.random() * 5) * nivel.raio;
                 let x, y, vx, vy;
 
                 if (this.modo === 'rush') {
@@ -2077,8 +2241,8 @@
                     if (!segundos) return this.fim();
                 }
                 const progresso = this.obterProgresso();
-                const intervalo = this.modo === 'rush' ? 1100 - progresso * 805 :
-                    (this.modo === 'duelo' ? 1330 : 1470) - progresso * 820;
+                const intervalo = (this.modo === 'rush' ? 1100 - progresso * 805 :
+                    (this.modo === 'duelo' ? 1330 : 1470) - progresso * 820) / niveisAcao[this.nivel].ritmo;
                 this.atualizarBomba(agora);
 
                 if (agora - this.ultimoSpawn > intervalo) {
@@ -2241,7 +2405,7 @@
             fim: function() {
                 const modos = {solo:'Sobrevivência', duelo:'Duelo', rush:'Rush'};
                 const bolhas = this.estouradasJ1 + (this.modo === 'rush' ? this.estouradasJ2 : 0);
-                window.RecordesArcade?.registrar('bolhas', modos[this.modo], bolhas, `${bolhas} bolhas`);
+                window.RecordesArcade?.registrar('bolhas', `${modos[this.modo]} · ${niveisAcao[this.nivel].nome}`, bolhas, `${bolhas} bolhas`);
                 this.parar();
                 tentarVibrar([60, 50, 60]);
                 GerenciadorArcade.controlarBarraSuperior(true);
@@ -2269,6 +2433,7 @@
                                 <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('rush')">Jogar Outro Rush (3 Min)</button>
                                 <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorBolhas.iniciarModo('solo')">Modo Sobrevivência (1P)</button>
                             </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                             <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                         </div>
                     `;
@@ -2300,6 +2465,7 @@
                                 <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('duelo')">Jogar Novamente (Duelo)</button>
                                 <button class="btn-acao-jogo" style="background:#0284c7; border-bottom-color:#0369a1;" onclick="MotorBolhas.iniciarModo('solo')">Modo Solo (1 Jogador)</button>
                             </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                             <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                         </div>
                     `;
@@ -2316,6 +2482,7 @@
                                 <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-bottom-color:#9d174d;" onclick="MotorBolhas.iniciarModo('duelo')">👥 Jogar Duelo (2P)</button>
                                 <button class="btn-acao-jogo" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-bottom-color:#b45309;" onclick="MotorBolhas.iniciarModo('rush')">⚡ Modo Rush (3 Minutos)</button>
                             </div>
+                            <button class="btn-link-voltar" onclick="GerenciadorArcade.escolherPartida()">Opções da partida</button>
                             <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao Menu</button>
                         </div>
                     `;
@@ -2939,6 +3106,7 @@
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     GerenciadorArcade.pausar();
+                    if (GerenciadorArcade.telaAtiva === 'eco') window.MotorEco?.pausar();
                     TrilhaSonoraArcade.audio?.pause();
                 } else if (!GerenciadorArcade.partidaPausada && TrilhaSonoraArcade.tocando && GerenciadorArcade.trilhaLigada()) {
                     TrilhaSonoraArcade.audio?.play()?.catch(() => {});

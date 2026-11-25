@@ -9,7 +9,7 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=9a473e61fdd1">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=44dbd8555622">
     <link rel="stylesheet" href="styles/pages/piano.css?v=e1526a2be3d8">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
@@ -62,7 +62,7 @@
                         <svg class="icone-svg" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="m4.5 16.5-1.5 3 3-1.5M12 15l-3-3m5.5-2.5L16 8m-6.5 4.5L11 11M9 6l6 6M12 3l9 9-4.5 4.5-9-9L12 3z"/></svg>
                     </span>
                     <strong class="arcade-card-titulo">Chuíri Voador</strong>
-                    <span class="arcade-card-descricao">Passe por entre os troncos.</span>
+                    <span class="arcade-card-descricao">Passe pelos troncos ou corra contra seu melhor voo.</span>
                     <span class="tag-premio-card">10 troncos = 1 🪙</span>
                 </button>
 
@@ -113,7 +113,23 @@
                     </span>
                     <strong class="arcade-card-titulo">Memória 3D</strong>
                     <span class="arcade-card-descricao">Encontre os pares de cartas.</span>
-                    <span class="tag-premio-card">4, 6 ou 8 pares</span>
+                    <span class="tag-premio-card">4 a 32 pares</span>
+                </button>
+                <button type="button" class="card-jogo-grade card-eco" data-arcade-jogo="eco" onclick="GerenciadorArcade.abrirJogo('eco')">
+                    <span class="icone-jogo-grade" aria-hidden="true">
+                        <svg class="icone-svg" width="26" height="26" viewBox="0 0 24 24"><path d="M9 17V5l9-2v12m3-5a4 4 0 0 1 0 5"/><circle cx="6" cy="17" r="3"/><circle cx="15" cy="15" r="3"/></svg>
+                    </span>
+                    <strong class="arcade-card-titulo">Eco Musical</strong>
+                    <span class="arcade-card-descricao">Escute a sequência do Chuíri e repita de ouvido.</span>
+                    <span class="tag-premio-card">Memória e ouvido</span>
+                </button>
+                <button type="button" class="card-jogo-grade card-campo" data-arcade-jogo="campo" onclick="GerenciadorArcade.abrirJogo('campo')">
+                    <span class="icone-jogo-grade" aria-hidden="true">
+                        <svg class="icone-svg" width="26" height="26" viewBox="0 0 24 24"><path d="M5 21V4m0 1c5-5 9 3 14-1v10c-5 4-9-4-14 1M2 21h8"/></svg>
+                    </span>
+                    <strong class="arcade-card-titulo">Campo Minado</strong>
+                    <span class="arcade-card-descricao">Siga as pistas e marque as minas no jardim.</span>
+                    <span class="tag-premio-card">Três dificuldades</span>
                 </button>
             </div>
         </main>
@@ -130,6 +146,7 @@
                     Moedas: <strong id="placar-moedas-ganhas-flappy" style="color:#d97706;">0</strong>
                 </div>
                 <span id="hud-cenario-flappy" class="placar-cenario-voo">Serra ao amanhecer</span>
+                <span id="hud-recorde-voo" class="placar-recorde-voo" hidden></span>
                 <div class="placar-item" id="hud-status-2p-flappy" style="display:none; font-size:11px;">
                     <span id="badge-p1-flappy-vivo" style="color:#0284c7;">💙 P1</span>
                     <span id="badge-p2-flappy-vivo" style="color:#ec4899; margin-left:4px;">💖 P2</span>
@@ -139,13 +156,23 @@
             <p class="arcade-dica-palco" id="flappy-primeiro-toque" hidden>Toque para começar a voar</p>
 
             <!-- Personagens Voador 1 (Chuíri) e 2 (Gato) -->
-            <img id="chuiri-voador-gif-el" class="personagem-flappy-el" data-arcade-imagem="voando" decoding="async" alt="Chuíri Voando" />
-            <img id="gato-voador-gif-el" class="personagem-flappy-el" data-arcade-imagem="gato" decoding="async" alt="Gato Voando" />
+            <div id="flappy-personagens">
+                <img id="flappy-sombra" class="personagem-flappy-el" data-arcade-imagem="voando" decoding="async" alt="" aria-hidden="true" hidden>
+                <img id="chuiri-voador-gif-el" class="personagem-flappy-el" data-arcade-imagem="voando" decoding="async" alt="Chuíri Voando" />
+                <img id="gato-voador-gif-el" class="personagem-flappy-el" data-arcade-imagem="gato" decoding="async" alt="Gato Voando" />
+            </div>
 
             <div id="over-flappy" class="overlay-jogo">
                 <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Chuíri Voador</h2>
                     <p>Cada toque faz o Chuíri subir. Toque de novo antes de chegar ao chão. As primeiras passagens são mais largas.</p>
+                    <label class="arcade-escolha-cenario">Dificuldade
+                        <select data-arcade-nivel="flappy" onchange="definirNivelAcao(MotorFlappy, this.value)">
+                            <option value="amador">Amador</option>
+                            <option value="moderado" selected>Moderado</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </label>
                     <label class="arcade-escolha-cenario">Cenário
                         <select id="flappy-cenario" onchange="MotorFlappy.preverCenario(this.value)">
                             <option value="viagem">Viagem · cenários alternados</option>
@@ -158,6 +185,8 @@
                         <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(1)"><strong>Voo solo</strong><small>Você pilota o Chuíri</small></button>
                         <button class="btn-acao-jogo" onclick="MotorFlappy.iniciar(2)"><strong>Voo em dupla</strong><small>Um jogador em cada lado da tela</small></button>
                     </div>
+                    <button type="button" class="btn-acao-jogo flappy-corrida" id="flappy-corrida" onclick="MotorFlappy.iniciar(1, true)" disabled aria-describedby="flappy-corrida-info">Correr contra meu melhor voo</button>
+                    <p id="flappy-corrida-info" class="arcade-teclado"></p>
                     <p class="arcade-teclado">Teclado: Espaço ou ↑ para Chuíri, W para Gato.</p>
                     <button class="btn-link-voltar" onclick="GerenciadorArcade.voltarAcao()">Voltar ao menu</button>
                 </div>
@@ -190,6 +219,13 @@
                 <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Quebra-Blocos & Pong</h2>
                     <p>Arraste o skate, solte para lançar e rebata a bola para acertar os blocos.</p>
+                    <label class="arcade-escolha-cenario">Dificuldade
+                        <select data-arcade-nivel="quebrablocos" onchange="definirNivelAcao(MotorQuebraBlocos, this.value)">
+                            <option value="amador">Amador</option>
+                            <option value="moderado" selected>Moderado</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </label>
                     <div class="arcade-escolhas-partida">
                         <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)"><strong>Quebra-Blocos</strong><small>Solo · três vidas para avançar</small></button>
                         <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)"><strong>Skate Pong</strong><small>Duelo · cada jogador em uma metade</small></button>
@@ -502,6 +538,13 @@
                 <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Estourar Bolhas</h2>
                     <p id="txt-desc-bolhas-inicio">Toque nas bolhas. A bomba dourada cai de vez em quando e estoura todas de uma vez.</p>
+                    <label class="arcade-escolha-cenario">Dificuldade
+                        <select data-arcade-nivel="bolhas" onchange="definirNivelAcao(MotorBolhas, this.value)">
+                            <option value="amador">Amador</option>
+                            <option value="moderado" selected>Moderado</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </label>
                     <div class="arcade-escolhas-partida">
                         <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')"><strong>Sobrevivência</strong><small>Solo · cinco vidas</small></button>
                         <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('duelo')"><strong>Duelo</strong><small>Um jogador por cor</small></button>
@@ -592,6 +635,58 @@
             </div>
         </div>
 
+        <section class="area-jogo" id="tela-eco" aria-labelledby="eco-titulo">
+            <div class="eco-palco">
+                <header class="eco-cabecalho">
+                    <div><h2 id="eco-titulo">Eco Musical</h2><p>Escute o Chuíri e repita as notas na mesma ordem.</p></div>
+                    <div class="eco-placar">
+                        <span>Rodada <strong id="eco-rodada">1</strong></span>
+                        <span>Vidas <strong id="eco-vidas">3</strong></span>
+                    </div>
+                </header>
+                <div id="eco-recado" class="eco-recado" role="status">Toque em Começar e escute a primeira sequência.</div>
+                <div class="eco-notas" role="group" aria-label="Notas do Eco Musical">
+                    <button type="button" class="eco-nota" data-eco-nota="0" aria-label="1, Dó" disabled><span aria-hidden="true">●</span><strong>Dó</strong><small aria-hidden="true">1</small></button>
+                    <button type="button" class="eco-nota" data-eco-nota="1" aria-label="2, Mi" disabled><span aria-hidden="true">◆</span><strong>Mi</strong><small aria-hidden="true">2</small></button>
+                    <button type="button" class="eco-nota" data-eco-nota="2" aria-label="3, Sol" disabled><span aria-hidden="true">▲</span><strong>Sol</strong><small aria-hidden="true">3</small></button>
+                    <button type="button" class="eco-nota" data-eco-nota="3" aria-label="4, Dó agudo" disabled><span aria-hidden="true">✦</span><strong>Dó agudo</strong><small aria-hidden="true">4</small></button>
+                </div>
+                <div class="eco-acoes">
+                    <button type="button" id="eco-comecar" class="btn-acao-jogo" onclick="MotorEco.iniciar()">Começar</button>
+                    <button type="button" id="eco-escutar" class="btn-voltar" onclick="MotorEco.escutarNovamente()" hidden>Ouvir de novo</button>
+                    <button type="button" id="eco-luzes" class="btn-voltar" aria-pressed="false">Mostrar luzes</button>
+                    <button type="button" id="eco-recordes" class="btn-voltar" onclick="RecordesArcade.abrir('eco')" hidden>Recordes</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="area-jogo" id="tela-campo" aria-labelledby="campo-titulo">
+            <div class="campo-palco">
+                <header class="campo-cabecalho">
+                    <span class="campo-emblema" aria-hidden="true">✦</span>
+                    <div><h2 id="campo-titulo">Campo Minado</h2><p>Os números mostram quantas minas cercam aquela casa.</p></div>
+                </header>
+                <div class="campo-controles">
+                    <label>Dificuldade
+                        <select id="campo-nivel">
+                            <option value="amador">Amador</option>
+                            <option value="moderado">Moderado</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </label>
+                    <span class="campo-contador">Minas a marcar <strong id="campo-minas">8</strong></span>
+                    <span class="campo-contador">Tempo <strong id="campo-tempo">0 s</strong></span>
+                </div>
+                <div class="campo-acoes">
+                    <button type="button" id="campo-modo-bandeira" class="btn-voltar" aria-pressed="false"><span aria-hidden="true">⚑</span> Bandeira</button>
+                    <button type="button" id="campo-reiniciar" class="btn-voltar">Novo tabuleiro</button>
+                    <button type="button" class="btn-voltar" onclick="RecordesArcade.abrir('campo')">Recordes</button>
+                </div>
+                <p id="campo-recado" class="campo-recado" role="status">O primeiro toque é seguro. Use Bandeira para marcar suspeitas.</p>
+                <div id="campo-grade" class="campo-grade" role="group" aria-label="Tabuleiro do Campo Minado"></div>
+            </div>
+        </section>
+
         <dialog id="arcade-recordes" aria-labelledby="recordes-titulo">
             <button type="button" class="arcade-recordes-alca" data-arcade-fechar-gesto aria-label="Fechar recordes. Também pode deslizar para baixo"><span></span></button>
             <header><h2 id="recordes-titulo">Recordes</h2><button type="button" aria-label="Fechar recordes" onclick="document.getElementById('arcade-recordes').close()">✕</button></header>
@@ -624,7 +719,9 @@
     <script src="src/features/kids/piano.js?v=b7071ea6cb33"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
-    <script src="src/pages/arcade-recordes.js?v=a35855a9bec2"></script>
-    <script src="src/pages/arcade.js?v=71c80e018179"></script>
+    <script src="src/pages/arcade-recordes.js?v=a8f65ef958da"></script>
+    <script src="src/pages/arcade.js?v=9f553fa69fa9"></script>
+    <script src="src/pages/arcade-eco.js?v=76b42d9a5aa3"></script>
+    <script src="src/pages/arcade-campo.js?v=6324b4c3aef8"></script>
 </body>
 </html>
