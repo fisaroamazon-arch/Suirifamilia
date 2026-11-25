@@ -342,6 +342,7 @@ window.MotorMusica = {
         { batidas: .0625, nome: 'Semifusa', cor: '#f3eca9' }
     ],
     niveis: { amador: 'Amador', moderado: 'Moderado', avancado: 'Avançado' },
+    margensPorNivel: { amador: [.62, .88], moderado: [.50, .72], avancado: [.38, .56] },
     metronomoLigado: true,
     vidasInfinitas: false,
     repetirErros: true,
@@ -895,7 +896,7 @@ window.MotorMusica = {
     },
 
     tempoParaAcertar: function(atraso = true) {
-        return (60 / (this.partituraAtual?.bpm || 90)) * (atraso ? .88 : .62);
+        return (60 / (this.partituraAtual?.bpm || 90)) * this.margensPorNivel[this.dificuldade][Number(atraso)];
     },
 
     desenharFaixaAcerto: function(ctx, largura, altura, pps) {

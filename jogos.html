@@ -9,7 +9,7 @@
     <title>Suiri Gestão Familiar - Arcade do Chuíri</title>
     <link rel="stylesheet" href="styles/pages/jogos.css?v=9b97da6fab58">
 <link rel="stylesheet" href="styles/themes.css?v=3911cf04fce3">
-    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=44dbd8555622">
+    <link rel="stylesheet" href="styles/pages/arcade-vila.css?v=a6cee632c010">
     <link rel="stylesheet" href="styles/pages/piano.css?v=e1526a2be3d8">
 </head>
 <body class="arcade-page" data-arcade-tela="menu">
@@ -165,7 +165,7 @@
             <div id="over-flappy" class="overlay-jogo">
                 <div class="painel-dialogo-arcade arcade-pre-jogo">
                     <h2>Chuíri Voador</h2>
-                    <p>Cada toque faz o Chuíri subir. Toque de novo antes de chegar ao chão. As primeiras passagens são mais largas.</p>
+                    <p>Cada toque faz o Chuíri subir. Toque de novo antes de chegar ao chão. A abertura muda conforme o nível.</p>
                     <label class="arcade-escolha-cenario">Dificuldade
                         <select data-arcade-nivel="flappy" onchange="definirNivelAcao(MotorFlappy, this.value)">
                             <option value="amador">Amador</option>
@@ -173,6 +173,7 @@
                             <option value="avancado">Avançado</option>
                         </select>
                     </label>
+                    <p class="arcade-nivel-resumo" data-arcade-nivel-resumo aria-live="polite"></p>
                     <label class="arcade-escolha-cenario">Cenário
                         <select id="flappy-cenario" onchange="MotorFlappy.preverCenario(this.value)">
                             <option value="viagem">Viagem · cenários alternados</option>
@@ -226,8 +227,9 @@
                             <option value="avancado">Avançado</option>
                         </select>
                     </label>
+                    <p class="arcade-nivel-resumo" data-arcade-nivel-resumo aria-live="polite"></p>
                     <div class="arcade-escolhas-partida">
-                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)"><strong>Quebra-Blocos</strong><small>Solo · três vidas para avançar</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(1)"><strong>Quebra-Blocos</strong><small>Solo · rebata a bola e avance de fase</small></button>
                         <button class="btn-acao-jogo" onclick="MotorQuebraBlocos.iniciar(2)"><strong>Skate Pong</strong><small>Duelo · cada jogador em uma metade</small></button>
                     </div>
                     <p class="arcade-teclado">Teclado: ← → na base, Espaço lança. No Pong, A / D no topo.</p>
@@ -381,7 +383,7 @@
                                 <option value="avancado">Avançado</option>
                             </select>
                         </label>
-                        <p class="piano-guia" id="piano-dificuldade-guia">Toque as notas destacadas. Em Amador e Moderado, o piano toca as outras notas da partitura.</p>
+                        <p class="piano-guia" id="piano-dificuldade-guia">Em Amador e Moderado, o piano toca as notas restantes. Com relógio, a faixa de acerto diminui nos níveis mais difíceis.</p>
                         <label class="piano-alcance">Alcance do teclado
                             <select id="piano-alcance" onchange="MotorMusica.alterarAlcance(this.value)">
                                 <option value="1">1 oitava · 13 teclas</option>
@@ -545,8 +547,9 @@
                             <option value="avancado">Avançado</option>
                         </select>
                     </label>
+                    <p class="arcade-nivel-resumo" data-arcade-nivel-resumo aria-live="polite"></p>
                     <div class="arcade-escolhas-partida">
-                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')"><strong>Sobrevivência</strong><small>Solo · cinco vidas</small></button>
+                        <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('solo')"><strong>Sobrevivência</strong><small>Solo · não deixe as bolhas escaparem</small></button>
                         <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('duelo')"><strong>Duelo</strong><small>Um jogador por cor</small></button>
                         <button class="btn-acao-jogo" onclick="MotorBolhas.iniciarModo('rush')"><strong>Corrida de bolhas</strong><small>Três minutos · bolhas em todos os cantos</small></button>
                     </div>
@@ -574,12 +577,13 @@
 
             <label class="velha-nivel" id="velha-nivel">Nível
                 <select onchange="MotorVelha.dificuldade = this.value; MotorVelha.iniciar()">
-                    <option value="treino">Treino</option>
-                    <option value="intermediario">Intermediário</option>
-                    <option value="desafio">Desafio</option>
+                    <option value="treino">Amador</option>
+                    <option value="intermediario">Moderado</option>
+                    <option value="desafio">Avançado</option>
                 </select>
             </label>
 
+            <p id="velha-nivel-resumo" class="arcade-nivel-resumo"></p>
             <p id="velha-dica" class="arcade-dica-turno">Junte três marcas em linha, coluna ou diagonal.</p>
             <div class="area-velha-caderno">
                 <div class="linha-caneta linha-caneta-h1"></div>
@@ -602,6 +606,7 @@
                 <button type="button" class="btn-modo-som-tab" id="tab-memoria-2p" onclick="MotorMemoria.trocarModo('2p')">👥 2 Jogadores</button>
             </div>
 
+            <p id="memoria-nivel-resumo" class="arcade-nivel-resumo"></p>
             <div id="memoria-niveis" class="alternador-modos-som" aria-label="Tamanho do tabuleiro">
                 <button type="button" class="btn-modo-som-tab ativo" aria-pressed="true" data-memoria-pares="4" onclick="MotorMemoria.trocarNivel(4)">4 pares</button>
                 <button type="button" class="btn-modo-som-tab" aria-pressed="false" data-memoria-pares="6" onclick="MotorMemoria.trocarNivel(6)">6 pares</button>
@@ -669,9 +674,9 @@
                 <div class="campo-controles">
                     <label>Dificuldade
                         <select id="campo-nivel">
-                            <option value="amador">Amador</option>
-                            <option value="moderado">Moderado</option>
-                            <option value="avancado">Avançado</option>
+                            <option value="amador">Amador · 8×8</option>
+                            <option value="moderado">Moderado · 10×10</option>
+                            <option value="avancado">Avançado · 12×12</option>
                         </select>
                     </label>
                     <span class="campo-contador">Minas a marcar <strong id="campo-minas">8</strong></span>
@@ -716,12 +721,12 @@
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
     <script src="src/features/kids/piano-dueto-rede.js?v=aceb565da372"></script>
-    <script src="src/features/kids/piano.js?v=b7071ea6cb33"></script>
+    <script src="src/features/kids/piano.js?v=5990cccc10dc"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
     <script src="src/pages/arcade-recordes.js?v=a8f65ef958da"></script>
-    <script src="src/pages/arcade.js?v=9f553fa69fa9"></script>
+    <script src="src/pages/arcade.js?v=b3c72775a66d"></script>
     <script src="src/pages/arcade-eco.js?v=76b42d9a5aa3"></script>
-    <script src="src/pages/arcade-campo.js?v=6324b4c3aef8"></script>
+    <script src="src/pages/arcade-campo.js?v=116513ba876b"></script>
 </body>
 </html>

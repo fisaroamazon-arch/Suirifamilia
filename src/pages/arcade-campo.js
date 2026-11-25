@@ -1,8 +1,8 @@
 window.MotorCampo = (() => {
     const niveis = {
         amador: { nome: 'Amador', linhas: 8, colunas: 8, minas: 8 },
-        moderado: { nome: 'Moderado', linhas: 10, colunas: 10, minas: 15 },
-        avancado: { nome: 'Avançado', linhas: 12, colunas: 12, minas: 26 }
+        moderado: { nome: 'Moderado', linhas: 10, colunas: 10, minas: 17 },
+        avancado: { nome: 'Avançado', linhas: 12, colunas: 12, minas: 34 }
     };
     const grade = document.getElementById('campo-grade');
     const seletor = document.getElementById('campo-nivel');
