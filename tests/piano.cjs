@@ -153,6 +153,35 @@ try {
     motor.parteSolo = 'ambas';
     assert.equal(motor.usaPainelDuplo(), true);
     assert.equal(motor.pistasAtivas().base, true);
+
+    const notasInteiras = motor.notasNaEsteira.map(({nota, tInicio, tFim}) => [nota, tInicio, tFim]);
+    const baseInteira = motor.acordesNaEsteira.flatMap(({notas, tInicio, tFim}) =>
+        notas.map(nota => [nota, tInicio, tFim]));
+    for (const nivel of ['amador', 'moderado']) {
+        motor.alterarDificuldade(nivel);
+        for (const [pista, tocadas, originais] of [
+            ['melodia', motor.notasNaEsteira.map(({nota, tInicio, tFim}) => [nota, tInicio, tFim]), notasInteiras],
+            ['base', motor.acordesNaEsteira.flatMap(({notas, tInicio, tFim}) => notas.map(nota => [nota, tInicio, tFim])), baseInteira]
+        ]) {
+            const automaticas = motor.eventosAutomaticos.filter(item => item.pista === pista)
+                .map(({nota, tInicio, tFim}) => [nota, tInicio, tFim]);
+            assert.deepEqual([...tocadas, ...automaticas].map(item => JSON.stringify(item)).sort(),
+                Array.from(originais, item => JSON.stringify(item)).sort());
+        }
+    }
+    const primeiraAuto = motor.eventosAutomaticos[0];
+    const vozesAntes = tocaram.length;
+    motor.tocarAutomaticasAte(primeiraAuto.tInicio, true);
+    assert.equal(tocaram.length, vozesAntes, 'A nota automática junto de um alvo espera o toque.');
+    motor.tocarAutomaticasAte(primeiraAuto.tInicio);
+    assert(tocaram.length > vozesAntes);
+    assert.equal(tocaram[vozesAntes].freq, motor.infoNota(primeiraAuto.nota).freq);
+    assert.equal(motor.errosTotais, 0);
+    assert.equal(motor.acertosTotais, 0);
+    motor.pausarMusica();
+    assert.equal(motor.vozesAutomaticas.size, 0);
+    motor.alterarDificuldade('avancado');
+    assert.equal(motor.eventosAutomaticos.length, 0);
     console.log('Piano: catálogo, movimentos, mapeamento, som e iluminação de oitavas verificados.');
 } finally {
     dom.window.close();

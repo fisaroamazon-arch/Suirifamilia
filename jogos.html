@@ -345,7 +345,7 @@
                                 <option value="avancado">Avançado</option>
                             </select>
                         </label>
-                        <p class="piano-guia" id="piano-dificuldade-guia">Amador tem menos notas, Moderado acrescenta outras e Avançado usa a partitura completa.</p>
+                        <p class="piano-guia" id="piano-dificuldade-guia">Toque as notas destacadas. Em Amador e Moderado, o piano toca as outras notas da partitura.</p>
                         <label class="piano-alcance">Alcance do teclado
                             <select id="piano-alcance" onchange="MotorMusica.alterarAlcance(this.value)">
                                 <option value="1">1 oitava · 13 teclas</option>
@@ -362,7 +362,7 @@
                                 <button type="button" class="btn-velocidade-bichinho" data-fator="1.0" aria-pressed="false" onclick="MotorMusica.mudarFatorVelocidade(1)">100%</button>
                             </div>
                         </div>
-                        <p class="piano-guia">Em Sem relógio, a próxima nota espera você tocar.</p>
+                        <p class="piano-guia">Em Sem relógio, as notas destacadas esperam seu toque.</p>
                         <div class="piano-banda" role="group" aria-label="Acompanhamento">
                             <button type="button" data-banda="sem" aria-pressed="true" onclick="MotorMusica.alterarBanda(false)">Sem banda</button>
                             <button type="button" data-banda="com" aria-pressed="false" onclick="MotorMusica.alterarBanda(true)">Com banda</button>
@@ -621,10 +621,10 @@
     <script src="src/features/kids/piano-banda.js?v=103a53e7e8b6"></script>
     <script src="vendor/supabase-2.49.8.js?v=522e844a8554"></script>
     <script src="src/features/kids/piano-dueto-rede.js?v=aceb565da372"></script>
-    <script src="src/features/kids/piano.js?v=a47b364ee24c"></script>
+    <script src="src/features/kids/piano.js?v=b7071ea6cb33"></script>
 
     <script src="src/data/desenhos-arte.js?v=3ce33393256b"></script>
     <script src="src/pages/arcade-recordes.js?v=a35855a9bec2"></script>
-    <script src="src/pages/arcade.js?v=36c559c5ee59"></script>
+    <script src="src/pages/arcade.js?v=71c80e018179"></script>
 </body>
 </html>
