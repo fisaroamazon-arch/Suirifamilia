@@ -1,5 +1,5 @@
 /* Suiri Família 7.0: somente arquivos públicos, nunca respostas autenticadas. */
-const CACHE='suiri-family-v7186';
+const CACHE='suiri-family-v7187';
 const SHELL=[
   "./src/features/finances/graficos.js?v=954c9ad9ad28",
   "./src/features/finances/planejamento.js?v=b2ebd625fb1a",
@@ -75,9 +75,9 @@ const SHELL=[
   "./src/data/partituras-extras.js?v=cf58d3b9dbee",
   "./src/features/kids/piano-banda.js?v=103a53e7e8b6",
   "./src/features/kids/piano-dueto-rede.js?v=aceb565da372",
-  "./src/features/kids/piano.js?v=a47b364ee24c",
+  "./src/features/kids/piano.js?v=b7071ea6cb33",
   "./src/pages/arcade-recordes.js?v=a35855a9bec2",
-  "./src/pages/arcade.js?v=36c559c5ee59",
+  "./src/pages/arcade.js?v=71c80e018179",
   "./styles/base.css?v=dbcb5e9d2dbe",
   "./styles/modulos.css?v=8893fc8f4fa5",
   "./styles/modais.css?v=65463f7da52f",

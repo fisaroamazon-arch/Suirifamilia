@@ -395,6 +395,10 @@ window.MotorMusica = {
     ultimoTimestamp: 0,
     notasNaEsteira: [],
     acordesNaEsteira: [],
+    eventosAutomaticos: [],
+    indiceAutomatico: 0,
+    vozesAutomaticas: new Map(),
+    destinoModoToque: null,
 
     layoutOitava4: {
         'C4':  { ehPreta: false, xPct: 0.000, wPct: 0.125, cor: '#38bdf8' },
@@ -549,6 +553,7 @@ window.MotorMusica = {
     notasDaTecla: function(codigo, origem) {
         const harmonia = origem === 'dueto-j2';
         const item = this.alvoDaPista(origem);
+        if (!item || !this.notaDisponivel(item)) return [];
         const notas = harmonia ? item?.notas : [item?.nota];
         return (notas || []).filter(nota => this.mapearNota(nota, harmonia)?.tecla === codigo);
     },
@@ -557,7 +562,7 @@ window.MotorMusica = {
         if (origem !== 'dueto-j1' || !this.tecladoCompartilhado() || !this.tocandoMusica) return [origem];
         const pistas = ['dueto-j1', 'dueto-j2'].filter(pista => {
             const item = this.alvoDaPista(pista);
-            return item && (this.fatorVelocidade === 'toque' || this.emFaixa(item));
+            return item && this.notaDisponivel(item);
         });
         const correspondentes = pistas.filter(pista => this.notasDaTecla(codigo, pista).length);
         if (correspondentes.length) return correspondentes;
@@ -930,6 +935,12 @@ window.MotorMusica = {
         return diferenca >= -this.tempoParaAcertar(false) && diferenca <= this.tempoParaAcertar();
     },
 
+    notaDisponivel: function(nota) {
+        if (this.contagem) return false;
+        if (this.fatorVelocidade !== 'toque') return this.emFaixa(nota);
+        return this.destinoModoToque === null && Math.abs(this.tempoMusicaSegundos - nota.tInicio) < .001;
+    },
+
     alterarBanda: function(ligada) {
         this.comBanda = ligada;
         if (!ligada) window.BandaPiano?.parar();
@@ -947,6 +958,44 @@ window.MotorMusica = {
                 window.BandaPiano?.tocar(evento, this.obterBpmEfetivo());
             }
         }
+    },
+
+    pistasAutomaticas: function() {
+        return this.relogioCompartilhado ? { melodia: true, base: true } : this.pistasAtivas();
+    },
+
+    tocarAutomaticasAte: function(tempo, aguardarAlvo = false) {
+        const limite = tempo + (aguardarAlvo ? -.001 : .001);
+        const primeiro = this.eventosAutomaticos[this.indiceAutomatico];
+        if (!primeiro || primeiro.tInicio > limite) return;
+        const pistas = this.pistasAutomaticas();
+        const andamento = this.obterBpmEfetivo() / (this.partituraAtual?.bpm || 90);
+        while (this.eventosAutomaticos[this.indiceAutomatico]?.tInicio <= limite) {
+            const evento = this.eventosAutomaticos[this.indiceAutomatico++];
+            if (!pistas[evento.pista] || tempo - evento.tInicio > Math.max(.10, evento.durSegundos)) continue;
+            const som = this.infoNota(evento.nota);
+            if (!som) continue;
+            const chave = `automatico-${this.indiceAutomatico}`;
+            const origem = !this.usaPainelDuplo() ? 'solo' : evento.pista === 'base' ? 'dueto-j2' : 'dueto-j1';
+            const volume = evento.pista === 'base' ? .56 : .83;
+            const motor = window.AudioMotor;
+            motor?.iniciarVozPiano(chave, som.freq, volume,
+                this.obterInstrumentoPorOrigem(origem, evento.nota));
+            const restante = Math.max(.035, (evento.tFim - tempo) / andamento);
+            const timer = setTimeout(() => {
+                motor?.soltarVozPiano(chave);
+                this.vozesAutomaticas.delete(chave);
+            }, restante * 1000);
+            this.vozesAutomaticas.set(chave, { timer, fim: evento.tFim });
+        }
+    },
+
+    pararNotasAutomaticas: function() {
+        for (const [chave, {timer}] of this.vozesAutomaticas) {
+            clearTimeout(timer);
+            window.AudioMotor?.soltarVozPiano(chave);
+        }
+        this.vozesAutomaticas.clear();
     },
 
     baixarBanda: function() {
@@ -1077,7 +1126,7 @@ window.MotorMusica = {
         if (!item) return;
 
         const modoToque = this.fatorVelocidade === 'toque';
-        if (!modoToque && !this.emFaixa(item)) return;
+        if (!this.notaDisponivel(item)) return;
         const acertos = alturas.filter(nota => harmonia ? item.notas.includes(nota) : item.nota === nota);
         if (!acertos.length) {
             if (!modoToque && !this.deveRepetirNota()) {
@@ -1105,11 +1154,8 @@ window.MotorMusica = {
         this[campo]++;
         if (modoToque) {
             this.tocarBandaAte(item.tInicio);
-            this.posicionarModoToque();
-            if (this.partidaCompleta()) {
-                this.concluirMusica();
-                return;
-            }
+            this.avancarModoToque();
+            if (this.encerrada) return;
             this.renderizarTodasEsteiras();
         }
         this.atualizarDisplays();
@@ -1118,6 +1164,7 @@ window.MotorMusica = {
     mudarFatorVelocidade: function(fator) {
         const mudandoModo = (fator === 'toque') !== (this.fatorVelocidade === 'toque');
         this.fatorVelocidade = fator;
+        if (mudandoModo) this.destinoModoToque = null;
         if (mudandoModo && fator === 'toque') {
             if (this.animEsteiraId) cancelAnimationFrame(this.animEsteiraId);
             this.animEsteiraId = null;
@@ -1171,12 +1218,38 @@ window.MotorMusica = {
         }
     },
 
-    posicionarModoToque: function() {
+    tempoProximoAlvo: function() {
         const pistas = this.pistasAtivas();
         const melodia = pistas.melodia ? this.notasNaEsteira[this.passoNota]?.tInicio ?? Infinity : Infinity;
         const base = pistas.base ? this.acordesNaEsteira[this.passoAcorde]?.tInicio ?? Infinity : Infinity;
-        const inicio = Math.min(melodia, base);
+        return Math.min(melodia, base);
+    },
+
+    posicionarModoToque: function() {
+        const inicio = this.tempoProximoAlvo();
         if (Number.isFinite(inicio)) this.tempoMusicaSegundos = inicio;
+    },
+
+    avancarModoToque: function() {
+        const agora = this.tempoMusicaSegundos;
+        this.tocarAutomaticasAte(agora);
+        const alvo = this.tempoProximoAlvo();
+        const pistas = this.pistasAutomaticas();
+        let fimAutomatico = agora;
+        for (const voz of this.vozesAutomaticas.values()) fimAutomatico = Math.max(fimAutomatico, voz.fim);
+        for (let i = this.indiceAutomatico; i < this.eventosAutomaticos.length; i++) {
+            const nota = this.eventosAutomaticos[i];
+            if (nota.tInicio >= alvo - .001) break;
+            if (pistas[nota.pista]) fimAutomatico = Math.max(fimAutomatico, nota.tFim);
+        }
+        if (fimAutomatico > agora + .001 && alvo > agora + .001) {
+            this.destinoModoToque = Number.isFinite(alvo) ? alvo : fimAutomatico;
+            this.iniciarAnimacaoEsteira();
+        } else if (Number.isFinite(alvo)) {
+            this.tempoMusicaSegundos = alvo;
+        } else {
+            this.concluirMusica();
+        }
     },
 
     obterBpmEfetivo: function() {
@@ -1198,6 +1271,9 @@ window.MotorMusica = {
         const mensagem = erro ? 'Errou, tente novamente' : 'Prepare-se para tocar';
         this.contagem = {destino, erro, comCompasso, inicio, duracao, intervalo, batidas, pulso: -1};
         this.sincronizarMetronomoSemRelogio();
+        this.pararNotasAutomaticas();
+        const proximaAutomatica = this.eventosAutomaticos.findIndex(nota => nota.tInicio >= destino - .001);
+        this.indiceAutomatico = proximaAutomatica === -1 ? this.eventosAutomaticos.length : proximaAutomatica;
         const aviso = document.getElementById('piano-contagem');
         if (aviso) {
             aviso.hidden = false;
@@ -1276,7 +1352,7 @@ window.MotorMusica = {
         this.sincronizarMetronomoSemRelogio();
         this.atualizarRotuloPartida('Pausar');
         this.atualizarDisplays();
-        if (this.fatorVelocidade !== 'toque' || this.contagem) this.iniciarAnimacaoEsteira();
+        if (this.fatorVelocidade !== 'toque' || this.contagem || this.destinoModoToque !== null) this.iniciarAnimacaoEsteira();
         else this.renderizarTodasEsteiras();
     },
 
@@ -1286,6 +1362,7 @@ window.MotorMusica = {
             this.limparContagem();
         }
         window.BandaPiano?.parar();
+        this.pararNotasAutomaticas();
         this.tocandoMusica = false;
         this.sincronizarMetronomoSemRelogio();
         this.relogioCompartilhado = null;
@@ -1299,6 +1376,8 @@ window.MotorMusica = {
         this.contagemPendente = null;
         this.limparContagem();
         window.BandaPiano?.parar();
+        this.pararNotasAutomaticas();
+        this.destinoModoToque = null;
         this.relogioCompartilhado = null;
         if (this.animVisualId) cancelAnimationFrame(this.animVisualId);
         this.animVisualId = null;
@@ -1329,6 +1408,7 @@ window.MotorMusica = {
         this.encerrada = false;
         if (this.modo === 'livre' && this.desafioLivre) this.sortearNotaLivre();
         this.indiceBanda = 0;
+        this.indiceAutomatico = 0;
         this.notasDoAcorde.clear();
         if (this.fatorVelocidade === 'toque') this.posicionarModoToque();
         else this.tempoMusicaSegundos = -this.tempoParaAcertar() * 3;
@@ -1343,6 +1423,7 @@ window.MotorMusica = {
     },
 
     construirTrilhasMelodiaEHarmonia: function() {
+        this.eventosAutomaticos = [];
         if (!this.catalogoMusicas || this.catalogoMusicas.length === 0) {
             this.notasNaEsteira = [];
             this.acordesNaEsteira = [];
@@ -1390,11 +1471,22 @@ window.MotorMusica = {
             });
         }
         if (this.dificuldade !== 'avancado') {
-            this.notasNaEsteira = this.reduzirTrilha(this.notasNaEsteira);
+            const melodia = this.notasNaEsteira;
+            const base = this.acordesNaEsteira;
+            const melodiaPedida = this.reduzirTrilha(melodia);
+            const basePedida = this.reduzirTrilha(base);
+            const notasPedidas = new Set(melodiaPedida);
+            const acordesPedidos = new Set(basePedida);
             const limite = this.dificuldade === 'amador' ? 1 : 2;
-            this.acordesNaEsteira = this.reduzirTrilha(this.acordesNaEsteira).map(item => {
+            this.eventosAutomaticos = [
+                ...melodia.filter(item => !notasPedidas.has(item)).map(item => ({ ...item, pista: 'melodia' })),
+                ...base.flatMap(item => item.notas.slice(acordesPedidos.has(item) ? limite : 0)
+                    .map(nota => ({ ...item, nota, pista: 'base' })))
+            ].sort((a, b) => a.tInicio - b.tInicio);
+            this.notasNaEsteira = melodiaPedida.map((item, idx) => ({ ...item, idx }));
+            this.acordesNaEsteira = basePedida.map((item, idx) => {
                 const notas = item.notas.slice(0, limite);
-                return { ...item, notas, nome: notas.join(' + ') };
+                return { ...item, idx, notas, nome: notas.join(' + ') };
             });
         }
     },
@@ -1410,7 +1502,7 @@ window.MotorMusica = {
             const quantidade = Math.ceil(grupo.length * porGrupo / 4);
             for (const nota of grupo.slice(0, quantidade)) selecionadas.add(nota);
         }
-        return itens.filter(nota => selecionadas.has(nota)).map((item, idx) => ({ ...item, idx }));
+        return itens.filter(nota => selecionadas.has(nota));
     },
 
     iniciarAnimacaoEsteira: function() {
@@ -1431,7 +1523,28 @@ window.MotorMusica = {
             const deltaSegundos = Math.min(0.08, (agora - this.ultimoTimestamp) / 1000);
             this.ultimoTimestamp = agora;
 
-            if (this.fatorVelocidade !== 'toque' && this.catalogoMusicas.length > 0) {
+            if (this.fatorVelocidade === 'toque') {
+                const destino = this.destinoModoToque;
+                if (destino === null) {
+                    this.animEsteiraId = null;
+                    return;
+                }
+                const chegou = this.tempoMusicaSegundos + deltaSegundos >= destino;
+                this.tempoMusicaSegundos = Math.min(destino, this.tempoMusicaSegundos + deltaSegundos);
+                const terminou = this.partidaCompleta();
+                this.tocarBandaAte(this.tempoMusicaSegundos);
+                this.tocarAutomaticasAte(this.tempoMusicaSegundos, !terminou);
+                if (chegou) {
+                    this.destinoModoToque = null;
+                    this.animEsteiraId = null;
+                    if (terminou) this.concluirMusica();
+                    else {
+                        this.atualizarDisplays();
+                        this.renderizarTodasEsteiras();
+                    }
+                    return;
+                }
+            } else if (this.catalogoMusicas.length > 0) {
                 const bpmEfetivo = this.obterBpmEfetivo();
                 const mus = this.partituraAtual;
                 const multiplicadorTempo = bpmEfetivo / (mus.bpm || 90);
@@ -1442,12 +1555,13 @@ window.MotorMusica = {
                     this.tempoMusicaSegundos += deltaSegundos * multiplicadorTempo;
                 }
 
-                this.tocarBandaAte(this.tempoMusicaSegundos);
                 this.marcarPulso();
                 if (!this.conferirAtrasos()) {
                     if (this.contagem) this.animEsteiraId = requestAnimationFrame(loop);
                     return;
                 }
+                this.tocarBandaAte(this.tempoMusicaSegundos);
+                this.tocarAutomaticasAte(this.tempoMusicaSegundos);
                 const ultimaNota = this.notasNaEsteira.at(-1);
                 if (ultimaNota && this.partidaCompleta() && this.tempoMusicaSegundos >= (mus.duracao || ultimaNota.tFim)) {
                     this.concluirMusica();
@@ -2017,6 +2131,7 @@ window.MotorMusica = {
             if (mapa.simbolo && !simbolos.includes(mapa.simbolo)) tecla.dataset.oitavaAlvo = [...simbolos, mapa.simbolo].join(' ');
         };
 
+        if (this.destinoModoToque !== null) return;
         if (notaItem && this.pistasAtivas().melodia) {
             iluminar('teclado-piano-completo', notaItem.nota);
             iluminar('teclado-dueto-melodia', notaItem.nota);

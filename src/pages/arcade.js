@@ -238,6 +238,21 @@
         // =========================================================================
         // GERENCIADOR CENTRAL DO ARCADE
         // =========================================================================
+        function animarArcade(motor, timestamp = performance.now()) {
+            if (!motor.rodando) return;
+            motor.anim = requestAnimationFrame(instante => motor.loop(instante));
+            const intervalo = motor.fpsIntervalo;
+            const quadros = Math.floor((timestamp - motor.ultimoFrame) / intervalo);
+            if (quadros < 1) return;
+
+            motor.ultimoFrame += quadros * intervalo;
+            // Compensa quadros perdidos sem simular de uma vez o tempo de uma travada longa.
+            for (let passo = 0; passo < Math.min(quadros, 4) && motor.rodando; passo++) {
+                motor.atualizar();
+            }
+            if (motor.rodando) motor.desenhar();
+        }
+
         const GerenciadorArcade = {
             telaAtiva: 'menu',
             menusAntesDaPartida: new Map(),
@@ -767,16 +782,7 @@
             },
 
             loop: function(timestamp) {
-                if (!MotorFlappy.rodando) return;
-                MotorFlappy.anim = requestAnimationFrame((ts) => MotorFlappy.loop(ts));
-                
-                if (!timestamp) timestamp = performance.now();
-                const delta = timestamp - MotorFlappy.ultimoFrame;
-                if (delta > MotorFlappy.fpsIntervalo) {
-                    MotorFlappy.ultimoFrame = timestamp - (delta % MotorFlappy.fpsIntervalo);
-                    MotorFlappy.atualizar();
-                    MotorFlappy.desenhar();
-                }
+                animarArcade(this, timestamp);
             },
 
             obterProgresso: function() {
@@ -1399,16 +1405,7 @@
             },
 
             loop: function(timestamp) {
-                if (!MotorQuebraBlocos.rodando) return;
-                MotorQuebraBlocos.anim = requestAnimationFrame((ts) => MotorQuebraBlocos.loop(ts));
-                
-                if (!timestamp) timestamp = performance.now();
-                const delta = timestamp - MotorQuebraBlocos.ultimoFrame;
-                if (delta > MotorQuebraBlocos.fpsIntervalo) {
-                    MotorQuebraBlocos.ultimoFrame = timestamp - (delta % MotorQuebraBlocos.fpsIntervalo);
-                    MotorQuebraBlocos.atualizar();
-                    MotorQuebraBlocos.desenhar();
-                }
+                animarArcade(this, timestamp);
             },
 
             gerarEstilhacos: function(bx, by, bw, bh, cor) {
@@ -2066,16 +2063,7 @@
             },
 
             loop: function(timestamp) {
-                if (!MotorBolhas.rodando) return;
-                MotorBolhas.anim = requestAnimationFrame((ts) => MotorBolhas.loop(ts));
-                
-                if (!timestamp) timestamp = performance.now();
-                const delta = timestamp - MotorBolhas.ultimoFrame;
-                if (delta > MotorBolhas.fpsIntervalo) {
-                    MotorBolhas.ultimoFrame = timestamp - (delta % MotorBolhas.fpsIntervalo);
-                    MotorBolhas.atualizar();
-                    MotorBolhas.desenhar();
-                }
+                animarArcade(this, timestamp);
             },
 
             atualizar: function() {
