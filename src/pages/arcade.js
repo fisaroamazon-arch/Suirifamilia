@@ -142,40 +142,31 @@
             tocarEstouro: function(variacao, atraso = 0, intensidade = 1) {
                 const ctx = this.obterCtx();
                 if (!ctx) return;
-                const inicio = ctx.currentTime + atraso;
-                const tom = 2 ** (variacao / 12);
                 const saida = this.obterSaida();
                 if (!this.ruidoBolha) {
-                    const amostras = Math.round(ctx.sampleRate * .06);
+                    const amostras = Math.round(ctx.sampleRate * .028);
                     this.ruidoBolha = ctx.createBuffer(1, amostras, ctx.sampleRate);
                     const dados = this.ruidoBolha.getChannelData(0);
                     for (let i = 0; i < amostras; i++) {
-                        dados[i] = (Math.random() * 2 - 1) * Math.exp(-6.5 * i / amostras);
+                        const tempo = i / ctx.sampleRate;
+                        const estalo = Math.exp(-tempo / .0026);
+                        const dobra = tempo < .0047 ? 0 : .28 * Math.exp(-((tempo - .0047) / .0017));
+                        const rasgo = tempo < .0101 ? 0 : .14 * Math.exp(-((tempo - .0101) / .0021));
+                        const pressao = Math.sin(2 * Math.PI * 420 * tempo) * Math.exp(-tempo / .0024);
+                        dados[i] = (Math.random() * 2 - 1) * .78 * (estalo + dobra + rasgo) + .48 * pressao;
                     }
                 }
                 const estalo = ctx.createBufferSource();
                 const filtro = ctx.createBiquadFilter();
                 const volumeEstalo = ctx.createGain();
                 estalo.buffer = this.ruidoBolha;
-                filtro.type = 'bandpass';
-                filtro.frequency.value = 1850 * tom;
-                filtro.Q.value = .65;
-                volumeEstalo.gain.value = .48 * intensidade;
+                estalo.playbackRate.value = 2 ** (variacao / 12);
+                filtro.type = 'highpass';
+                filtro.frequency.value = 280;
+                volumeEstalo.gain.value = .83 * intensidade;
                 estalo.connect(filtro).connect(volumeEstalo).connect(saida);
-                estalo.start(inicio);
+                estalo.start(ctx.currentTime + atraso);
                 estalo.onended = () => { estalo.disconnect(); filtro.disconnect(); volumeEstalo.disconnect(); };
-
-                const gota = ctx.createOscillator();
-                const volumeGota = ctx.createGain();
-                gota.frequency.setValueAtTime(590 * tom, inicio);
-                gota.frequency.exponentialRampToValueAtTime(165 * tom, inicio + .075);
-                volumeGota.gain.setValueAtTime(.001, inicio);
-                volumeGota.gain.linearRampToValueAtTime(.28 * intensidade, inicio + .006);
-                volumeGota.gain.exponentialRampToValueAtTime(.001, inicio + .085);
-                gota.connect(volumeGota).connect(saida);
-                gota.start(inicio);
-                gota.stop(inicio + .09);
-                gota.onended = () => { gota.disconnect(); volumeGota.disconnect(); };
             },
 
             tocarEfeito: function(nome, variacao = 0) {
@@ -467,8 +458,8 @@
                     window.AudioMotor?.carregarAmostra?.('piano');
                     if (window.MotorMusica && typeof window.MotorMusica.montar === 'function') {
                         window.MotorMusica.montar();
+                        window.MotorMusica.atualizarOrientacao();
                         if (telaInteira) window.MotorMusica.ativarTelaInteira(true);
-                        document.getElementById('piano-abrir-config')?.focus({ preventScroll: true });
                     }
                 } else if (idJogo === 'bolhas') {
                     document.getElementById('tela-bolhas').style.display = 'block';

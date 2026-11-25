@@ -11,6 +11,11 @@ try {
     }
 
     const { PARTITURAS_CLASSICAS: classicas, MotorMusica: motor } = window;
+    assert.equal(motor.fatorVelocidade, 'toque');
+    assert.equal(motor.metronomoLigado, true);
+    assert.equal(motor.repetirErros, true);
+    assert.equal(motor.alcancePreferido, 2);
+    assert.equal(motor.dificuldade, 'amador');
     assert.equal(classicas.length, 20);
     assert.equal(new Set(classicas.map(musica => musica.titulo)).size, 20);
     for (const musica of classicas) {
@@ -26,6 +31,26 @@ try {
     motor.selecionarEstilo('classicas');
     motor.selecionarMusica(motor.catalogoMusicas.findIndex(musica => musica.titulo.startsWith('Para Elisa')));
     assert.equal(motor.notasNaEsteira[0].nota, 'E5');
+    const notasAmador = motor.notasNaEsteira.map(item => item.tInicio);
+    assert(motor.acordesNaEsteira.every(item => item.notas.length <= 1));
+    motor.alterarDificuldade('moderado');
+    const notasModerado = motor.notasNaEsteira.map(item => item.tInicio);
+    assert(notasModerado.length > notasAmador.length && notasAmador.every(nota => notasModerado.includes(nota)));
+    assert(motor.acordesNaEsteira.every(item => item.notas.length <= 2));
+    motor.alterarDificuldade('avancado');
+    assert.equal(motor.notasNaEsteira.length, motor.partituraAtual.melodia.length);
+    assert(motor.notasNaEsteira.length > notasModerado.length);
+    const primeira = motor.notasNaEsteira[0];
+    const batida = 60 / motor.partituraAtual.bpm;
+    motor.tempoMusicaSegundos = primeira.tInicio + .76 * batida;
+    assert(motor.emFaixa(primeira));
+    assert(motor.conferirAtrasos());
+    motor.tempoMusicaSegundos = primeira.tInicio + .89 * batida;
+    assert(!motor.emFaixa(primeira));
+    motor.tempoMusicaSegundos = primeira.tInicio - .66 * batida;
+    assert(!motor.emFaixa(primeira));
+    motor.reiniciarMusica();
+    motor.alterarAlcance(1);
     assert.equal(motor.mapearNota('E6').simbolo, '↑2');
     assert.equal(motor.mapearNota('E2').simbolo, '↓2');
     assert.equal(motor.mapearNota('E6').tecla, 'E4');
@@ -45,6 +70,8 @@ try {
     assert.deepEqual(metronomo, [true, ...Array(contagem.batidas - 1).fill(false)]);
     assert.equal(motor.atualizarContagem(contagem.inicio + contagem.duracao), false);
     assert.equal(motor.tempoMusicaSegundos, contagem.destino);
+    assert.equal(metronomo.at(-1), true);
+    assert(motor.timerMetronomoSemRelogio, 'O metrônomo continua depois da contagem em Sem relógio.');
     const tocaram = [];
     const soltaram = [];
     window.AudioMotor.iniciarVozPiano = (id, freq) => tocaram.push({ id, freq });
@@ -66,6 +93,7 @@ try {
     assert.equal(motor.vidas, vidas);
     assert.equal(motor.contagem.destino, alvo.tInicio);
     assert.equal(motor.contagem.erro, true);
+    assert.equal(motor.timerMetronomoSemRelogio, null);
     motor.pausarMusica();
     assert.equal(motor.contagemPendente.destino, alvo.tInicio);
     motor.togglePlay();
@@ -88,8 +116,6 @@ try {
         <div id="teclado-piano-completo"><div data-nota="C4"></div></div>`);
     const teclado = window.document.getElementById('teclado-piano-completo');
     motor.orientacaoAmpla = {matches:true};
-    motor.atualizarAlcance();
-    assert.equal(teclado.children.length, 37);
     motor.alterarAlcance(2);
     assert.equal(teclado.children.length, 25);
     assert.equal(motor.mapearNota('E5').tecla, 'E5');
@@ -100,8 +126,10 @@ try {
     assert.equal(motor.mapearNota('G#2').simbolo, '↓1');
     motor.orientacaoAmpla.matches = false;
     motor.atualizarAlcance();
-    assert.equal(motor.mapearNota('E5').tecla, 'E4');
-    assert.equal(teclado.children[0].dataset.nota, 'C4');
+    assert.equal(motor.mapearNota('E5').tecla, 'E5');
+    assert.equal(teclado.children[0].dataset.nota, 'C3');
+    assert.equal(teclado.children.length, 37);
+    motor.orientacaoAmpla.matches = true;
     const livre = window.document.createElement('div');
     for (const [base, inicio, fim] of [[2, 'C2', 'C4'], [4, 'C4', 'C6']]) {
         motor.montarTecladoAmpliado(livre, 2, base);

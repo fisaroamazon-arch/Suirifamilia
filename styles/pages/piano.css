@@ -21,6 +21,24 @@
     padding: 4px;
     overflow: hidden;
 }
+#piano-orientacao { display: none; }
+#tela-simon[data-piano-vertical] > :not(#piano-orientacao) { display: none !important; }
+#tela-simon[data-piano-vertical] > #piano-orientacao {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 12px;
+    flex: 1;
+    width: min(350px, 100%);
+    margin: auto;
+    padding: 22px;
+    color: #fff0dc;
+    text-align: center;
+}
+#piano-orientacao svg { color: #ffd291; }
+#piano-orientacao h2 { font-size: clamp(1.25rem, 6vw, 1.65rem); }
+#piano-orientacao p { color: #e6daf4; font-size: .9rem; }
+#piano-orientacao button { margin-top: 8px; min-height: 44px; }
 
 .piano-abrir-config {
     position: absolute;
@@ -173,9 +191,6 @@
 @media (orientation: portrait) {
     #piano-configuracoes { margin: auto auto max(9px, env(safe-area-inset-bottom)); }
 }
-@media (orientation: landscape) {
-    .piano-girar { display: none; }
-}
 @media (orientation: landscape) and (min-width: 640px) {
     #piano-configuracoes { width: min(740px, calc(100% - 22px)); max-height: 94dvh; }
     .piano-config-cabecalho { margin-bottom: 7px; }
@@ -305,9 +320,6 @@
 #tela-simon :is(.tecla-branca-piano, .tecla-preta-piano) { min-width: 0; }
 #tela-simon :is(.rotulo-nota-branca, .rotulo-nota-preta) { font-size: clamp(8px, 1.24vw, 14px); }
 #tela-simon .tecla-preta-piano .rotulo-nota-preta { font-size: clamp(7px, 1vw, 12px); }
-@media (orientation: portrait) {
-    .arcade-page[data-arcade-tela="simon"] #tela-simon { --altura-teclado: 34%; }
-}
 #tela-simon [data-nota].tocando,
 #tela-simon [data-nota].nota-errada {
     transform: none;
