@@ -40,8 +40,19 @@ try {
     motor.alterarDificuldade('avancado');
     assert.equal(motor.notasNaEsteira.length, motor.partituraAtual.melodia.length);
     assert(motor.notasNaEsteira.length > notasModerado.length);
-    const primeira = motor.notasNaEsteira[0];
     const batida = 60 / motor.partituraAtual.bpm;
+    for (const [nivel, aceitaAtraso, aceitaAntecipacao] of [
+        ['amador', true, true], ['moderado', true, false], ['avancado', false, false]
+    ]) {
+        motor.alterarDificuldade(nivel);
+        const primeira = motor.notasNaEsteira[0];
+        motor.tempoMusicaSegundos = primeira.tInicio + .68 * batida;
+        assert.equal(motor.emFaixa(primeira), aceitaAtraso);
+        motor.tempoMusicaSegundos = primeira.tInicio - .53 * batida;
+        assert.equal(motor.emFaixa(primeira), aceitaAntecipacao);
+    }
+    motor.alterarDificuldade('amador');
+    const primeira = motor.notasNaEsteira[0];
     motor.tempoMusicaSegundos = primeira.tInicio + .76 * batida;
     assert(motor.emFaixa(primeira));
     assert(motor.conferirAtrasos());
@@ -49,6 +60,7 @@ try {
     assert(!motor.emFaixa(primeira));
     motor.tempoMusicaSegundos = primeira.tInicio - .66 * batida;
     assert(!motor.emFaixa(primeira));
+    motor.alterarDificuldade('avancado');
     motor.reiniciarMusica();
     motor.alterarAlcance(1);
     assert.equal(motor.mapearNota('E6').simbolo, '↑2');

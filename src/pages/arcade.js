@@ -254,14 +254,47 @@
         }
 
         const niveisAcao = {
-            amador: { nome: 'Amador', ritmo: .86, abertura: 1.14, skate: 132, grade: -1, raio: 1.13 },
-            moderado: { nome: 'Moderado', ritmo: 1, abertura: 1, skate: 116, grade: 0, raio: 1 },
-            avancado: { nome: 'Avançado', ritmo: 1.18, abertura: .86, skate: 99, grade: 1, raio: .86 }
+            amador: {
+                nome: 'Amador',
+                flappy: { ritmo: .84, intervalo: 162, abertura: .72, larguraMaxima: 318, reducao: .17,
+                    resumo: 'Passagens largas, mais espaçadas e perto do meio.' },
+                quebrablocos: { ritmo: .82, skate: 138, skateMinimo: 98, vidas: 5, grade: -1, reforco: 6, pong: 0,
+                    resumo: 'Cinco vidas no Quebra-Blocos, skate largo e pista livre no Pong.' },
+                bolhas: { ritmo: .76, raio: 1.2, vidas: 7, margem: 17, bomba: 10000, desvio: .25,
+                    resumo: 'Bolhas maiores, mais bombas e sete vidas em Sobrevivência e Duelo.' }
+            },
+            moderado: {
+                nome: 'Moderado',
+                flappy: { ritmo: 1, intervalo: 134, abertura: .57, larguraMaxima: 255, reducao: .22,
+                    resumo: 'As aberturas mudam de altura em etapas, passando pelo meio.' },
+                quebrablocos: { ritmo: 1, skate: 116, skateMinimo: 72, vidas: 3, grade: 0, reforco: 4, pong: 3,
+                    resumo: 'Três vidas e reforços na fase 4 do Quebra-Blocos. No Pong, surgem obstáculos após os primeiros pontos.' },
+                bolhas: { ritmo: 1, raio: 1, vidas: 5, margem: 10, bomba: 13500, desvio: .45,
+                    resumo: 'Bolhas diminuem com o tempo. Sobrevivência e Duelo começam com cinco vidas.' }
+            },
+            avancado: {
+                nome: 'Avançado',
+                flappy: { ritmo: 1.24, intervalo: 109, abertura: .45, larguraMaxima: 205, reducao: .19,
+                    resumo: 'Alterne entre passagens altas e baixas. Aberturas estreitas exigem precisão.' },
+                quebrablocos: { ritmo: 1.27, skate: 91, skateMinimo: 58, vidas: 2, grade: 1, reforco: 1, pong: 4,
+                    resumo: 'Skate estreito, duas vidas e reforços já na primeira fase. Os obstáculos do Pong aparecem mais cedo.' },
+                bolhas: { ritmo: 1.32, raio: .74, vidas: 3, margem: 4, bomba: 19000, desvio: .87,
+                    resumo: 'Bolhas pequenas. As ligeiras têm um anel dourado. Sobrevivência e Duelo começam com três vidas.' }
+            }
         };
+
+        function atualizarNivelNoMenu(menu, nivel) {
+            const seletor = menu?.querySelector('[data-arcade-nivel]');
+            if (!seletor) return;
+            seletor.value = nivel;
+            const resumo = menu.querySelector('[data-arcade-nivel-resumo]');
+            if (resumo) resumo.textContent = niveisAcao[nivel][seletor.dataset.arcadeNivel].resumo;
+        }
 
         function definirNivelAcao(motor, nivel) {
             if (!Object.hasOwn(niveisAcao, nivel) || motor.rodando) return;
             motor.nivel = nivel;
+            atualizarNivelNoMenu(motor.canvas?.parentElement, nivel);
             if (motor === MotorFlappy) motor.preverCenario(motor.cenarioEscolhido);
         }
 
@@ -470,8 +503,7 @@
                 } else if (menu && this.menusAntesDaPartida.has(idJogo)) {
                     menu.innerHTML = this.menusAntesDaPartida.get(idJogo);
                 }
-                const seletorNivel = menu?.querySelector('[data-arcade-nivel]');
-                if (seletorNivel) seletorNivel.value = this.motorAtivo().nivel;
+                if (this.motorAtivo()) atualizarNivelNoMenu(menu, this.motorAtivo().nivel);
                 document.getElementById('rotulo-voltar-arcade').textContent = 'Arcade';
                 document.querySelectorAll(`#tela-${idJogo} [data-arcade-imagem]`).forEach(img => {
                     const parado = matchMedia('(prefers-reduced-motion: reduce)').matches ? '-parado' : '';
@@ -690,7 +722,7 @@
                     corrida.disabled = !melhor;
                     document.getElementById('flappy-corrida-info').textContent = melhor
                         ? `Melhor voo neste cenário e nível · ${melhor.troncos} ${melhor.troncos === 1 ? 'tronco' : 'troncos'}`
-                        : 'Termine um voo solo neste cenário e nível para liberar a corrida.';
+                        : 'Termine um voo solo neste cenário e nível para gravar uma sombra no novo percurso.';
                 }
                 if (this.canvas && !this.rodando) {
                     this.obstaculos = [];
@@ -704,7 +736,7 @@
             chaveMelhorVoo: function() {
                 let perfil = 'visitante';
                 try { perfil = JSON.parse(localStorage.getItem('suiri_perfil_ativo') || '{}').id || perfil; } catch {}
-                return `suiri:arcade:voo:v1:${perfil}:${this.cenarioEscolhido}:${this.nivel}`;
+                return `suiri:arcade:voo:v2:${perfil}:${this.cenarioEscolhido}:${this.nivel}`;
             },
 
             lerMelhorVoo: function(chave = this.chaveMelhorVoo()) {
@@ -745,7 +777,7 @@
             ajustarCampo: function(voo) {
                 const {width, height} = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = voo?.largura ?? (Math.round(width) || 320);
-                this.canvas.height = voo?.altura ?? (Math.round(height) || 560);
+                this.canvas.height = voo?.altura ?? Math.max(360, Math.round(height) || 560);
                 this.camadaPersonagens.style.width = `${this.canvas.width}px`;
                 this.camadaPersonagens.style.height = `${this.canvas.height}px`;
                 this.ajustarEscalaPersonagens();
@@ -798,7 +830,7 @@
                 this.obstaculosPassados = 0;
                 this.moedasGanhasPartida = 0;
                 this.timer = 91;
-                this.centroPassagem = this.canvas.height * .48;
+                this.passagensGeradas = 0;
                 this.cicloAnimProfundidade = 0;
                 document.querySelectorAll("#tela-flappy .impacto-voo").forEach(efeito => efeito.remove());
                 this.obstaculoParaSpawnVida = 0;
@@ -933,9 +965,33 @@
             },
 
             obterEspacoAtual: function() {
-                const espacoInicial = Math.min(290, this.canvas.height * .62);
-                return Math.min(this.canvas.height - 36,
-                    espacoInicial * (1 - .31 * this.obterProgresso()) * niveisAcao[this.nivel].abertura);
+                const altura = this.canvas.height;
+                const { abertura, larguraMaxima, reducao } = niveisAcao[this.nivel].flappy;
+                const espaco = Math.min(larguraMaxima, altura * abertura) * (1 - reducao * this.obterProgresso());
+                return Math.min(altura - 56, Math.max(80, espaco));
+            },
+
+            criarPassagem: function() {
+                const espaco = this.obterEspacoAtual();
+                const primeiroTopo = 18;
+                const ultimoTopo = this.canvas.height - espaco - 38;
+                const alcance = Math.max(0, ultimoTopo - primeiroTopo);
+                const meio = primeiroTopo + alcance / 2;
+                const indice = this.passagensGeradas++;
+                const variacao = this.sortearPercurso() * 2 - 1;
+                let topo = meio;
+                if (this.nivel === 'avancado') {
+                    const sentido = (indice + (this.sementeVoo & 1)) % 2 ? 1 : -1;
+                    const amplitude = Math.min(alcance * .46, 111 + this.obterProgresso() * 9);
+                    topo += sentido * amplitude + variacao * Math.min(alcance * .025, 7);
+                } else if (this.nivel === 'moderado') {
+                    const sentido = [0, -1, 0, 1][indice % 4];
+                    topo += sentido * Math.min(alcance * .35, 119) + variacao * Math.min(alcance * .08, 16);
+                } else {
+                    topo += Math.sin(indice * .8) * Math.min(alcance * .15, 38) + variacao * 4;
+                }
+                topo = Math.max(primeiroTopo, Math.min(ultimoTopo, topo));
+                return { x: this.canvas.width, topo, base: topo + espaco, passou: false };
             },
 
             atualizar: function() {
@@ -1017,36 +1073,27 @@
                 // Spawn de troncos e itens
                 this.timer++;
                 const progressoVoo = this.obterProgresso();
-                const ritmo = niveisAcao[this.nivel].ritmo;
-                const intervaloSpawn = (137 - progressoVoo * 41) / ritmo;
+                const { ritmo, intervalo } = niveisAcao[this.nivel].flappy;
+                const intervaloSpawn = intervalo - progressoVoo * 24;
                 if (this.timer > intervaloSpawn) {
                     this.timer = 0;
-                    const espaco = this.obterEspacoAtual();
-                    const variacao = this.canvas.height * (.017 + .13 * progressoVoo);
-                    const centro = this.centroPassagem + (this.sortearPercurso() * 2 - 1) * variacao;
-                    const topo = Math.max(20, Math.min(this.canvas.height - espaco - 37, centro - espaco / 2));
-                    this.centroPassagem = topo + espaco / 2;
-
-                    this.obstaculos.push({
-                        x: this.canvas.width,
-                        topo: topo,
-                        base: topo + espaco,
-                        passou: false
-                    });
+                    const passagem = this.criarPassagem();
+                    this.obstaculos.push(passagem);
+                    const centro = (passagem.topo + passagem.base) / 2;
 
                     // Se alguém precisa de vida no modo 2P
                     const precisaVida = this.modo === 2 && (!this.p1.vivo || !this.p2.vivo);
                     if (precisaVida && this.vidasNoAr.length === 0 && this.obstaculosPassados >= this.obstaculoParaSpawnVida) {
                         this.vidasNoAr.push({
                             x: this.canvas.width + this.larguraTronco / 2,
-                            y: topo + espaco / 2,
+                            y: centro,
                             coletada: false,
                             r: 16
                         });
                     } else if (this.sortearPercurso() < 0.45) {
                         this.moedasNoAr.push({
                             x: this.canvas.width + this.larguraTronco / 2,
-                            y: topo + espaco / 2,
+                            y: centro,
                             coletada: false,
                             r: 11
                         });
@@ -1324,7 +1371,7 @@
 
             fim: function() {
                 const modalidade = this.modo === 2 ? 'Dupla' : 'Solo';
-                window.RecordesArcade?.registrar('flappy', `${modalidade} · ${niveisAcao[this.nivel].nome}`,
+                window.RecordesArcade?.registrar('flappy', `${modalidade} · ${niveisAcao[this.nivel].nome} · Percurso atual`,
                     this.obstaculosPassados, `${this.obstaculosPassados} troncos`);
                 const corrida = this.vooParaSuperar;
                 const novoRecorde = this.salvarMelhorVoo();
@@ -1444,7 +1491,8 @@
             iniciar: function(modoEscolhido = 1) {
                 this.modo = modoEscolhido;
                 this.faseAtual = 1;
-                this.vidas = 3;
+                const nivel = niveisAcao[this.nivel].quebrablocos;
+                this.vidas = nivel.vidas;
                 this.totalDestruidos = 0;
                 this.moedasGanhas = 0;
                 this.pontosJ1 = 0;
@@ -1486,8 +1534,7 @@
                 const arena = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = Math.round(arena.width);
                 this.canvas.height = Math.round(arena.height);
-                const nivel = niveisAcao[this.nivel];
-                this.skate.w = Math.min(this.modo === 1 ? nivel.skate : nivel.skate - 18, this.canvas.width * .35);
+                this.skate.w = Math.min(this.modo === 1 ? nivel.skate : nivel.skate - 18, this.canvas.width * .4);
                 this.skateTopo.w = this.skate.w;
                 this.teclas.clear();
                 this.skate.y = this.canvas.height - 90;
@@ -1514,10 +1561,10 @@
             gerarGradeBlocos: function() {
                 this.blocos = [];
                 const alturaBloco = 22;
-                const ajuste = niveisAcao[this.nivel].grade;
+                const { grade, reforco } = niveisAcao[this.nivel].quebrablocos;
                 const distancia = alturaBloco + 7;
                 const limite = Math.max(1, Math.floor((this.skate.y - 83) / distancia));
-                const linhas = Math.min(7, Math.max(1, this.faseAtual + 1 + ajuste), limite);
+                const linhas = Math.min(7, Math.max(1, this.faseAtual + 1 + grade), limite);
                 const colunas = Math.min(7, this.faseAtual + 4);
                 const margemX = 14;
                 const larguraBloco = (this.canvas.width - (margemX * 2)) / colunas;
@@ -1525,14 +1572,16 @@
 
                 for (let l = 0; l < linhas; l++) {
                     const cor = paletaCores[l % paletaCores.length];
+                    const deslocada = this.nivel === 'avancado' && l % 2 === 1;
                     for (let c = 0; c < colunas; c++) {
+                        if (deslocada && c === colunas - 1) continue;
                         this.blocos.push({
-                            x: margemX + c * larguraBloco,
+                            x: margemX + (c + (deslocada ? .5 : 0)) * larguraBloco,
                             y: 43 + l * distancia,
                             w: larguraBloco - 6,
                             h: alturaBloco,
                             cor: cor,
-                            resistencia: this.faseAtual >= 4 - ajuste && (l * 2 + c) % 4 === 0 ? 2 : 1,
+                            resistencia: this.faseAtual >= reforco && (l * 2 + c) % 4 === 0 ? 2 : 1,
                             vivo: true
                         });
                     }
@@ -1582,6 +1631,7 @@
             },
 
             atualizar: function() {
+                const { ritmo, skateMinimo, pong } = niveisAcao[this.nivel].quebrablocos;
                 const direcao = (direita, esquerda) => Number(this.teclas.has(direita)) - Number(this.teclas.has(esquerda));
                 const base = direcao('ArrowRight', 'ArrowLeft');
                 const topo = direcao('KeyD', 'KeyA');
@@ -1620,7 +1670,7 @@
                             this.bola.vy = Math.abs(this.bola.vy);
                             const centro = this.skateTopo.x + this.skateTopo.w / 2;
                             const offset = (this.bola.x - centro) / (this.skateTopo.w / 2);
-                            this.bola.vx = offset * 4.4;
+                            this.bola.vx = offset * 4.4 * ritmo;
                             AudioMotor.tocarTom(620, 0.08);
                             tentarVibrar(15);
                         }
@@ -1643,9 +1693,10 @@
                     }
 
                     this.obstaculoTimer++;
-                    if (this.pontosJ1 + this.pontosJ2 >= 2 && this.obstaculoTimer > 310 / niveisAcao[this.nivel].ritmo) {
+                    const pontosAntesDoObstaculo = this.nivel === 'avancado' ? 0 : 2;
+                    if (pong && this.pontosJ1 + this.pontosJ2 >= pontosAntesDoObstaculo && this.obstaculoTimer > 310 / ritmo) {
                         this.obstaculoTimer = 0;
-                        if (this.blocos.filter(b => b.vivo).length < 3) {
+                        if (this.blocos.filter(b => b.vivo).length < pong) {
                             this.adicionarObstaculoCentroPong();
                         }
                     }
@@ -1657,7 +1708,7 @@
                         const centro = this.skate.x + this.skate.w / 2;
                         const offset = (this.bola.x - centro) / (this.skate.w / 2);
                         this.bola.vx = this.modo === 1 && Math.abs(offset) < .16 ?
-                            .75 * (Math.sign(this.bola.vx) || 1) : offset * 4.4;
+                            .75 * (Math.sign(this.bola.vx) || 1) : offset * 4.4 * ritmo;
                         AudioMotor.tocarTom(550, 0.08);
                         tentarVibrar(15);
                     }
@@ -1676,7 +1727,7 @@
                         document.getElementById('placar-quebrablocos-fase').textContent = this.faseAtual;
                         document.getElementById('placar-quebrablocos-moedas').textContent = this.moedasGanhas;
                         const centro = this.skate.x + this.skate.w / 2;
-                        this.skate.w = Math.max(72, this.skate.w - 4);
+                        this.skate.w = Math.max(Math.min(skateMinimo, this.canvas.width * .35), this.skate.w - 4);
                         this.moverSkate(false, centro);
                         this.gerarGradeBlocos();
                         this.servirBolaSolo();
@@ -1746,7 +1797,7 @@
                 this.bolaEmEspera = false;
                 this.posicionarBolaNoSkate();
                 this.bola.vx = this.bola.x <= this.canvas.width / 2 ? 1.35 : -1.35;
-                this.bola.vy = -Math.min(5.65, 2.45 + (this.faseAtual - 1) * .38) * niveisAcao[this.nivel].ritmo;
+                this.bola.vy = -Math.min(5.65, 2.45 + (this.faseAtual - 1) * .38) * niveisAcao[this.nivel].quebrablocos.ritmo;
                 document.getElementById('blocos-dica-saque').hidden = true;
                 AudioMotor.tocarEfeito('rebote');
             },
@@ -1754,7 +1805,7 @@
             resetarBolaPong: function(direcaoY) {
                 this.bola.x = this.canvas.width / 2;
                 this.bola.y = this.canvas.height / 2;
-                const ritmo = niveisAcao[this.nivel].ritmo;
+                const ritmo = niveisAcao[this.nivel].quebrablocos.ritmo;
                 this.bola.vx = (Math.random() < 0.5 ? -1 : 1) * 2.8 * ritmo;
                 this.bola.vy = direcaoY * 3.4 * ritmo;
             },
@@ -1973,17 +2024,19 @@
 
             iniciarModo: function(modoEscolhido = 'solo') {
                 this.parar();
+                const nivel = niveisAcao[this.nivel].bolhas;
                 this.modo = modoEscolhido;
                 this.estouradasJ1 = 0;
                 this.estouradasJ2 = 0;
-                this.vidasJ1 = 5;
-                this.vidasJ2 = 5;
+                this.vidasJ1 = nivel.vidas;
+                this.vidasJ2 = nivel.vidas;
+                this.bolhasCriadas = 0;
                 this.segundosRestantesRush = 180;
                 this.bolhas = [];
                 this.gotas = [];
                 this.ultimoSpawn = performance.now();
                 this.prazoRush = 0;
-                this.proximaBomba = this.ultimoSpawn + 13500;
+                this.proximaBomba = this.ultimoSpawn + nivel.bomba;
                 this.bomba = null;
                 this.onda = null;
                 this.fimAvisoBonus = 0;
@@ -2000,7 +2053,7 @@
                     document.getElementById('placar-bolhas-estouradas').textContent = '0';
                 }
                 if (document.getElementById('placar-bolhas-vidas-j1')) {
-                    document.getElementById('placar-bolhas-vidas-j1').textContent = '❤️ 5';
+                    document.getElementById('placar-bolhas-vidas-j1').textContent = `❤️ ${this.vidasJ1}`;
                 }
                 const overEl = document.getElementById('over-bolhas');
                 if (overEl) overEl.style.display = 'none';
@@ -2013,7 +2066,7 @@
                     if (hudJ2) hudJ2.style.display = 'flex';
                     if (hudTempo) hudTempo.style.display = 'none';
                     if (document.getElementById('placar-bolhas-vidas-j2')) {
-                        document.getElementById('placar-bolhas-vidas-j2').textContent = '❤️ 5';
+                        document.getElementById('placar-bolhas-vidas-j2').textContent = `❤️ ${this.vidasJ2}`;
                     }
                     if (document.getElementById('placar-bolhas-estouradas-j2')) {
                         document.getElementById('placar-bolhas-estouradas-j2').textContent = '0';
@@ -2078,8 +2131,11 @@
                 }
 
                 const progresso = this.obterProgresso();
-                const nivel = niveisAcao[this.nivel];
-                const velBase = (this.modo === 'rush' ? 1.18 + 1.45 * progresso : .86 + 1.15 * progresso) * nivel.ritmo;
+                const nivel = niveisAcao[this.nivel].bolhas;
+                const numero = ++this.bolhasCriadas;
+                const ligeira = this.nivel === 'avancado' && fracaoInicial === undefined && numero % 4 === 0;
+                const velBase = (this.modo === 'rush' ? 1.18 + 1.45 * progresso : .86 + 1.15 * progresso) * nivel.ritmo *
+                    (ligeira ? 1.55 : 1);
                 const variacao = (.3 + .95 * progresso) * nivel.ritmo;
                 const raio = (36 - 13 * progresso + Math.random() * 5) * nivel.raio;
                 let x, y, vx, vy;
@@ -2128,6 +2184,7 @@
                     vx: vx,
                     vy: vy,
                     r: raio,
+                    ligeira,
                     oscilacao: Math.random() * Math.PI * 2,
                     entrouNaTela: false
                 });
@@ -2190,9 +2247,10 @@
                     tentarVibrar([24, 26, 18]);
                     return;
                 }
+                const margem = niveisAcao[this.nivel].bolhas.margem;
                 for (let i = this.bolhas.length - 1; i >= 0; i--) {
                     const b = this.bolhas[i];
-                    if (Math.hypot(x - b.x, y - b.y) > b.r + 13) continue;
+                    if (Math.hypot(x - b.x, y - b.y) > b.r + margem) continue;
                     const rosa = b.dono === 'j2';
                     this.gerarGotas(b.x, b.y, rosa ? '#f6a6ca' : '#8af2f7');
                     this.bolhas.splice(i, 1);
@@ -2216,7 +2274,7 @@
                     }
                 } else if (agora >= this.proximaBomba) {
                     this.bomba = { x: this.canvas.width * (.2 + Math.random() * .6), y: -30, r: 26 };
-                    this.proximaBomba = agora + 16500 + Math.random() * 5500;
+                    this.proximaBomba = agora + niveisAcao[this.nivel].bolhas.bomba + 3000 + Math.random() * 5500;
                     this.mostrarBonus('Toque na bomba dourada para estourar todas!');
                 }
                 if (this.onda) {
@@ -2232,6 +2290,7 @@
 
             atualizar: function() {
                 const agora = performance.now();
+                const { ritmo, desvio } = niveisAcao[this.nivel].bolhas;
                 if (this.modo === 'rush') {
                     const segundos = Math.max(0, Math.ceil((this.prazoRush - agora) / 1000));
                     if (segundos !== this.segundosRestantesRush) {
@@ -2242,7 +2301,7 @@
                 }
                 const progresso = this.obterProgresso();
                 const intervalo = (this.modo === 'rush' ? 1100 - progresso * 805 :
-                    (this.modo === 'duelo' ? 1330 : 1470) - progresso * 820) / niveisAcao[this.nivel].ritmo;
+                    (this.modo === 'duelo' ? 1330 : 1470) - progresso * 820) / ritmo;
                 this.atualizarBomba(agora);
 
                 if (agora - this.ultimoSpawn > intervalo) {
@@ -2266,9 +2325,10 @@
                     b.x += b.vx;
                     b.y += b.vy;
                     b.oscilacao += 0.04;
-                    b.x += Math.sin(b.oscilacao) * 0.45;
+                    b.x += Math.sin(b.oscilacao) * desvio;
 
                     if (!b.entrouNaTela) {
+                        if (this.modo !== 'rush') b.x = Math.max(b.r, Math.min(this.canvas.width - b.r, b.x));
                         if (b.x >= 0 && b.x <= this.canvas.width && b.y >= 0 && b.y <= this.canvas.height) {
                             b.entrouNaTela = true;
                         }
@@ -2325,8 +2385,8 @@
                     brilho.addColorStop(.72, rival ? '#db5a9d66' : '#74aaff55');
                     brilho.addColorStop(1, rival ? '#ffc4deae' : '#baffffe0');
                     ctx.fillStyle = brilho;
-                    ctx.strokeStyle = rival ? '#ffc0d3' : '#cdfaff';
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = b.ligeira ? '#ffda83' : rival ? '#ffc0d3' : '#cdfaff';
+                    ctx.lineWidth = b.ligeira ? 3 : 2;
                     ctx.beginPath();
                     if (rival) {
                         ctx.moveTo(b.x, b.y - b.r);
@@ -2474,7 +2534,7 @@
                     ov.innerHTML = `
                         <div class="painel-dialogo-arcade">
                             <h2 style="color:#ef4444;">Fim de Partida!</h2>
-                            <p>5 bolhas escaparam!<br>
+                            <p>${niveisAcao[this.nivel].bolhas.vidas} bolhas escaparam!<br>
                             Bolhas estouradas: <strong>${this.estouradasJ1}</strong><br>
                             <span style="color:#b45309; font-weight:900; font-size:14px; margin-top:4px; display:inline-block;">+${moedas} Moedas faturadas!</span></p>
                             <div style="display:flex; flex-direction:column; gap:8px;">
@@ -2497,6 +2557,11 @@
         const MotorVelha = {
             modo: 'ia',
             dificuldade: 'treino',
+            niveis: {
+                treino: { nome: 'Amador', resumo: 'O Chuíri joga de forma mais solta e destaca uma casa quando há uma boa jogada.' },
+                intermediario: { nome: 'Moderado', resumo: 'O Chuíri bloqueia trincas e tenta preparar duas ameaças de uma vez.' },
+                desafio: { nome: 'Avançado', resumo: 'O Chuíri prevê as respostas. Forçar um empate já é um bom resultado.' }
+            },
             proximoInicio: { ia: 'X', '2p': 'X' },
             tabuleiro: Array(9).fill(''),
             turno: 'X',
@@ -2555,6 +2620,9 @@
                 this.turno = this.proximoInicio[this.modo];
                 this.proximoInicio[this.modo] = this.turno === 'X' ? 'O' : 'X';
                 this.fim = false;
+                const resumo = document.getElementById('velha-nivel-resumo');
+                resumo.hidden = this.modo !== 'ia';
+                resumo.textContent = this.niveis[this.dificuldade].resumo;
                 const nomeJ1 = GerenciadorArcade.obterNomeUsuario();
                 
                 const statusEl = document.getElementById('status-velha');
@@ -2636,11 +2704,17 @@
             },
 
             casaQueFechaTrinca: function(p) {
+                return this.casasQueFechamTrinca(p).values().next().value;
+            },
+
+            casasQueFechamTrinca: function(p) {
+                const casas = new Set();
                 for (const {linha} of this.linhasVitoria) {
                     if (linha.filter(i => this.tabuleiro[i] === p).length !== 2) continue;
                     const casa = linha.find(i => !this.tabuleiro[i]);
-                    if (casa !== undefined) return casa;
+                    if (casa !== undefined) casas.add(casa);
                 }
+                return casas;
             },
 
             escolherJogada: function() {
@@ -2648,7 +2722,17 @@
                 if (this.dificuldade === 'desafio') return this.melhorJogada(vazias);
                 const vitoria = this.casaQueFechaTrinca('O');
                 if (vitoria !== undefined) return vitoria;
-                if (this.dificuldade === 'intermediario') return this.casaQueFechaTrinca('X') ?? vazias[0];
+                if (this.dificuldade === 'intermediario') {
+                    const bloqueio = this.casaQueFechaTrinca('X');
+                    if (bloqueio !== undefined) return bloqueio;
+                    const duasAmeacas = vazias.find(casa => {
+                        this.tabuleiro[casa] = 'O';
+                        const temDuas = this.casasQueFechamTrinca('O').size >= 2;
+                        this.tabuleiro[casa] = '';
+                        return temDuas;
+                    });
+                    return duasAmeacas ?? vazias[0];
+                }
                 return vazias[Math.floor(Math.random() * vazias.length)];
             },
 
@@ -2735,8 +2819,7 @@
             vitoria: function(p, vInfo) {
                 if (p === 'X' || this.modo === '2p') {
                     const jogadas = this.tabuleiro.filter(Boolean).length;
-                    const niveis = { treino: 'Treino', intermediario: 'Intermediário', desafio: 'Desafio' };
-                    const modalidade = this.modo === '2p' ? 'Dois jogadores' : `Contra Chuíri · ${niveis[this.dificuldade]}`;
+                    const modalidade = this.modo === '2p' ? 'Dois jogadores' : `Contra Chuíri · ${this.niveis[this.dificuldade].nome}`;
                     window.RecordesArcade?.registrar('velha', modalidade,
                         -jogadas, `Vitória em ${jogadas} jogadas`, `Trinca com ${p}`);
                 }
@@ -2815,8 +2898,10 @@
                 return this.figurasGeradas.get(carta.id);
             },
 
+            temposPorPares: {4: 1500, 6: 1350, 8: 1200, 12: 1000, 16: 900, 24: 750, 32: 650},
+
             trocarNivel: function(pares) {
-                if (![4, 6, 8, 12, 16, 24, 32].includes(pares)) return;
+                if (!Object.hasOwn(this.temposPorPares, pares)) return;
                 this.totalPares = pares;
                 for (const botao of document.querySelectorAll('[data-memoria-pares]')) {
                     const ativo = Number(botao.dataset.memoriaPares) === pares;
@@ -2894,6 +2979,11 @@
                 const dica = document.getElementById('memoria-espiar');
                 dica.hidden = this.modo !== 'solo' || this.totalPares > 8;
                 dica.disabled = false;
+                const resumo = document.getElementById('memoria-nivel-resumo');
+                if (this.totalPares > 16) resumo.textContent = 'Avançado · Muitas cartas, e elas viram para baixo mais depressa.';
+                else if (this.totalPares > 8) resumo.textContent = 'Moderado · Mais cartas e menos tempo para observar cada tentativa.';
+                else resumo.textContent = dica.hidden ? 'Amador · Poucas cartas e mais tempo para observar.' :
+                    'Amador · Você pode espiar o tabuleiro uma vez no começo.';
                 this.atualizarPlacar();
 
                 grade.dataset.pares = this.totalPares;
@@ -2997,7 +3087,7 @@
                             }
                             this.viradas = [];
                             this.bloqueado = false;
-                        }, {4: 1280, 6: 1150, 8: 1030, 12: 970, 16: 910, 24: 870, 32: 830}[this.totalPares]);
+                        }, this.temposPorPares[this.totalPares]);
                     }
                 }
             },
