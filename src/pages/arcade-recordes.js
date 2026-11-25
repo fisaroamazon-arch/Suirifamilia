@@ -1,5 +1,5 @@
 window.RecordesArcade = (() => {
-    const jogos = {flappy:'Chuíri Voador', quebrablocos:'Quebra-Blocos', simon:'Piano', bolhas:'Bolhas', velha:'Jogo da Velha', memoria:'Memória'};
+    const jogos = {flappy:'Chuíri Voador', quebrablocos:'Quebra-Blocos', simon:'Piano', bolhas:'Bolhas', velha:'Jogo da Velha', memoria:'Memória', eco:'Eco Musical', campo:'Campo Minado'};
     const dialogo = document.getElementById('arcade-recordes');
     const seletor = document.getElementById('recordes-jogo');
     const grupo = document.getElementById('recordes-grupo');
